@@ -1,0 +1,34 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="admin.Master.cs" Inherits="ONYX_DDAC.admin_page.admin" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - ONYX Admin</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/onyx.css" rel="stylesheet" />
+    <link href="~/Content/admin.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+</head>
+<body>
+    <form id="form1" runat="server" class="admin-shell">
+        <nav class="admin-nav">
+            <div class="container d-flex align-items-center justify-content-between py-3">
+                <a class="onyx-brand fs-4" runat="server" href="~/admin_page/onyx_admin_dashboard.aspx">ONYX Admin</a>
+                <div class="d-flex gap-3">
+                    <a runat="server" href="~/admin_page/onyx_admin_dashboard.aspx">Dashboard</a>
+                    <a runat="server" href="~/admin_page/onyx_admin_products.aspx">Products</a>
+                    <a runat="server" href="~/customer_page/onyx_catalog.aspx">Storefront</a>
+                </div>
+            </div>
+        </nav>
+        <main class="py-4">
+            <div class="container">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
+        </main>
+    </form>
+    <script src="../Scripts/bootstrap.bundle.min.js"></script>
+</body>
+</html>

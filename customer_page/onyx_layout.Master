@@ -1,0 +1,42 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="onyx_layout.Master.cs" Inherits="ONYX_DDAC.customer_page.onyx_layout" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - ONYX</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/onyx.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+</head>
+<body>
+    <form id="form1" runat="server" class="onyx-shell">
+        <nav class="onyx-nav">
+            <div class="container d-flex align-items-center justify-content-between py-3">
+                <a class="onyx-brand fs-4" runat="server" href="~/customer_page/onyx_catalog.aspx">ONYX</a>
+                <div class="d-flex gap-3">
+                    <a runat="server" href="~/customer_page/onyx_products.aspx">Products</a>
+                    <a runat="server" href="~/customer_page/onyx_cart.aspx">Cart</a>
+                    <a runat="server" href="~/auth_page/onyx_login.aspx">Login</a>
+                </div>
+            </div>
+        </nav>
+
+        <main class="onyx-main">
+            <div class="container">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
+        </main>
+
+        <footer class="onyx-footer">
+            <div class="container d-flex justify-content-between">
+                <span>ONYX</span>
+                <span>Gear Up. Game On.</span>
+            </div>
+        </footer>
+    </form>
+    <script src="../Scripts/bootstrap.bundle.min.js"></script>
+    <script src="../Scripts/onyx.js"></script>
+</body>
+</html>

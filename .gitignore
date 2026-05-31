@@ -1,0 +1,28 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# NuGet
+packages/
+*.nupkg
+
+# ASP.NET generated files
+App_Data/*.mdf
+App_Data/*.ldf
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
