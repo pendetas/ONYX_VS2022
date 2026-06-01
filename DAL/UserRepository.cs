@@ -1,68 +1,82 @@
 using System;
+using System.Configuration;
 using System.Data;
-using System.Data.Common;
-using ONYX_DDAC.Models;
+using Npgsql;
+using ONYX_DDAC.Models; 
 
 namespace ONYX_DDAC.DAL
 {
     public class UserRepository
     {
-        private readonly DbConnectionFactory connectionFactory;
-
-        public UserRepository()
-            : this(new DbConnectionFactory())
+        // Helper method to grab the connection string from Web.config
+        private string GetConnectionString(string connectionName = "DefaultConnection")
         {
+            return ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
         }
 
-        public UserRepository(DbConnectionFactory connectionFactory)
+        // Inserts a new user into the database
+        public bool CreateUser(User user)
         {
-            this.connectionFactory = connectionFactory;
-        }
-
-        public User FindByEmail(string email)
-        {
-            using (DbConnection connection = connectionFactory.CreateDefaultConnection())
-            using (DbCommand command = connection.CreateCommand())
+            // Explicitly initializing the Npgsql library connection right here
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
             {
-                command.CommandText = "SELECT id, fullname, username, email, password_hash, address, dob, phone_number, role, created_at FROM users WHERE email = @email";
-                AddParameter(command, "@email", email);
+                conn.Open();
+                string sql = @"
+                    INSERT INTO users (fullname, username, email, password_hash, address, dob, phone_number, role, created_at) 
+                    VALUES (@FullName, @Username, @Email, @PasswordHash, @Address, @Dob, @PhoneNumber, @Role, @CreatedAt)";
 
-                connection.Open();
-                using (DbDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow))
+                using (var cmd = new NpgsqlCommand(sql, conn))
                 {
-                    if (!reader.Read())
-                    {
-                        return null;
-                    }
+                    // Using parameters prevents SQL Injection attacks
+                    cmd.Parameters.AddWithValue("@FullName", user.FullName);
+                    cmd.Parameters.AddWithValue("@Username", user.Username);
+                    cmd.Parameters.AddWithValue("@Email", user.Email);
+                    cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
 
-                    return MapUser(reader);
+                    // Handle nullable fields safely for PostgreSQL
+                    cmd.Parameters.AddWithValue("@Address", (object)user.Address ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Dob", user.Dob);
+                    cmd.Parameters.AddWithValue("@PhoneNumber", (object)user.PhoneNumber ?? DBNull.Value);
+
+                    cmd.Parameters.AddWithValue("@Role", user.Role ?? "customer"); // Default to customer
+                    cmd.Parameters.AddWithValue("@CreatedAt", DateTime.UtcNow);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
                 }
             }
         }
 
-        private static void AddParameter(DbCommand command, string name, object value)
+        // Retrieves a user by email for login validation
+        public User GetUserByEmail(string email)
         {
-            DbParameter parameter = command.CreateParameter();
-            parameter.ParameterName = name;
-            parameter.Value = value ?? DBNull.Value;
-            command.Parameters.Add(parameter);
-        }
-
-        private static User MapUser(DbDataReader reader)
-        {
-            return new User
+            // Explicitly initializing the Npgsql library for reading
+            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
             {
-                Id = Convert.ToInt64(reader["id"]),
-                Fullname = Convert.ToString(reader["fullname"]),
-                Username = Convert.ToString(reader["username"]),
-                Email = Convert.ToString(reader["email"]),
-                PasswordHash = Convert.ToString(reader["password_hash"]),
-                Address = reader["address"] == DBNull.Value ? null : Convert.ToString(reader["address"]),
-                Dob = reader["dob"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["dob"]),
-                PhoneNumber = reader["phone_number"] == DBNull.Value ? null : Convert.ToString(reader["phone_number"]),
-                Role = Convert.ToString(reader["role"]),
-                CreatedAt = Convert.ToDateTime(reader["created_at"])
-            };
+                conn.Open();
+                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE email = @Email";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Email", email);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User
+                            {
+                                Id = reader.GetInt64(0),
+                                Username = reader.GetString(1),
+                                Email = reader.GetString(2),
+                                PasswordHash = reader.GetString(3),
+                                Role = reader.GetString(4)
+                            };
+                        }
+                    }
+                }
+            }
+            return null; // User not found
         }
     }
 }

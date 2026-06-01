@@ -1,5 +1,5 @@
 using System;
-using System.Reflection;
+using BCrypt.Net;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 
@@ -7,71 +7,65 @@ namespace ONYX_DDAC.Services
 {
     public class AuthService
     {
-        private readonly UserRepository userRepository;
+        private readonly UserRepository _userRepository;
 
         public AuthService()
-            : this(new UserRepository())
         {
+            _userRepository = new UserRepository();
         }
 
-        public AuthService(UserRepository userRepository)
+        // Handles the business logic for registering a user
+        public bool Register(string fullName, string username, string email, string rawPassword, DateTime dob, string address, string phoneNumber)
         {
-            this.userRepository = userRepository;
-        }
-
-        public LoginResult Login(string email, string password)
-        {
-            User user = userRepository.FindByEmail(email);
-
-            if (user == null || !VerifyBcryptPassword(password, user.PasswordHash))
+            try
             {
-                return LoginResult.Failed("Invalid email or password.");
+                // 1. Hash the password using BCrypt with a work factor of 12 for strong security
+                string hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(rawPassword, 12);
+
+                // 2. Create the user model (now including all PRD fields)
+                User newUser = new User
+                {
+                    FullName = fullName,
+                    Username = username,
+                    Email = email,
+                    PasswordHash = hashedPassword,
+                    Dob = dob,
+                    Address = address,
+                    PhoneNumber = phoneNumber,
+                    Role = "customer"
+                };
+
+                // 3. Send to the Data Access Layer to save in PostgreSQL
+                return _userRepository.CreateUser(newUser);
+            }
+            catch (Exception ex)
+            {
+                // In a production app, log this error (e.g., duplicate username violation)
+                System.Diagnostics.Debug.WriteLine("Registration Error: " + ex.Message);
+                return false;
+            }
+        }
+
+        // Handles the business logic for logging in
+        public User Login(string email, string rawPassword)
+        {
+            // 1. Fetch the user from the database
+            User user = _userRepository.GetUserByEmail(email);
+
+            // 2. If user exists, verify the password against the stored BCrypt hash
+            if (user != null)
+            {
+                // Fix: Removed named arguments here as well. SHA384 is used by default.
+                bool isPasswordValid = BCrypt.Net.BCrypt.EnhancedVerify(rawPassword, user.PasswordHash);
+
+                if (isPasswordValid)
+                {
+                    return user; // Login successful!
+                }
             }
 
-            return LoginResult.Success(user);
-        }
-
-        private static bool VerifyBcryptPassword(string password, string passwordHash)
-        {
-            Type bcryptType = Type.GetType("BCrypt.Net.BCrypt, BCrypt.Net-Next");
-
-            if (bcryptType == null)
-            {
-                throw new InvalidOperationException("BCrypt.Net-Next is required before password login can be verified.");
-            }
-
-            MethodInfo verifyMethod = bcryptType.GetMethod("Verify", new[] { typeof(string), typeof(string) });
-
-            if (verifyMethod == null)
-            {
-                throw new InvalidOperationException("BCrypt password verifier was not found.");
-            }
-
-            return (bool)verifyMethod.Invoke(null, new object[] { password, passwordHash });
-        }
-    }
-
-    public class LoginResult
-    {
-        private LoginResult(bool succeeded, string message, User user)
-        {
-            Succeeded = succeeded;
-            Message = message;
-            User = user;
-        }
-
-        public bool Succeeded { get; private set; }
-        public string Message { get; private set; }
-        public User User { get; private set; }
-
-        public static LoginResult Success(User user)
-        {
-            return new LoginResult(true, string.Empty, user);
-        }
-
-        public static LoginResult Failed(string message)
-        {
-            return new LoginResult(false, message, null);
+            // Login failed (either username not found or password incorrect)
+            return null;
         }
     }
 }

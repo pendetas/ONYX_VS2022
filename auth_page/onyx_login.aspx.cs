@@ -2,6 +2,7 @@ using System;
 using System.Web.Security;
 using System.Web.UI;
 using ONYX_DDAC.Helpers;
+using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.auth_page
@@ -24,21 +25,21 @@ namespace ONYX_DDAC.auth_page
 
             try
             {
-                LoginResult result = authService.Login(EmailTextBox.Text.Trim(), PasswordTextBox.Text);
+                User user = authService.Login(EmailTextBox.Text.Trim(), PasswordTextBox.Text);
 
-                if (!result.Succeeded)
+                if (user == null)
                 {
-                    ShowMessage(result.Message);
+                    ShowMessage("Invalid email or password.");
                     return;
                 }
 
-                Session["UserId"] = result.User.Id;
-                Session["Username"] = result.User.Username;
-                Session["Role"] = result.User.Role;
-                FormsAuthentication.SetAuthCookie(result.User.Email, false);
+                Session["UserId"] = user.Id;
+                Session["Username"] = user.Username;
+                Session["Role"] = user.Role;
+                FormsAuthentication.SetAuthCookie(user.Email, false);
 
                 Response.Redirect(
-                    string.Equals(result.User.Role, "admin", StringComparison.OrdinalIgnoreCase)
+                    string.Equals(user.Role, "admin", StringComparison.OrdinalIgnoreCase)
                         ? "~/admin_page/onyx_admin_dashboard.aspx"
                         : "~/customer_page/onyx_catalog.aspx",
                     true);

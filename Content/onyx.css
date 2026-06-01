@@ -1,69 +1,679 @@
 html,
 body {
-    background: #0a0a0a;
+    background: #050505;
     color: #ffffff;
     font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+body {
+    margin: 0;
+}
+
 a {
-    color: #00ff87;
+    color: #ffffff;
 }
 
 .onyx-shell {
     min-height: 100vh;
-    background: #0a0a0a;
+    background:
+        radial-gradient(circle at 76% 8%, rgba(255, 255, 255, 0.12), transparent 18rem),
+        linear-gradient(180deg, #050505 0%, #0b0b0c 42%, #151515 100%);
+    color: #ffffff;
 }
 
 .onyx-nav {
-    background: #111111;
-    border-bottom: 1px solid #1f1f1f;
+    background: rgba(10, 10, 11, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    left: 12px;
+    position: sticky;
+    right: 12px;
+    top: 10px;
+    z-index: 20;
 }
 
-.onyx-brand {
-    color: #00ff87;
+.onyx-nav-inner {
+    align-items: center;
+    display: grid;
+    gap: 18px;
+    grid-template-columns: auto 1fr auto;
+    margin: 0 auto;
+    max-width: 1320px;
+    min-height: 44px;
+    padding: 5px 8px;
+}
+
+.onyx-mark,
+.onyx-gem {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+}
+
+.onyx-mark {
+    background: #111113;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    height: 32px;
+    text-decoration: none;
+    width: 32px;
+}
+
+.onyx-gem {
+    background: #ffffff;
+    border-radius: 50%;
+    color: #050505;
+    font-size: 10px;
     font-weight: 800;
-    letter-spacing: 0;
+    height: 16px;
+    line-height: 1;
+    width: 16px;
 }
 
-.onyx-nav a {
+.onyx-nav-links,
+.onyx-nav-meta {
+    align-items: center;
+    display: flex;
+}
+
+.onyx-nav-links {
+    gap: 24px;
+}
+
+.onyx-nav-meta {
+    color: #8f8f95;
+    font-size: 12px;
+    gap: 18px;
+}
+
+.onyx-nav a,
+.onyx-footer a {
     color: #ffffff;
     text-decoration: none;
 }
 
-.onyx-nav a:hover {
-    color: #00ff87;
+.onyx-nav-links a,
+.onyx-footer-links a {
+    color: #c8c8ce;
+    font-size: 12px;
+}
+
+.onyx-nav a:hover,
+.onyx-footer a:hover {
+    color: #ffffff;
+}
+
+.onyx-nav-cta,
+.onyx-pill {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    font-weight: 800;
+    gap: 8px;
+    justify-content: center;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.onyx-nav-cta {
+    background: #ffffff;
+    color: #050505 !important;
+    font-size: 12px;
+    padding: 10px 13px;
+}
+
+.onyx-nav-cta span,
+.onyx-pill span {
+    align-items: center;
+    background: #050505;
+    border-radius: 50%;
+    color: #ffffff;
+    display: inline-flex;
+    height: 18px;
+    justify-content: center;
+    width: 18px;
 }
 
 .onyx-main {
-    padding: 32px 0;
+    margin-top: -55px;
+    min-height: 70vh;
+}
+
+.onyx-hero,
+.onyx-section,
+.onyx-auth-page,
+.onyx-footer-grid,
+.onyx-footer-bottom {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1320px;
+    padding-left: 34px;
+    padding-right: 34px;
 }
 
 .onyx-hero {
-    background: linear-gradient(135deg, #101010 0%, #181818 55%, #082718 100%);
-    border: 1px solid #1f1f1f;
-    padding: 48px;
+    padding-top: 150px;
+}
+
+.onyx-hero-surface {
+    background:
+        linear-gradient(105deg, rgba(5, 5, 5, 0.92) 0%, rgba(7, 7, 8, 0.74) 45%, rgba(255, 255, 255, 0.08) 100%),
+        repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.08) 0 2px, transparent 2px 76px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    min-height: 500px;
+    padding: 170px 0 90px;
+}
+
+.onyx-hero-label,
+.onyx-eyebrow,
+.onyx-mini-label {
+    color: #a0a0a7;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.onyx-hero h1,
+.onyx-auth-copy h1 {
+    color: #ffffff;
+    font-size: clamp(44px, 6vw, 82px);
+    font-weight: 850;
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+    max-width: 930px;
+}
+
+.onyx-hero p {
+    color: #b6b6bd;
+    max-width: 520px;
+}
+
+.onyx-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 34px;
+}
+
+.onyx-pill {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 13px;
+    min-height: 42px;
+    padding: 12px 16px;
+}
+
+.onyx-pill-light {
+    background: #ffffff;
+    color: #050505 !important;
+}
+
+.onyx-pill-dark {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff !important;
+}
+
+.onyx-pill small {
+    background: #ffffff;
+    border-radius: 999px;
+    color: #050505;
+    font-size: 10px;
+    padding: 4px 8px;
+}
+
+.onyx-section {
+    padding-bottom: 96px;
+    padding-top: 96px;
+}
+
+.onyx-section-raised {
+    background: #151515;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    max-width: none;
+}
+
+.onyx-section-raised > * {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1252px;
+}
+
+.onyx-section-kicker {
+    align-items: center;
+    color: #9d9da4;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 44px;
+}
+
+.onyx-section-kicker span {
+    align-items: center;
+    background: #ffffff;
+    border-radius: 50%;
+    color: #050505;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 800;
+    height: 24px;
+    justify-content: center;
+    width: 24px;
+}
+
+.onyx-section-kicker small {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    font-size: 11px;
+    padding: 6px 12px;
+}
+
+.onyx-split {
+    display: grid;
+    gap: 70px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+}
+
+.onyx-split h2,
+.onyx-section-heading h2,
+.onyx-footer h2 {
+    color: #ffffff;
+    font-size: clamp(34px, 4vw, 58px);
+    font-weight: 850;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+}
+
+.onyx-split p {
+    color: #c4c4ca;
+    line-height: 1.7;
+    margin-bottom: 28px;
+}
+
+.onyx-benefit-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 70px;
+}
+
+.onyx-benefit-grid article,
+.onyx-card,
+.onyx-auth-panel,
+.onyx-product-card,
+.onyx-auth-note,
+.onyx-auth-note-grid div {
+    background: rgba(20, 20, 23, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+}
+
+.onyx-benefit-grid article {
+    padding: 18px;
+}
+
+.onyx-benefit-grid span,
+.onyx-product-body p,
+.onyx-form-footnote,
+.onyx-auth-note span,
+.onyx-auth-note-grid span {
+    color: #9c9ca4;
+}
+
+.onyx-benefit-grid span {
+    display: block;
+    font-size: 11px;
+    margin-bottom: 18px;
+}
+
+.onyx-benefit-grid strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.onyx-benefit-grid p {
+    color: #8f8f96;
+    font-size: 12px;
+    margin: 0;
+}
+
+.onyx-section-heading {
+    align-items: end;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 38px;
+}
+
+.onyx-section-heading a {
+    color: #ffffff;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.onyx-product-grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.onyx-product-card {
+    overflow: hidden;
+}
+
+.onyx-product-media {
+    align-items: center;
+    aspect-ratio: 1.22 / 1;
+    background:
+        radial-gradient(circle at 58% 36%, rgba(255, 255, 255, 0.16), transparent 6rem),
+        linear-gradient(145deg, #09090a, #171719);
+    display: flex;
+    justify-content: center;
+}
+
+.onyx-product-media span {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    color: #f6f6f6;
+    font-size: 12px;
+    font-weight: 850;
+    letter-spacing: 0.28em;
+    padding: 10px 16px;
+}
+
+.onyx-product-body {
+    padding: 18px;
+}
+
+.onyx-product-body p {
+    font-size: 11px;
+    margin-bottom: 10px;
+}
+
+.onyx-product-body h3 {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 850;
+    min-height: 38px;
+}
+
+.onyx-product-meta {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+}
+
+.onyx-product-meta strong {
+    font-size: 12px;
+}
+
+.onyx-product-meta a {
+    align-items: center;
+    background: #ffffff;
+    border-radius: 999px;
+    color: #050505;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 850;
+    gap: 6px;
+    padding: 8px 10px;
+    text-decoration: none;
+}
+
+.onyx-auth-page {
+    align-items: center;
+    display: grid;
+    gap: 64px;
+    grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
+    min-height: calc(100vh - 60px);
+    padding-bottom: 92px;
+    padding-top: 150px;
+}
+
+.onyx-auth-page-wide {
+    align-items: start;
+    grid-template-columns: minmax(320px, 0.85fr) minmax(500px, 1.15fr);
+}
+
+.onyx-auth-copy h1 {
+    margin: 0 0 24px;
+}
+
+.onyx-lead {
+    color: #b8b8c0;
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 520px;
+}
+
+.onyx-auth-note {
+    margin-top: 34px;
+    max-width: 380px;
+    padding: 20px;
+}
+
+.onyx-auth-note strong,
+.onyx-auth-note span,
+.onyx-auth-note-grid strong,
+.onyx-auth-note-grid span {
+    display: block;
+}
+
+.onyx-auth-note strong,
+.onyx-auth-note-grid strong {
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.onyx-auth-note-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 34px;
+    max-width: 420px;
+}
+
+.onyx-auth-note-grid div {
+    padding: 20px;
+}
+
+.onyx-auth-note-grid strong {
+    font-size: 32px;
+    letter-spacing: -0.04em;
+}
+
+.onyx-auth-panel {
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    padding: 34px;
+}
+
+.onyx-auth-panel-wide {
+    padding: 38px;
+}
+
+.onyx-panel-heading {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 26px;
+    padding-bottom: 24px;
+}
+
+.onyx-panel-heading h2 {
+    color: #ffffff;
+    font-size: 32px;
+    font-weight: 850;
+    letter-spacing: -0.025em;
+    margin: 10px 0 8px;
+}
+
+.onyx-panel-heading p {
+    color: #aaaab2;
+    margin: 0;
+}
+
+.onyx-form-stack {
+    display: grid;
+    gap: 18px;
+}
+
+.onyx-form-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.onyx-field {
+    display: grid;
+    gap: 8px;
+}
+
+.onyx-field-full {
+    grid-column: 1 / -1;
+}
+
+.onyx-field label,
+.onyx-field span {
+    color: #d6d6dc;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.onyx-input,
+.onyx-select {
+    background: #0c0c0e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #ffffff;
+    min-height: 46px;
+    outline: none;
+    padding: 12px 14px;
+    width: 100%;
+}
+
+.onyx-input:focus,
+.onyx-select:focus {
+    background: #0f0f12;
+    border-color: rgba(255, 255, 255, 0.42);
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
+}
+
+.onyx-input::placeholder {
+    color: #6f6f78;
+}
+
+.onyx-submit {
+    background: #ffffff;
+    border: 0;
+    border-radius: 999px;
+    color: #050505;
+    font-weight: 850;
+    min-height: 48px;
+    padding: 13px 20px;
+    width: 100%;
+}
+
+.onyx-submit:hover {
+    background: #e7e7e7;
+}
+
+.onyx-alert {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 10px;
+    color: #ffffff;
+    margin-bottom: 18px;
+    padding: 14px 16px;
+}
+
+.onyx-form-footnote {
+    font-size: 13px;
+    margin: 4px 0 0;
+    text-align: center;
+}
+
+.onyx-form-footnote a {
+    color: #ffffff;
+    font-weight: 850;
+    text-decoration: none;
+}
+
+.onyx-footer {
+    background: #090909;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: #b8b8bf;
+}
+
+.onyx-footer-grid {
+    display: grid;
+    gap: 70px;
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 0.85fr);
+    padding-bottom: 72px;
+    padding-top: 88px;
+}
+
+.onyx-wordmark {
+    align-items: center;
+    color: #ffffff;
+    display: flex;
+    font-size: 44px;
+    font-weight: 400;
+    letter-spacing: 0.48em;
+    margin-bottom: 34px;
+}
+
+.onyx-footer h2 {
+    margin-bottom: 28px;
+    max-width: 520px;
+}
+
+.onyx-footer-links {
+    display: grid;
+    gap: 42px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.onyx-footer-links strong,
+.onyx-footer-links a {
+    display: block;
+}
+
+.onyx-footer-links strong {
+    color: #ffffff;
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+.onyx-footer-links a {
+    margin-bottom: 12px;
+}
+
+.onyx-footer-bottom {
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: #72727a;
+    display: flex;
+    font-size: 11px;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    padding-top: 24px;
 }
 
 .onyx-card {
-    background: #1a1a1a;
-    border: 1px solid #2b2b2b;
-    color: #ffffff;
     padding: 24px;
 }
 
-.onyx-card:hover {
-    border-color: #00ff87;
-    box-shadow: 0 0 18px rgba(0, 255, 135, 0.18);
+.onyx-muted {
+    color: #b8b8b8;
+}
+
+.onyx-btn,
+.onyx-btn-secondary {
+    border-radius: 999px;
+    font-weight: 800;
 }
 
 .onyx-btn {
-    background: #00ff87;
-    border: 1px solid #00ff87;
-    color: #050505;
-    font-weight: 700;
-}
-
-.onyx-btn:hover {
     background: #ffffff;
     border-color: #ffffff;
     color: #050505;
@@ -71,33 +681,8 @@ a {
 
 .onyx-btn-secondary {
     background: transparent;
-    border: 1px solid #00ff87;
-    color: #00ff87;
-    font-weight: 700;
-}
-
-.onyx-btn-secondary:hover {
-    background: #00ff87;
-    color: #050505;
-}
-
-.onyx-muted {
-    color: #b8b8b8;
-}
-
-.onyx-input,
-.onyx-select {
-    background: #111111;
-    border: 1px solid #333333;
+    border-color: rgba(255, 255, 255, 0.28);
     color: #ffffff;
-}
-
-.onyx-input:focus,
-.onyx-select:focus {
-    background: #111111;
-    border-color: #00ff87;
-    color: #ffffff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 255, 135, 0.2);
 }
 
 .onyx-product-placeholder {
@@ -105,15 +690,84 @@ a {
     aspect-ratio: 4 / 3;
     background: #111111;
     border: 1px solid #2b2b2b;
-    color: #00ff87;
+    color: #ffffff;
     display: flex;
     font-size: 32px;
     font-weight: 800;
     justify-content: center;
 }
 
-.onyx-footer {
-    border-top: 1px solid #1f1f1f;
-    color: #b8b8b8;
-    padding: 24px 0;
+@media (max-width: 980px) {
+    .onyx-nav-inner,
+    .onyx-auth-page,
+    .onyx-auth-page-wide,
+    .onyx-split,
+    .onyx-footer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-nav-meta {
+        display: none;
+    }
+
+    .onyx-nav-links {
+        justify-content: flex-end;
+    }
+
+    .onyx-product-grid,
+    .onyx-benefit-grid,
+    .onyx-form-grid,
+    .onyx-footer-links {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-field-full {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 640px) {
+    .onyx-nav {
+        border-radius: 22px;
+        left: 8px;
+        right: 8px;
+    }
+
+    .onyx-nav-inner {
+        gap: 10px;
+    }
+
+    .onyx-nav-links {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .onyx-hero,
+    .onyx-section,
+    .onyx-auth-page,
+    .onyx-footer-grid,
+    .onyx-footer-bottom {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .onyx-hero-surface {
+        min-height: 420px;
+        padding-top: 132px;
+    }
+
+    .onyx-auth-page {
+        padding-top: 136px;
+    }
+
+    .onyx-auth-panel,
+    .onyx-auth-panel-wide {
+        padding: 22px;
+    }
+
+    .onyx-footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
 }
