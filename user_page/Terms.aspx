@@ -1,10 +1,10 @@
-<%@ Page Title="Privacy Policy" Language="C#" AutoEventWireup="true" CodeBehind="Privacy.aspx.cs" Inherits="ONYX_DDAC.user_page.Privacy" %>
+<%@ Page Title="Terms and Conditions" Language="C#" AutoEventWireup="true" CodeBehind="Terms.aspx.cs" Inherits="ONYX_DDAC.user_page.Terms" %>
 <!DOCTYPE html>
 <html lang="en">
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Privacy Policy — ONYX</title>
+    <title>Terms &amp; Conditions — ONYX</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -500,74 +500,70 @@
             <div class="editorial-toc">
                 <p class="text-xs uppercase tracking-widest text-secondary mb-6 font-bold">Contents</p>
                 <nav class="flex flex-col gap-2">
-                    <a href="#info" class="editorial-toc-link hover-trigger">1. Information We Collect</a>
-                    <a href="#use" class="editorial-toc-link hover-trigger">2. How We Use Information</a>
-                    <a href="#sharing" class="editorial-toc-link hover-trigger">3. Data Sharing</a>
-                    <a href="#cookies" class="editorial-toc-link hover-trigger">4. Cookies & Tracking</a>
-                    <a href="#rights" class="editorial-toc-link hover-trigger">5. Your Rights</a>
-                    <a href="#security" class="editorial-toc-link hover-trigger">6. Data Security</a>
-                    <a href="#contact" class="editorial-toc-link hover-trigger">7. Contact Us</a>
+                    <a href="#acceptance" class="editorial-toc-link hover-trigger">1. Acceptance of Terms</a>
+                    <a href="#products" class="editorial-toc-link hover-trigger">2. Products & Pricing</a>
+                    <a href="#orders" class="editorial-toc-link hover-trigger">3. Orders & Payment</a>
+                    <a href="#shipping" class="editorial-toc-link hover-trigger">4. Shipping & Delivery</a>
+                    <a href="#returns" class="editorial-toc-link hover-trigger">5. Returns & Warranty</a>
+                    <a href="#intellectual" class="editorial-toc-link hover-trigger">6. Intellectual Property</a>
+                    <a href="#liability" class="editorial-toc-link hover-trigger">7. Limitation of Liability</a>
+                    <a href="#governing" class="editorial-toc-link hover-trigger">8. Governing Law</a>
                 </nav>
             </div>
         </aside>
 
         <main>
             <div class="mb-24 reveal-item">
-                <h1 class="text-5xl md:text-7xl font-syne font-bold mb-6 tracking-tight">Privacy Policy</h1>
-                <p class="text-secondary text-lg">Last Updated: January 2026</p>
+                <h1 class="text-5xl md:text-7xl font-syne font-bold mb-6 tracking-tight">Terms & Conditions</h1>
+                <p class="text-secondary text-lg">Effective Date: January 2026</p>
                 <div class="h-px bg-white/10 w-full mt-12"></div>
             </div>
 
-            <section id="info" class="editorial-section reveal-item">
-                <h2><span>01</span> Information We Collect</h2>
-                <p>At ONYX Gaming Technologies, we respect your privacy and are committed to protecting your personal data. We collect information that you voluntarily provide to us when registering on the website, expressing an interest in obtaining information about us or our products, participating in activities on the website, or otherwise contacting us.</p>
-                <p>The personal information that we collect depends on the context of your interactions with us and the website, the choices you make, and the products and features you use. This may include your name, email address, physical address, phone number, and payment information when placing orders.</p>
+            <section id="acceptance" class="editorial-section reveal-item">
+                <h2><span>01</span> Acceptance of Terms</h2>
+                <p>By accessing, browsing, or purchasing products from ONYX Gaming Technologies ("ONYX", "we", "us"), you agree to be bound by these Terms and Conditions. If you do not agree to all the terms and conditions of this agreement, then you may not access the website or use any services.</p>
+                <p>We reserve the right to update, change or replace any part of these Terms and Conditions by posting updates and/or changes to our website. It is your responsibility to check this page periodically for changes.</p>
             </section>
 
-            <section id="use" class="editorial-section reveal-item">
-                <h2><span>02</span> How We Use Your Information</h2>
-                <p>We use personal information collected via our website for a variety of business purposes described below. We process your personal information for these purposes in reliance on our legitimate business interests, in order to enter into or perform a contract with you, with your consent, and/or for compliance with our legal obligations.</p>
-                <ul>
-                    <li>To facilitate account creation and logon process.</li>
-                    <li>To fulfill and manage your orders, payments, returns, and exchanges made through the website.</li>
-                    <li>To deliver targeted advertising to you regarding our latest esports peripherals and gear.</li>
-                    <li>To request feedback and to contact you about your use of our website or products.</li>
-                </ul>
+            <section id="products" class="editorial-section reveal-item">
+                <h2><span>02</span> Products & Pricing</h2>
+                <p>We strive to accurately display the colors, features, specifications, and details of the products available on our website. However, we do not guarantee that the colors, features, specifications, and details of the products will be accurate, complete, reliable, current, or free of other errors.</p>
+                <p>All pricing is listed in Malaysian Ringgit (MYR) unless otherwise stated. Prices for our products are subject to change without notice. We reserve the right at any time to modify or discontinue any product (or any part or content thereof) without notice at any time.</p>
             </section>
 
-            <section id="sharing" class="editorial-section reveal-item">
-                <h2><span>03</span> Data Sharing</h2>
-                <p>We only share information with your consent, to comply with laws, to provide you with services, to protect your rights, or to fulfill business obligations. We may process or share your data that we hold based on the following legal basis:</p>
-                <p>More specifically, we may need to process your data or share your personal information with third-party vendors, service providers, contractors, or agents who perform services for us or on our behalf and require access to such information to do that work. Examples include: payment processing, data analysis, email delivery, hosting services, customer service, and marketing efforts.</p>
+            <section id="orders" class="editorial-section reveal-item">
+                <h2><span>03</span> Orders & Payment</h2>
+                <p>We reserve the right to refuse any order you place with us. We may, in our sole discretion, limit or cancel quantities purchased per person, per household or per order. These restrictions may include orders placed by or under the same customer account, the same credit card, and/or orders that use the same billing and/or shipping address.</p>
+                <p>You agree to provide current, complete and accurate purchase and account information for all purchases made at our store. We accept major credit cards, online banking, and e-wallets as displayed during the checkout process.</p>
             </section>
 
-            <section id="cookies" class="editorial-section reveal-item">
-                <h2><span>04</span> Cookies & Tracking</h2>
-                <p>We may use cookies and similar tracking technologies (like web beacons and pixels) to access or store information. Specific information about how we use such technologies and how you can refuse certain cookies is set out in our Cookie Notice.</p>
-                <p>Most Web browsers are set to accept cookies by default. If you prefer, you can usually choose to set your browser to remove cookies and to reject cookies. If you choose to remove cookies or reject cookies, this could affect certain features or services of our website.</p>
+            <section id="shipping" class="editorial-section reveal-item">
+                <h2><span>04</span> Shipping & Delivery</h2>
+                <p>Shipping costs and estimated delivery times are calculated at checkout and may vary depending on the delivery address and selected shipping method. While we endeavor to ensure timely delivery, we cannot be held responsible for delays beyond our control, including carrier delays or customs clearance.</p>
+                <p>Risk of loss and title for items purchased from ONYX pass to you upon delivery of the items to the carrier. It is your responsibility to provide a secure delivery location.</p>
             </section>
 
-            <section id="rights" class="editorial-section reveal-item">
-                <h2><span>05</span> Your Rights</h2>
-                <p>Depending on your location, you may have certain rights regarding your personal information. These may include the right to request access and obtain a copy of your personal information, to request rectification or erasure, to restrict the processing of your personal information, and, if applicable, to data portability.</p>
-                <p>To make such a request, please contact us using the contact details provided in the "Contact Us" section below. We will consider and act upon any request in accordance with applicable data protection laws.</p>
+            <section id="returns" class="editorial-section reveal-item">
+                <h2><span>05</span> Returns & Warranty</h2>
+                <p>We offer a 30-day return policy for unused, unopened items in their original packaging. Return shipping costs are the responsibility of the customer unless the item received was defective or incorrect.</p>
+                <p>ONYX esports peripherals come with a standard limited warranty covering manufacturing defects. This warranty does not cover damage resulting from misuse, abuse, accidents, modifications, or normal wear and tear. Please refer to the specific warranty documentation included with your product for detailed terms.</p>
             </section>
 
-            <section id="security" class="editorial-section reveal-item">
-                <h2><span>06</span> Data Security</h2>
-                <p>We have implemented appropriate technical and organizational security measures designed to protect the security of any personal information we process. However, despite our safeguards and efforts to secure your information, no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure.</p>
-                <p>We cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information. Transmission of personal information to and from our website is at your own risk.</p>
+            <section id="intellectual" class="editorial-section reveal-item">
+                <h2><span>06</span> Intellectual Property</h2>
+                <p>The website and its entire contents, features, and functionality (including but not limited to all information, software, text, displays, images, video, and audio, and the design, selection, and arrangement thereof) are owned by ONYX Gaming Technologies, its licensors, or other providers of such material and are protected by international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.</p>
+                <p>You must not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store, or transmit any of the material on our website without our prior written consent.</p>
             </section>
 
-            <section id="contact" class="editorial-section reveal-item">
-                <h2><span>07</span> Contact Us</h2>
-                <p>If you have questions or comments about this privacy policy or our privacy practices, you may email us at privacy@onyxgaming.com or by post to:</p>
-                <p>
-                    ONYX Gaming Technologies<br />
-                    123 Esports Avenue, Level 4<br />
-                    Kuala Lumpur, 50000<br />
-                    Malaysia
-                </p>
+            <section id="liability" class="editorial-section reveal-item">
+                <h2><span>07</span> Limitation of Liability</h2>
+                <p>In no case shall ONYX Gaming Technologies, our directors, officers, employees, affiliates, agents, contractors, interns, suppliers, service providers or licensors be liable for any injury, loss, claim, or any direct, indirect, incidental, punitive, special, or consequential damages of any kind, including, without limitation lost profits, lost revenue, lost savings, loss of data, replacement costs, or any similar damages, whether based in contract, tort (including negligence), strict liability or otherwise, arising from your use of any of the service or any products procured using the service.</p>
+            </section>
+
+            <section id="governing" class="editorial-section reveal-item">
+                <h2><span>08</span> Governing Law</h2>
+                <p>These Terms and Conditions and any separate agreements whereby we provide you services shall be governed by and construed in accordance with the laws of Malaysia, without regard to its conflict of law provisions.</p>
+                <p>Any dispute arising out of or in connection with these terms, including any question regarding its existence, validity, or termination, shall be referred to and finally resolved by the courts of Malaysia.</p>
             </section>
         </main>
     </div>
@@ -576,8 +572,8 @@
         <div class="footer-inner">
             <div class="font-syne text-2xl font-bold tracking-widest uppercase hover-trigger">ONYX</div>
             <div class="flex gap-6 text-sm text-secondary">
-                <a href="Privacy.aspx" class="hover-trigger text-white">Privacy Policy</a>
-                <a href="Terms.aspx" class="hover-trigger hover:text-white transition-colors">Terms</a>
+                <a href="Privacy.aspx" class="hover-trigger hover:text-white transition-colors">Privacy Policy</a>
+                <a href="Terms.aspx" class="hover-trigger text-white">Terms</a>
                 <a href="../Contact.aspx" class="hover-trigger hover:text-white transition-colors">Support</a>
             </div>
             <div class="text-sm text-secondary">

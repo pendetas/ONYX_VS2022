@@ -262,6 +262,7 @@
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Site.Master" />
     <Content Include="user_page\Privacy.aspx" />
+    <Content Include="user_page\Terms.aspx" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -445,6 +446,13 @@
     </Compile>
     <Compile Include="user_page\Privacy.aspx.designer.cs">
       <DependentUpon>Privacy.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="user_page\Terms.aspx.cs">
+      <DependentUpon>Terms.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="user_page\Terms.aspx.designer.cs">
+      <DependentUpon>Terms.aspx</DependentUpon>
     </Compile>
     <Compile Include="ViewSwitcher.ascx.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
