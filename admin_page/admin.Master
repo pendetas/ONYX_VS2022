@@ -6,29 +6,188 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%: Page.Title %> - ONYX Admin</title>
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/Content/onyx.css" rel="stylesheet" />
-    <link href="~/Content/admin.css" rel="stylesheet" />
+    
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg-dark: #121215;
+            --sidebar-bg: #18181c;
+            --card-dark: #1c1c22;
+            --text-main: #ffffff;
+            --text-muted: #888891;
+            --accent-green: #00ff87;
+            
+            /* Pastel Card Colors from Reference */
+            --pastel-yellow: #fdf5e6;
+            --pastel-purple: #eaddff;
+            --pastel-pink: #fce4ec;
+            --pastel-blue: #e0f7fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden; /* Prevent body scroll, handle inside main */
+        }
+
+        /* Sidebar Styling */
+        .admin-sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            margin-bottom: 50px;
+            padding-left: 10px;
+        }
+
+        .sidebar-brand i {
+            color: var(--pastel-pink); /* Placeholder logo accent */
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+        
+        .sidebar-menu li a.active {
+            border-left: 3px solid var(--accent-green);
+        }
+
+        .sidebar-menu li a i {
+            width: 20px;
+            height: 20px;
+        }
+
+        .sidebar-logout {
+            margin-top: auto;
+        }
+
+        .sidebar-logout a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar-logout a:hover {
+            color: #ff4444;
+        }
+
+        /* Main Content Area */
+        .admin-main {
+            flex-grow: 1;
+            padding: 40px 50px;
+            overflow-y: auto;
+            /* Hide scrollbar for clean look */
+            -ms-overflow-style: none;  
+            scrollbar-width: none;  
+        }
+        
+        .admin-main::-webkit-scrollbar {
+            display: none;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .admin-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+    </style>
     <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
 </head>
 <body>
-    <form id="form1" runat="server" class="admin-shell">
-        <nav class="admin-nav">
-            <div class="container d-flex align-items-center justify-content-between py-3">
-                <a class="onyx-brand fs-4" runat="server" href="~/admin_page/onyx_admin_dashboard.aspx">ONYX Admin</a>
-                <div class="d-flex gap-3">
-                    <a runat="server" href="~/admin_page/onyx_admin_dashboard.aspx">Dashboard</a>
-                    <a runat="server" href="~/admin_page/onyx_admin_products.aspx">Products</a>
-                    <a runat="server" href="~/customer_page/onyx_catalog.aspx">Storefront</a>
-                </div>
+    <form id="form1" runat="server" style="display: contents;">
+        
+        <!-- Left Sidebar Navigation -->
+        <aside class="admin-sidebar">
+            <a href="onyx_admin_dashboard.aspx" class="sidebar-brand">
+                <i data-lucide="hexagon"></i> 
+                <span>ONYX</span>
+            </a>
+
+            <ul class="sidebar-menu">
+                <li><a href="onyx_admin_dashboard.aspx" class="active"><i data-lucide="layout-dashboard"></i> Overview</a></li>
+                <li><a href="onyx_admin_products.aspx"><i data-lucide="package"></i> Products</a></li>
+                <li><a href="onyx_admin_product_form.aspx"><i data-lucide="plus-circle"></i> Product Form</a></li>
+                <li><a href="onyx_admin_orders.aspx"><i data-lucide="shopping-cart"></i> Orders</a></li>
+                <li><a href="onyx_admin_order_details.aspx"><i data-lucide="file-text"></i> Order Detail</a></li>
+                <li><a href="onyx_admin_promos.aspx"><i data-lucide="tag"></i> Promos</a></li>
+                <li><a href="onyx_admin_users.aspx"><i data-lucide="users"></i> Users</a></li>
+            </ul>
+
+            <div class="sidebar-logout">
+                <asp:LinkButton ID="btnLogOut" runat="server" OnClick="btnLogOut_Click" CausesValidation="false">
+                    <i data-lucide="log-out"></i> Log Out
+                </asp:LinkButton>
             </div>
-        </nav>
-        <main class="py-4">
-            <div class="container">
-                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
-            </div>
+        </aside>
+
+        <!-- Main Content Rendering Area -->
+        <main class="admin-main">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
         </main>
+
     </form>
-    <script src="../Scripts/bootstrap.bundle.min.js"></script>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

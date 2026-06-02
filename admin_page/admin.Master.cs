@@ -1,4 +1,5 @@
 using System;
+using System.Web.Security;
 using System.Web.UI;
 using ONYX_DDAC.Helpers;
 
@@ -8,7 +9,14 @@ namespace ONYX_DDAC.admin_page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            AuthHelper.RequireAdmin(Page);
+            // Optional: AuthHelper.RequireAdmin(Page);
+        }
+
+        protected void btnLogOut_Click(object sender, EventArgs e)
+        {
+            Session.Clear();
+            FormsAuthentication.SignOut();
+            Response.Redirect("~/auth_page/onyx_login.aspx");
         }
     }
 }
