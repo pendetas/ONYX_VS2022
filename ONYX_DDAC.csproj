@@ -149,6 +149,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="About.aspx" />
+    <Content Include="admin_page\onyx_admin_orders.aspx" />
+    <Content Include="admin_page\onyx_admin_order_details.aspx" />
+    <Content Include="admin_page\onyx_admin_products_form.aspx" />
+    <Content Include="admin_page\onyx_admin_promos.aspx" />
+    <Content Include="admin_page\onyx_admin_users.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="admin_page\admin.Master" />
     <Content Include="admin_page\onyx_admin_dashboard.aspx" />
@@ -260,12 +265,47 @@
     <Compile Include="admin_page\onyx_admin_dashboard.aspx.designer.cs">
       <DependentUpon>onyx_admin_dashboard.aspx</DependentUpon>
     </Compile>
+    <Compile Include="admin_page\onyx_admin_orders.aspx.cs">
+      <DependentUpon>onyx_admin_orders.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_orders.aspx.designer.cs">
+      <DependentUpon>onyx_admin_orders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_order_details.aspx.cs">
+      <DependentUpon>onyx_admin_order_details.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_order_details.aspx.designer.cs">
+      <DependentUpon>onyx_admin_order_details.aspx</DependentUpon>
+    </Compile>
     <Compile Include="admin_page\onyx_admin_products.aspx.cs">
       <DependentUpon>onyx_admin_products.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="admin_page\onyx_admin_products.aspx.designer.cs">
       <DependentUpon>onyx_admin_products.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_products_form.aspx.cs">
+      <DependentUpon>onyx_admin_products_form.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_products_form.aspx.designer.cs">
+      <DependentUpon>onyx_admin_products_form.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_promos.aspx.cs">
+      <DependentUpon>onyx_admin_promos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_promos.aspx.designer.cs">
+      <DependentUpon>onyx_admin_promos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_users.aspx.cs">
+      <DependentUpon>onyx_admin_users.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_users.aspx.designer.cs">
+      <DependentUpon>onyx_admin_users.aspx</DependentUpon>
     </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="auth_page\onyx_login.aspx.cs">

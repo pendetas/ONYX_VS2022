@@ -12,8 +12,17 @@ namespace ONYX_DDAC.admin_page
         {
             if (!IsPostBack)
             {
-                ProductsGridView.DataSource = productService.GetFeaturedProducts(4);
-                ProductsGridView.DataBind();
+                // Note: productService.GetFeaturedProducts(4) requires actual DB connection to not crash.
+                // Wrapped in try/catch to ensure UI renders even without DB.
+                try
+                {
+                    ProductsGridView.DataSource = productService.GetFeaturedProducts(4);
+                    ProductsGridView.DataBind();
+                }
+                catch
+                {
+                    // Ignore DB errors so the template UI can still be viewed
+                }
             }
         }
     }
