@@ -1,20 +1,19 @@
-<%@ Page Title="About" Language="C#" MasterPageFile="~/customer_page/onyx_layout.Master" AutoEventWireup="true" CodeBehind="About.aspx.cs" Inherits="ONYX_DDAC.About" %>
+<%@ Page Title="About" Language="C#" MasterPageFile="~/user_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="About.aspx.cs" Inherits="ONYX_DDAC.user_page.About" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@500;700;800&display=swap" rel="stylesheet" />
     <style>
         .onyx-about {
             background: #050505;
             color: #f8fafc;
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            margin-top: -72px;
             overflow: hidden;
         }
 
-        .onyx-about a {
-            text-decoration: none;
+        .onyx-about h1,
+        .onyx-about h2,
+        .onyx-about h3 {
+            font-family: Syne, Inter, sans-serif;
+            letter-spacing: -0.04em;
         }
 
         .onyx-about-hero {
@@ -59,13 +58,6 @@
             letter-spacing: 0.22em;
             margin-bottom: 24px;
             text-transform: uppercase;
-        }
-
-        .onyx-about h1,
-        .onyx-about h2,
-        .onyx-about h3 {
-            font-family: Syne, Inter, sans-serif;
-            letter-spacing: -0.04em;
         }
 
         .onyx-about h1 {
@@ -303,7 +295,6 @@
 
         .onyx-about-timeline {
             display: grid;
-            gap: 0;
         }
 
         .onyx-about-timeline-row {
@@ -384,10 +375,6 @@
         }
 
         @media (max-width: 720px) {
-            .onyx-about {
-                margin-top: -56px;
-            }
-
             .onyx-about-hero,
             .onyx-about-section {
                 padding-left: 24px;
@@ -404,8 +391,8 @@
             }
 
             .onyx-about-timeline-row {
-                grid-template-columns: 1fr;
                 gap: 14px;
+                grid-template-columns: 1fr;
             }
 
             .onyx-about-visual {
@@ -426,8 +413,8 @@
                         ONYX creates black-silver esports hardware for players who care about feel, response, and confidence under pressure. Every surface, click, and gram is tuned for the moment where hesitation loses.
                     </p>
                     <div class="onyx-about-actions">
-                        <a class="onyx-about-pill" href="/customer_page/onyx_products.aspx">Explore gear <span>+</span></a>
-                        <a class="onyx-about-pill" href="/Contact.aspx">Talk to ONYX <span>+</span></a>
+                        <a class="onyx-about-pill hover-trigger" href="/customer_page/onyx_products.aspx">Explore gear <span>+</span></a>
+                        <a class="onyx-about-pill hover-trigger" href="/user_page/Support.aspx">Talk to ONYX <span>+</span></a>
                     </div>
                 </div>
 
@@ -536,7 +523,7 @@
                         <h2>Step into the silver standard.</h2>
                         <p>Explore the current ONYX lineup and build a setup that feels quiet, exact, and ready for the last round.</p>
                     </div>
-                    <a class="onyx-about-pill" href="/customer_page/onyx_catalog.aspx">Shop ONYX <span>+</span></a>
+                    <a class="onyx-about-pill hover-trigger" href="/customer_page/onyx_catalog.aspx">Shop ONYX <span>+</span></a>
                 </div>
             </div>
         </section>

@@ -165,7 +165,10 @@
     <Content Include="customer_page\onyx_catalog.aspx" />
     <Content Include="customer_page\onyx_layout.Master" />
     <Content Include="customer_page\onyx_products.aspx" />
+    <Content Include="user_page\About.aspx" />
     <Content Include="user_page\Home.aspx" />
+    <Content Include="user_page\onyx_user.Master" />
+    <Content Include="user_page\Support.aspx" />
     <Content Include="Content\home\onyx-logo-horizontal.png" />
     <Content Include="Content\home\onyx-logo-stacked.png" />
     <Content Include="Content\home\onyx-pro-mouse.png" />
@@ -401,12 +404,26 @@
     <Compile Include="customer_page\onyx_products.aspx.designer.cs">
       <DependentUpon>onyx_products.aspx</DependentUpon>
     </Compile>
+    <Compile Include="user_page\About.aspx.cs">
+      <DependentUpon>About.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="user_page\About.aspx.designer.cs">
+      <DependentUpon>About.aspx</DependentUpon>
+    </Compile>
     <Compile Include="user_page\Home.aspx.cs">
       <DependentUpon>Home.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="user_page\Home.aspx.designer.cs">
       <DependentUpon>Home.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="user_page\onyx_user.Master.cs">
+      <DependentUpon>onyx_user.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="user_page\onyx_user.Master.designer.cs">
+      <DependentUpon>onyx_user.Master</DependentUpon>
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -446,6 +463,13 @@
     </Compile>
     <Compile Include="user_page\Privacy.aspx.designer.cs">
       <DependentUpon>Privacy.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="user_page\Support.aspx.cs">
+      <DependentUpon>Support.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="user_page\Support.aspx.designer.cs">
+      <DependentUpon>Support.aspx</DependentUpon>
     </Compile>
     <Compile Include="user_page\Terms.aspx.cs">
       <DependentUpon>Terms.aspx</DependentUpon>

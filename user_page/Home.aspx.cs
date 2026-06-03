@@ -49,7 +49,7 @@ namespace ONYX_DDAC.user_page
 
         protected string GetFeaturedProductImageUrl(object category, int itemIndex)
         {
-            return "/Content/home/products/onyx-" + GetProductVisualKey(category, itemIndex) + ".png";
+            return "/Content/home/products/onyx-" + GetProductVisualKey(category, itemIndex) + ".png?v=20260603-studio";
         }
 
         protected string GetFeaturedProductAlt(object category, int itemIndex)

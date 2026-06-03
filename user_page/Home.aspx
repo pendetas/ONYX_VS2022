@@ -1,4 +1,4 @@
-<%@ Page Title="Home" Language="C#" MasterPageFile="~/customer_page/onyx_layout.Master" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="ONYX_DDAC.user_page.Home" %>
+<%@ Page Title="Home" Language="C#" MasterPageFile="~/user_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="ONYX_DDAC.user_page.Home" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -41,7 +41,6 @@
         .onyx-ddac-home {
             background-color: #050505;
             color: #ffffff;
-            cursor: none;
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             margin-top: -1px;
             overflow-x: hidden;
@@ -49,10 +48,11 @@
             isolation: isolate;
         }
 
-        .onyx-ddac-home a,
-        .onyx-ddac-home button,
-        .onyx-ddac-home input,
-        .onyx-ddac-home label {
+        .onyx-ddac-home.has-custom-cursor,
+        .onyx-ddac-home.has-custom-cursor a,
+        .onyx-ddac-home.has-custom-cursor button,
+        .onyx-ddac-home.has-custom-cursor input,
+        .onyx-ddac-home.has-custom-cursor label {
             cursor: none;
         }
 
@@ -62,13 +62,21 @@
             height: 12px;
             left: 0;
             mix-blend-mode: difference;
+            opacity: 0;
             pointer-events: none;
             position: fixed;
             top: 0;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, background-color 0.3s, opacity 0.3s, border-color 0.3s;
+            transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s, opacity 0.18s ease, border-color 0.3s;
+            visibility: hidden;
+            will-change: transform, width, height;
             width: 12px;
             z-index: 9999;
+        }
+
+        .onyx-ddac-cursor.is-visible {
+            opacity: 1;
+            visibility: visible;
         }
 
         .onyx-ddac-cursor.hover-state {
@@ -195,8 +203,8 @@
             z-index: 80;
         }
 
-        .onyx-ddac-nav.is-floating ~ * .onyx-ddac-megapanel,
-        .onyx-ddac-nav.is-floating + .onyx-ddac-megapanel {
+        .onyx-ddac-nav.is-scrolled ~ * .onyx-ddac-megapanel,
+        .onyx-ddac-nav.is-scrolled + .onyx-ddac-megapanel {
             padding-top: 110px;
         }
 
@@ -344,11 +352,6 @@
             right: 0;
             top: 0;
             transition:
-                border-radius 0.55s cubic-bezier(0.4, 0, 0.2, 1),
-                top 0.55s cubic-bezier(0.4, 0, 0.2, 1),
-                left 0.55s cubic-bezier(0.4, 0, 0.2, 1),
-                right 0.55s cubic-bezier(0.4, 0, 0.2, 1),
-                padding 0.55s cubic-bezier(0.4, 0, 0.2, 1),
                 box-shadow 0.55s cubic-bezier(0.4, 0, 0.2, 1),
                 border-color 0.4s ease,
                 background 0.4s ease;
@@ -356,20 +359,15 @@
             z-index: 90;
         }
 
-        /* Floating pill state: scroll-triggered ONLY (no hover) */
-        .onyx-ddac-nav.is-floating {
+        .onyx-ddac-nav.is-scrolled {
             background: rgba(8, 8, 10, 0.97);
-            border-bottom-color: transparent;
-            border-radius: 999px;
+            border-bottom-color: rgba(255, 255, 255, 0.12);
             box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.5),
-                0 2px 8px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(255, 255, 255, 0.10),
+                0 10px 30px rgba(0, 0, 0, 0.36),
                 inset 0 1px 0 rgba(255, 255, 255, 0.06);
-            left: 20px;
-            padding: 12px 32px;
-            right: 20px;
-            top: 12px;
+            left: 0;
+            right: 0;
+            top: 0;
         }
 
         .onyx-ddac-hero-mouse {
@@ -490,22 +488,30 @@
 
         .onyx-ddac-product-media {
             align-items: center;
-            aspect-ratio: 1.12 / 1;
-            background:
-                radial-gradient(circle at 50% 34%, rgba(216, 221, 227, 0.22), transparent 7rem),
-                linear-gradient(145deg, #080808, #181a1d);
+            aspect-ratio: 1.55 / 1;
+            background: #050505;
             display: flex;
             justify-content: center;
             overflow: hidden;
-            padding: 22px;
             position: relative;
+        }
+
+        .onyx-ddac-product-media::after {
+            background: linear-gradient(180deg, transparent 62%, rgba(5, 5, 5, 0.82) 100%);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+            content: "";
+            inset: 0;
+            pointer-events: none;
+            position: absolute;
+            z-index: 2;
         }
 
         .onyx-ddac-product-image {
             display: block;
-            filter: drop-shadow(0 26px 42px rgba(216, 221, 227, 0.12));
+            filter: saturate(0.96) contrast(1.04);
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
+            object-position: center center;
             position: relative;
             transition: transform 260ms ease, filter 260ms ease;
             width: 100%;
@@ -513,23 +519,12 @@
         }
 
         .onyx-ddac-product-card:hover .onyx-ddac-product-image {
-            filter: drop-shadow(0 32px 52px rgba(216, 221, 227, 0.2));
-            transform: scale(1.035);
-        }
-
-        .onyx-ddac-product-logo {
-            bottom: 16px;
-            height: 28px;
-            left: 18px;
-            object-fit: contain;
-            opacity: 0.72;
-            position: absolute;
-            width: 92px;
-            z-index: 2;
+            filter: saturate(1) contrast(1.08) brightness(1.05);
+            transform: scale(1.045);
         }
 
         .onyx-ddac-product-body {
-            padding: 18px;
+            padding: 22px;
         }
 
         .onyx-ddac-product-body p {
@@ -614,11 +609,12 @@
                 padding: 14px 20px;
             }
 
-            .onyx-ddac-nav.is-floating {
-                left: 10px;
-                padding: 10px 18px;
-                right: 10px;
-                top: 8px;
+            .onyx-ddac-home.has-custom-cursor,
+            .onyx-ddac-home.has-custom-cursor a,
+            .onyx-ddac-home.has-custom-cursor button,
+            .onyx-ddac-home.has-custom-cursor input,
+            .onyx-ddac-home.has-custom-cursor label {
+                cursor: auto;
             }
 
             .onyx-ddac-product-grid {
@@ -650,76 +646,11 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <div class="onyx-ddac-home antialiased font-sans selection:bg-accent selection:text-black">
-        <div id="cursor" class="onyx-ddac-cursor"></div>
-
         <div id="preloader" class="onyx-ddac-preloader">
             <h1 id="loader-text" class="text-6xl md:text-8xl font-syne font-bold text-white tracking-tighter">0%</h1>
         </div>
 
         <canvas id="webgl-canvas" class="onyx-ddac-canvas"></canvas>
-
-        <nav id="onyx-main-nav" class="onyx-ddac-nav flex justify-between items-center">
-            <a href="#top" class="hover-trigger no-underline text-white flex-shrink-0">
-                <img src="/Content/home/onyx-logo-horizontal.png" alt="ONYX" class="onyx-ddac-nav-logo" />
-            </a>
-            <div class="hidden md:flex gap-8 text-sm font-medium tracking-wide items-center">
-                <!-- Catalog mega-dropdown -->
-                <div class="onyx-ddac-dropdown">
-                    <a href="../customer_page/onyx_catalog.aspx" class="hover-trigger onyx-ddac-dropdown-trigger text-white">
-                        Catalog
-                        <span class="onyx-chev"></span>
-                    </a>
-                    <div class="onyx-ddac-megapanel">
-                        <div class="onyx-ddac-megapanel-inner">
-                            <div class="onyx-ddac-mega-cats">
-                                <a href="../customer_page/onyx_products.aspx?category=Mouse" class="hover-trigger onyx-ddac-mega-cat">
-                                    <span class="onyx-ddac-mega-cat-num">01</span>
-                                    <span class="onyx-ddac-mega-cat-name">Gaming Mice</span>
-                                    <span class="onyx-ddac-mega-cat-sub">Precision tracking</span>
-                                </a>
-                                <a href="../customer_page/onyx_products.aspx?category=Keyboard" class="hover-trigger onyx-ddac-mega-cat">
-                                    <span class="onyx-ddac-mega-cat-num">02</span>
-                                    <span class="onyx-ddac-mega-cat-name">Keyboards</span>
-                                    <span class="onyx-ddac-mega-cat-sub">Tactile response</span>
-                                </a>
-                                <a href="../customer_page/onyx_products.aspx?category=Headset" class="hover-trigger onyx-ddac-mega-cat">
-                                    <span class="onyx-ddac-mega-cat-num">03</span>
-                                    <span class="onyx-ddac-mega-cat-name">Audio</span>
-                                    <span class="onyx-ddac-mega-cat-sub">Spatial surround</span>
-                                </a>
-                                <a href="../customer_page/onyx_products.aspx" class="hover-trigger onyx-ddac-mega-cat">
-                                    <span class="onyx-ddac-mega-cat-num">04</span>
-                                    <span class="onyx-ddac-mega-cat-name">Accessories</span>
-                                    <span class="onyx-ddac-mega-cat-sub">Desk essentials</span>
-                                </a>
-                            </div>
-                            <div class="onyx-ddac-mega-cta">
-                                <span class="onyx-ddac-mega-cta-label">New season</span>
-                                <a href="../customer_page/onyx_catalog.aspx" class="hover-trigger onyx-ddac-mega-cta-link">
-                                    Shop All
-                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                        <path d="M2 6h8M6.5 2.5L10 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <a href="#featured-products" class="hover-trigger hover:text-accent transition-colors no-underline text-white">Pro Gear</a>
-                <a href="../About.aspx" class="hover-trigger hover:text-accent transition-colors no-underline text-white">About</a>
-                <a href="../Contact.aspx" class="hover-trigger hover:text-accent transition-colors no-underline text-white">Support</a>
-
-                <span class="text-secondary">|</span>
-
-                <% if (IsLoggedIn) { %>
-                    <a href="../customer_page/onyx_cart.aspx" class="hover-trigger hover:text-accent transition-colors no-underline text-white">Cart</a>
-                    <span class="text-secondary text-xs">Hi, <%= Server.HtmlEncode(CurrentUsername) %></span>
-                <% } else { %>
-                    <a href="../auth_page/onyx_login.aspx" class="hover-trigger hover:text-accent transition-colors no-underline text-white">Login</a>
-                    <a href="../auth_page/onyx_register.aspx" class="hover-trigger no-underline onyx-ddac-nav-register">Register</a>
-                <% } %>
-            </div>
-        </nav>
 
         <main id="top">
             <section class="onyx-ddac-hero-section relative w-full h-screen flex flex-col justify-center items-center px-6 pt-20">
@@ -847,7 +778,6 @@
                                 <article class="onyx-ddac-product-card reveal-item">
                                     <div class="onyx-ddac-product-media">
                                         <img src='<%# GetFeaturedProductImageUrl(Eval("Category"), Container.ItemIndex) %>' alt='<%# GetFeaturedProductAlt(Eval("Category"), Container.ItemIndex) %>' class="onyx-ddac-product-image" loading="lazy" />
-                                        <img src="/Content/home/onyx-logo-horizontal.png" alt="" class="onyx-ddac-product-logo" loading="lazy" />
                                     </div>
                                     <div class="onyx-ddac-product-body">
                                         <p><%# GetFeaturedProductBrandLine(Eval("Category"), Container.ItemIndex) %></p>
@@ -887,7 +817,7 @@
                             <a href="../customer_page/onyx_products.aspx?category=Keyboard" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Mechanical Keyboards</a>
                             <a href="../customer_page/onyx_products.aspx?category=Headset" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Headsets</a>
                             <a href="../customer_page/onyx_products.aspx" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Accessories</a>
-                            <a href="../auth_page/onyx_register.aspx" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Support & Warranty</a>
+                            <a href="/user_page/Support.aspx" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Support & Warranty</a>
                         </div>
                     </div>
                 </div>
@@ -895,8 +825,8 @@
                 <div class="max-w-7xl mx-auto mt-32 flex flex-col md:flex-row justify-between items-center text-xs text-secondary border-t border-white/10 pt-8 reveal-item">
                     <p>Onyx Gaming Technologies, 2026</p>
                     <div class="flex gap-6 mt-4 md:mt-0">
-                        <a href="#" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Terms of Sale</a>
-                        <a href="#" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Privacy Policy</a>
+                        <a href="/user_page/Terms.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Terms of Sale</a>
+                        <a href="/user_page/Privacy.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Privacy Policy</a>
                     </div>
                     <button type="button" id="onyx-back-to-top" class="mt-4 md:mt-0 hover:text-white transition-colors hover-trigger uppercase tracking-widest font-bold">Back to Top</button>
                 </div>
@@ -907,27 +837,10 @@
     <script>
         (function () {
             var root = document.querySelector('.onyx-ddac-home');
-            var cursor = document.getElementById('cursor');
-            var hoverTriggers = document.querySelectorAll('.hover-trigger, .onyx-ddac-home a, .onyx-ddac-home button, .onyx-ddac-home input');
             var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
             if (!root) {
                 return;
-            }
-
-            if (cursor) {
-                document.addEventListener('mousemove', function (event) {
-                    cursor.style.transform = 'translate(' + event.clientX + 'px, ' + event.clientY + 'px)';
-                });
-
-                hoverTriggers.forEach(function (trigger) {
-                    trigger.addEventListener('mouseenter', function () {
-                        cursor.classList.add('hover-state');
-                    });
-                    trigger.addEventListener('mouseleave', function () {
-                        cursor.classList.remove('hover-state');
-                    });
-                });
             }
 
             if (window.gsap && window.ScrollTrigger) {
@@ -1118,19 +1031,6 @@
             }
 
             /* ── Floating nav on scroll ─────────────────────────── */
-            var mainNav = document.getElementById('onyx-main-nav');
-            if (mainNav) {
-                function updateNavFloat() {
-                    if (window.scrollY > 60) {
-                        mainNav.classList.add('is-floating');
-                    } else {
-                        mainNav.classList.remove('is-floating');
-                    }
-                }
-                window.addEventListener('scroll', updateNavFloat, { passive: true });
-                updateNavFloat();
-            }
-
             var backToTop = document.getElementById('onyx-back-to-top');
 
             if (backToTop) {
