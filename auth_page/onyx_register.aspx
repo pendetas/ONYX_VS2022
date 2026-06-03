@@ -79,12 +79,17 @@
 
         .auth-right {
             flex: 1.2;
-            padding: 50px 60px;
             position: relative;
             background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
+            overflow: hidden;
+        }
+
+        .auth-scroll-content {
+            padding: 32px 50px 40px;
             display: flex;
             flex-direction: column;
-            overflow-y: auto !important;
+            min-height: 100%;
+            will-change: transform;
         }
 
         .auth-top-nav {
@@ -123,25 +128,26 @@
 
         .auth-form-wrapper {
             max-width: 600px;
-            margin-top: 20px;
+            margin-top: 10px;
             width: 100%;
-            padding-bottom: 120px;
+            padding-bottom: 24px;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .auth-title {
-            font-size: 48px;
+            font-size: 44px;
             font-weight: 300;
-            margin-bottom: 40px;
+            margin-bottom: 24px;
             letter-spacing: -1px;
         }
 
         .auth-form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px 30px;
+            gap: 22px 28px;
             overflow: visible;
         }
 
@@ -184,7 +190,7 @@
             display: inline-flex;
             align-items: center;
             text-decoration: none;
-            margin-top: 60px;
+            margin-top: 32px;
             align-self: flex-end;
         }
 
@@ -343,12 +349,13 @@
             <div class="auth-left">
                 <div class="auth-brand">ONYX&deg;</div>
                 <video autoplay loop muted playsinline class="auth-video-bg">
-                    <source src="<%= ResolveUrl("~/Videos/ONYX_Cinematic_Logo.mp4") %>" type="video/mp4" />
+                    <source src="<%= ResolveUrl("~/Videos/onyx_headset.mp4") %>" type="video/mp4" />
                 </video>
-                <div class="auth-copyright">&copy; ONYX 2024. All rights reserved.</div>
+                <div class="auth-copyright">&copy; ONYX 2026. All rights reserved.</div>
             </div>
 
             <div class="auth-right">
+                <div class="auth-scroll-content">
                 <div class="auth-top-nav">
                     <a href="onyx_login.aspx"><span>Already have an account? Sign In</span></a>
                 </div>
@@ -427,6 +434,7 @@
                         </svg>
                     </asp:LinkButton>
                 </div>
+                </div><!-- /.auth-scroll-content -->
             </div>
         </div>
     </div>
@@ -437,11 +445,17 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
 
-            // Lenis smooth scroll
-            const scrollContainer = document.querySelector('.auth-right');
-            const scrollContent   = document.querySelector('.auth-form-wrapper');
-            if (scrollContainer && scrollContent) {
-                const lenis = new Lenis({ wrapper: scrollContainer, content: scrollContent, lerp: 0.08, smoothWheel: true });
+            // Lenis smooth scroll — wrapper clips, content is the full scrollable area
+            const lenisWrapper  = document.querySelector('.auth-right');
+            const lenisContent  = document.querySelector('.auth-scroll-content');
+            if (lenisWrapper && lenisContent) {
+                const lenis = new Lenis({
+                    wrapper:     lenisWrapper,
+                    content:     lenisContent,
+                    lerp:        0.1,
+                    smoothWheel: true,
+                    syncTouch:   true
+                });
                 function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
                 requestAnimationFrame(raf);
             }

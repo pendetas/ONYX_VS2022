@@ -275,7 +275,7 @@
                     <source src="<%= ResolveUrl("~/Videos/ONYX_Cinematic_Logo.mp4") %>" type="video/mp4" />
                 </video>
 
-                <div class="auth-copyright">&copy; ONYX 2024. All rights reserved.</div>
+                <div class="auth-copyright">&copy; ONYX 2026. All rights reserved.</div>
             </div>
 
             <div class="auth-right">

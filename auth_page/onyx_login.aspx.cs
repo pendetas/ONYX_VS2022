@@ -13,6 +13,12 @@ namespace ONYX_DDAC.auth_page
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["UserId"] != null)
+            {
+                Response.Redirect("~/customer_page/onyx_catalog.aspx");
+                return;
+            }
+
             if (Request.QueryString["registered"] == "true")
             {
                 ShowMessage("Registration successful. You can now sign in.", true);
