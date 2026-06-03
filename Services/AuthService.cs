@@ -14,15 +14,22 @@ namespace ONYX_DDAC.Services
             _userRepository = new UserRepository();
         }
 
-        // Handles the business logic for registering a user
-        public bool Register(string fullName, string username, string email, string rawPassword, DateTime dob, string address, string phoneNumber)
+        // Returns null on success, or an error message string on failure
+        public string Register(string fullName, string username, string email, string rawPassword, DateTime dob, string address, string phoneNumber)
         {
             try
             {
-                // 1. Hash the password using BCrypt with a work factor of 12 for strong security
+                // 1. Pre-check for duplicate username / email before attempting INSERT
+                string duplicate = _userRepository.CheckDuplicate(username, email);
+                if (duplicate == "username")
+                    return "That username is already taken. Please choose another.";
+                if (duplicate == "email")
+                    return "An account with that email already exists. Try signing in instead.";
+
+                // 2. Hash the password using BCrypt with a work factor of 12 for strong security
                 string hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(rawPassword, 12);
 
-                // 2. Create the user model (now including all PRD fields)
+                // 3. Create the user model
                 User newUser = new User
                 {
                     FullName = fullName,
@@ -35,14 +42,14 @@ namespace ONYX_DDAC.Services
                     Role = "customer"
                 };
 
-                // 3. Send to the Data Access Layer to save in PostgreSQL
-                return _userRepository.CreateUser(newUser);
+                // 4. Persist to PostgreSQL
+                bool created = _userRepository.CreateUser(newUser);
+                return created ? null : "Registration failed due to a server error. Please try again.";
             }
             catch (Exception ex)
             {
-                // In a production app, log this error (e.g., duplicate username violation)
                 System.Diagnostics.Debug.WriteLine("Registration Error: " + ex.Message);
-                return false;
+                return "DB Error: " + ex.Message;
             }
         }
 

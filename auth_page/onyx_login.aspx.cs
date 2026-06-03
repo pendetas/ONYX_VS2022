@@ -77,7 +77,7 @@ namespace ONYX_DDAC.auth_page
         private void ShowMessage(string message, bool isSuccess)
         {
             MessagePanel.Visible = true;
-            MessageLiteral.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#00ff87" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
+            MessageLiteral.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#c0c0c0" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
         }
     }
 }

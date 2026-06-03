@@ -2,6 +2,20 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
+        /* Force scrollbar removal across all browsers */
+        * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+        
+        ::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            background: transparent !important;
+            -webkit-appearance: none !important;
+        }
+
         /* Fullscreen takeover to override MasterPage formatting */
         .auth-takeover {
             position: fixed;
@@ -16,6 +30,7 @@
             justify-content: center;
             font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #ffffff;
+            overflow: hidden;
         }
 
         .auth-container {
@@ -30,7 +45,7 @@
             border: 1px solid #1f1f1f;
         }
 
-        /* Left Panel - Video Placeholder */
+        /* Left Panel - Video BG */
         .auth-left {
             flex: 1;
             position: relative;
@@ -39,7 +54,7 @@
             align-items: center;
             justify-content: center;
             background: #030303;
-            overflow: hidden; /* Added to keep video within bounds */
+            overflow: hidden; 
         }
 
         .auth-brand {
@@ -49,7 +64,7 @@
             font-size: 20px;
             font-weight: 600;
             letter-spacing: -0.5px;
-            z-index: 2; /* Brought above video */
+            z-index: 2;
         }
 
         .auth-copyright {
@@ -58,7 +73,7 @@
             left: 40px;
             font-size: 11px;
             color: #555;
-            z-index: 2; /* Brought above video */
+            z-index: 2;
         }
 
         .auth-video-bg {
@@ -68,7 +83,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.5; /* Dimmed slightly for elegance */
+            opacity: 0.5;
             z-index: 1;
         }
 
@@ -80,13 +95,7 @@
             background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        .auth-right::-webkit-scrollbar {
-            display: none;
+            overflow-y: auto !important; 
         }
 
         .auth-top-nav {
@@ -94,6 +103,7 @@
             display: flex;
             justify-content: flex-end;
             z-index: 10;
+            flex-shrink: 0;
         }
         
         .auth-top-nav a {
@@ -119,18 +129,24 @@
         }
 
         .auth-top-nav a:hover {
-            color: #00ff87;
+            color: #c0c0c0;
         }
 
         .auth-top-nav a:hover::after {
             width: 50px;
-            background-color: #00ff87;
+            background-color: #c0c0c0;
         }
 
+        /* Fixed missing button by preventing squishing */
         .auth-form-wrapper {
-            margin-top: 15vh;
+            margin: auto 0; /* Centers it vertically */
             max-width: 480px;
-            padding-bottom: 120px; /* Ensure space to scroll past the button */
+            width: 100%;
+            flex-shrink: 0; /* Forces scrolling if screen is too small */
+            padding-top: 40px;
+            padding-bottom: 40px;
+            display: flex;
+            flex-direction: column;
         }
 
         .auth-title {
@@ -142,9 +158,8 @@
 
         .auth-form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px 20px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr; 
+            gap: 40px;
         }
 
         .auth-field {
@@ -158,6 +173,7 @@
             margin-bottom: 8px;
             font-weight: 500;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .auth-input {
@@ -168,38 +184,76 @@
             font-size: 16px;
             padding: 8px 0;
             outline: none;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .auth-input:focus {
             border-bottom-color: #fff;
+            box-shadow: 0 1px 0 #fff;
         }
 
-        /* Circular Submit Button */
-        .auth-submit-btn {
-            position: absolute;
-            bottom: 50px;
-            right: 60px;
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background-color: #fff;
-            color: #000;
+        /* UIverse Button "empty-moose-12" */
+        .cta {
             border: none;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            background: none;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            z-index: 10;
+            text-decoration: none;
+            margin-top: 50px;
+            align-self: flex-end;
         }
 
-        .auth-submit-btn:hover {
-            transform: scale(1.05);
-            background-color: #00ff87;
+        .cta span {
+            padding-bottom: 7px;
+            letter-spacing: 4px;
+            font-size: 13px;
+            padding-right: 15px;
+            text-transform: uppercase;
+            color: #ffffff;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .cta svg {
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            fill: #ffffff;
+        }
+
+        .cta:hover svg {
+            transform: translateX(0);
+            fill: #c0c0c0;
+        }
+
+        .cta:active svg {
+            transform: scale(0.9);
+        }
+
+        .hover-underline-animation {
+            position: relative;
+        }
+
+        .hover-underline-animation:after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #c0c0c0;
+            transform-origin: bottom right;
+            transition: transform 0.25s ease-out;
+        }
+
+        .cta:hover .hover-underline-animation {
+            color: #c0c0c0;
+        }
+
+        .cta:hover .hover-underline-animation:after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
         }
 
         .auth-alert {
@@ -217,15 +271,13 @@
             <div class="auth-left">
                 <div class="auth-brand">ONYX&deg;</div>
                 
-                <!-- MP4 Video Background with ASP.NET path resolving -->
                 <video autoplay loop muted playsinline class="auth-video-bg">
                     <source src="<%= ResolveUrl("~/Videos/ONYX_Cinematic_Logo.mp4") %>" type="video/mp4" />
                 </video>
 
-                <div class="auth-copyright">&copy; ONYX 2026. All rights reserved.</div>
+                <div class="auth-copyright">&copy; ONYX 2024. All rights reserved.</div>
             </div>
 
-            <!-- Right Side: Login Form -->
             <div class="auth-right">
                 <div class="auth-top-nav">
                     <a href="onyx_register.aspx"><span>Create an account</span></a>
@@ -249,20 +301,26 @@
                             <asp:TextBox ID="PasswordTextBox" runat="server" CssClass="auth-input" TextMode="Password" placeholder="Enter password" />
                         </div>
                     </div>
-                </div>
 
-                <asp:Button ID="LoginButton" runat="server" CssClass="auth-submit-btn" Text="SIGN IN" OnClick="LoginButton_Click" />
+                    <!-- Uiverse "empty-moose-12" LinkButton -->
+                    <asp:LinkButton ID="LoginButton" runat="server" CssClass="cta" OnClick="LoginButton_Click">
+                        <span class="hover-underline-animation">LOG IN</span>
+                        <svg viewBox="0 0 46 16" height="10" width="30" xmlns="http://www.w3.org/2000/svg" id="arrow-horizontal">
+                            <path transform="translate(30)" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z" data-name="Path 10" id="Path_10"></path>
+                        </svg>
+                    </asp:LinkButton>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Animation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // 0. Initialize Lenis for smooth scrolling
+
+            // 1. Lenis Smooth Scroll Initialization on Right Panel
             const scrollContainer = document.querySelector('.auth-right');
             const scrollContent = document.querySelector('.auth-form-wrapper');
 
@@ -280,39 +338,16 @@
                 requestAnimationFrame(raf);
             }
 
-            // 1. GSAP Entrance Animations
+            // 2. Cinematic GSAP Timeline Sequence
             const tl = gsap.timeline();
 
-            // Base container scaling in smoothly
             tl.from(".auth-container", { duration: 1.2, scale: 0.96, opacity: 0, ease: "power4.out" })
-                // Fade in video background
                 .from(".auth-video-bg", { duration: 2, opacity: 0, ease: "power2.out" }, "-=0.8")
-                // Reveal left branding
                 .from(".auth-brand, .auth-copyright", { duration: 0.8, x: -30, opacity: 0, stagger: 0.2, ease: "power3.out" }, "-=1.5")
-                // Reveal right form headers
                 .from(".auth-top-nav, .auth-title", { duration: 0.8, y: 20, opacity: 0, stagger: 0.1, ease: "power3.out" }, "-=1.2")
-                // Staggered reveal of form fields
-                .from(".auth-field", { duration: 0.6, y: 20, opacity: 0, stagger: 0.1, ease: "power3.out" }, "-=0.8");
-
-            // Bounce in the submit button
-            gsap.from(".auth-submit-btn", { duration: 1, scale: 0, opacity: 0, delay: 1, ease: "back.out(1.7)" });
-
-            // 2. Magnetic Hover Effect for the Circular Submit Button
-            const btn = document.querySelector('.auth-submit-btn');
-            if (btn) {
-                btn.addEventListener('mousemove', (e) => {
-                    const rect = btn.getBoundingClientRect();
-                    const x = e.clientX - rect.left - rect.width / 2;
-                    const y = e.clientY - rect.top - rect.height / 2;
-                    // Move the button slightly towards the cursor
-                    gsap.to(btn, { x: x * 0.35, y: y * 0.35, duration: 0.3, ease: 'power2.out' });
-                });
-
-                btn.addEventListener('mouseleave', () => {
-                    // Snap back with an elastic bounce
-                    gsap.to(btn, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.3)' });
-                });
-            }
+                .from(".auth-field", { duration: 0.6, y: 20, opacity: 0, stagger: 0.1, ease: "power3.out" }, "-=0.8")
+                // Uiverse button elegantly slides in. clearProps ensures hover CSS works smoothly afterwards!
+                .from(".cta", { duration: 1.2, y: 30, opacity: 0, ease: "expo.out", clearProps: "all" }, "-=0.4");
         });
     </script>
 </asp:Content>
