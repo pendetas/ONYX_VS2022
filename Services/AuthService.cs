@@ -47,10 +47,10 @@ namespace ONYX_DDAC.Services
         }
 
         // Handles the business logic for logging in
-        public User Login(string email, string rawPassword)
+        public User Login(string emailOrUsername, string rawPassword)
         {
             // 1. Fetch the user from the database
-            User user = _userRepository.GetUserByEmail(email);
+            User user = _userRepository.GetUserByEmailOrUsername(emailOrUsername);
 
             // 2. If user exists, verify the password against the stored BCrypt hash
             if (user != null)
@@ -64,7 +64,7 @@ namespace ONYX_DDAC.Services
                 }
             }
 
-            // Login failed (either username not found or password incorrect)
+            // Login failed (either account not found or password incorrect)
             return null;
         }
     }

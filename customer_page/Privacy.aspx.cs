@@ -5,9 +5,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace ONYX_DDAC.user_page
+namespace ONYX_DDAC.customer_page
 {
-    public partial class About : System.Web.UI.Page
+    public partial class Privacy : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {

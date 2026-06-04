@@ -32,17 +32,6 @@ namespace ONYX_DDAC.auth_page
 
             try
             {
-                // Hardcoded bypass logic for Admin as requested in the instructions
-                if (emailOrUser.ToLower() == "admin" && password == "admin123")
-                {
-                    Session["UserId"] = 1; // Assuming 1 is the Admin seeded ID
-                    Session["Username"] = "Admin";
-                    Session["Role"] = "admin";
-                    FormsAuthentication.SetAuthCookie("admin@onyx.com", false);
-                    Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx", true);
-                    return;
-                }
-
                 // Normal Database Authentication Flow
                 User user = authService.Login(emailOrUser, password);
 
@@ -52,11 +41,15 @@ namespace ONYX_DDAC.auth_page
                     return;
                 }
 
-                // Establish session state per PRD requirements
+                var savedCart = Session["Cart"] as System.Collections.Generic.List<CartItem>;
+
+                
                 Session["UserId"] = user.Id;
                 Session["Username"] = user.Username;
                 Session["Role"] = user.Role;
                 FormsAuthentication.SetAuthCookie(user.Email, false);
+
+                new CartService().MergeSessionCartForUser(user.Id, savedCart);
 
                 // Auto-detect role and route
                 if (string.Equals(user.Role, "admin", StringComparison.OrdinalIgnoreCase))
@@ -65,7 +58,7 @@ namespace ONYX_DDAC.auth_page
                 }
                 else
                 {
-                    Response.Redirect("~/customer_page/onyx_catalog.aspx", true);
+                    Response.Redirect("~/customer_page/Home.aspx", true);
                 }
             }
             catch (Exception ex)

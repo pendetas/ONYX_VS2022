@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace ONYX_DDAC.user_page
+namespace ONYX_DDAC.customer_page
 {
     public partial class Support : System.Web.UI.Page
     {

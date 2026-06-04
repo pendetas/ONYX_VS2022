@@ -12,7 +12,7 @@ namespace ONYX_DDAC.auth_page
         {
             if (Session["UserId"] != null)
             {
-                Response.Redirect("~/customer_page/onyx_catalog.aspx");
+                Response.Redirect("~/customer_page/Home.aspx");
             }
         }
 
@@ -48,7 +48,7 @@ namespace ONYX_DDAC.auth_page
                 return;
             }
 
-            // Defaults to "customer" role via PostgreSQL DB schema DEFAULT as per PRD
+            
             bool isSuccess = _authService.Register(fullName, username, email, password, dob, address, phoneNumber);
 
             if (isSuccess)

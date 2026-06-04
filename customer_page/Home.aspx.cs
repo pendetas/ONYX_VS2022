@@ -2,7 +2,7 @@ using System;
 using System.Web.UI;
 using ONYX_DDAC.Services;
 
-namespace ONYX_DDAC.user_page
+namespace ONYX_DDAC.customer_page
 {
     public partial class Home : Page
     {

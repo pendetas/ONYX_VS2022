@@ -1,4 +1,4 @@
-<%@ Page Title="Register - ONYX" Language="C#" MasterPageFile="~/customer_page/onyx_layout.Master" AutoEventWireup="true" CodeBehind="onyx_register.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_register" %>
+<%@ Page Title="Register - ONYX" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_register.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_register" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -132,9 +132,16 @@
 
         .auth-form-wrapper {
             max-width: 600px;
+            width: 100%;
+            min-height: calc(100% - 56px);
             margin-top: 20px;
-            /* Crucial: Provides space at the bottom for the absolute submit button and fixes Lenis boundary */
-            padding-bottom: 150px; 
+            padding-bottom: 48px;
+        }
+
+        .auth-register-panel {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .auth-title {
@@ -183,26 +190,38 @@
             border-bottom-color: #fff;
         }
 
-        /* Circular Submit Button with Absolute Positioning */
+        .auth-action-row {
+            position: sticky;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 34px;
+            padding: 24px 0 2px;
+            background: linear-gradient(180deg, rgba(17,17,17,0) 0%, #111111 42%, #111111 100%);
+            z-index: 30;
+        }
+
         .auth-submit-btn {
-            position: absolute;
-            bottom: 50px;
-            right: 60px;
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
+            opacity: 1 !important;
+            visibility: visible !important;
+            width: auto;
+            min-width: 150px;
+            height: 48px;
+            border-radius: 999px;
+            padding: 0 26px;
             background-color: #fff;
             color: #000;
             border: none;
             font-size: 12px;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.08em;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-            display: flex;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            z-index: 10;
+            z-index: 31;
         }
 
         .auth-submit-btn:hover {
@@ -240,54 +259,58 @@
                 </div>
 
                 <div class="auth-form-wrapper">
-                    <h1 class="auth-title">Register</h1>
-                    
-                    <asp:Label ID="lblMessage" runat="server" Visible="false"></asp:Label>
+                    <asp:Panel ID="RegisterPanel" runat="server" CssClass="auth-register-panel" DefaultButton="btnRegister">
+                        <h1 class="auth-title">Register</h1>
+                        
+                        <asp:Label ID="lblMessage" runat="server" Visible="false"></asp:Label>
 
-                    <div class="auth-form-grid">
-                        <div class="auth-field">
-                            <label>Full Name</label>
-                            <asp:TextBox ID="txtFullName" runat="server" CssClass="auth-input" required="true" placeholder="John Doe" />
+                        <div class="auth-form-grid">
+                            <div class="auth-field">
+                                <label>Full Name</label>
+                                <asp:TextBox ID="txtFullName" runat="server" CssClass="auth-input" required="true" placeholder="John Doe" />
+                            </div>
+
+                            <div class="auth-field">
+                                <label>Username</label>
+                                <asp:TextBox ID="txtUsername" runat="server" CssClass="auth-input" required="true" placeholder="johndoe99" />
+                            </div>
+
+                            <div class="auth-field">
+                                <label>Email Address</label>
+                                <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="auth-input" required="true" placeholder="name@example.com" />
+                            </div>
+
+                            <div class="auth-field">
+                                <label>Phone Number</label>
+                                <asp:TextBox ID="txtPhone" runat="server" TextMode="Phone" CssClass="auth-input" placeholder="+60 12-345 6789" />
+                            </div>
+
+                            <div class="auth-field">
+                                <label>Password</label>
+                                <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" CssClass="auth-input" required="true" placeholder="Enter strong password" />
+                            </div>
+
+                            <div class="auth-field">
+                                <label>Confirm Password</label>
+                                <asp:TextBox ID="txtConfirmPassword" runat="server" TextMode="Password" CssClass="auth-input" required="true" placeholder="Confirm password" />
+                            </div>
+
+                            <div class="auth-field">
+                                <label>Date of Birth</label>
+                                <asp:TextBox ID="txtDob" runat="server" TextMode="Date" CssClass="auth-input" required="true" />
+                            </div>
+
+                            <div class="auth-field full-width">
+                                <label>Shipping Address</label>
+                                <asp:TextBox ID="txtAddress" runat="server" CssClass="auth-input" placeholder="Your default delivery address" />
+                            </div>
                         </div>
 
-                        <div class="auth-field">
-                            <label>Username</label>
-                            <asp:TextBox ID="txtUsername" runat="server" CssClass="auth-input" required="true" placeholder="johndoe99" />
+                        <div class="auth-action-row">
+                            <asp:Button ID="btnRegister" runat="server" Text="SIGN UP" CssClass="auth-submit-btn" OnClick="btnRegister_Click" />
                         </div>
-
-                        <div class="auth-field">
-                            <label>Email Address</label>
-                            <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="auth-input" required="true" placeholder="name@example.com" />
-                        </div>
-
-                        <div class="auth-field">
-                            <label>Phone Number</label>
-                            <asp:TextBox ID="txtPhone" runat="server" TextMode="Phone" CssClass="auth-input" placeholder="+60 12-345 6789" />
-                        </div>
-
-                        <div class="auth-field">
-                            <label>Password</label>
-                            <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" CssClass="auth-input" required="true" placeholder="Enter strong password" />
-                        </div>
-
-                        <div class="auth-field">
-                            <label>Confirm Password</label>
-                            <asp:TextBox ID="txtConfirmPassword" runat="server" TextMode="Password" CssClass="auth-input" required="true" placeholder="Confirm password" />
-                        </div>
-
-                        <div class="auth-field">
-                            <label>Date of Birth</label>
-                            <asp:TextBox ID="txtDob" runat="server" TextMode="Date" CssClass="auth-input" required="true" />
-                        </div>
-
-                        <div class="auth-field full-width">
-                            <label>Shipping Address</label>
-                            <asp:TextBox ID="txtAddress" runat="server" CssClass="auth-input" placeholder="Your default delivery address" />
-                        </div>
-                    </div>
+                    </asp:Panel>
                 </div>
-
-                <asp:Button ID="btnRegister" runat="server" Text="SIGN UP" CssClass="auth-submit-btn" OnClick="btnRegister_Click" />
             </div>
         </div>
     </div>
@@ -326,22 +349,7 @@
                 // Faster stagger for registration since it has more fields
                 .from(".auth-field", { duration: 0.6, y: 20, opacity: 0, stagger: 0.06, ease: "power3.out" }, "-=0.8");
 
-            gsap.from(".auth-submit-btn", { duration: 1, scale: 0, opacity: 0, delay: 1.1, ease: "back.out(1.7)" });
-
-            // 3. Magnetic Hover Effect for circular button
-            const btn = document.querySelector('.auth-submit-btn');
-            if (btn) {
-                btn.addEventListener('mousemove', (e) => {
-                    const rect = btn.getBoundingClientRect();
-                    const x = e.clientX - rect.left - rect.width / 2;
-                    const y = e.clientY - rect.top - rect.height / 2;
-                    gsap.to(btn, { x: x * 0.35, y: y * 0.35, duration: 0.3, ease: 'power2.out' });
-                });
-
-                btn.addEventListener('mouseleave', () => {
-                    gsap.to(btn, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.3)' });
-                });
-            }
+            // Keep the submit button in normal layout so registration is always reachable.
         });
     </script>
 </asp:Content>

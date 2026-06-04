@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ONYX_DDAC.user_page
+namespace ONYX_DDAC.customer_page
 {
 
 
