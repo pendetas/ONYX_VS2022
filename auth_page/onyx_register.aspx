@@ -351,6 +351,7 @@
                 <video autoplay loop muted playsinline class="auth-video-bg">
                     <source src="<%= ResolveUrl("~/Videos/onyx_headset.mp4") %>" type="video/mp4" />
                 </video>
+
                 <div class="auth-copyright">&copy; ONYX 2026. All rights reserved.</div>
             </div>
 
