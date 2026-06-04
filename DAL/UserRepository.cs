@@ -47,18 +47,22 @@ namespace ONYX_DDAC.DAL
             }
         }
 
-        // Retrieves a user by email for login validation
-        public User GetUserByEmail(string email)
+        // Retrieves a user by email or username for login validation
+        public User GetUserByEmailOrUsername(string emailOrUsername)
         {
             // Explicitly initializing the Npgsql library for reading
             using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
             {
                 conn.Open();
-                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE email = @Email";
+                string sql = @"
+                    SELECT id, username, email, password_hash, role
+                    FROM users
+                    WHERE lower(email) = lower(@LoginIdentifier)
+                       OR lower(username) = lower(@LoginIdentifier)";
 
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@Email", email);
+                    cmd.Parameters.AddWithValue("@LoginIdentifier", emailOrUsername);
 
                     using (var reader = cmd.ExecuteReader())
                     {

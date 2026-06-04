@@ -1,4 +1,4 @@
-<%@ Page Title="Support" Language="C#" MasterPageFile="~/user_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Support.aspx.cs" Inherits="ONYX_DDAC.user_page.Support" %>
+<%@ Page Title="Support" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Support.aspx.cs" Inherits="ONYX_DDAC.customer_page.Support" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>

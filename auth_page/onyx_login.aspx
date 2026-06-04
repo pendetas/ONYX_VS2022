@@ -1,4 +1,4 @@
-<%@ Page Title="Login" Language="C#" MasterPageFile="~/customer_page/onyx_layout.Master" AutoEventWireup="true" CodeBehind="onyx_login.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_login" %>
+<%@ Page Title="Login" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_login.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_login" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -10,12 +10,18 @@
             width: 100vw;
             height: 100vh;
             background-color: #050505;
-            z-index: 9999;
+            z-index: 12000;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #ffffff;
+            pointer-events: auto;
+        }
+
+        .auth-takeover,
+        .auth-takeover * {
+            cursor: auto !important;
         }
 
         .auth-container {
@@ -83,6 +89,8 @@
             overflow-y: auto;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
+            z-index: 2;
+            pointer-events: auto;
         }
 
         .auth-right::-webkit-scrollbar {
@@ -131,6 +139,9 @@
             margin-top: 15vh;
             max-width: 480px;
             padding-bottom: 120px; /* Ensure space to scroll past the button */
+            position: relative;
+            z-index: 20;
+            pointer-events: auto;
         }
 
         .auth-title {
@@ -150,6 +161,9 @@
         .auth-field {
             display: flex;
             flex-direction: column;
+            position: relative;
+            z-index: 21;
+            pointer-events: auto;
         }
 
         .auth-field label {
@@ -169,6 +183,10 @@
             padding: 8px 0;
             outline: none;
             transition: border-color 0.3s;
+            position: relative;
+            z-index: 22;
+            pointer-events: auto;
+            cursor: text !important;
         }
 
         .auth-input:focus {

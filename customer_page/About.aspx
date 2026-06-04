@@ -1,4 +1,4 @@
-<%@ Page Title="About" Language="C#" MasterPageFile="~/user_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="About.aspx.cs" Inherits="ONYX_DDAC.user_page.About" %>
+<%@ Page Title="About" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="About.aspx.cs" Inherits="ONYX_DDAC.customer_page.About" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
@@ -414,7 +414,7 @@
                     </p>
                     <div class="onyx-about-actions">
                         <a class="onyx-about-pill hover-trigger" href="/customer_page/onyx_products.aspx">Explore gear <span>+</span></a>
-                        <a class="onyx-about-pill hover-trigger" href="/user_page/Support.aspx">Talk to ONYX <span>+</span></a>
+                        <a class="onyx-about-pill hover-trigger" href="/customer_page/Support.aspx">Talk to ONYX <span>+</span></a>
                     </div>
                 </div>
 
@@ -523,7 +523,7 @@
                         <h2>Step into the silver standard.</h2>
                         <p>Explore the current ONYX lineup and build a setup that feels quiet, exact, and ready for the last round.</p>
                     </div>
-                    <a class="onyx-about-pill hover-trigger" href="/customer_page/onyx_catalog.aspx">Shop ONYX <span>+</span></a>
+                    <a class="onyx-about-pill hover-trigger" href="/customer_page/Home.aspx">Shop ONYX <span>+</span></a>
                 </div>
             </div>
         </section>

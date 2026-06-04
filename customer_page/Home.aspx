@@ -1,8 +1,8 @@
-<%@ Page Title="Home" Language="C#" MasterPageFile="~/user_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="ONYX_DDAC.user_page.Home" %>
+<%@ Page Title="Home" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="ONYX_DDAC.customer_page.Home" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@500;700;800&display=swap" rel="stylesheet" />
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -661,7 +661,7 @@
                     </h1>
 
                     <div class="flex flex-col sm:flex-row gap-6 justify-center items-center reveal-item opacity-0">
-                        <a href="../customer_page/onyx_products.aspx" class="hover-trigger bg-accent text-black px-8 py-4 rounded-full font-bold text-sm tracking-wide uppercase hover:bg-white transition-colors no-underline">
+                        <a href="../customer_page/onyx_catalog.aspx" class="hover-trigger bg-accent text-black px-8 py-4 rounded-full font-bold text-sm tracking-wide uppercase hover:bg-white transition-colors no-underline">
                             Shop Collection
                         </a>
                         <a href="#featured-products" class="hover-trigger border border-white/30 px-8 py-4 rounded-full font-bold text-sm tracking-wide uppercase hover:border-white transition-colors no-underline text-white">
@@ -769,7 +769,7 @@
                             <p class="text-accent uppercase tracking-widest text-sm font-bold mb-4">Featured Gear</p>
                             <h2 class="text-5xl md:text-7xl font-syne font-bold tracking-tighter leading-tight">Shop the silver standard.</h2>
                         </div>
-                        <a href="../customer_page/onyx_products.aspx" class="hover-trigger border border-white/30 px-8 py-4 rounded-full font-bold text-sm tracking-wide uppercase hover:border-white transition-colors no-underline text-white">View All</a>
+                        <a href="../customer_page/onyx_catalog.aspx" class="hover-trigger border border-white/30 px-8 py-4 rounded-full font-bold text-sm tracking-wide uppercase hover:border-white transition-colors no-underline text-white">View All</a>
                     </div>
 
                     <div class="onyx-ddac-product-grid">
@@ -784,7 +784,7 @@
                                         <h3><%# GetFeaturedProductName(Eval("Category"), Container.ItemIndex) %></h3>
                                         <div class="onyx-ddac-product-meta">
                                             <strong><%# ONYX_DDAC.Helpers.CurrencyHelper.FormatMyr((decimal)Eval("Price")) %></strong>
-                                            <a href="../customer_page/onyx_products.aspx" class="hover-trigger">View</a>
+                                            <a href="../customer_page/onyx_catalog.aspx" class="hover-trigger">View</a>
                                         </div>
                                     </div>
                                 </article>
@@ -813,11 +813,11 @@
                     <div class="flex md:justify-end reveal-item">
                         <div class="flex flex-col gap-4 text-right">
                             <h4 class="text-secondary text-sm font-bold uppercase tracking-widest mb-4">Shop Onyx</h4>
-                            <a href="../customer_page/onyx_products.aspx?category=Mouse" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Gaming Mice</a>
-                            <a href="../customer_page/onyx_products.aspx?category=Keyboard" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Mechanical Keyboards</a>
-                            <a href="../customer_page/onyx_products.aspx?category=Headset" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Headsets</a>
-                            <a href="../customer_page/onyx_products.aspx" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Accessories</a>
-                            <a href="/user_page/Support.aspx" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Support & Warranty</a>
+                            <a href="../customer_page/onyx_catalog.aspx?category=Mouse" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Gaming Mice</a>
+                            <a href="../customer_page/onyx_catalog.aspx?category=Keyboard" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Mechanical Keyboards</a>
+                            <a href="../customer_page/onyx_catalog.aspx?category=Headset" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Headsets</a>
+                            <a href="../customer_page/onyx_catalog.aspx?category=Accessory" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Accessories</a>
+                            <a href="/customer_page/Support.aspx" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Support & Warranty</a>
                         </div>
                     </div>
                 </div>
@@ -825,8 +825,8 @@
                 <div class="max-w-7xl mx-auto mt-32 flex flex-col md:flex-row justify-between items-center text-xs text-secondary border-t border-white/10 pt-8 reveal-item">
                     <p>Onyx Gaming Technologies, 2026</p>
                     <div class="flex gap-6 mt-4 md:mt-0">
-                        <a href="/user_page/Terms.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Terms of Sale</a>
-                        <a href="/user_page/Privacy.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Privacy Policy</a>
+                        <a href="/customer_page/Terms.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Terms of Sale</a>
+                        <a href="/customer_page/Privacy.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Privacy Policy</a>
                     </div>
                     <button type="button" id="onyx-back-to-top" class="mt-4 md:mt-0 hover:text-white transition-colors hover-trigger uppercase tracking-widest font-bold">Back to Top</button>
                 </div>

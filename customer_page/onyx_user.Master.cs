@@ -1,7 +1,8 @@
+using ONYX_DDAC.Services;
 using System;
 using System.Web.UI;
 
-namespace ONYX_DDAC.user_page
+namespace ONYX_DDAC.customer_page
 {
     public partial class onyx_user : MasterPage
     {
@@ -10,6 +11,12 @@ namespace ONYX_DDAC.user_page
             get { return Session["UserId"] != null; }
         }
 
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            var cartService = new CartService();
+            litCartCount.Text = cartService.GetCartItemCount().ToString();
+        }
         protected string CurrentUsername
         {
             get

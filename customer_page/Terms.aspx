@@ -1,4 +1,4 @@
-<%@ Page Title="Privacy Policy" Language="C#" MasterPageFile="~/user_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Privacy.aspx.cs" Inherits="ONYX_DDAC.user_page.Privacy" %>
+<%@ Page Title="Terms and Conditions" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Terms.aspx.cs" Inherits="ONYX_DDAC.customer_page.Terms" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
@@ -46,7 +46,7 @@
             font-size: clamp(54px, 8vw, 112px);
             line-height: 0.92;
             margin: 18px 0 24px;
-            max-width: 860px;
+            max-width: 900px;
             text-transform: uppercase;
         }
 
@@ -149,83 +149,90 @@
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <main class="onyx-legal" aria-labelledby="privacy-title">
+    <main class="onyx-legal" aria-labelledby="terms-title">
         <div class="onyx-legal-shell">
             <aside class="onyx-legal-aside">
                 <p class="onyx-legal-toc-title">Contents</p>
-                <nav class="onyx-legal-toc" aria-label="Privacy contents">
-                    <a class="hover-trigger" href="#collect">Information we collect</a>
-                    <a class="hover-trigger" href="#use">How we use it</a>
-                    <a class="hover-trigger" href="#sharing">Data sharing</a>
-                    <a class="hover-trigger" href="#cookies">Cookies</a>
-                    <a class="hover-trigger" href="#rights">Your rights</a>
-                    <a class="hover-trigger" href="#security">Security</a>
-                    <a class="hover-trigger" href="#contact">Contact</a>
+                <nav class="onyx-legal-toc" aria-label="Terms contents">
+                    <a class="hover-trigger" href="#acceptance">Acceptance</a>
+                    <a class="hover-trigger" href="#products">Products and pricing</a>
+                    <a class="hover-trigger" href="#orders">Orders and payment</a>
+                    <a class="hover-trigger" href="#shipping">Shipping</a>
+                    <a class="hover-trigger" href="#returns">Returns and warranty</a>
+                    <a class="hover-trigger" href="#property">Intellectual property</a>
+                    <a class="hover-trigger" href="#liability">Liability</a>
+                    <a class="hover-trigger" href="#law">Governing law</a>
                 </nav>
             </aside>
 
             <div>
                 <header>
-                    <p class="onyx-legal-kicker">Privacy standard</p>
-                    <h1 id="privacy-title">Your data stays under control.</h1>
+                    <p class="onyx-legal-kicker">Use standard</p>
+                    <h1 id="terms-title">Terms for the ONYX store.</h1>
                     <p class="onyx-legal-lede">
-                        ONYX uses personal information to run accounts, process orders, protect the store, and improve the player experience. We keep the policy direct so you know what is collected and why.
+                        These terms explain how purchases, accounts, shipping, returns, warranties, and site use work across ONYX Gaming Technologies.
                     </p>
                     <div class="onyx-legal-meta">
-                        <span>Last updated: January 2026</span>
-                        <span>Region: Malaysia</span>
+                        <span>Effective: January 2026</span>
+                        <span>Currency: MYR</span>
                     </div>
                 </header>
 
                 <div class="onyx-legal-content">
-                    <section id="collect" class="onyx-legal-section">
+                    <section id="acceptance" class="onyx-legal-section">
                         <span>01</span>
-                        <h2>Information we collect</h2>
-                        <p>We collect information you provide when you create an account, place an order, contact support, join a promotion, or interact with ONYX services.</p>
+                        <h2>Acceptance of terms</h2>
+                        <p>By accessing the ONYX website, creating an account, or purchasing products, you agree to these Terms and Conditions. If you do not agree, you should not use the website or services.</p>
+                    </section>
+
+                    <section id="products" class="onyx-legal-section">
+                        <span>02</span>
+                        <h2>Products and pricing</h2>
+                        <p>We work to show product details, colors, specifications, availability, and pricing accurately. Product information may change without notice, and minor differences can appear between screen previews and real products.</p>
                         <ul>
-                            <li>Name, email address, phone number, username, and account credentials.</li>
-                            <li>Shipping address, billing details, order history, returns, and warranty requests.</li>
-                            <li>Device, browser, approximate location, session activity, and security logs.</li>
+                            <li>Prices are listed in Malaysian Ringgit unless stated otherwise.</li>
+                            <li>Promotions, bundles, and limited drops may have separate rules.</li>
+                            <li>We may update or discontinue products at any time.</li>
                         </ul>
                     </section>
 
-                    <section id="use" class="onyx-legal-section">
-                        <span>02</span>
-                        <h2>How we use it</h2>
-                        <p>We use your information to deliver products, provide support, secure the platform, improve website performance, and communicate important updates about your account or orders.</p>
+                    <section id="orders" class="onyx-legal-section">
+                        <span>03</span>
+                        <h2>Orders and payment</h2>
+                        <p>You agree to provide accurate order, billing, and contact information. We may refuse or cancel an order if payment cannot be verified, stock is unavailable, fraud is suspected, or account details are incomplete.</p>
                         <div class="onyx-legal-card">
-                            <p>Marketing messages are only sent when allowed by law or your preferences. You can opt out of promotional email at any time while still receiving service messages about orders or account security.</p>
+                            <p>Payment methods shown at checkout are supported for that session. Your order is not confirmed until payment is authorized and an order confirmation is issued.</p>
                         </div>
                     </section>
 
-                    <section id="sharing" class="onyx-legal-section">
-                        <span>03</span>
-                        <h2>Data sharing</h2>
-                        <p>We do not sell your personal information. We share it only with service providers who help us run the store, including payment processors, delivery partners, hosting providers, analytics services, and customer support tools.</p>
-                    </section>
-
-                    <section id="cookies" class="onyx-legal-section">
+                    <section id="shipping" class="onyx-legal-section">
                         <span>04</span>
-                        <h2>Cookies</h2>
-                        <p>Cookies and similar technologies help us keep you signed in, remember preferences, measure site performance, and protect against abuse. Your browser settings may allow you to block or delete cookies, although some store features may stop working correctly.</p>
+                        <h2>Shipping and delivery</h2>
+                        <p>Shipping cost and estimated delivery time are calculated during checkout. Delivery times can be affected by carrier delays, customs review, weather, public holidays, or incorrect address information.</p>
                     </section>
 
-                    <section id="rights" class="onyx-legal-section">
+                    <section id="returns" class="onyx-legal-section">
                         <span>05</span>
-                        <h2>Your rights</h2>
-                        <p>You may request access, correction, deletion, or restriction of your personal information where applicable. You may also ask us to explain how your data is used or withdraw consent for optional processing.</p>
+                        <h2>Returns and warranty</h2>
+                        <p>Eligible unused products may be returned according to the return window shown at checkout or in the product documentation. ONYX warranties cover manufacturing defects and do not cover misuse, accidents, unauthorized modification, or normal wear.</p>
                     </section>
 
-                    <section id="security" class="onyx-legal-section">
+                    <section id="property" class="onyx-legal-section">
                         <span>06</span>
-                        <h2>Security</h2>
-                        <p>We use technical and organizational measures to protect personal information, including access controls, encrypted connections, monitoring, and account safeguards. No online service can be guaranteed completely secure, so protect your login details carefully.</p>
+                        <h2>Intellectual property</h2>
+                        <p>The ONYX website, brand assets, product names, design language, copy, photos, graphics, and code are owned by ONYX Gaming Technologies or our licensors. You may not copy, resell, modify, or distribute this material without written permission.</p>
                     </section>
 
-                    <section id="contact" class="onyx-legal-section">
+                    <section id="liability" class="onyx-legal-section">
                         <span>07</span>
-                        <h2>Contact</h2>
-                        <p>Questions about privacy can be sent to privacy@onyxgaming.com or mailed to ONYX Gaming Technologies, Kuala Lumpur, Malaysia.</p>
+                        <h2>Limitation of liability</h2>
+                        <p>To the fullest extent allowed by law, ONYX is not liable for indirect, incidental, punitive, special, or consequential damages related to website use, order delays, product availability, or third-party service interruptions.</p>
+                    </section>
+
+                    <section id="law" class="onyx-legal-section">
+                        <span>08</span>
+                        <h2>Governing law</h2>
+                        <p>These terms are governed by the laws of Malaysia. Any dispute connected to these terms will be handled by the courts of Malaysia unless another written agreement applies.</p>
                     </section>
                 </div>
             </div>
