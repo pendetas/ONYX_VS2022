@@ -49,21 +49,21 @@ namespace ONYX_DDAC.auth_page
             }
 
             // Defaults to "customer" role via PostgreSQL DB schema DEFAULT as per PRD
-            bool isSuccess = _authService.Register(fullName, username, email, password, dob, address, phoneNumber);
+            string error = _authService.Register(fullName, username, email, password, dob, address, phoneNumber);
 
-            if (isSuccess)
+            if (error == null)
             {
                 Response.Redirect("onyx_login.aspx?registered=true");
             }
             else
             {
-                ShowMessage("Registration failed. The username or email might already be taken.", false);
+                ShowMessage(error, false);
             }
         }
 
         private void ShowMessage(string message, bool isSuccess)
         {
-            lblMessage.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#00ff87" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
+            lblMessage.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#c0c0c0" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
             lblMessage.Visible = true;
         }
     }
