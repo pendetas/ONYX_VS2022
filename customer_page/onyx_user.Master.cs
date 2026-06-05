@@ -37,5 +37,12 @@ namespace ONYX_DDAC.customer_page
         protected void Page_Load(object sender, EventArgs e)
         {
         }
+
+        protected void btnCustomerLogout_Click(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Session.Abandon();
+            Response.Redirect("~/auth_page/onyx_login.aspx", true);
+        }
     }
 }

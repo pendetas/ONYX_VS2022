@@ -1,6 +1,5 @@
 using System;
 using System.Configuration;
-using System.Data;
 using Npgsql;
 using ONYX_DDAC.Models; 
 
@@ -81,6 +80,70 @@ namespace ONYX_DDAC.DAL
                 }
             }
             return null; // User not found
+        }
+
+        public User GetUserById(long userId)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            {
+                conn.Open();
+                string sql = @"
+                    SELECT id, fullname, username, email, address, dob, phone_number, role, created_at
+                    FROM users
+                    WHERE id = @UserId";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User
+                            {
+                                Id = reader.GetInt64(reader.GetOrdinal("id")),
+                                FullName = reader.IsDBNull(reader.GetOrdinal("fullname")) ? null : reader.GetString(reader.GetOrdinal("fullname")),
+                                Username = reader.IsDBNull(reader.GetOrdinal("username")) ? null : reader.GetString(reader.GetOrdinal("username")),
+                                Email = reader.IsDBNull(reader.GetOrdinal("email")) ? null : reader.GetString(reader.GetOrdinal("email")),
+                                Address = reader.IsDBNull(reader.GetOrdinal("address")) ? null : reader.GetString(reader.GetOrdinal("address")),
+                                Dob = reader.IsDBNull(reader.GetOrdinal("dob")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("dob")),
+                                PhoneNumber = reader.IsDBNull(reader.GetOrdinal("phone_number")) ? null : reader.GetString(reader.GetOrdinal("phone_number")),
+                                Role = reader.IsDBNull(reader.GetOrdinal("role")) ? null : reader.GetString(reader.GetOrdinal("role")),
+                                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at"))
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public bool UpdateUserSettings(long userId, string fullName, string email, string phoneNumber, string address)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                string sql = @"
+                    UPDATE users
+                    SET fullname = @FullName,
+                        email = @Email,
+                        phone_number = @PhoneNumber,
+                        address = @Address
+                    WHERE id = @UserId";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+                    cmd.Parameters.AddWithValue("@FullName", (object)fullName ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Email", email);
+                    cmd.Parameters.AddWithValue("@PhoneNumber", (object)phoneNumber ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Address", (object)address ?? DBNull.Value);
+
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
         }
     }
 }

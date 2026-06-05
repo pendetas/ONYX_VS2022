@@ -192,6 +192,8 @@
     <Content Include="customer_page\onyx_checkout.aspx" />
     <Content Include="customer_page\onyx_invoice.aspx" />
     <Content Include="customer_page\onyx_product_details.aspx" />
+    <Content Include="customer_page\onyx_profile.aspx" />
+    <Content Include="customer_page\onyx_wishlist.aspx" />
     <Content Include="customer_page\onyx_user.Master" />
     <Content Include="customer_page\onyx_catalog.aspx" />
     <Content Include="customer_page\About.aspx" />
@@ -353,6 +355,20 @@
     </Compile>
     <Compile Include="customer_page\onyx_product_details.aspx.designer.cs">
       <DependentUpon>onyx_product_details.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="customer_page\onyx_profile.aspx.cs">
+      <DependentUpon>onyx_profile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="customer_page\onyx_profile.aspx.designer.cs">
+      <DependentUpon>onyx_profile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="customer_page\onyx_wishlist.aspx.cs">
+      <DependentUpon>onyx_wishlist.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="customer_page\onyx_wishlist.aspx.designer.cs">
+      <DependentUpon>onyx_wishlist.aspx</DependentUpon>
     </Compile>
     <Compile Include="DAL\AdminRepository.cs" />
     <Compile Include="DAL\CartRepository.cs" />

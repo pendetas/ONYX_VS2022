@@ -17,11 +17,13 @@
             font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #ffffff;
             pointer-events: auto;
+            overflow: hidden;
+            overscroll-behavior: none;
         }
 
-        .auth-takeover,
-        .auth-takeover * {
-            cursor: auto !important;
+        body.auth-lock-scroll {
+            height: 100vh;
+            overflow: hidden !important;
         }
 
         .auth-container {
@@ -86,15 +88,9 @@
             background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            overflow: hidden;
             z-index: 2;
             pointer-events: auto;
-        }
-
-        .auth-right::-webkit-scrollbar {
-            display: none;
         }
 
         .auth-top-nav {
@@ -127,18 +123,19 @@
         }
 
         .auth-top-nav a:hover {
-            color: #00ff87;
+            color: #d8dde3;
         }
 
         .auth-top-nav a:hover::after {
             width: 50px;
-            background-color: #00ff87;
+            background-color: #d8dde3;
         }
 
         .auth-form-wrapper {
-            margin-top: 15vh;
-            max-width: 480px;
-            padding-bottom: 120px; /* Ensure space to scroll past the button */
+            margin: auto 0;
+            max-width: 520px;
+            width: 100%;
+            padding-bottom: 0;
             position: relative;
             z-index: 20;
             pointer-events: auto;
@@ -153,9 +150,9 @@
 
         .auth-form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px 20px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr;
+            gap: 26px;
+            margin-bottom: 0;
         }
 
         .auth-field {
@@ -186,38 +183,64 @@
             position: relative;
             z-index: 22;
             pointer-events: auto;
-            cursor: text !important;
         }
 
         .auth-input:focus {
             border-bottom-color: #fff;
         }
 
-        /* Circular Submit Button */
+        .auth-action-row {
+            align-items: center;
+            display: flex;
+            gap: 18px;
+            justify-content: space-between;
+            margin-top: 38px;
+            position: static;
+        }
+
+        .auth-forgot-link {
+            color: #9ca3af;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: color 0.2s ease;
+        }
+
+        .auth-forgot-link:hover {
+            color: #ffffff;
+        }
+
         .auth-submit-btn {
-            position: absolute;
-            bottom: 50px;
-            right: 60px;
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
+            appearance: none;
+            -webkit-appearance: none;
+            opacity: 1 !important;
+            visibility: visible !important;
+            flex-shrink: 0;
+            position: static;
+            width: auto;
+            min-width: 150px;
+            height: 52px;
+            border-radius: 999px;
+            padding: 0 30px;
             background-color: #fff;
             color: #000;
             border: none;
             font-size: 12px;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-            display: flex;
+            letter-spacing: 0.08em;
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             z-index: 10;
         }
 
         .auth-submit-btn:hover {
-            transform: scale(1.05);
-            background-color: #00ff87;
+            transform: translateY(-2px);
+            background-color: #d8dde3;
+            box-shadow: 0 16px 40px rgba(216, 221, 227, 0.18);
         }
 
         .auth-alert {
@@ -225,6 +248,17 @@
             font-size: 13px;
             margin-bottom: 20px;
             display: block;
+        }
+
+        @media (max-width: 720px) {
+            .auth-action-row {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .auth-submit-btn {
+                width: 100%;
+            }
         }
     </style>
 
@@ -267,36 +301,22 @@
                             <asp:TextBox ID="PasswordTextBox" runat="server" CssClass="auth-input" TextMode="Password" placeholder="Enter password" />
                         </div>
                     </div>
-                </div>
 
-                <asp:Button ID="LoginButton" runat="server" CssClass="auth-submit-btn" Text="SIGN IN" OnClick="LoginButton_Click" />
+                    <div class="auth-action-row">
+                        <a href="mailto:support@onyxgaming.com?subject=ONYX%20Password%20Reset" class="auth-forgot-link hover-trigger">Forgot password?</a>
+                        <asp:Button ID="LoginButton" runat="server" CssClass="auth-submit-btn hover-trigger" Text="LOGIN" OnClick="LoginButton_Click" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Animation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // 0. Initialize Lenis for smooth scrolling
-            const scrollContainer = document.querySelector('.auth-right');
-            const scrollContent = document.querySelector('.auth-form-wrapper');
-
-            if (scrollContainer && scrollContent) {
-                const lenis = new Lenis({
-                    wrapper: scrollContainer,
-                    content: scrollContent,
-                    lerp: 0.08,
-                    smoothWheel: true
-                });
-                function raf(time) {
-                    lenis.raf(time);
-                    requestAnimationFrame(raf);
-                }
-                requestAnimationFrame(raf);
-            }
+            document.body.classList.add("auth-lock-scroll");
 
             // 1. GSAP Entrance Animations
             const tl = gsap.timeline();
@@ -312,25 +332,7 @@
                 // Staggered reveal of form fields
                 .from(".auth-field", { duration: 0.6, y: 20, opacity: 0, stagger: 0.1, ease: "power3.out" }, "-=0.8");
 
-            // Bounce in the submit button
-            gsap.from(".auth-submit-btn", { duration: 1, scale: 0, opacity: 0, delay: 1, ease: "back.out(1.7)" });
-
-            // 2. Magnetic Hover Effect for the Circular Submit Button
-            const btn = document.querySelector('.auth-submit-btn');
-            if (btn) {
-                btn.addEventListener('mousemove', (e) => {
-                    const rect = btn.getBoundingClientRect();
-                    const x = e.clientX - rect.left - rect.width / 2;
-                    const y = e.clientY - rect.top - rect.height / 2;
-                    // Move the button slightly towards the cursor
-                    gsap.to(btn, { x: x * 0.35, y: y * 0.35, duration: 0.3, ease: 'power2.out' });
-                });
-
-                btn.addEventListener('mouseleave', () => {
-                    // Snap back with an elastic bounce
-                    gsap.to(btn, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.3)' });
-                });
-            }
+            gsap.from(".auth-action-row", { duration: 0.6, y: 12, opacity: 0, delay: 0.4, ease: "power3.out" });
         });
     </script>
 </asp:Content>

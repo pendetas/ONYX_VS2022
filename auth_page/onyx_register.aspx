@@ -10,12 +10,19 @@
             width: 100vw;
             height: 100vh;
             background-color: #050505;
-            z-index: 9999;
+            z-index: 12000;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #ffffff;
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+
+        body.auth-lock-scroll {
+            height: 100vh;
+            overflow: hidden !important;
         }
 
         .auth-container {
@@ -81,6 +88,7 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto; /* Allow scrolling */
+            overscroll-behavior: contain;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
@@ -122,24 +130,23 @@
         }
 
         .auth-top-nav a:hover {
-            color: #00ff87;
+            color: #d8dde3;
         }
 
         .auth-top-nav a:hover::after {
             width: 50px;
-            background-color: #00ff87;
+            background-color: #d8dde3;
         }
 
         .auth-form-wrapper {
             max-width: 600px;
             width: 100%;
-            min-height: calc(100% - 56px);
+            min-height: auto;
             margin-top: 20px;
-            padding-bottom: 48px;
+            padding-bottom: 28px;
         }
 
         .auth-register-panel {
-            min-height: 100%;
             display: flex;
             flex-direction: column;
         }
@@ -191,20 +198,24 @@
         }
 
         .auth-action-row {
-            position: sticky;
-            bottom: 0;
+            position: static;
+            align-self: flex-end;
             display: flex;
             align-items: center;
             justify-content: flex-end;
             margin-top: 34px;
-            padding: 24px 0 2px;
-            background: linear-gradient(180deg, rgba(17,17,17,0) 0%, #111111 42%, #111111 100%);
+            padding: 0;
+            background: transparent;
             z-index: 30;
         }
 
         .auth-submit-btn {
+            appearance: none;
+            -webkit-appearance: none;
             opacity: 1 !important;
             visibility: visible !important;
+            flex-shrink: 0;
+            position: static;
             width: auto;
             min-width: 150px;
             height: 48px;
@@ -226,7 +237,7 @@
 
         .auth-submit-btn:hover {
             transform: scale(1.05);
-            background-color: #00ff87;
+            background-color: #d8dde3;
         }
 
         .auth-alert {
@@ -234,6 +245,20 @@
             font-size: 13px;
             margin-bottom: 20px;
             display: block;
+        }
+
+        @media (max-width: 720px) {
+            .auth-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-action-row {
+                align-self: stretch;
+            }
+
+            .auth-submit-btn {
+                width: 100%;
+            }
         }
     </style>
 
@@ -317,27 +342,10 @@
 
     <!-- Animation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // 1. Initialize Lenis for buttery smooth scrolling in the right panel
-            const scrollContainer = document.querySelector('.auth-right');
-            const scrollContent = document.querySelector('.auth-form-wrapper');
-
-            if (scrollContainer && scrollContent) {
-                const lenis = new Lenis({
-                    wrapper: scrollContainer,
-                    content: scrollContent,
-                    lerp: 0.08,
-                    smoothWheel: true
-                });
-                function raf(time) {
-                    lenis.raf(time);
-                    requestAnimationFrame(raf);
-                }
-                requestAnimationFrame(raf);
-            }
+            document.body.classList.add("auth-lock-scroll");
 
             // 2. GSAP Entrance Animations
             const tl = gsap.timeline();

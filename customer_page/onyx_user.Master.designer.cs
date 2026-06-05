@@ -51,6 +51,15 @@ namespace ONYX_DDAC.customer_page
         protected global::System.Web.UI.WebControls.Literal litCartCount;
 
         /// <summary>
+        /// btnCustomerLogout control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btnCustomerLogout;
+
+        /// <summary>
         /// MainContent control.
         /// </summary>
         /// <remarks>
