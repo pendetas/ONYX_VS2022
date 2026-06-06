@@ -47,6 +47,35 @@ namespace ONYX_DDAC.DAL
             }
         }
 
+        // Returns "username" or "email" if already taken, null if both are available
+        public string CheckDuplicate(string username, string email)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                string sql = @"
+                    SELECT
+                        (SELECT COUNT(*) FROM users WHERE LOWER(username) = LOWER(@Username)) AS un_count,
+                        (SELECT COUNT(*) FROM users WHERE LOWER(email)    = LOWER(@Email))    AS em_count";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Username", username);
+                    cmd.Parameters.AddWithValue("@Email", email);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            if (reader.GetInt64(0) > 0) return "username";
+                            if (reader.GetInt64(1) > 0) return "email";
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         // Retrieves a user by email for login validation
         public User GetUserByEmail(string email)
         {
