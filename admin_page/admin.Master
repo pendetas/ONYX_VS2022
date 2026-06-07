@@ -162,13 +162,13 @@
             </a>
 
             <ul class="sidebar-menu">
-                <li><a href="onyx_admin_dashboard.aspx" class="active"><i data-lucide="layout-dashboard"></i> Overview</a></li>
-                <li><a href="onyx_admin_products.aspx"><i data-lucide="package"></i> Products</a></li>
-                <li><a href="onyx_admin_product_form.aspx"><i data-lucide="plus-circle"></i> Product Form</a></li>
-                <li><a href="onyx_admin_orders.aspx"><i data-lucide="shopping-cart"></i> Orders</a></li>
-                <li><a href="onyx_admin_order_details.aspx"><i data-lucide="file-text"></i> Order Detail</a></li>
-                <li><a href="onyx_admin_promos.aspx"><i data-lucide="tag"></i> Promos</a></li>
-                <li><a href="onyx_admin_users.aspx"><i data-lucide="users"></i> Users</a></li>
+                <li><a id="navDashboard"  runat="server" href="onyx_admin_dashboard.aspx"><i data-lucide="layout-dashboard"></i> Overview</a></li>
+                <li><a id="navProducts"   runat="server" href="onyx_admin_products.aspx"><i data-lucide="package"></i> Products</a></li>
+                <li><a id="navProductForm" runat="server" href="onyx_admin_products_form.aspx"><i data-lucide="plus-circle"></i> Product Form</a></li>
+                <li><a id="navOrders"     runat="server" href="onyx_admin_orders.aspx"><i data-lucide="shopping-cart"></i> Orders</a></li>
+                <li><a id="navOrderDetail" runat="server" href="onyx_admin_order_details.aspx"><i data-lucide="file-text"></i> Order Detail</a></li>
+                <li><a id="navPromos"     runat="server" href="onyx_admin_promos.aspx"><i data-lucide="tag"></i> Promos</a></li>
+                <li><a id="navUsers"      runat="server" href="onyx_admin_users.aspx"><i data-lucide="users"></i> Users</a></li>
             </ul>
 
             <div class="sidebar-logout">

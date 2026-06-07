@@ -333,11 +333,14 @@
     <Compile Include="Helpers\CurrencyHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Models\CartItem.cs" />
+    <Compile Include="Models\DashboardMetrics.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderItem.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductVariant.cs" />
+    <Compile Include="Models\RecerntOrder.cs" />
     <Compile Include="Models\Review.cs" />
+    <Compile Include="Models\TopProduct.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Wishlist.cs" />
     <Compile Include="About.aspx.cs">
