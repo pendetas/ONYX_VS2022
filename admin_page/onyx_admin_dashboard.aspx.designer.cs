@@ -13,8 +13,14 @@ namespace ONYX_DDAC.admin_page
     {
         // ---- Top Bar ----
 
+        /// <summary>Dynamic greeting: "Good morning, onyxadmin" with Lucide hand icon.</summary>
+        protected global::System.Web.UI.WebControls.Label lblGreeting;
+
         /// <summary>Label displaying the current date string in the greeting bar.</summary>
         protected global::System.Web.UI.WebControls.Label lblCurrentDate;
+
+        /// <summary>Two-letter uppercase initials derived from the session username.</summary>
+        protected global::System.Web.UI.WebControls.Label lblAvatar;
 
         // ---- Row 1: Pastel KPI Card Labels ----
 
@@ -61,9 +67,22 @@ namespace ONYX_DDAC.admin_page
         /// <summary>Repeater for the top-5 selling products leaderboard.</summary>
         protected global::System.Web.UI.WebControls.Repeater TopProductsRepeater;
 
+        // ---- Low Stock Alerts ----
+
+        /// <summary>Panel shown only when at least one product has stock_qty &lt; 5.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlLowStock;
+
+        /// <summary>Repeater listing each low-stock product with name, category, and quantity.</summary>
+        protected global::System.Web.UI.WebControls.Repeater LowStockRepeater;
+
         // ---- Row 4: Recent Orders Table ----
 
         /// <summary>Repeater for the recent orders activity table.</summary>
         protected global::System.Web.UI.WebControls.Repeater RecentOrdersRepeater;
+
+        // ---- Notifications ----
+
+        /// <summary>Repeater for the top-3 recent activity items in the notification dropdown.</summary>
+        protected global::System.Web.UI.WebControls.Repeater NotifRepeater;
     }
 }

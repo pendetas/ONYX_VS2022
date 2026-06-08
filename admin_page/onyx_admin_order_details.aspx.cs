@@ -1,14 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Web.UI;
-using System.Web.UI.WebControls;
+using ONYX_DDAC.DAL;
 
 namespace ONYX_DDAC.admin_page
 {
-    public partial class onyx_admin_order_details : System.Web.UI.Page
+    public partial class onyx_admin_order_details : Page
     {
-        // Stores the current order's status key so btnUpdateStatus can update the badge
-        private string _currentStatusKey = "delivered";
+        private readonly OrderRepository _repo = new OrderRepository();
+
+        private long CurrentOrderId
+        {
+            get { return ViewState["OrderId"] != null ? (long)ViewState["OrderId"] : 0; }
+            set { ViewState["OrderId"] = value; }
+        }
 
         // =====================================================================
         //  PAGE LIFECYCLE
@@ -18,82 +23,87 @@ namespace ONYX_DDAC.admin_page
         {
             if (!IsPostBack)
             {
-                // Read order ID from query string; default to 1042 for direct preview
-                string idParam = Request.QueryString["id"];
-                long orderId = 1042;
-                if (!string.IsNullOrWhiteSpace(idParam))
-                    long.TryParse(idParam, out orderId);
+                long id;
+                if (!long.TryParse(Request.QueryString["id"], out id) || id <= 0)
+                {
+                    ShowNotFound();
+                    return;
+                }
 
-                BindOrderDetails(orderId);
+                CurrentOrderId = id;
+                BindOrder(id);
+
+                if (Request.QueryString["updated"] == "1")
+                {
+                    pnlStatusMsg.Visible = true;
+                    litStatusMsg.Text    = "Status updated successfully.";
+                }
             }
         }
 
         // =====================================================================
-        //  DATA BINDING  (replace with OrderService.GetDetails(id) when DB ready)
+        //  DATA BINDING
         // =====================================================================
 
-        private void BindOrderDetails(long orderId)
+        private void BindOrder(long id)
         {
-            // Simulate routing to different mock orders by ID
-            // In production: var order = orderService.GetOrderById(orderId);
-            string statusKey = GetMockStatusKey(orderId);
-            string status = GetDisplayStatus(statusKey);
+            OrderRepository.OrderDetail order = _repo.GetOrderById(id);
 
-            _currentStatusKey = statusKey;
+            if (order == null)
+            {
+                ShowNotFound();
+                return;
+            }
 
-            // ---- Header ----
-            litOrderId.Text = "#ORD-" + orderId;
-            litOrderDate.Text = "2 Jun 2026, 4:15 PM";
-            litCustomerNameHeader.Text = "Amir Rashid";
-            lblStatusBadge.Text = BuildStatusBadge(statusKey, status);
+            pnlOrderDetail.Visible = true;
+            pnlNotFound.Visible    = false;
 
-            // ---- Customer info ----
-            litCustName.Text = "Amir Rashid";
-            litCustEmail.Text = "amir.rashid@gmail.com";
-            litCustPhone.Text = "+60 12-345 6789";
-            litCustSince.Text = "14 Jan 2025";
+            string statusKey = order.Status.ToLower();
+            string statusCap = char.ToUpper(order.Status[0]) + order.Status.Substring(1);
 
-            // ---- Shipping address ----
-            litShippingAddress.Text =
-                "Unit 15-3, Menara Duta,<br>" +
-                "Jalan Duta, Bukit Damansara,<br>" +
-                "50480 Kuala Lumpur,<br>" +
-                "Malaysia";
+            // Header
+            litOrderId.Text            = "#ORD-" + order.Id;
+            litOrderDate.Text          = order.OrderedAt.ToString("d MMM yyyy, h:mm tt");
+            litCustomerNameHeader.Text = Server.HtmlEncode(order.CustomerName);
+            lblStatusBadge.Text        = BuildBadge(statusKey, statusCap);
 
-            // ---- Pre-select dropdown ----
+            // Customer info
+            litCustName.Text  = Server.HtmlEncode(order.CustomerName);
+            litCustEmail.Text = Server.HtmlEncode(order.CustomerEmail);
+            litCustPhone.Text = Server.HtmlEncode(order.CustomerPhone);
+            litCustSince.Text = order.CustomerSince == DateTime.MinValue
+                                ? "—"
+                                : order.CustomerSince.ToString("d MMM yyyy");
+
+            // Shipping address
+            if (string.IsNullOrWhiteSpace(order.ShippingAddress))
+                litShippingAddress.Text = "<span style=\"color:rgba(255,255,255,0.28);font-style:italic;\">No address recorded.</span>";
+            else
+                litShippingAddress.Text = Server.HtmlEncode(order.ShippingAddress).Replace("\n", "<br/>");
+
+            // Pre-select status dropdown
             ddlStatus.SelectedValue = statusKey;
 
-            // ---- Metadata ----
-            litMetaOrderId.Text = "#ORD-" + orderId;
-            litMetaDate.Text = "2 Jun 2026, 4:15 PM";
-            litReceiptKey.Text = "receipts/" + orderId + ".json";
+            // Metadata
+            litMetaOrderId.Text = "#ORD-" + order.Id;
+            litMetaDate.Text    = order.OrderedAt.ToString("d MMM yyyy, h:mm tt");
+            litReceiptKey.Text  = string.IsNullOrEmpty(order.ReceiptS3Key) ? "—" : Server.HtmlEncode(order.ReceiptS3Key);
 
-            // ---- Order items ----
-            var mockItems = new List<object>
-            {
-                new { ProductName = "Viper V2 Pro",  Category = "Mouse",    Variant = "Wireless — Black",    Quantity = 1, UnitPrice = "RM 599.00", Subtotal = "RM 599.00" },
-                new { ProductName = "BlackWidow V3", Category = "Keyboard", Variant = "US Layout — Black",   Quantity = 1, UnitPrice = "RM 449.00", Subtotal = "RM 449.00" },
-                new { ProductName = "Kraken X",      Category = "Headset",  Variant = "Black",               Quantity = 1, UnitPrice = "RM 299.00", Subtotal = "RM 299.00" }
-            };
-
-            OrderItemsRepeater.DataSource = mockItems;
+            // Order items
+            List<OrderRepository.OrderItemDetail> items = _repo.GetOrderItems(id);
+            OrderItemsRepeater.DataSource = items;
             OrderItemsRepeater.DataBind();
 
-            // ---- Summary ----
-            litSubtotal.Text = "RM 1,347.00";
-            litTotal.Text = "RM 1,357.00";   // subtotal + RM10 shipping
+            // Summary — subtotal from items; total from order record
+            decimal subtotal = 0;
+            foreach (var item in items)
+                subtotal += item.UnitPrice * item.Quantity;
 
-            // ---- Timeline ----
-            var timeline = new List<object>
-            {
-                new { Event = "Order Delivered",      Timestamp = "2 Jun 2026, 4:15 PM",  DotClass = "dot-green"  },
-                new { Event = "Out for Delivery",     Timestamp = "2 Jun 2026, 9:00 AM",  DotClass = "dot-blue"   },
-                new { Event = "Order Shipped",        Timestamp = "1 Jun 2026, 3:00 PM",  DotClass = "dot-blue"   },
-                new { Event = "Payment Confirmed",    Timestamp = "31 May 2026, 11:30 PM", DotClass = "dot-yellow" },
-                new { Event = "Order Placed",         Timestamp = "31 May 2026, 11:28 PM", DotClass = "dot-yellow" }
-            };
+            litSubtotal.Text = "RM " + subtotal.ToString("N2");
+            litTotal.Text    = "RM " + order.TotalAmount.ToString("N2");
 
-            TimelineRepeater.DataSource = timeline;
+            // Timeline
+            TimelineRepeater.DataSource = BuildTimeline(statusKey, order.OrderedAt, order.StatusUpdatedAt);
             TimelineRepeater.DataBind();
         }
 
@@ -103,49 +113,65 @@ namespace ONYX_DDAC.admin_page
 
         protected void btnUpdateStatus_Click(object sender, EventArgs e)
         {
-            string newKey = ddlStatus.SelectedValue;
-            string newDisplay = ddlStatus.SelectedItem.Text;
+            long id = CurrentOrderId;
+            if (id <= 0) return;
 
-            // TODO: Call OrderRepository.UpdateStatus(orderId, newKey) when DB is connected.
-            lblStatusBadge.Text = BuildStatusBadge(newKey, newDisplay);
-            litStatusMsg.Text = $"Status updated to \"{newDisplay}\" successfully.";
-            pnlStatusMsg.Visible = true;
+            _repo.UpdateStatus(id, ddlStatus.SelectedValue);
+
+            // Redirect back to same page — forces a fresh GET so all controls re-render from DB
+            Response.Redirect("onyx_admin_order_details.aspx?id=" + id + "&updated=1");
+        }
+
+        protected void btnDeleteOrder_Click(object sender, EventArgs e)
+        {
+            long id = CurrentOrderId;
+            if (id <= 0) return;
+
+            _repo.DeleteOrder(id);
+            Response.Redirect("~/admin_page/onyx_admin_orders.aspx");
         }
 
         // =====================================================================
         //  HELPERS
         // =====================================================================
 
-        /// <summary>
-        /// Returns a simple status key for the given order ID.
-        /// Simulates routing to different mock orders.
-        /// </summary>
-        private static string GetMockStatusKey(long orderId)
+        private void ShowNotFound()
         {
-            switch (orderId % 4)
-            {
-                case 0: return "delivered";
-                case 1: return "shipped";
-                case 2: return "pending";
-                default: return "cancelled";
-            }
+            pnlOrderDetail.Visible = false;
+            pnlNotFound.Visible    = true;
         }
 
-        private static string GetDisplayStatus(string key)
+        private static string BuildBadge(string key, string display)
         {
-            switch (key)
-            {
-                case "shipped": return "Shipped";
-                case "pending": return "Pending";
-                case "cancelled": return "Cancelled";
-                default: return "Delivered";
-            }
+            return "<span class=\"status-badge status-" + key + "\">" + display + "</span>";
         }
 
-        /// <summary>Builds the HTML for the status badge in the page header.</summary>
-        private static string BuildStatusBadge(string key, string display)
+        private static List<object> BuildTimeline(string status, DateTime orderedAt, DateTime? statusUpdatedAt)
         {
-            return $"<span class=\"status-badge status-{key}\">{display}</span>";
+            string ts      = orderedAt.ToString("d MMM yyyy, h:mm tt");
+            string updated = statusUpdatedAt.HasValue
+                             ? statusUpdatedAt.Value.ToString("d MMM yyyy, h:mm tt")
+                             : "—";
+            var t = new List<object>();
+
+            t.Add(new { Event = "Order Placed",       Timestamp = ts,      DotClass = "dot-done" });
+
+            if (status != "cancelled")
+                t.Add(new { Event = "Payment Confirmed", Timestamp = ts,      DotClass = "dot-done" });
+
+            if (status == "shipped" || status == "delivered")
+                t.Add(new { Event = "Shipped",           Timestamp = updated, DotClass = "dot-done" });
+
+            if (status == "delivered")
+                t.Add(new { Event = "Delivered",         Timestamp = updated, DotClass = "dot-done" });
+
+            if (status == "pending")
+                t.Add(new { Event = "Awaiting Shipment", Timestamp = "Pending", DotClass = "dot-pending" });
+
+            if (status == "cancelled")
+                t.Add(new { Event = "Order Cancelled",   Timestamp = updated, DotClass = "dot-cancel" });
+
+            return t;
         }
     }
 }

@@ -29,7 +29,7 @@ namespace ONYX_DDAC.Helpers
         {
             if (!IsAdmin(page))
             {
-                page.Response.Redirect("~/customer_page/onyx_catalog.aspx", true);
+                page.Response.Redirect("~/auth_page/onyx_Admin_Login.aspx", true);
             }
         }
 

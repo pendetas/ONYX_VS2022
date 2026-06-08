@@ -11,7 +11,7 @@ namespace ONYX_DDAC.admin_page
 {
     public partial class admin
     {
-        /// <summary>HeadContent placeholder — for page-level CSS and scripts.</summary>
+        /// <summary>HeadContent placeholder ï¿½ for page-level CSS and scripts.</summary>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder HeadContent;
 
         /// <summary>Root form element.</summary>
@@ -20,7 +20,7 @@ namespace ONYX_DDAC.admin_page
         /// <summary>Log Out link button in the sidebar footer.</summary>
         protected global::System.Web.UI.WebControls.LinkButton btnLogOut;
 
-        /// <summary>MainContent placeholder — for page body markup.</summary>
+        /// <summary>MainContent placeholder ï¿½ for page body markup.</summary>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
 
         // ---- Sidebar Navigation Anchors (used by HighlightActiveNavLink) ----
@@ -32,5 +32,6 @@ namespace ONYX_DDAC.admin_page
         protected global::System.Web.UI.HtmlControls.HtmlAnchor navOrderDetail;
         protected global::System.Web.UI.HtmlControls.HtmlAnchor navPromos;
         protected global::System.Web.UI.HtmlControls.HtmlAnchor navUsers;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor navSettings;
     }
 }

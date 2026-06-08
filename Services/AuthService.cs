@@ -53,6 +53,32 @@ namespace ONYX_DDAC.Services
             }
         }
 
+        // Returns null on success, or an error string on failure.
+        // Verifies current password, then updates to new hash.
+        public string ChangePassword(string username, string currentRaw, string newRaw, string confirmRaw)
+        {
+            if (string.IsNullOrWhiteSpace(currentRaw) || string.IsNullOrWhiteSpace(newRaw) || string.IsNullOrWhiteSpace(confirmRaw))
+                return "All fields are required.";
+
+            if (newRaw != confirmRaw)
+                return "New password and confirmation do not match.";
+
+            if (newRaw.Length < 8)
+                return "New password must be at least 8 characters.";
+
+            User user = _userRepository.GetUserByUsername(username);
+            if (user == null)
+                return "Session error. Please log in again.";
+
+            bool currentValid = BCrypt.Net.BCrypt.EnhancedVerify(currentRaw, user.PasswordHash);
+            if (!currentValid)
+                return "Current password is incorrect.";
+
+            string newHash = BCrypt.Net.BCrypt.EnhancedHashPassword(newRaw, 12);
+            _userRepository.UpdatePasswordHash(user.Id, newHash);
+            return null;
+        }
+
         // Handles the business logic for logging in
         public User Login(string email, string rawPassword)
         {

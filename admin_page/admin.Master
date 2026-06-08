@@ -4,190 +4,429 @@
 <html lang="en">
 <head runat="server">
     <meta charset="utf-8" />
+    <%-- Theme init: runs synchronously before CSS renders to prevent flash --%>
+    <script>
+        (function () {
+            var t = localStorage.getItem('onyx-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%: Page.Title %> - ONYX Admin</title>
-    
-    <!-- Fonts and Icons -->
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
+        /* ── Base variables ──────────────────────────── */
         :root {
-            --bg-dark: #121215;
-            --sidebar-bg: #18181c;
-            --card-dark: #1c1c22;
-            --text-main: #ffffff;
-            --text-muted: #888891;
-            --accent-green: #00ff87;
-            
-            /* Pastel Card Colors from Reference */
-            --pastel-yellow: #fdf5e6;
-            --pastel-purple: #eaddff;
-            --pastel-pink: #fce4ec;
-            --pastel-blue: #e0f7fa;
+            --bg-dark:      #111113;
+            --sidebar-bg:   #0c0c0e;
+            --card-dark:    #1c1c22;
+            --text-main:    #ffffff;
+            --text-muted:   #888891;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            background-color: #111113;
+            background-image: radial-gradient(ellipse at 12% 60%, rgba(40,40,55,0.55) 0%, transparent 65%);
+            color: #fff;
             display: flex;
             height: 100vh;
-            overflow: hidden; /* Prevent body scroll, handle inside main */
+            overflow: hidden;
+            transition: background-color 0.25s, color 0.25s;
         }
 
-        /* Sidebar Styling */
+        /* ── Sidebar ─────────────────────────────────── */
         .admin-sidebar {
-            width: 260px;
-            background-color: var(--sidebar-bg);
+            width: 210px;
+            flex-shrink: 0;
+            background: rgba(14, 14, 17, 0.68);
+            backdrop-filter: blur(28px) saturate(160%);
+            -webkit-backdrop-filter: blur(28px) saturate(160%);
             display: flex;
             flex-direction: column;
-            padding: 30px 20px;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 22px 10px;
+            border-right: 1px solid rgba(255,255,255,0.07);
+            box-shadow: inset -1px 0 0 rgba(255,255,255,0.04), 4px 0 40px rgba(0,0,0,0.35);
+            transition: background 0.25s, border-color 0.25s;
         }
 
         .sidebar-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 20px;
+            display: block;
+            padding: 4px 10px 0;
+            margin-bottom: 28px;
+            color: #ffffff !important;
+            text-decoration: none !important;
+            font-size: 17px;
             font-weight: 700;
-            color: var(--text-main);
-            text-decoration: none;
-            margin-bottom: 50px;
-            padding-left: 10px;
-        }
-
-        .sidebar-brand i {
-            color: var(--pastel-pink); /* Placeholder logo accent */
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            transition: color 0.25s;
         }
 
         .sidebar-menu {
-            list-style: none;
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             flex-grow: 1;
         }
 
+        .sidebar-menu li { padding: 0 !important; margin: 0 !important; }
+
         .sidebar-menu li a {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            color: rgba(255,255,255,0.38) !important;
+            text-decoration: none !important;
+            padding: 7px 10px !important;
+            border-radius: 7px !important;
+            font-size: 13px !important;
+            font-weight: 400 !important;
+            letter-spacing: 0.005em;
+            white-space: nowrap !important;
+            transition: background 0.12s, color 0.12s !important;
+            background: transparent !important;
+        }
+
+        .sidebar-menu li a i { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.65; transition: opacity 0.12s; }
+        .sidebar-menu li a:hover { background: rgba(255,255,255,0.06) !important; color: rgba(255,255,255,0.80) !important; }
+        .sidebar-menu li a:hover i { opacity: 1; }
+        .sidebar-menu li a.active { background: rgba(255,255,255,0.10) !important; color: #ffffff !important; font-weight: 500 !important; }
+        .sidebar-menu li a.active i { opacity: 1; }
+
+        .sidebar-bottom {
+            margin-top: auto;
             display: flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--text-muted);
-            text-decoration: none;
-            padding: 12px 15px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-menu li a:hover, .sidebar-menu li a.active {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--text-main);
-        }
-        
-        .sidebar-menu li a.active {
-            border-left: 3px solid var(--accent-green);
-        }
-
-        .sidebar-menu li a i {
-            width: 20px;
-            height: 20px;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .sidebar-logout {
-            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            transition: border-color 0.25s;
         }
 
-        .sidebar-logout a {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--text-muted);
-            text-decoration: none;
-            padding: 12px 15px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.3s ease;
+        .sidebar-logout a, .sidebar-bottom-link {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            color: rgba(255,255,255,0.28) !important;
+            text-decoration: none !important;
+            padding: 7px 10px !important;
+            border-radius: 7px !important;
+            font-size: 13px !important;
+            font-weight: 400 !important;
+            white-space: nowrap;
+            transition: background 0.12s, color 0.12s;
+            background: transparent !important;
+            border: none !important;
+            cursor: pointer;
+            width: 100%;
         }
 
-        .sidebar-logout a:hover {
-            color: #ff4444;
+        .sidebar-logout a:hover, .sidebar-bottom-link:hover {
+            background: rgba(255,255,255,0.05) !important;
+            color: rgba(255,255,255,0.58) !important;
         }
 
-        /* Main Content Area */
+        .sidebar-logout a i, .sidebar-bottom-link i { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.55; }
+
+        /* ── Main content ────────────────────────────── */
         .admin-main {
             flex-grow: 1;
+            min-width: 0;
             padding: 40px 50px;
+            overflow-x: hidden;
             overflow-y: auto;
-            /* Hide scrollbar for clean look */
-            -ms-overflow-style: none;  
-            scrollbar-width: none;  
-        }
-        
-        .admin-main::-webkit-scrollbar {
-            display: none;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            transition: background 0.25s;
         }
 
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
+        .admin-main::-webkit-scrollbar { display: none; }
+
+        /* =====================================================================
+           LIGHT THEME OVERRIDES
+           Targets every class used across all admin pages.
+           Specificity: html[data-theme="light"] .class > plain .class  ✓
+        ===================================================================== */
+
+        html[data-theme="light"] body {
+            background-color: #f0f0f4;
+            background-image: none;
+            color: #0d0d0f;
         }
 
-        .admin-header h1 {
-            font-size: 24px;
-            font-weight: 600;
+        /* Sidebar */
+        html[data-theme="light"] .admin-sidebar {
+            background: rgba(255,255,255,0.92);
+            border-right-color: rgba(0,0,0,0.08);
+            box-shadow: inset -1px 0 0 rgba(0,0,0,0.04), 4px 0 20px rgba(0,0,0,0.06);
         }
+
+        html[data-theme="light"] .sidebar-brand { color: #0d0d0f !important; }
+
+        html[data-theme="light"] .sidebar-menu li a { color: rgba(0,0,0,0.42) !important; }
+        html[data-theme="light"] .sidebar-menu li a:hover { background: rgba(0,0,0,0.05) !important; color: rgba(0,0,0,0.80) !important; }
+        html[data-theme="light"] .sidebar-menu li a.active { background: rgba(0,0,0,0.08) !important; color: #0d0d0f !important; }
+
+        html[data-theme="light"] .sidebar-logout { border-top-color: rgba(0,0,0,0.07); }
+        html[data-theme="light"] .sidebar-logout a,
+        html[data-theme="light"] .sidebar-bottom-link { color: rgba(0,0,0,0.32) !important; }
+        html[data-theme="light"] .sidebar-logout a:hover,
+        html[data-theme="light"] .sidebar-bottom-link:hover { background: rgba(0,0,0,0.04) !important; color: rgba(0,0,0,0.60) !important; }
+
+        /* Cards / Panels */
+        html[data-theme="light"] .panel,
+        html[data-theme="light"] .stat-box,
+        html[data-theme="light"] .kpi-card,
+        html[data-theme="light"] .sec-card,
+        html[data-theme="light"] .chart-card,
+        html[data-theme="light"] .top-products-card,
+        html[data-theme="light"] .orders-card,
+        html[data-theme="light"] .dark-card,
+        html[data-theme="light"] .product-card {
+            background: #ffffff;
+            border-color: rgba(0,0,0,0.07);
+        }
+
+        html[data-theme="light"] .kpi-card:hover,
+        html[data-theme="light"] .sec-card:hover { border-color: rgba(0,0,0,0.14); }
+
+        /* Primary text */
+        html[data-theme="light"] .page-title,
+        html[data-theme="light"] .stat-value,
+        html[data-theme="light"] .kpi-value,
+        html[data-theme="light"] .sec-value,
+        html[data-theme="light"] .dark-value,
+        html[data-theme="light"] .card-value,
+        html[data-theme="light"] .user-name,
+        html[data-theme="light"] .product-name,
+        html[data-theme="light"] .product-revenue,
+        html[data-theme="light"] .amount-cell,
+        html[data-theme="light"] .customer-name,
+        html[data-theme="light"] .hero-name,
+        html[data-theme="light"] .timeline-label,
+        html[data-theme="light"] .card-header h3,
+        html[data-theme="light"] .orders-header h3,
+        html[data-theme="light"] .greeting-block h1,
+        html[data-theme="light"] .info-value,
+        html[data-theme="light"] .summary-value,
+        html[data-theme="light"] .summary-total .summary-key,
+        html[data-theme="light"] .summary-total .summary-value,
+        html[data-theme="light"] .stat-val,
+        html[data-theme="light"] .spent-value,
+        html[data-theme="light"] .notif-title { color: #0d0d0f; }
+
+        /* Muted text */
+        html[data-theme="light"] .page-meta,
+        html[data-theme="light"] .page-subtitle,
+        html[data-theme="light"] .stat-label,
+        html[data-theme="light"] .kpi-label,
+        html[data-theme="light"] .sec-label,
+        html[data-theme="light"] .dark-label,
+        html[data-theme="light"] .date-cell,
+        html[data-theme="light"] .phone-cell,
+        html[data-theme="light"] .order-id,
+        html[data-theme="light"] .order-id-cell,
+        html[data-theme="light"] .items-cell,
+        html[data-theme="light"] .product-category,
+        html[data-theme="light"] .product-units,
+        html[data-theme="light"] .timeline-date,
+        html[data-theme="light"] .notif-sub,
+        html[data-theme="light"] .notif-time,
+        html[data-theme="light"] .greeting-meta,
+        html[data-theme="light"] .info-key,
+        html[data-theme="light"] .summary-key,
+        html[data-theme="light"] .stat-key,
+        html[data-theme="light"] .empty-orders,
+        html[data-theme="light"] .hero-email,
+        html[data-theme="light"] .user-email { color: rgba(0,0,0,0.40); }
+
+        /* Section labels */
+        html[data-theme="light"] .section-label {
+            color: rgba(0,0,0,0.28);
+            border-bottom-color: rgba(0,0,0,0.06);
+        }
+
+        /* Tables */
+        html[data-theme="light"] .admin-table,
+        html[data-theme="light"] .orders-table,
+        html[data-theme="light"] .users-table,
+        html[data-theme="light"] .items-table,
+        html[data-theme="light"] .orders-mini { color: #0d0d0f; }
+
+        html[data-theme="light"] .admin-table th,
+        html[data-theme="light"] .orders-table thead th,
+        html[data-theme="light"] .users-table thead th,
+        html[data-theme="light"] .items-table thead th,
+        html[data-theme="light"] .orders-mini thead th {
+            color: rgba(0,0,0,0.32);
+            border-bottom-color: rgba(0,0,0,0.07);
+        }
+
+        html[data-theme="light"] .admin-table td,
+        html[data-theme="light"] .orders-table tbody td,
+        html[data-theme="light"] .users-table tbody td,
+        html[data-theme="light"] .items-table tbody td,
+        html[data-theme="light"] .orders-mini tbody td { border-bottom-color: rgba(0,0,0,0.04); color: #0d0d0f; }
+
+        html[data-theme="light"] .admin-table tr:hover td,
+        html[data-theme="light"] .orders-table tbody tr:hover td,
+        html[data-theme="light"] .users-table tbody tr:hover td,
+        html[data-theme="light"] .items-table tbody tr:hover td { background: rgba(0,0,0,0.02); }
+
+        /* Filter tabs */
+        html[data-theme="light"] .filter-tabs { border-bottom-color: rgba(0,0,0,0.08); }
+        html[data-theme="light"] .tab { color: rgba(0,0,0,0.35); }
+        html[data-theme="light"] .tab:hover { color: rgba(0,0,0,0.65); }
+        html[data-theme="light"] .tab.active { color: #0d0d0f; border-bottom-color: #0d0d0f; }
+
+        /* Search */
+        html[data-theme="light"] .search-line { border-bottom-color: rgba(0,0,0,0.10); }
+        html[data-theme="light"] .search-line:focus-within { border-bottom-color: rgba(0,0,0,0.35); }
+        html[data-theme="light"] .search-line i { color: rgba(0,0,0,0.28) !important; }
+        html[data-theme="light"] .search-input { color: #0d0d0f; }
+        html[data-theme="light"] .search-input::placeholder { color: rgba(0,0,0,0.22); }
+
+        /* Inputs */
+        html[data-theme="light"] .field-input {
+            color: #0d0d0f;
+            border-bottom-color: rgba(0,0,0,0.12);
+        }
+        html[data-theme="light"] .field-input:focus { border-bottom-color: rgba(0,0,0,0.40); }
+        html[data-theme="light"] .field-input::placeholder { color: rgba(0,0,0,0.22); }
+
+        html[data-theme="light"] .field-select,
+        html[data-theme="light"] .status-select,
+        html[data-theme="light"] .role-select {
+            color: #0d0d0f;
+            border-bottom-color: rgba(0,0,0,0.12);
+        }
+
+        /* Buttons */
+        html[data-theme="light"] .btn-view,
+        html[data-theme="light"] .view-link { color: rgba(0,0,0,0.30); }
+        html[data-theme="light"] .btn-view:hover,
+        html[data-theme="light"] .view-link:hover { color: rgba(0,0,0,0.70); }
+        html[data-theme="light"] .back-link { color: rgba(0,0,0,0.28); }
+        html[data-theme="light"] .back-link:hover { color: rgba(0,0,0,0.65); }
+
+        /* Avatars */
+        html[data-theme="light"] .user-avatar,
+        html[data-theme="light"] .hero-avatar { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.50); }
+        html[data-theme="light"] .avatar-admin,
+        html[data-theme="light"] .avatar-customer { background: rgba(0,0,0,0.05); color: rgba(0,0,0,0.40); }
+
+        /* Dashboard top bar */
+        html[data-theme="light"] .user-profile { background: #ffffff; border-color: rgba(0,0,0,0.07); }
+        html[data-theme="light"] .notif-btn { color: rgba(0,0,0,0.32); }
+        html[data-theme="light"] .notif-btn:hover { color: rgba(0,0,0,0.70); }
+        html[data-theme="light"] .notif-dot { background: rgba(0,0,0,0.40); border-color: #f0f0f4; }
+
+        /* Notification panel */
+        html[data-theme="light"] .notif-panel {
+            background: #ffffff;
+            border-color: rgba(0,0,0,0.10);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+        }
+        html[data-theme="light"] .notif-header { color: rgba(0,0,0,0.28); border-bottom-color: rgba(0,0,0,0.06); }
+        html[data-theme="light"] .notif-item { border-bottom-color: rgba(0,0,0,0.04); }
+        html[data-theme="light"] .notif-item:hover { background: rgba(0,0,0,0.02); }
+        html[data-theme="light"] .notif-icon { background: rgba(0,0,0,0.04); }
+        html[data-theme="light"] .notif-icon i { color: rgba(0,0,0,0.40); }
+
+        /* Dashboard cards */
+        html[data-theme="light"] .card-tag { color: rgba(0,0,0,0.28); background: rgba(0,0,0,0.04); }
+        html[data-theme="light"] .kpi-icon { background: rgba(0,0,0,0.05); }
+        html[data-theme="light"] .kpi-icon i { color: rgba(0,0,0,0.40); }
+        html[data-theme="light"] .sec-icon.icon-neutral { background: rgba(0,0,0,0.05); color: rgba(0,0,0,0.45); }
+        html[data-theme="light"] .trend-up { color: rgba(0,0,0,0.40); }
+
+        /* Top products */
+        html[data-theme="light"] .product-item { border-bottom-color: rgba(0,0,0,0.05); }
+        html[data-theme="light"] .product-rank { background: rgba(0,0,0,0.04); color: rgba(0,0,0,0.28); }
+        html[data-theme="light"] .rank-1 { background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.70); }
+        html[data-theme="light"] .rank-2 { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.55); }
+        html[data-theme="light"] .rank-3 { background: rgba(0,0,0,0.04); color: rgba(0,0,0,0.40); }
+
+        /* Summary bars */
+        html[data-theme="light"] .summary-bar { border-top-color: rgba(0,0,0,0.06); color: rgba(0,0,0,0.38); }
+        html[data-theme="light"] .summary-bar strong { color: rgba(0,0,0,0.60); }
+        html[data-theme="light"] .summary-row { border-bottom-color: rgba(0,0,0,0.04); }
+        html[data-theme="light"] .stat-row { border-bottom-color: rgba(0,0,0,0.04); }
+
+        /* Timeline */
+        html[data-theme="light"] .timeline-item:not(:last-child)::before { background: rgba(0,0,0,0.08); }
+        html[data-theme="light"] .dot-done { background: rgba(0,0,0,0.22); }
+
+        /* Alerts */
+        html[data-theme="light"] .alert-success {
+            background: rgba(0,0,0,0.03);
+            border-left-color: rgba(0,0,0,0.22);
+            color: rgba(0,0,0,0.65);
+        }
+
+        html[data-theme="light"] .alert-error {
+            background: rgba(255,68,68,0.05);
+            color: rgba(0,0,0,0.65);
+        }
+
+        /* Toolbar right */
+        html[data-theme="light"] .toolbar-right { color: rgba(0,0,0,0.32); }
+        html[data-theme="light"] .toolbar-right strong { color: rgba(0,0,0,0.58); }
+
+        /* Card placeholder */
+        html[data-theme="light"] .card-placeholder { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.28); }
+
+        /* Product card price/category */
+        html[data-theme="light"] .card-price { color: #0d0d0f; }
+        html[data-theme="light"] .card-category { color: rgba(0,0,0,0.35); }
     </style>
+
     <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
 </head>
 <body>
     <form id="form1" runat="server" style="display: contents;">
-        
-        <!-- Left Sidebar Navigation -->
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
         <aside class="admin-sidebar">
-            <a href="onyx_admin_dashboard.aspx" class="sidebar-brand">
-                <i data-lucide="hexagon"></i> 
-                <span>ONYX</span>
-            </a>
+            <a href="onyx_admin_dashboard.aspx" class="sidebar-brand">ONYX</a>
 
             <ul class="sidebar-menu">
-                <li><a id="navDashboard"  runat="server" href="onyx_admin_dashboard.aspx"><i data-lucide="layout-dashboard"></i> Overview</a></li>
-                <li><a id="navProducts"   runat="server" href="onyx_admin_products.aspx"><i data-lucide="package"></i> Products</a></li>
-                <li><a id="navProductForm" runat="server" href="onyx_admin_products_form.aspx"><i data-lucide="plus-circle"></i> Product Form</a></li>
-                <li><a id="navOrders"     runat="server" href="onyx_admin_orders.aspx"><i data-lucide="shopping-cart"></i> Orders</a></li>
-                <li><a id="navOrderDetail" runat="server" href="onyx_admin_order_details.aspx"><i data-lucide="file-text"></i> Order Detail</a></li>
-                <li><a id="navPromos"     runat="server" href="onyx_admin_promos.aspx"><i data-lucide="tag"></i> Promos</a></li>
-                <li><a id="navUsers"      runat="server" href="onyx_admin_users.aspx"><i data-lucide="users"></i> Users</a></li>
+                <li><a id="navDashboard" runat="server" href="onyx_admin_dashboard.aspx"><i data-lucide="layout-dashboard"></i> Overview</a></li>
+                <li><a id="navProducts"  runat="server" href="onyx_admin_products.aspx"><i data-lucide="package"></i> Products</a></li>
+                <li><a id="navOrders"    runat="server" href="onyx_admin_orders.aspx"><i data-lucide="shopping-cart"></i> Orders</a></li>
+                <li><a id="navPromos"    runat="server" href="onyx_admin_promos.aspx"><i data-lucide="tag"></i> Promos</a></li>
+                <li><a id="navUsers"     runat="server" href="onyx_admin_users.aspx"><i data-lucide="users"></i> Users</a></li>
             </ul>
 
-            <div class="sidebar-logout">
-                <asp:LinkButton ID="btnLogOut" runat="server" OnClick="btnLogOut_Click" CausesValidation="false">
-                    <i data-lucide="log-out"></i> Log Out
-                </asp:LinkButton>
+            <div class="sidebar-bottom">
+                <a id="navSettings" runat="server" href="onyx_admin_settings.aspx" class="sidebar-bottom-link">
+                    <i data-lucide="settings"></i> Settings
+                </a>
+                <div class="sidebar-logout">
+                    <asp:LinkButton ID="btnLogOut" runat="server" OnClick="btnLogOut_Click" CausesValidation="false">
+                        <i data-lucide="log-out"></i> Log out
+                    </asp:LinkButton>
+                </div>
             </div>
         </aside>
 
-        <!-- Main Content Rendering Area -->
         <main class="admin-main">
             <asp:ContentPlaceHolder ID="MainContent" runat="server" />
         </main>
 
     </form>
 
-    <!-- Initialize Lucide Icons -->
-    <script>
-        lucide.createIcons();
-    </script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>

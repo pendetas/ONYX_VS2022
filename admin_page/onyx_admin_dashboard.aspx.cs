@@ -28,9 +28,18 @@ namespace ONYX_DDAC.admin_page
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Chart JSON must be set on every request (postback or not) so
+            // the inline <%= %> expression always has a value to render.
+            BindChartData();
+
             if (!IsPostBack)
             {
-                BindDashboard();
+                BindTopBar();
+                BindMetricCards();
+                BindTopProducts();
+                BindLowStockAlerts();
+                BindRecentOrders();
+                BindNotifications();
             }
         }
 
@@ -38,19 +47,19 @@ namespace ONYX_DDAC.admin_page
         //  DATA BINDING
         // =====================================================================
 
-        private void BindDashboard()
-        {
-            BindTopBar();
-            BindMetricCards();
-            BindTopProducts();
-            BindRecentOrders();
-            BindChartData();
-        }
-
         private void BindTopBar()
         {
-            // Display current date in a friendly format for the greeting sub-line.
+            string username = Session["Username"]?.ToString() ?? "Admin";
+
+            int hour = DateTime.Now.Hour;
+            string timeGreeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+            lblGreeting.Text = timeGreeting + ", " + Server.HtmlEncode(username);
+
             lblCurrentDate.Text = DateTime.Now.ToString("dddd, d MMMM yyyy");
+
+            lblAvatar.Text = username.Length >= 2
+                ? username.Substring(0, 2).ToUpperInvariant()
+                : username.ToUpperInvariant();
         }
 
         private void BindMetricCards()
@@ -83,11 +92,31 @@ namespace ONYX_DDAC.admin_page
             TopProductsRepeater.DataBind();
         }
 
+        private void BindLowStockAlerts()
+        {
+            var items = _adminRepo.GetLowStockProducts(5);
+
+            pnlLowStock.Visible = items.Count > 0;
+
+            if (items.Count > 0)
+            {
+                LowStockRepeater.DataSource = items;
+                LowStockRepeater.DataBind();
+            }
+        }
+
         private void BindRecentOrders()
         {
             List<RecentOrder> orders = _adminRepo.GetRecentOrders(6);
             RecentOrdersRepeater.DataSource = orders;
             RecentOrdersRepeater.DataBind();
+        }
+
+        private void BindNotifications()
+        {
+            var activities = _adminRepo.GetRecentActivities(3);
+            NotifRepeater.DataSource = activities;
+            NotifRepeater.DataBind();
         }
 
         private void BindChartData()
@@ -113,15 +142,18 @@ namespace ONYX_DDAC.admin_page
         /// </summary>
         private static void SetPastelTrend(Label lbl, double value, string suffix)
         {
+            const string iconStyle = "width:12px;height:12px;vertical-align:middle;margin-right:3px;";
             if (value >= 0)
             {
                 lbl.CssClass = "trend-tag trend-up";
-                lbl.Text = "↑ +" + value.ToString("F1") + "% " + suffix;
+                lbl.Text = "<i data-lucide=\"trending-up\" style=\"" + iconStyle + "\"></i> +"
+                           + value.ToString("F1") + "% " + suffix;
             }
             else
             {
                 lbl.CssClass = "trend-tag trend-down";
-                lbl.Text = "↓ " + value.ToString("F1") + "% " + suffix;
+                lbl.Text = "<i data-lucide=\"trending-down\" style=\"" + iconStyle + "\"></i> "
+                           + value.ToString("F1") + "% " + suffix;
             }
         }
 
@@ -131,15 +163,18 @@ namespace ONYX_DDAC.admin_page
         /// </summary>
         private static void SetDarkTrend(Label lbl, double value, string suffix)
         {
+            const string iconStyle = "width:12px;height:12px;vertical-align:middle;margin-right:3px;";
             if (value >= 0)
             {
                 lbl.CssClass = "dark-trend-up";
-                lbl.Text = "↑ +" + value.ToString("F1") + "% " + suffix;
+                lbl.Text = "<i data-lucide=\"trending-up\" style=\"" + iconStyle + "\"></i> +"
+                           + value.ToString("F1") + "% " + suffix;
             }
             else
             {
                 lbl.CssClass = "dark-trend-down";
-                lbl.Text = "↓ " + value.ToString("F1") + "% " + suffix;
+                lbl.Text = "<i data-lucide=\"trending-down\" style=\"" + iconStyle + "\"></i> "
+                           + value.ToString("F1") + "% " + suffix;
             }
         }
 

@@ -1,272 +1,409 @@
-﻿<%@ Page Title="Product Form" Language="C#" MasterPageFile="~/admin_page/admin.Master"
+<%@ Page Title="Product Form" Language="C#" MasterPageFile="~/admin_page/admin.Master"
     AutoEventWireup="true" CodeBehind="onyx_admin_products_form.aspx.cs"
-    Inherits="ONYX_DDAC.admin_page.onyx_admin_products_form" %>
+    Inherits="ONYX_DDAC.admin_page.onyx_admin_products_form"
+    MaintainScrollPositionOnPostback="true" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #0d0d0d !important; }
+<style>
+    /* ── Page header ─────────────────────────────── */
+    .form-header {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        margin-bottom: 44px;
+    }
+    .page-title    { font-size: 22px; font-weight: 600; color: #fff; letter-spacing: -0.02em; margin: 0; }
+    .page-subtitle { font-size: 12px; color: rgba(255,255,255,0.28); margin-top: 5px; font-weight: 400; letter-spacing: 0.02em; }
 
-        .admin-panel {
-            background: #1a1a1a;
-            border: 1px solid #2b2b2b;
-            border-radius: 0;
-            padding: 30px 32px;
-        }
+    .back-link {
+        display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
+        color: rgba(255,255,255,0.28); text-decoration: none; transition: color 0.15s;
+        flex-shrink: 0; margin-top: 4px;
+    }
+    .back-link:hover { color: rgba(255,255,255,0.68); text-decoration: none; }
+    .back-link i { width: 14px; height: 14px; }
 
-        .page-title   { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 0; }
-        .page-subtitle { font-size: 13px; color: #9c9ca4; margin-top: 4px; }
+    /* ── Alert ───────────────────────────────────── */
+    .alert-panel { padding: 12px 16px; margin-bottom: 32px; font-size: 13px; line-height: 1.5; }
+    .alert-success-dark { border-left: 2px solid rgba(255,255,255,0.30); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.68); padding-left: 14px; }
+    .alert-error-dark   { border-left: 2px solid rgba(255,68,68,0.55);   background: rgba(255,68,68,0.05);    color: #ff5555;                padding-left: 14px; }
 
-        /* Form controls — dark override */
-        .form-label {
-            color: #9c9ca4;
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
+    /* ── Form body ───────────────────────────────── */
+    .form-body { max-width: 700px; }
 
-        .form-control,
-        .form-select {
-            background-color: #0d0d0d !important;
-            border: 1px solid #2b2b2b !important;
-            border-radius: 0 !important;
-            color: #ffffff !important;
-            font-size: 14px;
-            padding: 10px 14px;
-            font-family: 'Inter', sans-serif;
-        }
+    /* ── Section ─────────────────────────────────── */
+    .form-section { margin-bottom: 40px; }
+    .section-label {
+        font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+        color: rgba(255,255,255,0.18); margin-bottom: 22px;
+        padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
 
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #00ff87 !important;
-            box-shadow: 0 0 0 3px rgba(0, 255, 135, 0.10) !important;
-        }
+    /* ── Field rows ──────────────────────────────── */
+    .field-row { display: grid; gap: 28px 36px; margin-bottom: 26px; }
+    .field-row:last-child { margin-bottom: 0; }
+    .fr-2 { grid-template-columns: 1fr 1fr; }
+    .fr-1 { grid-template-columns: 1fr; }
+    .field-group { display: flex; flex-direction: column; }
 
-        .form-control::placeholder { color: #484848; }
-        .form-select option         { background-color: #1a1a1a; color: #ffffff; }
+    .field-label {
+        font-size: 10px; font-weight: 600; letter-spacing: 0.10em; text-transform: uppercase;
+        color: rgba(255,255,255,0.26); margin-bottom: 10px;
+    }
+    .req { color: rgba(255,68,68,0.75); margin-left: 3px; }
 
-        /* Required star */
-        .req { color: #ff4444; margin-left: 2px; }
+    /* ── Underline inputs ────────────────────────── */
+    .field-input, .field-select, .field-textarea {
+        background: transparent; border: none;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        color: #fff; font-size: 14px; font-weight: 400;
+        padding: 8px 0; width: 100%; outline: none;
+        transition: border-color 0.18s; font-family: inherit;
+    }
+    .field-input::placeholder, .field-textarea::placeholder { color: rgba(255,255,255,0.14); }
+    .field-input:focus, .field-select:focus, .field-textarea:focus { border-bottom-color: rgba(255,255,255,0.40); }
+    .field-input:disabled { opacity: 0.40; cursor: not-allowed; }
 
-        /* Field hint */
-        .field-hint { font-size: 12px; color: #4a4a4a; margin-top: 5px; }
+    .field-select {
+        appearance: none; -webkit-appearance: none; cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 2px center; padding-right: 22px;
+        color: rgba(255,255,255,0.85);
+    }
+    .field-select option { background-color: #111113; color: #fff; }
 
-        /* Section divider */
-        hr.divider { border-color: #2b2b2b; margin: 28px 0; }
+    .field-textarea { resize: vertical; min-height: 96px; line-height: 1.65; border-bottom: 1px solid rgba(255,255,255,0.10); }
 
-        /* Neon green save button */
-        .btn-onyx {
-            background: #00ff87;
-            color: #000000;
-            border: none;
-            border-radius: 0;
-            font-weight: 700;
-            font-size: 14px;
-            padding: 11px 30px;
-            font-family: 'Inter', sans-serif;
-            transition: background 0.2s;
-            cursor: pointer;
-        }
+    .field-hint { font-size: 11px; color: rgba(255,255,255,0.16); margin-top: 7px; line-height: 1.5; }
+    .field-hint.managed { color: rgba(255,255,255,0.25); font-style: italic; }
 
-        .btn-onyx:hover,
-        .btn-onyx:focus { background: #00e077; color: #000; }
+    .category-wrap { max-width: 260px; }
 
-        /* Secondary cancel button */
-        .btn-secondary-dark {
-            background: transparent;
-            border: 1px solid #2b2b2b;
-            color: #9c9ca4;
-            border-radius: 0;
-            font-size: 14px;
-            padding: 11px 26px;
-            font-family: 'Inter', sans-serif;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
+    /* ── Image preview ───────────────────────────── */
+    .image-preview-wrap {
+        margin-top: 16px; height: 128px; border: 1px dashed rgba(255,255,255,0.07);
+        border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    #imgPreview { width: 100%; height: 100%; object-fit: contain; display: none; }
+    .preview-empty { display: flex; flex-direction: column; align-items: center; gap: 7px; color: rgba(255,255,255,0.10); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .preview-empty i { width: 18px; height: 18px; }
 
-        .btn-secondary-dark:hover { border-color: #555; color: #ffffff; }
+    /* ── Colors section ──────────────────────────── */
+    .color-hint {
+        font-size: 12px; color: rgba(255,255,255,0.22); margin-bottom: 18px; line-height: 1.6;
+    }
 
-        /* Back link */
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #9c9ca4;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
+    /* Color chip swatches */
+    .color-swatches { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
 
-        .back-link:hover { color: #ffffff; }
+    .swatch-chip {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 6px 14px 6px 8px; border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: transparent; color: rgba(255,255,255,0.42);
+        font-size: 12px; font-weight: 500; font-family: 'Inter', sans-serif;
+        cursor: pointer; text-decoration: none;
+        transition: border-color 0.15s, color 0.15s, background 0.15s;
+        white-space: nowrap;
+    }
+    .swatch-chip:hover { border-color: rgba(255,255,255,0.22); color: rgba(255,255,255,0.75); }
 
-        /* Alert box */
-        .alert-panel {
-            border-radius: 0;
-            padding: 13px 18px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+    .swatch-dot {
+        width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,0.12);
+    }
 
-        .alert-success-dark {
-            background: rgba(0, 255, 135, 0.07);
-            border: 1px solid rgba(0, 255, 135, 0.25);
-            color: #00ff87;
-        }
+    .swatch-chip.active {
+        border-color: rgba(255,255,255,0.30);
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.88);
+    }
+    .swatch-chip.active:hover { background: rgba(255,255,255,0.09); }
 
-        .alert-error-dark {
-            background: rgba(255, 68, 68, 0.07);
-            border: 1px solid rgba(255, 68, 68, 0.25);
-            color: #ff4444;
-        }
+    .swatch-stock {
+        font-size: 10px; color: rgba(255,255,255,0.35);
+        background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 10px;
+        margin-left: 2px;
+    }
 
-        /* Image preview placeholder */
-        .image-placeholder {
-            background: #0d0d0d;
-            border: 2px dashed #2b2b2b;
-            border-radius: 0;
-            height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #444;
-            font-size: 13px;
-            gap: 8px;
-            margin-top: 8px;
-        }
+    /* Color variants table */
+    .cv-table { width: 100%; border-collapse: collapse; }
+    .cv-table th {
+        text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+        text-transform: uppercase; color: rgba(255,255,255,0.22);
+        padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .cv-table td { padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+    .cv-table tr:last-child td { border-bottom: none; }
+    .cv-table tbody tr:hover td { background: rgba(255,255,255,0.015); }
 
-        /* Stock warning */
-        .stock-warning { color: #fbbf24; font-size: 12px; margin-top: 5px; }
-    </style>
+    .cv-color-cell { display: flex; align-items: center; gap: 9px; }
+    .cv-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0; }
+    .cv-name { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.80); }
+
+    .cv-input {
+        background: transparent; border: none;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        color: #fff; font-size: 13px; font-family: 'Inter', sans-serif;
+        padding: 4px 0; width: 90px; outline: none; transition: border-color 0.15s;
+    }
+    .cv-input:focus { border-bottom-color: rgba(255,255,255,0.40); }
+
+    .cv-save-btn {
+        background: rgba(255,255,255,0.88); color: #0d0d0f;
+        border: none; border-radius: 5px; font-size: 11px; font-weight: 600;
+        padding: 5px 14px; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.12s;
+    }
+    .cv-save-btn:hover { opacity: 0.80; }
+
+    /* ── Action bar ──────────────────────────────── */
+    .form-actions {
+        display: flex; align-items: center; gap: 18px;
+        padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 8px;
+    }
+    .btn-save {
+        display: inline-flex; align-items: center; gap: 6px; padding: 9px 22px;
+        background: #ffffff; color: #000; border: none; border-radius: 5px;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+        cursor: pointer; transition: background 0.15s; font-family: inherit;
+    }
+    .btn-save:hover { background: rgba(255,255,255,0.82); }
+    .btn-cancel { font-size: 12px; color: rgba(255,255,255,0.26); text-decoration: none; letter-spacing: 0.04em; transition: color 0.15s; }
+    .btn-cancel:hover { color: rgba(255,255,255,0.62); text-decoration: none; }
+    .required-note { margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.16); letter-spacing: 0.04em; }
+
+    /* ── Light mode ──────────────────────────────── */
+    html[data-theme="light"] .page-title    { color: #0d0d0f; }
+    html[data-theme="light"] .page-subtitle { color: rgba(0,0,0,0.35); }
+    html[data-theme="light"] .section-label { color: rgba(0,0,0,0.22); border-bottom-color: rgba(0,0,0,0.06); }
+    html[data-theme="light"] .field-label   { color: rgba(0,0,0,0.30); }
+    html[data-theme="light"] .field-input, html[data-theme="light"] .field-select, html[data-theme="light"] .field-textarea { color: #0d0d0f; border-bottom-color: rgba(0,0,0,0.10); }
+    html[data-theme="light"] .field-input:focus, html[data-theme="light"] .field-select:focus, html[data-theme="light"] .field-textarea:focus { border-bottom-color: rgba(0,0,0,0.38); }
+    html[data-theme="light"] .field-input::placeholder, html[data-theme="light"] .field-textarea::placeholder { color: rgba(0,0,0,0.18); }
+    html[data-theme="light"] .field-hint   { color: rgba(0,0,0,0.22); }
+    html[data-theme="light"] .field-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='rgba(0,0,0,0.30)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); color: rgba(0,0,0,0.75); }
+    html[data-theme="light"] .field-select option { background: #fff; color: #0d0d0f; }
+    html[data-theme="light"] .image-preview-wrap { border-color: rgba(0,0,0,0.08); }
+    html[data-theme="light"] .preview-empty { color: rgba(0,0,0,0.12); }
+    html[data-theme="light"] .form-actions { border-top-color: rgba(0,0,0,0.06); }
+    html[data-theme="light"] .btn-save     { background: #0d0d0f; color: #fff; }
+    html[data-theme="light"] .btn-save:hover { background: #2a2a2a; }
+    html[data-theme="light"] .btn-cancel   { color: rgba(0,0,0,0.28); }
+    html[data-theme="light"] .btn-cancel:hover { color: rgba(0,0,0,0.60); }
+    html[data-theme="light"] .required-note { color: rgba(0,0,0,0.20); }
+    html[data-theme="light"] .color-hint   { color: rgba(0,0,0,0.30); }
+    html[data-theme="light"] .swatch-chip  { border-color: rgba(0,0,0,0.10); color: rgba(0,0,0,0.45); }
+    html[data-theme="light"] .swatch-chip:hover { border-color: rgba(0,0,0,0.25); color: rgba(0,0,0,0.75); }
+    html[data-theme="light"] .swatch-chip.active { border-color: rgba(0,0,0,0.30); background: rgba(0,0,0,0.05); color: rgba(0,0,0,0.80); }
+    html[data-theme="light"] .swatch-dot   { border-color: rgba(0,0,0,0.12); }
+    html[data-theme="light"] .swatch-stock { color: rgba(0,0,0,0.38); background: rgba(0,0,0,0.06); }
+    html[data-theme="light"] .cv-table th  { color: rgba(0,0,0,0.22); border-bottom-color: rgba(0,0,0,0.06); }
+    html[data-theme="light"] .cv-table td  { border-bottom-color: rgba(0,0,0,0.04); }
+    html[data-theme="light"] .cv-name  { color: rgba(0,0,0,0.75); }
+    html[data-theme="light"] .cv-dot   { border-color: rgba(0,0,0,0.12); }
+    html[data-theme="light"] .cv-input { color: #0d0d0f; border-bottom-color: rgba(0,0,0,0.10); }
+    html[data-theme="light"] .cv-input:focus { border-bottom-color: rgba(0,0,0,0.38); }
+    html[data-theme="light"] .cv-save-btn { background: #0d0d0f; color: #fff; }
+</style>
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
-    <%-- ======================================================
-         PAGE HEADER
-    ====================================================== --%>
-    <div class="d-flex justify-content-between align-items-start mb-4">
+    <div class="form-header">
         <div>
-            <h1 class="page-title">
-                <asp:Literal ID="litPageTitle" runat="server" Text="Add New Product" />
-            </h1>
-            <p class="page-subtitle">
-                <asp:Literal ID="litPageSubtitle" runat="server"
-                    Text="Fill in the details below to add a new product to the catalog." />
-            </p>
+            <h1 class="page-title"><asp:Literal ID="litPageTitle" runat="server" Text="Add New Product" /></h1>
+            <p class="page-subtitle"><asp:Literal ID="litPageSubtitle" runat="server" Text="Fill in the details below to add a new product." /></p>
         </div>
-        <a href="onyx_admin_products.aspx" class="back-link">
-            <i data-lucide="arrow-left" style="width:15px;height:15px;"></i> Back to Products
-        </a>
+        <asp:HyperLink ID="lnkBack" runat="server" CssClass="back-link" NavigateUrl="onyx_admin_products.aspx">
+            <i data-lucide="arrow-left"></i> Back
+        </asp:HyperLink>
     </div>
 
-    <%-- ======================================================
-         ALERT PANEL (success / error messages)
-    ====================================================== --%>
     <asp:Panel ID="pnlAlert" runat="server" Visible="false">
-        <div class="alert-panel">
-            <i data-lucide="check-circle" style="width:16px;height:16px;flex-shrink:0;"></i>
-            <asp:Literal ID="litAlertMessage" runat="server" />
-        </div>
+        <asp:Literal ID="litAlertMessage" runat="server" />
     </asp:Panel>
 
-    <%-- ======================================================
-         MAIN FORM PANEL
-    ====================================================== --%>
-    <div class="admin-panel">
+    <div class="form-body">
 
-        <div class="row g-4">
-
-            <%-- Product Name --%>
-            <div class="col-12 col-md-6">
-                <label class="form-label">Product Name <span class="req">*</span></label>
-                <asp:TextBox ID="txtName" runat="server" CssClass="form-control"
-                    placeholder="e.g. Viper V2 Pro" MaxLength="100" />
-                <div class="field-hint">Max 100 characters. This is shown on the product listing page.</div>
-            </div>
-
-            <%-- Brand --%>
-            <div class="col-12 col-md-6">
-                <label class="form-label">Brand</label>
-                <asp:TextBox ID="txtBrand" runat="server" CssClass="form-control"
-                    placeholder="e.g. Razer" MaxLength="50" />
-                <div class="field-hint">Manufacturer or brand name.</div>
-            </div>
-
-            <%-- Category --%>
-            <div class="col-12 col-md-4">
-                <label class="form-label">Category <span class="req">*</span></label>
-                <asp:DropDownList ID="ddlCategory" runat="server" CssClass="form-select">
-                    <asp:ListItem Value=""        Text="— Select Category —" />
-                    <asp:ListItem Value="Mouse"   Text="Mouse" />
-                    <asp:ListItem Value="Keyboard" Text="Keyboard" />
-                    <asp:ListItem Value="Headset" Text="Headset" />
-                    <asp:ListItem Value="Monitor" Text="Monitor" />
-                    <asp:ListItem Value="Chair"   Text="Chair" />
-                </asp:DropDownList>
-            </div>
-
-            <%-- Price --%>
-            <div class="col-12 col-md-4">
-                <label class="form-label">Price (RM) <span class="req">*</span></label>
-                <asp:TextBox ID="txtPrice" runat="server" CssClass="form-control"
-                    placeholder="0.00" TextMode="Number" />
-                <div class="field-hint">Enter price in Malaysian Ringgit (MYR).</div>
-            </div>
-
-            <%-- Stock Quantity --%>
-            <div class="col-12 col-md-4">
-                <label class="form-label">Stock Quantity <span class="req">*</span></label>
-                <asp:TextBox ID="txtStock" runat="server" CssClass="form-control"
-                    placeholder="0" TextMode="Number" />
-                <div class="field-hint">Set to 0 to mark product as out of stock.</div>
-            </div>
-
-            <%-- Description --%>
-            <div class="col-12">
-                <label class="form-label">Description</label>
-                <asp:TextBox ID="txtDescription" runat="server" CssClass="form-control"
-                    TextMode="MultiLine" Rows="5"
-                    placeholder="Describe the product — key features, compatibility, materials, etc."
-                    MaxLength="2000" />
-                <div class="field-hint">Max 2,000 characters. Supports plain text only.</div>
-            </div>
-
-            <%-- Image URL (S3) --%>
-            <div class="col-12">
-                <label class="form-label">Image URL (S3)</label>
-                <asp:TextBox ID="txtImageUrl" runat="server" CssClass="form-control"
-                    placeholder="https://onyx-assets.s3.ap-southeast-1.amazonaws.com/products/..." />
-                <div class="field-hint">
-                    Upload the image to the S3 bucket <strong style="color:#fff;">onyx-assets</strong>
-                    and paste the full URL here. Leave blank to show the ONYX placeholder.
+        <%-- Product Info --%>
+        <div class="form-section">
+            <div class="section-label">Product Info</div>
+            <div class="field-row fr-2">
+                <div class="field-group">
+                    <label class="field-label">Name <span class="req">*</span></label>
+                    <asp:TextBox ID="txtName" runat="server" CssClass="field-input" placeholder="e.g. Viper V2 Pro" MaxLength="100" />
+                    <div class="field-hint">Max 100 characters.</div>
                 </div>
-                <div class="image-placeholder">
-                    <i data-lucide="image" style="width:18px;height:18px;"></i>
-                    Image preview will appear here when a URL is entered
+                <div class="field-group">
+                    <label class="field-label">Brand</label>
+                    <asp:TextBox ID="txtBrand" runat="server" CssClass="field-input" placeholder="e.g. Razer" MaxLength="50" />
                 </div>
             </div>
-
+            <div class="field-row fr-1">
+                <div class="field-group category-wrap">
+                    <label class="field-label">Category <span class="req">*</span></label>
+                    <asp:DropDownList ID="ddlCategory" runat="server" CssClass="field-select">
+                        <asp:ListItem Value=""         Text="Select category" />
+                        <asp:ListItem Value="Mouse"    Text="Mouse" />
+                        <asp:ListItem Value="Keyboard" Text="Keyboard" />
+                        <asp:ListItem Value="Headset"  Text="Headset" />
+                        <asp:ListItem Value="Monitor"  Text="Monitor" />
+                        <asp:ListItem Value="Chair"    Text="Chair" />
+                    </asp:DropDownList>
+                </div>
+            </div>
         </div>
 
-        <hr class="divider" />
-
-        <%-- Action Buttons --%>
-        <div class="d-flex align-items-center gap-3">
-            <asp:Button ID="btnSave" runat="server" Text="Save Product"
-                CssClass="btn btn-onyx" OnClick="btnSave_Click" />
-            <a href="onyx_admin_products.aspx" class="btn-secondary-dark">Cancel</a>
-            <div style="margin-left:auto; font-size:12px; color:#4a4a4a;">
-                <span class="req">*</span> Required fields
+        <%-- Pricing & Inventory --%>
+        <div class="form-section">
+            <div class="section-label">Pricing &amp; Inventory</div>
+            <div class="field-row fr-2">
+                <div class="field-group">
+                    <label class="field-label">Price (RM) <span class="req">*</span></label>
+                    <asp:TextBox ID="txtPrice" runat="server" CssClass="field-input" placeholder="0.00" TextMode="Number" />
+                    <div class="field-hint">Malaysian Ringgit (MYR).</div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Stock Qty <span class="req">*</span></label>
+                    <asp:TextBox ID="txtStock" runat="server" CssClass="field-input" placeholder="0" TextMode="Number" />
+                    <asp:Label ID="lblStockHint" runat="server" CssClass="field-hint" Text="Set 0 to mark as out of stock." />
+                </div>
             </div>
+        </div>
+
+        <%-- Colors — edit mode only (wrapped in UpdatePanel so chip clicks don't scroll to top) --%>
+        <asp:UpdatePanel ID="upColors" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
+        <ContentTemplate>
+        <asp:Panel ID="pnlColors" runat="server" Visible="false">
+            <div class="form-section">
+                <div class="section-label">Colors</div>
+                <p class="color-hint">
+                    Click a color to add it as a variant. Click an active color to remove it.<br />
+                    Set the stock per color in the table below.
+                </p>
+
+                <%-- Color chip row --%>
+                <div class="color-swatches">
+                    <asp:Repeater ID="ColorSwatchRepeater" runat="server"
+                        OnItemCommand="ColorSwatchRepeater_ItemCommand">
+                        <ItemTemplate>
+                            <asp:LinkButton runat="server"
+                                CommandName="ToggleColor"
+                                CommandArgument='<%# Eval("Name") %>'
+                                CssClass='<%# "swatch-chip " + ((bool)Eval("IsActive") ? "active" : "") %>'
+                                CausesValidation="false">
+                                <span class="swatch-dot" style='<%# "background:" + Eval("Hex") %>'></span>
+                                <%# Eval("Name") %>
+                                <%# (bool)Eval("IsActive") ? "<span class=\"swatch-stock\">" + Eval("StockQty") + "</span>" : "" %>
+                            </asp:LinkButton>
+                        </ItemTemplate>
+                    </asp:Repeater>
+                </div>
+
+                <%-- Active color variants — stock editing --%>
+                <asp:Panel ID="pnlColorVariants" runat="server" Visible="false">
+                    <asp:Repeater ID="ColorVariantsRepeater" runat="server"
+                        OnItemCommand="ColorVariantsRepeater_ItemCommand">
+                        <HeaderTemplate>
+                            <table class="cv-table">
+                                <thead><tr>
+                                    <th>Color</th>
+                                    <th style="width:130px">Price (RM)</th>
+                                    <th style="width:110px">Stock</th>
+                                    <th style="width:80px"></th>
+                                </tr></thead>
+                                <tbody>
+                        </HeaderTemplate>
+                        <ItemTemplate>
+                            <tr>
+                                <td>
+                                    <div class="cv-color-cell">
+                                        <span class="cv-dot" style='<%# "background:" + GetColorHex(Eval("VariantValue").ToString()) %>'></span>
+                                        <span class="cv-name"><%# Server.HtmlEncode(Eval("VariantValue").ToString()) %></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <asp:TextBox ID="txtCvPrice" runat="server"
+                                        Text='<%# string.Format("{0:N2}", Eval("VariantPrice")) %>'
+                                        CssClass="cv-input" data-gramm="false" data-gramm_editor="false" />
+                                </td>
+                                <td>
+                                    <asp:TextBox ID="txtCvStock" runat="server"
+                                        Text='<%# Eval("StockQty") %>'
+                                        CssClass="cv-input" data-gramm="false" data-gramm_editor="false" />
+                                </td>
+                                <td>
+                                    <asp:Button ID="btnSaveCv" runat="server"
+                                        CommandName="SaveColor"
+                                        CommandArgument='<%# Eval("ProductVariantId") %>'
+                                        Text="Save" CssClass="cv-save-btn" CausesValidation="false" />
+                                </td>
+                            </tr>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                                </tbody>
+                            </table>
+                        </FooterTemplate>
+                    </asp:Repeater>
+                </asp:Panel>
+
+            </div>
+        </asp:Panel>
+        </ContentTemplate>
+        </asp:UpdatePanel>
+
+        <%-- Details --%>
+        <div class="form-section">
+            <div class="section-label">Details</div>
+            <div class="field-group">
+                <label class="field-label">Description</label>
+                <asp:TextBox ID="txtDescription" runat="server" CssClass="field-textarea"
+                    TextMode="MultiLine" Rows="5"
+                    placeholder="Key features, compatibility, materials..."
+                    MaxLength="2000" />
+                <div class="field-hint">Max 2,000 characters. Plain text only.</div>
+            </div>
+        </div>
+
+        <%-- Media --%>
+        <div class="form-section">
+            <div class="section-label">Media</div>
+            <div class="field-group">
+                <label class="field-label">Image URL</label>
+                <asp:TextBox ID="txtImageUrl" runat="server" CssClass="field-input"
+                    placeholder="https://..." />
+                <div class="field-hint">Paste the full S3 URL. Leave blank to show the ONYX placeholder.</div>
+                <div class="image-preview-wrap">
+                    <img id="imgPreview" src="" alt="Image preview" />
+                    <div class="preview-empty" id="previewEmpty">
+                        <i data-lucide="image"></i>
+                        No image
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%-- Actions --%>
+        <div class="form-actions">
+            <asp:Button ID="btnSave" runat="server" Text="Save Product"
+                CssClass="btn-save" OnClick="btnSave_Click" />
+            <a href="onyx_admin_products.aspx" class="btn-cancel">Cancel</a>
+            <span class="required-note"><span class="req">*</span> Required</span>
         </div>
 
     </div>
+
+    <script>
+        // Image URL live preview
+        (function () {
+            var urlInput = document.getElementById('<%= txtImageUrl.ClientID %>');
+            var imgEl    = document.getElementById('imgPreview');
+            var emptyEl  = document.getElementById('previewEmpty');
+            function updatePreview() {
+                var url = urlInput ? urlInput.value.trim() : '';
+                if (url) { imgEl.src = url; imgEl.style.display = 'block'; emptyEl.style.display = 'none'; }
+                else      { imgEl.style.display = 'none'; emptyEl.style.display = 'flex'; }
+            }
+            if (urlInput) { urlInput.addEventListener('input', updatePreview); updatePreview(); }
+        })();
+    </script>
 
 </asp:Content>

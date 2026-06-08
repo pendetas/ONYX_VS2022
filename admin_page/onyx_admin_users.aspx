@@ -1,306 +1,390 @@
-﻿<%@ Page Title="Users" Language="C#" MasterPageFile="~/admin_page/admin.Master"
+<%@ Page Title="Users" Language="C#" MasterPageFile="~/admin_page/admin.Master"
     AutoEventWireup="true" CodeBehind="onyx_admin_users.aspx.cs"
     Inherits="ONYX_DDAC.admin_page.onyx_admin_users" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #0d0d0d !important; }
+<style>
+    /* ── Page header ─────────────────────────────── */
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 32px;
+    }
 
-        .admin-panel {
-            background: #1a1a1a;
-            border: 1px solid #2b2b2b;
-            border-radius: 0;
-        }
+    .page-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
 
-        .page-title   { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 0; }
-        .page-subtitle { font-size: 13px; color: #9c9ca4; margin-top: 4px; }
+    .page-subtitle {
+        font-size: 12px;
+        color: rgba(255,255,255,0.28);
+        margin-top: 5px;
+    }
 
-        /* ── STAT STRIP ──────────────────────────────────────────── */
-        .stat-strip {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background: #2b2b2b;
-            border: 1px solid #2b2b2b;
-            margin-bottom: 20px;
-        }
+    .header-count {
+        font-size: 12px;
+        color: rgba(255,255,255,0.22);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+    }
 
-        .stat-box {
-            background: #1a1a1a;
-            padding: 16px 20px;
-            text-align: center;
-        }
+    .header-count i { width: 13px; height: 13px; }
 
-        .stat-value { font-size: 20px; font-weight: 700; color: #ffffff; }
-        .stat-label { font-size: 12px; color: #9c9ca4; margin-top: 3px; }
+    /* ── Stat strip ──────────────────────────────── */
+    .stat-strip {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+    }
 
-        /* ── SEARCH / FILTER BAR ─────────────────────────────────── */
-        .filter-bar {
-            padding: 14px 20px;
-            border-bottom: 1px solid #2b2b2b;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+    .stat-box {
+        flex: 1;
+        min-width: 130px;
+        background: #111113;
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 10px;
+        padding: 16px 20px;
+    }
 
-        .search-input {
-            background: #0d0d0d;
-            border: 1px solid #2b2b2b;
-            border-radius: 0;
-            color: #ffffff;
-            padding: 8px 14px;
-            font-size: 13px;
-            font-family: 'Inter', sans-serif;
-            width: 260px;
-        }
+    .stat-value {
+        font-size: 22px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.02em;
+    }
 
-        .search-input:focus { outline: none; border-color: #00ff87; }
-        .search-input::placeholder { color: #484848; }
+    .stat-label {
+        font-size: 10px;
+        color: rgba(255,255,255,0.26);
+        margin-top: 5px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
 
-        .role-filter {
-            background: #0d0d0d;
-            border: 1px solid #2b2b2b;
-            border-radius: 0;
-            color: #ffffff;
-            padding: 8px 12px;
-            font-size: 13px;
-            font-family: 'Inter', sans-serif;
-        }
+    /* ── Toolbar ─────────────────────────────────── */
+    .toolbar {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        margin-bottom: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+        padding-bottom: 0;
+        flex-wrap: wrap;
+    }
 
-        .role-filter:focus { outline: none; border-color: #00ff87; }
-        .role-filter option { background: #1a1a1a; }
+    .search-wrap {
+        max-width: 260px;
+        flex: 1;
+        padding-bottom: 10px;
+    }
 
-        /* ── USERS TABLE ─────────────────────────────────────────── */
-        .users-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
+    .search-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        padding: 7px 0;
+        transition: border-color 0.18s;
+    }
 
-        .users-table thead th {
-            background: #141414;
-            color: #9c9ca4;
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            padding: 13px 20px;
-            border-bottom: 1px solid #2b2b2b;
-            white-space: nowrap;
-        }
+    .search-line:focus-within { border-color: rgba(255,255,255,0.38); }
+    .search-line i { width: 13px; height: 13px; color: rgba(255,255,255,0.22); flex-shrink: 0; }
 
-        .users-table tbody td {
-            padding: 14px 20px;
-            border-bottom: 1px solid #202020;
-            color: #ffffff;
-            vertical-align: middle;
-        }
+    .search-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #fff;
+        font-size: 13px;
+        font-family: inherit;
+    }
 
-        .users-table tbody tr:last-child td { border-bottom: none; }
-        .users-table tbody tr:hover td      { background: rgba(255,255,255,0.02); }
+    .search-input::placeholder { color: rgba(255,255,255,0.16); }
 
-        /* Avatar + name cell */
-        .user-cell { display: flex; align-items: center; gap: 12px; }
+    /* Role select — underline style */
+    .role-select {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        color: rgba(255,255,255,0.45);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 7px 20px 7px 0;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-family: inherit;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 2px center;
+        margin-bottom: 10px;
+    }
 
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            flex-shrink: 0;
-            letter-spacing: 0.5px;
-        }
+    .role-select option { background: #111113; color: #fff; }
 
-        .avatar-admin    { background: rgba(167, 139, 250, 0.18); color: #a78bfa; }
-        .avatar-customer { background: rgba(96,  165, 250, 0.18); color: #60a5fa; }
+    .toolbar-right {
+        margin-left: auto;
+        font-size: 11px;
+        color: rgba(255,255,255,0.20);
+        letter-spacing: 0.04em;
+        padding-bottom: 12px;
+    }
 
-        .user-name  { font-weight: 600; font-size: 14px; }
-        .user-email { font-size: 12px; color: #9c9ca4; margin-top: 2px; }
+    .toolbar-right strong { color: rgba(255,255,255,0.55); }
 
-        /* Role badge */
-        .role-badge {
-            display: inline-block;
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: capitalize;
-        }
+    /* ── Users table ─────────────────────────────── */
+    .users-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
 
-        .role-admin    { background: rgba(167, 139, 250, 0.12); color: #a78bfa; }
-        .role-customer { background: rgba(96,  165, 250, 0.12); color: #60a5fa; }
+    .users-table thead th {
+        color: rgba(255,255,255,0.26);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.10em;
+        padding: 16px 14px 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        white-space: nowrap;
+        text-align: left;
+    }
 
-        /* Spend cell */
-        .spent-value { font-weight: 600; color: #00ff87; }
-        .spent-dash  { color: #444; }
+    .users-table thead th:first-child { padding-left: 0; }
 
-        .date-cell  { color: #9c9ca4; font-size: 13px; }
-        .phone-cell { color: #9c9ca4; font-size: 13px; }
+    .users-table tbody td {
+        padding: 13px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        color: #fff;
+        vertical-align: middle;
+    }
 
-        /* ── SUMMARY BAR ─────────────────────────────────────────── */
-        .summary-bar {
-            padding: 12px 20px;
-            border-top: 1px solid #2b2b2b;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #9c9ca4;
-        }
-    </style>
+    .users-table tbody td:first-child { padding-left: 0; }
+    .users-table tbody tr:last-child td { border-bottom: none; }
+    .users-table tbody tr:hover td { background: rgba(255,255,255,0.018); }
+
+    /* Avatar + name */
+    .user-cell { display: flex; align-items: center; gap: 12px; }
+
+    .user-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        flex-shrink: 0;
+        letter-spacing: 0.5px;
+    }
+
+    .avatar-admin    { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55); }
+    .avatar-customer { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.40); }
+
+    .user-name  { font-weight: 600; font-size: 13px; }
+    .user-email { font-size: 11px; color: rgba(255,255,255,0.30); margin-top: 2px; }
+
+    /* Role badge */
+    .role-badge {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 3px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .role-admin    { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.60); }
+    .role-customer { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.38); }
+
+    .date-cell, .phone-cell { color: rgba(255,255,255,0.32); }
+
+    .spent-value { font-weight: 600; color: rgba(255,255,255,0.85); }
+    .spent-dash  { color: rgba(255,255,255,0.18); }
+
+    /* ── Summary bar ─────────────────────────────── */
+    .summary-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        margin-top: 4px;
+        font-size: 12px;
+        color: rgba(255,255,255,0.22);
+    }
+
+    .summary-bar strong { color: rgba(255,255,255,0.60); }
+
+    .btn-view {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        color: rgba(255,255,255,0.30);
+        text-decoration: none;
+        letter-spacing: 0.04em;
+        transition: color 0.15s;
+        white-space: nowrap;
+    }
+
+    .btn-view i { width: 12px; height: 12px; }
+    .btn-view:hover { color: rgba(255,255,255,0.75); text-decoration: none; }
+</style>
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
-    <%-- ======================================================
-         PAGE HEADER
-    ====================================================== --%>
-    <div class="d-flex justify-content-between align-items-start mb-4">
+    <%-- Header --%>
+    <div class="page-header">
         <div>
-            <h1 class="page-title">User Management</h1>
-            <p class="page-subtitle">View and manage all registered customers and admins.</p>
+            <div class="page-title">Users</div>
+            <div class="page-subtitle">View and manage all registered customers and admins.</div>
         </div>
-        <div style="font-size:13px; color:#9c9ca4; padding-top:5px; display:flex; align-items:center; gap:6px;">
-            <i data-lucide="users" style="width:14px;height:14px;"></i>
-            <asp:Literal ID="litUserCountHeader" runat="server" Text="0" /> registered accounts
+        <div class="header-count">
+            <i data-lucide="users"></i>
+            <asp:Literal ID="litUserCountHeader" runat="server" Text="0" /> accounts
         </div>
     </div>
 
-    <%-- ======================================================
-         STAT STRIP
-    ====================================================== --%>
-    <div class="stat-strip mb-4">
+    <%-- Stat strip --%>
+    <div class="stat-strip">
         <div class="stat-box">
-            <div class="stat-value"><asp:Literal ID="litStatTotal"    runat="server" Text="0" /></div>
-            <div class="stat-label">Total Users</div>
+            <div class="stat-value"><asp:Literal ID="litStatTotal" runat="server" Text="0" /></div>
+            <div class="stat-label">Total</div>
         </div>
         <div class="stat-box">
-            <div class="stat-value" style="color:#a78bfa;">
-                <asp:Literal ID="litStatAdmins" runat="server" Text="0" />
-            </div>
+            <div class="stat-value"><asp:Literal ID="litStatAdmins" runat="server" Text="0" /></div>
             <div class="stat-label">Admins</div>
         </div>
         <div class="stat-box">
-            <div class="stat-value" style="color:#60a5fa;">
-                <asp:Literal ID="litStatCustomers" runat="server" Text="0" />
-            </div>
+            <div class="stat-value"><asp:Literal ID="litStatCustomers" runat="server" Text="0" /></div>
             <div class="stat-label">Customers</div>
         </div>
         <div class="stat-box">
-            <div class="stat-value" style="color:#00ff87;">
-                <asp:Literal ID="litStatRevenue" runat="server" Text="RM 0" />
-            </div>
-            <div class="stat-label">Platform Revenue</div>
+            <div class="stat-value"><asp:Literal ID="litStatRevenue" runat="server" Text="RM 0" /></div>
+            <div class="stat-label">Revenue</div>
         </div>
     </div>
 
-    <%-- ======================================================
-         USERS PANEL
-    ====================================================== --%>
-    <div class="admin-panel">
-
-        <%-- Filter Bar --%>
-        <div class="filter-bar">
-            <input type="text" class="search-input" id="userSearch"
-                   placeholder="Search by name, email, or phone..."
-                   oninput="searchUsers(this.value)">
-            <select class="role-filter" id="roleFilter"
-                    onchange="filterByRole(this.value)">
-                <option value="all">All Roles</option>
-                <option value="admin">Admin</option>
-                <option value="customer">Customer</option>
-            </select>
-            <div style="margin-left:auto; font-size:13px; color:#9c9ca4;">
-                Showing <strong id="visibleCount" style="color:#fff;">
-                    <asp:Literal ID="litVisibleCount" runat="server" Text="0" />
-                </strong>
-                of <asp:Literal ID="litTotalCount" runat="server" Text="0" /> users
+    <%-- Toolbar --%>
+    <div class="toolbar">
+        <div class="search-wrap">
+            <div class="search-line">
+                <i data-lucide="search"></i>
+                <input type="text" class="search-input" id="userSearch"
+                       placeholder="Search name, email, phone..." oninput="searchUsers(this.value)" />
             </div>
         </div>
+        <select class="role-select" id="roleFilter" onchange="filterByRole(this.value)">
+            <option value="all">All Roles</option>
+            <option value="admin">Admin</option>
+            <option value="customer">Customer</option>
+        </select>
+        <div class="toolbar-right">
+            <strong id="visibleCount"><asp:Literal ID="litVisibleCount" runat="server" Text="0" /></strong>
+            of <asp:Literal ID="litTotalCount" runat="server" Text="0" /> users
+        </div>
+    </div>
 
-        <%-- Users Table --%>
-        <table class="users-table" id="usersTable">
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Role</th>
-                    <th>Phone</th>
-                    <th>Join Date</th>
-                    <th>Total Orders</th>
-                    <th>Total Spent</th>
-                </tr>
-            </thead>
-            <tbody>
-                <asp:Repeater ID="UsersRepeater" runat="server">
-                    <ItemTemplate>
-                        <tr class="user-row" data-role="<%# Eval("RoleKey") %>">
-                            <td>
-                                <div class="user-cell">
-                                    <div class="user-avatar avatar-<%# Eval("RoleKey") %>">
-                                        <%# Eval("Initials") %>
-                                    </div>
-                                    <div>
-                                        <div class="user-name"><%# Eval("FullName") %></div>
-                                        <div class="user-email"><%# Eval("Email") %></div>
-                                    </div>
+    <%-- Users table --%>
+    <table class="users-table" id="usersTable">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Phone</th>
+                <th>Joined</th>
+                <th>Orders</th>
+                <th>Spent</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <asp:Repeater ID="UsersRepeater" runat="server">
+                <ItemTemplate>
+                    <tr class="user-row" data-role="<%# Eval("RoleKey") %>">
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar avatar-<%# Eval("RoleKey") %>">
+                                    <%# Eval("Initials") %>
                                 </div>
-                            </td>
-                            <td>
-                                <span class="role-badge role-<%# Eval("RoleKey") %>">
-                                    <%# Eval("Role") %>
-                                </span>
-                            </td>
-                            <td class="phone-cell"><%# Eval("Phone") %></td>
-                            <td class="date-cell"><%# Eval("JoinDate") %></td>
-                            <td style="color:#9c9ca4; text-align:center;">
-                                <%# Eval("TotalOrders") %>
-                            </td>
-                            <td>
-                                <span class='<%# Eval("SpentClass") %>'>
-                                    <%# Eval("TotalSpent") %>
-                                </span>
-                            </td>
-                        </tr>
-                    </ItemTemplate>
-                </asp:Repeater>
-            </tbody>
-        </table>
+                                <div>
+                                    <div class="user-name"><%# Eval("FullName") %></div>
+                                    <div class="user-email"><%# Eval("Email") %></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="role-badge role-<%# Eval("RoleKey") %>">
+                                <%# Eval("Role") %>
+                            </span>
+                        </td>
+                        <td class="phone-cell"><%# Eval("Phone") %></td>
+                        <td class="date-cell"><%# Eval("JoinDate") %></td>
+                        <td style="color:rgba(255,255,255,0.32); text-align:center;">
+                            <%# Eval("TotalOrders") %>
+                        </td>
+                        <td>
+                            <span class="<%# Eval("SpentClass") %>"><%# Eval("TotalSpent") %></span>
+                        </td>
+                        <td>
+                            <a href="onyx_admin_user_detail.aspx?id=<%# Eval("Id") %>" class="btn-view">
+                                <i data-lucide="eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                </ItemTemplate>
+            </asp:Repeater>
+        </tbody>
+    </table>
 
-        <%-- Summary Bar --%>
-        <div class="summary-bar">
-            <span>
-                <i data-lucide="info" style="width:13px;height:13px;margin-right:5px;"></i>
-                Total Spent column shows cumulative spend across all completed orders.
-            </span>
-            <span>
-                New this month: <strong style="color:#00ff87; margin-left:4px;">
-                    <asp:Literal ID="litNewThisMonth" runat="server" Text="0" />
-                </strong>
-            </span>
-        </div>
+    <%-- Summary bar --%>
+    <div class="summary-bar">
+        <span>
+            New this month: <strong><asp:Literal ID="litNewThisMonth" runat="server" Text="0" /></strong>
+        </span>
+        <span>
+            Total revenue across all completed orders shown in stats above.
+        </span>
     </div>
 
-    <%-- ======================================================
-         CLIENT-SIDE SEARCH & FILTER
-    ====================================================== --%>
     <script>
         function searchUsers(q) {
             q = q.toLowerCase();
-            document.querySelectorAll('.user-row').forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            var visible = 0;
+            document.querySelectorAll('.user-row').forEach(function (row) {
+                var show = row.textContent.toLowerCase().indexOf(q) !== -1;
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
             });
+            document.getElementById('visibleCount').textContent = visible;
         }
 
         function filterByRole(role) {
-            document.querySelectorAll('.user-row').forEach(row => {
-                row.style.display = (role === 'all' || row.dataset.role === role) ? '' : 'none';
+            var visible = 0;
+            document.querySelectorAll('.user-row').forEach(function (row) {
+                var show = role === 'all' || row.dataset.role === role;
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
             });
+            document.getElementById('visibleCount').textContent = visible;
         }
     </script>
 

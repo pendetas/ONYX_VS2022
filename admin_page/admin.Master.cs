@@ -10,7 +10,7 @@ namespace ONYX_DDAC.admin_page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Optional: AuthHelper.RequireAdmin(Page);
+            AuthHelper.RequireAdmin(Page);
             HighlightActiveNavLink();
         }
 
@@ -22,30 +22,34 @@ namespace ONYX_DDAC.admin_page
         {
             string currentPage = System.IO.Path.GetFileName(Request.FilePath).ToLowerInvariant();
 
-            // Map page filenames to their corresponding nav anchor controls.
-            var navMap = new System.Collections.Generic.Dictionary<string, HtmlAnchor>
+            // Main sidebar menu items (no default base class).
+            var menuMap = new System.Collections.Generic.Dictionary<string, HtmlAnchor>
             {
-                { "onyx_admin_dashboard.aspx",      navDashboard   },
-                { "onyx_admin_products.aspx",        navProducts    },
-                { "onyx_admin_products_form.aspx",   navProductForm },
-                { "onyx_admin_orders.aspx",           navOrders      },
-                { "onyx_admin_order_details.aspx",    navOrderDetail },
-                { "onyx_admin_promos.aspx",           navPromos      },
-                { "onyx_admin_users.aspx",            navUsers       }
+                { "onyx_admin_dashboard.aspx", navDashboard },
+                { "onyx_admin_products.aspx",  navProducts  },
+                { "onyx_admin_orders.aspx",    navOrders    },
+                { "onyx_admin_promos.aspx",    navPromos    },
+                { "onyx_admin_users.aspx",     navUsers     }
             };
 
-            foreach (var entry in navMap)
-            {
-                if (entry.Key == currentPage)
-                    entry.Value.Attributes["class"] = "active";
-            }
+            foreach (var anchor in menuMap.Values)
+                anchor.Attributes["class"] = "";
+
+            HtmlAnchor active;
+            if (menuMap.TryGetValue(currentPage, out active))
+                active.Attributes["class"] = "active";
+
+            // Settings link keeps its base class; active is additive.
+            navSettings.Attributes["class"] = currentPage == "onyx_admin_settings.aspx"
+                ? "sidebar-bottom-link active"
+                : "sidebar-bottom-link";
         }
 
         protected void btnLogOut_Click(object sender, EventArgs e)
         {
             Session.Clear();
             FormsAuthentication.SignOut();
-            Response.Redirect("~/auth_page/onyx_login.aspx");
+            Response.Redirect("~/auth_page/onyx_Admin_Login.aspx");
         }
     }
 }
