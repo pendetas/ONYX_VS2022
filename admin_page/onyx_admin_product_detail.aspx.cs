@@ -2,24 +2,20 @@ using System;
 using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.admin_page
 {
     public partial class onyx_admin_product_detail : Page
     {
-        private readonly ProductRepository _repo = new ProductRepository();
+        private readonly ProductService _svc = new ProductService();
 
         private long CurrentProductId
         {
             get { return ViewState["pid"] != null ? (long)ViewState["pid"] : 0L; }
             set { ViewState["pid"] = value; }
         }
-
-        // =====================================================================
-        //  PAGE LIFECYCLE
-        // =====================================================================
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -33,7 +29,6 @@ namespace ONYX_DDAC.admin_page
                 BindProduct(id);
                 BindVariants(id);
 
-                // Post-operation feedback via query string
                 string vmsg = Request.QueryString["vmsg"];
                 if (vmsg == "saved")   ShowVarMsg("Variant updated successfully.", isError: false);
                 if (vmsg == "added")   ShowVarMsg("Variant added successfully.",   isError: false);
@@ -43,13 +38,9 @@ namespace ONYX_DDAC.admin_page
             }
         }
 
-        // =====================================================================
-        //  BIND HELPERS
-        // =====================================================================
-
         private void BindProduct(long id)
         {
-            Product p = _repo.GetProductById(id);
+            Product p = _svc.GetProductById(id);
             if (p == null) { ShowNotFound(); return; }
 
             Page.Title = p.Name + " — ONYX Admin";
@@ -91,7 +82,7 @@ namespace ONYX_DDAC.admin_page
 
         private void BindVariants(long productId)
         {
-            var variants = _repo.GetVariantsByProductId(productId);
+            var variants = _svc.GetVariantsByProductId(productId);
 
             if (variants.Count == 0)
             {
@@ -107,11 +98,7 @@ namespace ONYX_DDAC.admin_page
             }
         }
 
-        // =====================================================================
-        //  VARIANT EVENTS
-        // =====================================================================
-
-        protected void VariantsRepeater_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+        protected void VariantsRepeater_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             long productId = CurrentProductId;
             long variantId;
@@ -128,20 +115,28 @@ namespace ONYX_DDAC.admin_page
                 bool priceOk = decimal.TryParse(txtPrice.Text.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out price);
                 bool stockOk = int.TryParse(txtStock.Text.Trim(), out stock);
 
-                if (!priceOk || price < 0 || !stockOk || stock < 0)
+                if (!priceOk || !stockOk)
                 {
-                    ShowVarMsg("Enter a valid price (e.g. 599.00) and stock (whole number ≥ 0).", isError: true);
+                    ShowVarMsg("Enter a valid price and stock.", isError: true);
                     BindProduct(productId);
                     BindVariants(productId);
                     return;
                 }
 
-                _repo.UpdateVariant(variantId, productId, price, stock);
+                string err = _svc.UpdateVariant(variantId, productId, price, stock);
+                if (err != null)
+                {
+                    ShowVarMsg(err, isError: true);
+                    BindProduct(productId);
+                    BindVariants(productId);
+                    return;
+                }
+
                 Response.Redirect("onyx_admin_product_detail.aspx?id=" + productId + "&vmsg=saved");
             }
             else if (e.CommandName == "DeleteVariant")
             {
-                _repo.DeleteVariant(variantId, productId);
+                _svc.DeleteVariant(variantId, productId);
                 Response.Redirect("onyx_admin_product_detail.aspx?id=" + productId + "&vmsg=deleted");
             }
         }
@@ -159,15 +154,7 @@ namespace ONYX_DDAC.admin_page
             bool priceOk = decimal.TryParse(txtVPrice.Text.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out price);
             bool stockOk = int.TryParse(txtVStock.Text.Trim(), out stock);
 
-            if (string.IsNullOrEmpty(type) || string.IsNullOrEmpty(value))
-            {
-                ShowVarMsg("Type and value are required.", isError: true);
-                BindProduct(productId);
-                BindVariants(productId);
-                return;
-            }
-
-            if (!priceOk || price < 0 || !stockOk || stock < 0)
+            if (!priceOk || !stockOk)
             {
                 ShowVarMsg("Enter a valid price and stock quantity.", isError: true);
                 BindProduct(productId);
@@ -175,13 +162,17 @@ namespace ONYX_DDAC.admin_page
                 return;
             }
 
-            _repo.AddVariant(productId, type, value, price, stock);
+            string err = _svc.AddVariant(productId, type, value, price, stock);
+            if (err != null)
+            {
+                ShowVarMsg(err, isError: true);
+                BindProduct(productId);
+                BindVariants(productId);
+                return;
+            }
+
             Response.Redirect("onyx_admin_product_detail.aspx?id=" + productId + "&vmsg=added");
         }
-
-        // =====================================================================
-        //  HELPERS
-        // =====================================================================
 
         private void ShowVarMsg(string message, bool isError)
         {

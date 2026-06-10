@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Web.UI;
-using ONYX_DDAC.DAL;
-using ONYX_DDAC.Models;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.admin_page
 {
     public partial class onyx_admin_products : Page
     {
-        private readonly ProductRepository _repo = new ProductRepository();
+        private readonly ProductService _svc = new ProductService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -18,8 +16,8 @@ namespace ONYX_DDAC.admin_page
 
         private void BindPage()
         {
-            List<Product> products   = _repo.GetAllProducts();
-            List<string>  categories = _repo.GetDistinctCategories();
+            var products   = _svc.GetAllProducts();
+            var categories = _svc.GetDistinctCategories();
 
             lblCount.Text = products.Count + " product" + (products.Count == 1 ? "" : "s");
 

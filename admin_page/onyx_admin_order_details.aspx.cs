@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Web.UI;
-using ONYX_DDAC.DAL;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.admin_page
 {
     public partial class onyx_admin_order_details : Page
     {
-        private readonly OrderRepository _repo = new OrderRepository();
+        private readonly OrderService _svc = new OrderService();
 
         private long CurrentOrderId
         {
@@ -15,20 +15,13 @@ namespace ONYX_DDAC.admin_page
             set { ViewState["OrderId"] = value; }
         }
 
-        // =====================================================================
-        //  PAGE LIFECYCLE
-        // =====================================================================
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
                 long id;
                 if (!long.TryParse(Request.QueryString["id"], out id) || id <= 0)
-                {
-                    ShowNotFound();
-                    return;
-                }
+                { ShowNotFound(); return; }
 
                 CurrentOrderId = id;
                 BindOrder(id);
@@ -41,19 +34,10 @@ namespace ONYX_DDAC.admin_page
             }
         }
 
-        // =====================================================================
-        //  DATA BINDING
-        // =====================================================================
-
         private void BindOrder(long id)
         {
-            OrderRepository.OrderDetail order = _repo.GetOrderById(id);
-
-            if (order == null)
-            {
-                ShowNotFound();
-                return;
-            }
+            var order = _svc.GetOrderById(id);
+            if (order == null) { ShowNotFound(); return; }
 
             pnlOrderDetail.Visible = true;
             pnlNotFound.Visible    = false;
@@ -61,13 +45,11 @@ namespace ONYX_DDAC.admin_page
             string statusKey = order.Status.ToLower();
             string statusCap = char.ToUpper(order.Status[0]) + order.Status.Substring(1);
 
-            // Header
             litOrderId.Text            = "#ORD-" + order.Id;
             litOrderDate.Text          = order.OrderedAt.ToString("d MMM yyyy, h:mm tt");
             litCustomerNameHeader.Text = Server.HtmlEncode(order.CustomerName);
             lblStatusBadge.Text        = BuildBadge(statusKey, statusCap);
 
-            // Customer info
             litCustName.Text  = Server.HtmlEncode(order.CustomerName);
             litCustEmail.Text = Server.HtmlEncode(order.CustomerEmail);
             litCustPhone.Text = Server.HtmlEncode(order.CustomerPhone);
@@ -75,26 +57,21 @@ namespace ONYX_DDAC.admin_page
                                 ? "—"
                                 : order.CustomerSince.ToString("d MMM yyyy");
 
-            // Shipping address
             if (string.IsNullOrWhiteSpace(order.ShippingAddress))
                 litShippingAddress.Text = "<span style=\"color:rgba(255,255,255,0.28);font-style:italic;\">No address recorded.</span>";
             else
                 litShippingAddress.Text = Server.HtmlEncode(order.ShippingAddress).Replace("\n", "<br/>");
 
-            // Pre-select status dropdown
             ddlStatus.SelectedValue = statusKey;
 
-            // Metadata
             litMetaOrderId.Text = "#ORD-" + order.Id;
             litMetaDate.Text    = order.OrderedAt.ToString("d MMM yyyy, h:mm tt");
             litReceiptKey.Text  = string.IsNullOrEmpty(order.ReceiptS3Key) ? "—" : Server.HtmlEncode(order.ReceiptS3Key);
 
-            // Order items
-            List<OrderRepository.OrderItemDetail> items = _repo.GetOrderItems(id);
+            var items = _svc.GetOrderItems(id);
             OrderItemsRepeater.DataSource = items;
             OrderItemsRepeater.DataBind();
 
-            // Summary — subtotal from items; total from order record
             decimal subtotal = 0;
             foreach (var item in items)
                 subtotal += item.UnitPrice * item.Quantity;
@@ -102,23 +79,23 @@ namespace ONYX_DDAC.admin_page
             litSubtotal.Text = "RM " + subtotal.ToString("N2");
             litTotal.Text    = "RM " + order.TotalAmount.ToString("N2");
 
-            // Timeline
             TimelineRepeater.DataSource = BuildTimeline(statusKey, order.OrderedAt, order.StatusUpdatedAt);
             TimelineRepeater.DataBind();
         }
-
-        // =====================================================================
-        //  EVENT HANDLERS
-        // =====================================================================
 
         protected void btnUpdateStatus_Click(object sender, EventArgs e)
         {
             long id = CurrentOrderId;
             if (id <= 0) return;
 
-            _repo.UpdateStatus(id, ddlStatus.SelectedValue);
+            string err = _svc.UpdateStatus(id, ddlStatus.SelectedValue);
+            if (err != null)
+            {
+                pnlStatusMsg.Visible = true;
+                litStatusMsg.Text    = err;
+                return;
+            }
 
-            // Redirect back to same page — forces a fresh GET so all controls re-render from DB
             Response.Redirect("onyx_admin_order_details.aspx?id=" + id + "&updated=1");
         }
 
@@ -127,13 +104,9 @@ namespace ONYX_DDAC.admin_page
             long id = CurrentOrderId;
             if (id <= 0) return;
 
-            _repo.DeleteOrder(id);
+            _svc.DeleteOrder(id);
             Response.Redirect("~/admin_page/onyx_admin_orders.aspx");
         }
-
-        // =====================================================================
-        //  HELPERS
-        // =====================================================================
 
         private void ShowNotFound()
         {

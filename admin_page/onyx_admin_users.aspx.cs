@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Web.UI;
-using ONYX_DDAC.DAL;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.admin_page
 {
     public partial class onyx_admin_users : System.Web.UI.Page
     {
-        private readonly UserRepository _repo = new UserRepository();
+        private readonly UserService _svc = new UserService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -17,8 +16,8 @@ namespace ONYX_DDAC.admin_page
 
         private void BindUsers()
         {
-            List<UserRepository.UserSummary> users = _repo.GetAllUsers();
-            UserRepository.UserStats stats = _repo.GetStats();
+            var users = _svc.GetAllUsers();
+            var stats = _svc.GetStats();
 
             UsersRepeater.DataSource = users;
             UsersRepeater.DataBind();

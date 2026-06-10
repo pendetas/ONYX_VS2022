@@ -443,7 +443,9 @@
     <Compile Include="Services\OrderService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\ReceiptService.cs" />
+    <Compile Include="Services\DashboardService.cs" />
     <Compile Include="Services\S3Service.cs" />
+    <Compile Include="Services\UserService.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Web.UI;
-using ONYX_DDAC.DAL;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.admin_page
 {
     public partial class onyx_admin_orders : System.Web.UI.Page
     {
-        private readonly OrderRepository _repo = new OrderRepository();
+        private readonly OrderService _svc = new OrderService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -19,8 +18,8 @@ namespace ONYX_DDAC.admin_page
         {
             litLastUpdated.Text = DateTime.Now.ToString("d MMM yyyy, h:mm tt");
 
-            List<OrderRepository.OrderSummary> orders = _repo.GetAllOrders();
-            OrderRepository.OrderStats stats = _repo.GetStats();
+            var orders = _svc.GetAllOrders();
+            var stats  = _svc.GetStats();
 
             OrdersRepeater.DataSource = orders;
             OrdersRepeater.DataBind();
