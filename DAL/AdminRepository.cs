@@ -7,10 +7,6 @@ namespace ONYX_DDAC.DAL
 {
     public class AdminRepository
     {
-        // =====================================================================
-        //  PUBLIC QUERY METHODS
-        // =====================================================================
-
         public DashboardMetrics GetDashboardMetrics()
         {
             var m = new DashboardMetrics();
@@ -19,145 +15,131 @@ namespace ONYX_DDAC.DAL
             {
                 conn.Open();
 
-                    // --- KPIs: current + previous period in one pass ---
-                    using (DbCommand cmd = conn.CreateCommand())
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT
+                            COALESCE(SUM(total_amount) FILTER (
+                                WHERE ordered_at::date = CURRENT_DATE), 0)                                               AS today_sales,
+                            COALESCE(SUM(total_amount) FILTER (
+                                WHERE ordered_at::date = CURRENT_DATE - 1), 0)                                           AS yesterday_sales,
+                            COALESCE(SUM(total_amount) FILTER (
+                                WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW())), 0)                  AS mtd_revenue,
+                            COALESCE(SUM(total_amount) FILTER (
+                                WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW() - INTERVAL '1 month')
+                                  AND EXTRACT(DAY FROM ordered_at) <= EXTRACT(DAY FROM NOW())), 0)                       AS last_month_revenue_to_date,
+                            COUNT(*) FILTER (
+                                WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW()))                      AS mtd_orders,
+                            COUNT(*) FILTER (
+                                WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW() - INTERVAL '1 month')
+                                  AND EXTRACT(DAY FROM ordered_at) <= EXTRACT(DAY FROM NOW()))                           AS last_month_orders_to_date,
+                            COALESCE(AVG(total_amount) FILTER (
+                                WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW())), 0)                  AS aov,
+                            COALESCE(AVG(total_amount) FILTER (
+                                WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW() - INTERVAL '1 month')), 0) AS last_month_aov
+                        FROM orders
+                        WHERE status <> 'cancelled'";
+
+                    using (DbDataReader r = cmd.ExecuteReader())
                     {
-                        cmd.CommandText = @"
-                            SELECT
-                                /* today vs yesterday — use ::date to avoid timezone dependency */
-                                COALESCE(SUM(total_amount) FILTER (
-                                    WHERE ordered_at::date = CURRENT_DATE), 0)                                               AS today_sales,
-                                COALESCE(SUM(total_amount) FILTER (
-                                    WHERE ordered_at::date = CURRENT_DATE - 1), 0)                                           AS yesterday_sales,
+                        if (r.Read())
+                        {
+                            decimal todaySales       = Convert.ToDecimal(r[0]);
+                            decimal yesterdaySales   = Convert.ToDecimal(r[1]);
+                            decimal mtdRevenue       = Convert.ToDecimal(r[2]);
+                            decimal lastMonthRevenue = Convert.ToDecimal(r[3]);
+                            int     mtdOrders        = Convert.ToInt32(r[4]);
+                            int     lastMonthOrders  = Convert.ToInt32(r[5]);
+                            decimal aov              = Convert.ToDecimal(r[6]);
+                            decimal lastMonthAov     = Convert.ToDecimal(r[7]);
 
-                                /* MTD revenue vs same days-elapsed last month */
-                                COALESCE(SUM(total_amount) FILTER (
-                                    WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW())), 0)                  AS mtd_revenue,
-                                COALESCE(SUM(total_amount) FILTER (
-                                    WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW() - INTERVAL '1 month')
-                                      AND EXTRACT(DAY FROM ordered_at) <= EXTRACT(DAY FROM NOW())), 0)                       AS last_month_revenue_to_date,
+                            m.TodaySales        = todaySales;
+                            m.TotalRevenueMTD   = mtdRevenue;
+                            m.TotalOrdersMTD    = mtdOrders;
+                            m.AverageOrderValue = aov;
 
-                                /* MTD orders vs same period last month */
-                                COUNT(*) FILTER (
-                                    WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW()))                      AS mtd_orders,
-                                COUNT(*) FILTER (
-                                    WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW() - INTERVAL '1 month')
-                                      AND EXTRACT(DAY FROM ordered_at) <= EXTRACT(DAY FROM NOW()))                           AS last_month_orders_to_date,
+                            m.TodaySalesTrend = CalcTrend(todaySales,     yesterdaySales);
+                            m.RevenueTrend    = CalcTrend(mtdRevenue,      lastMonthRevenue);
+                            m.OrdersTrend     = CalcTrend(mtdOrders,       lastMonthOrders);
+                            m.AOVTrend        = CalcTrend(aov,             lastMonthAov);
+                        }
+                    }
+                }
 
-                                /* AOV: this month vs last month */
-                                COALESCE(AVG(total_amount) FILTER (
-                                    WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW())), 0)                  AS aov,
-                                COALESCE(AVG(total_amount) FILTER (
-                                    WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW() - INTERVAL '1 month')), 0) AS last_month_aov
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT COUNT(*) FROM users WHERE role = 'customer'";
+                    m.TotalUsers = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT COUNT(*) FROM products WHERE stock_qty < 5";
+                    m.LowStockItems = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        WITH this_month_buyers AS (
+                            SELECT DISTINCT user_id
                             FROM orders
-                            WHERE status <> 'cancelled'";
-
-                        using (DbDataReader r = cmd.ExecuteReader())
-                        {
-                            if (r.Read())
-                            {
-                                decimal todaySales       = Convert.ToDecimal(r[0]);
-                                decimal yesterdaySales   = Convert.ToDecimal(r[1]);
-                                decimal mtdRevenue       = Convert.ToDecimal(r[2]);
-                                decimal lastMonthRevenue = Convert.ToDecimal(r[3]);
-                                int     mtdOrders        = Convert.ToInt32(r[4]);
-                                int     lastMonthOrders  = Convert.ToInt32(r[5]);
-                                decimal aov              = Convert.ToDecimal(r[6]);
-                                decimal lastMonthAov     = Convert.ToDecimal(r[7]);
-
-                                m.TodaySales       = todaySales;
-                                m.TotalRevenueMTD  = mtdRevenue;
-                                m.TotalOrdersMTD   = mtdOrders;
-                                m.AverageOrderValue = aov;
-
-                                m.TodaySalesTrend = CalcTrend(todaySales,     yesterdaySales);
-                                m.RevenueTrend    = CalcTrend(mtdRevenue,      lastMonthRevenue);
-                                m.OrdersTrend     = CalcTrend(mtdOrders,       lastMonthOrders);
-                                m.AOVTrend        = CalcTrend(aov,             lastMonthAov);
-                            }
-                        }
-                    }
-
-                    // --- Total customer count ---
-                    using (DbCommand cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = "SELECT COUNT(*) FROM users WHERE role = 'customer'";
-                        m.TotalUsers = Convert.ToInt32(cmd.ExecuteScalar());
-                    }
-
-                    // --- Low stock (stock_qty < 5) ---
-                    using (DbCommand cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = "SELECT COUNT(*) FROM products WHERE stock_qty < 5";
-                        m.LowStockItems = Convert.ToInt32(cmd.ExecuteScalar());
-                    }
-
-                    // --- Returning customer rate & conversion rate ---
-                    using (DbCommand cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = @"
-                            WITH this_month_buyers AS (
-                                SELECT DISTINCT user_id
-                                FROM orders
-                                WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW())
-                                  AND status <> 'cancelled'
-                            ),
-                            repeat_buyers AS (
-                                SELECT user_id
-                                FROM orders
-                                WHERE status <> 'cancelled'
-                                GROUP BY user_id
-                                HAVING COUNT(*) > 1
-                            ),
-                            total_customers AS (
-                                SELECT COUNT(*) AS cnt FROM users WHERE role = 'customer'
-                            )
-                            SELECT
-                                COUNT(tmb.user_id)                                              AS buyers_this_month,
-                                COUNT(rb.user_id)                                               AS returning_buyers,
-                                (SELECT cnt FROM total_customers)                               AS total_customers
-                            FROM this_month_buyers tmb
-                            LEFT JOIN repeat_buyers rb ON tmb.user_id = rb.user_id";
-
-                        using (DbDataReader r = cmd.ExecuteReader())
-                        {
-                            if (r.Read())
-                            {
-                                int buyersThisMonth  = Convert.ToInt32(r[0]);
-                                int returningBuyers  = Convert.ToInt32(r[1]);
-                                int totalCustomers   = Convert.ToInt32(r[2]);
-
-                                m.ReturningCustomerRate = buyersThisMonth > 0
-                                    ? Math.Round((double)returningBuyers / buyersThisMonth * 100.0, 1)
-                                    : 0.0;
-
-                                m.ConversionRate = totalCustomers > 0
-                                    ? Math.Round((double)buyersThisMonth / totalCustomers * 100.0, 1)
-                                    : 0.0;
-                            }
-                        }
-                    }
-
-                    // --- Conversion trend: buyers this month vs last month ---
-                    using (DbCommand cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = @"
-                            SELECT
-                                COUNT(DISTINCT user_id) FILTER (
-                                    WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW())) AS this_month,
-                                COUNT(DISTINCT user_id) FILTER (
-                                    WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW() - INTERVAL '1 month')) AS last_month
+                            WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW())
+                              AND status <> 'cancelled'
+                        ),
+                        repeat_buyers AS (
+                            SELECT user_id
                             FROM orders
-                            WHERE status <> 'cancelled'";
+                            WHERE status <> 'cancelled'
+                            GROUP BY user_id
+                            HAVING COUNT(*) > 1
+                        ),
+                        total_customers AS (
+                            SELECT COUNT(*) AS cnt FROM users WHERE role = 'customer'
+                        )
+                        SELECT
+                            COUNT(tmb.user_id)                 AS buyers_this_month,
+                            COUNT(rb.user_id)                  AS returning_buyers,
+                            (SELECT cnt FROM total_customers)  AS total_customers
+                        FROM this_month_buyers tmb
+                        LEFT JOIN repeat_buyers rb ON tmb.user_id = rb.user_id";
 
-                        using (DbDataReader r = cmd.ExecuteReader())
+                    using (DbDataReader r = cmd.ExecuteReader())
+                    {
+                        if (r.Read())
                         {
-                            if (r.Read())
-                            {
-                                m.ConversionTrend = CalcTrend(Convert.ToInt32(r[0]), Convert.ToInt32(r[1]));
-                            }
+                            int buyersThisMonth = Convert.ToInt32(r[0]);
+                            int returningBuyers = Convert.ToInt32(r[1]);
+                            int totalCustomers  = Convert.ToInt32(r[2]);
+
+                            m.ReturningCustomerRate = buyersThisMonth > 0
+                                ? Math.Round((double)returningBuyers / buyersThisMonth * 100.0, 1)
+                                : 0.0;
+
+                            m.ConversionRate = totalCustomers > 0
+                                ? Math.Round((double)buyersThisMonth / totalCustomers * 100.0, 1)
+                                : 0.0;
                         }
                     }
+                }
+
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT
+                            COUNT(DISTINCT user_id) FILTER (
+                                WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW())) AS this_month,
+                            COUNT(DISTINCT user_id) FILTER (
+                                WHERE DATE_TRUNC('month', ordered_at) = DATE_TRUNC('month', NOW() - INTERVAL '1 month')) AS last_month
+                        FROM orders
+                        WHERE status <> 'cancelled'";
+
+                    using (DbDataReader r = cmd.ExecuteReader())
+                    {
+                        if (r.Read())
+                            m.ConversionTrend = CalcTrend(Convert.ToInt32(r[0]), Convert.ToInt32(r[1]));
+                    }
+                }
             }
 
             return m;
@@ -200,11 +182,11 @@ namespace ONYX_DDAC.DAL
                     {
                         while (r.Read())
                         {
-                            decimal price          = Convert.ToDecimal(r[2]);
-                            int     stockQty       = Convert.ToInt32(r[3]);
-                            int     unitsCurrent   = Convert.ToInt32(r[4]);
-                            decimal revenueCurrent  = Convert.ToDecimal(r[5]);
-                            int     unitsLast       = Convert.ToInt32(r[6]);
+                            decimal price        = Convert.ToDecimal(r[2]);
+                            int     stockQty     = Convert.ToInt32(r[3]);
+                            int     unitsCurrent = Convert.ToInt32(r[4]);
+                            decimal revCurrent   = Convert.ToDecimal(r[5]);
+                            int     unitsLast    = Convert.ToInt32(r[6]);
 
                             results.Add(new TopProduct
                             {
@@ -213,7 +195,7 @@ namespace ONYX_DDAC.DAL
                                 Price      = price,
                                 StockQty   = stockQty,
                                 UnitsSold  = unitsCurrent,
-                                Revenue    = revenueCurrent,
+                                Revenue    = revCurrent,
                                 GrowthRate = CalcTrend(unitsCurrent, unitsLast)
                             });
                         }
@@ -306,16 +288,6 @@ namespace ONYX_DDAC.DAL
             return results;
         }
 
-        public class RecentActivity
-        {
-            public string   Type       { get; set; } // "order" | "user"
-            public long     RefId      { get; set; }
-            public string   Title      { get; set; }
-            public string   Sub        { get; set; }
-            public string   TimeLabel  { get; set; }
-            public string   Icon       { get; set; }
-        }
-
         public List<RecentActivity> GetRecentActivities(int count = 3)
         {
             var list = new List<RecentActivity>();
@@ -356,11 +328,11 @@ namespace ONYX_DDAC.DAL
                     {
                         while (r.Read())
                         {
-                            string type = r.GetString(0);
-                            long   id   = r.GetInt64(1);
-                            string name = r.GetString(2);
-                            string extra = r.GetString(3);
-                            DateTime at = r.GetDateTime(4);
+                            string   type  = r.GetString(0);
+                            long     id    = r.GetInt64(1);
+                            string   name  = r.GetString(2);
+                            string   extra = r.GetString(3);
+                            DateTime at    = r.GetDateTime(4);
 
                             list.Add(new RecentActivity
                             {
@@ -381,16 +353,6 @@ namespace ONYX_DDAC.DAL
             }
 
             return list;
-        }
-
-        private static string FormatTimeAgo(DateTime dt)
-        {
-            TimeSpan diff = DateTime.Now - dt;
-            if (diff.TotalMinutes < 1)   return "Just now";
-            if (diff.TotalMinutes < 60)  return (int)diff.TotalMinutes + " min ago";
-            if (diff.TotalHours   < 24)  return (int)diff.TotalHours + "h ago";
-            if (diff.TotalDays    < 7)   return (int)diff.TotalDays + "d ago";
-            return dt.ToString("d MMM yyyy");
         }
 
         public List<decimal> GetWeeklyRevenueTrend()
@@ -456,54 +418,14 @@ namespace ONYX_DDAC.DAL
             }
         }
 
-        // =====================================================================
-        //  MOCK FALLBACKS (DB unavailable)
-        // =====================================================================
-
-        private static DashboardMetrics GetMockDashboardMetrics()
+        private static string FormatTimeAgo(DateTime dt)
         {
-            return new DashboardMetrics
-            {
-                TodaySales              = 4785.50m,
-                TotalRevenueMTD         = 128340.00m,
-                TotalOrdersMTD          = 312,
-                TodayOrders             = 24,
-                AverageOrderValue       = 411.34m,
-                ConversionRate          = 3.4,
-                ReturningCustomerRate   = 42.5,
-                TotalUsers              = 1284,
-                LowStockItems           = 3,
-                TodaySalesTrend         = 12.5,
-                RevenueTrend            = 15.2,
-                OrdersTrend             = 8.3,
-                AOVTrend                = 3.1,
-                ConversionTrend         = 0.5
-            };
-        }
-
-        private static List<TopProduct> GetMockTopProducts()
-        {
-            return new List<TopProduct>
-            {
-                new TopProduct { Name = "Viper V2 Pro",   Category = "Mouse",    UnitsSold = 87, Revenue = 52113.00m, GrowthRate =  18.2 },
-                new TopProduct { Name = "BlackWidow V3",  Category = "Keyboard", UnitsSold = 64, Revenue = 28736.00m, GrowthRate =  12.5 },
-                new TopProduct { Name = "Kraken X",       Category = "Headset",  UnitsSold = 58, Revenue = 17342.00m, GrowthRate =   9.1 },
-                new TopProduct { Name = "G502 X Plus",    Category = "Mouse",    UnitsSold = 41, Revenue = 20459.00m, GrowthRate =  -3.4 },
-                new TopProduct { Name = "Huntsman Mini",  Category = "Keyboard", UnitsSold = 33, Revenue = 17457.00m, GrowthRate =   5.8 }
-            };
-        }
-
-        private static List<RecentOrder> GetMockRecentOrders()
-        {
-            return new List<RecentOrder>
-            {
-                new RecentOrder { OrderId = 1042, CustomerName = "Amir Rashid",    Status = "delivered", TotalAmount =  948.00m, OrderedAt = DateTime.Now.AddHours(-1),  StatusCssClass = "status-delivered" },
-                new RecentOrder { OrderId = 1041, CustomerName = "Siti Nurhaliza", Status = "shipped",   TotalAmount = 1249.00m, OrderedAt = DateTime.Now.AddHours(-3),  StatusCssClass = "status-shipped"   },
-                new RecentOrder { OrderId = 1040, CustomerName = "Lee Chong Wei",  Status = "pending",   TotalAmount =  599.00m, OrderedAt = DateTime.Now.AddHours(-5),  StatusCssClass = "status-pending"   },
-                new RecentOrder { OrderId = 1039, CustomerName = "Kumar Rajan",    Status = "delivered", TotalAmount = 2199.00m, OrderedAt = DateTime.Now.AddHours(-8),  StatusCssClass = "status-delivered" },
-                new RecentOrder { OrderId = 1038, CustomerName = "Farah Liyana",   Status = "shipped",   TotalAmount =  449.00m, OrderedAt = DateTime.Now.AddHours(-12), StatusCssClass = "status-shipped"   },
-                new RecentOrder { OrderId = 1037, CustomerName = "Tan Wei Xiang",  Status = "cancelled", TotalAmount =  349.00m, OrderedAt = DateTime.Now.AddHours(-20), StatusCssClass = "status-cancelled" }
-            };
+            TimeSpan diff = DateTime.Now - dt;
+            if (diff.TotalMinutes < 1)  return "Just now";
+            if (diff.TotalMinutes < 60) return (int)diff.TotalMinutes + " min ago";
+            if (diff.TotalHours   < 24) return (int)diff.TotalHours + "h ago";
+            if (diff.TotalDays    < 7)  return (int)diff.TotalDays + "d ago";
+            return dt.ToString("d MMM yyyy");
         }
     }
 }

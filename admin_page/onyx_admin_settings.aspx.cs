@@ -1,15 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Web.UI;
-using ONYX_DDAC.DAL;
 using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.admin_page
 {
     public partial class onyx_admin_settings : Page
     {
-        private readonly UserRepository _repo    = new UserRepository();
-        private readonly AuthService    _auth    = new AuthService();
+        private readonly UserService _svc  = new UserService();
+        private readonly AuthService _auth = new AuthService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -24,7 +22,7 @@ namespace ONYX_DDAC.admin_page
 
         private void BindAdminList()
         {
-            List<UserRepository.UserSummary> admins = _repo.GetAdminList();
+            var admins = _svc.GetAdminList();
 
             if (admins.Count == 0)
             {
@@ -33,7 +31,7 @@ namespace ONYX_DDAC.admin_page
             }
             else
             {
-                pnlNoAdmins.Visible   = false;
+                pnlNoAdmins.Visible      = false;
                 AdminRepeater.DataSource = admins;
                 AdminRepeater.DataBind();
             }
@@ -61,7 +59,6 @@ namespace ONYX_DDAC.admin_page
                 return;
             }
 
-            // Clear fields then redirect to show success on fresh GET
             Response.Redirect("onyx_admin_settings.aspx?pw=1");
         }
 
@@ -71,7 +68,7 @@ namespace ONYX_DDAC.admin_page
             string message,
             bool isError)
         {
-            panel.Visible      = true;
+            panel.Visible = true;
             container.Attributes["class"] = isError ? "alert-error" : "alert-success";
             container.InnerHtml = System.Web.HttpUtility.HtmlEncode(message);
         }

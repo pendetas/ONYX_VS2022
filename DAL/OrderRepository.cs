@@ -1,61 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using ONYX_DDAC.Models;
 
 namespace ONYX_DDAC.DAL
 {
     public class OrderRepository
     {
-        // =====================================================================
-        //  VIEW MODELS
-        // =====================================================================
-
-        public class OrderSummary
-        {
-            public long   RawId        { get; set; }
-            public string OrderId      { get; set; }
-            public string CustomerName { get; set; }
-            public string Date         { get; set; }
-            public int    ItemCount    { get; set; }
-            public string Total        { get; set; }
-            public string Status       { get; set; }
-            public string StatusKey    { get; set; }
-        }
-
-        public class OrderStats
-        {
-            public int     Total     { get; set; }
-            public int     Pending   { get; set; }
-            public int     Shipped   { get; set; }
-            public int     Delivered { get; set; }
-            public decimal Revenue   { get; set; }
-        }
-
-        public class OrderDetail
-        {
-            public long     Id              { get; set; }
-            public string   Status          { get; set; }
-            public decimal  TotalAmount     { get; set; }
-            public string   ShippingAddress { get; set; }
-            public string   ReceiptS3Key    { get; set; }
-            public DateTime  OrderedAt        { get; set; }
-            public DateTime? StatusUpdatedAt { get; set; }
-            public string    CustomerName    { get; set; }
-            public string    CustomerEmail   { get; set; }
-            public string    CustomerPhone   { get; set; }
-            public DateTime  CustomerSince   { get; set; }
-        }
-
-        public class OrderItemDetail
-        {
-            public string  ProductName      { get; set; }
-            public string  Category         { get; set; }
-            public int     Quantity         { get; set; }
-            public decimal UnitPrice        { get; set; }
-            public string  UnitPriceFmt     { get; set; }
-            public string  SubtotalFmt      { get; set; }
-        }
-
         // =====================================================================
         //  READ QUERIES
         // =====================================================================
@@ -191,10 +142,10 @@ namespace ONYX_DDAC.DAL
                     {
                         while (r.Read())
                         {
-                            string name     = r.GetString(0);
-                            string category = r.GetString(1);
-                            int    qty      = r.GetInt32(2);
-                            decimal price   = Convert.ToDecimal(r[3]);
+                            string  name     = r.GetString(0);
+                            string  category = r.GetString(1);
+                            int     qty      = r.GetInt32(2);
+                            decimal price    = Convert.ToDecimal(r[3]);
 
                             list.Add(new OrderItemDetail
                             {
@@ -287,7 +238,6 @@ namespace ONYX_DDAC.DAL
                     {
                         cmd.Transaction = tx;
 
-                        // Remove line items first (FK constraint)
                         cmd.CommandText = "DELETE FROM order_items WHERE order_id = @Id";
                         DbParameter p1 = cmd.CreateParameter();
                         p1.ParameterName = "@Id";
@@ -295,7 +245,6 @@ namespace ONYX_DDAC.DAL
                         cmd.Parameters.Add(p1);
                         cmd.ExecuteNonQuery();
 
-                        // Remove the order
                         cmd.Parameters.Clear();
                         cmd.CommandText = "DELETE FROM orders WHERE id = @Id";
                         DbParameter p2 = cmd.CreateParameter();

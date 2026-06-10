@@ -40,7 +40,7 @@ namespace ONYX_DDAC.Services
             return _repo.GetWeeklyRevenueTrend();
         }
 
-        public List<AdminRepository.RecentActivity> GetRecentActivities(int count = 3)
+        public List<RecentActivity> GetRecentActivities(int count = 3)
         {
             return _repo.GetRecentActivities(count);
         }

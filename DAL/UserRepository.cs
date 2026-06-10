@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Data.Common;
 using Npgsql;
 using ONYX_DDAC.Models;
@@ -10,34 +9,6 @@ namespace ONYX_DDAC.DAL
 {
     public class UserRepository
     {
-        // =====================================================================
-        //  ADMIN VIEW MODELS
-        // =====================================================================
-
-        public class UserSummary
-        {
-            public long   Id          { get; set; }
-            public string FullName    { get; set; }
-            public string Email       { get; set; }
-            public string Role        { get; set; }
-            public string RoleKey     { get; set; }
-            public string Initials    { get; set; }
-            public string Phone       { get; set; }
-            public string JoinDate    { get; set; }
-            public string TotalOrders { get; set; }
-            public string TotalSpent  { get; set; }
-            public string SpentClass  { get; set; }
-        }
-
-        public class UserStats
-        {
-            public int     Total           { get; set; }
-            public int     Admins          { get; set; }
-            public int     Customers       { get; set; }
-            public int     NewThisMonth    { get; set; }
-            public decimal PlatformRevenue { get; set; }
-        }
-
         // =====================================================================
         //  ADMIN QUERIES
         // =====================================================================
@@ -70,11 +41,10 @@ namespace ONYX_DDAC.DAL
                     {
                         while (r.Read())
                         {
-                            string fullName = r.GetString(1);
-                            string role     = r.GetString(4);
-                            int    orders   = r.GetInt32(6);
-                            decimal spent   = Convert.ToDecimal(r[7]);
-                            bool   isAdmin  = role.Equals("admin", StringComparison.OrdinalIgnoreCase);
+                            string  fullName = r.GetString(1);
+                            string  role     = r.GetString(4);
+                            int     orders   = r.GetInt32(6);
+                            decimal spent    = Convert.ToDecimal(r[7]);
 
                             list.Add(new UserSummary
                             {
@@ -132,40 +102,6 @@ namespace ONYX_DDAC.DAL
             }
             return new UserStats();
         }
-
-        // =====================================================================
-        //  DETAIL VIEW MODEL
-        // =====================================================================
-
-        public class UserDetail
-        {
-            public long     Id          { get; set; }
-            public string   FullName    { get; set; }
-            public string   Username    { get; set; }
-            public string   Email       { get; set; }
-            public string   Phone       { get; set; }
-            public string   Address     { get; set; }
-            public string   Dob         { get; set; }
-            public string   Role        { get; set; }
-            public string   Initials    { get; set; }
-            public DateTime CreatedAt   { get; set; }
-            public int      TotalOrders { get; set; }
-            public decimal  TotalSpent  { get; set; }
-        }
-
-        public class UserOrderSummary
-        {
-            public long   RawId    { get; set; }
-            public string OrderId  { get; set; }
-            public string Date     { get; set; }
-            public string Total    { get; set; }
-            public string Status   { get; set; }
-            public string StatusKey { get; set; }
-        }
-
-        // =====================================================================
-        //  DETAIL CRUD
-        // =====================================================================
 
         public UserDetail GetUserById(long id)
         {
@@ -312,20 +248,17 @@ namespace ONYX_DDAC.DAL
                     {
                         cmd.Transaction = tx;
 
-                        // Remove order_items for this user's orders (FK constraint)
                         cmd.CommandText = "DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE user_id = @Id)";
                         DbParameter p1 = cmd.CreateParameter(); p1.ParameterName = "@Id"; p1.Value = id;
                         cmd.Parameters.Add(p1);
                         cmd.ExecuteNonQuery();
 
-                        // Remove orders
                         cmd.Parameters.Clear();
                         cmd.CommandText = "DELETE FROM orders WHERE user_id = @Id";
                         DbParameter p2 = cmd.CreateParameter(); p2.ParameterName = "@Id"; p2.Value = id;
                         cmd.Parameters.Add(p2);
                         cmd.ExecuteNonQuery();
 
-                        // Remove user
                         cmd.Parameters.Clear();
                         cmd.CommandText = "DELETE FROM users WHERE id = @Id";
                         DbParameter p3 = cmd.CreateParameter(); p3.ParameterName = "@Id"; p3.Value = id;
@@ -335,144 +268,6 @@ namespace ONYX_DDAC.DAL
                     tx.Commit();
                 }
             }
-        }
-
-        private static string GetInitials(string fullName)
-        {
-            if (string.IsNullOrWhiteSpace(fullName)) return "?";
-            string[] parts = fullName.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length == 1) return parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper();
-            return (parts[0][0].ToString() + parts[parts.Length - 1][0].ToString()).ToUpper();
-        }
-
-        // Helper method to grab the connection string from Web.config
-        private string GetConnectionString(string connectionName = "DefaultConnection")
-        {
-            return ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
-        }
-
-        // Inserts a new user into the database
-        public bool CreateUser(User user)
-        {
-            // Explicitly initializing the Npgsql library connection right here
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
-            {
-                conn.Open();
-                string sql = @"
-                    INSERT INTO users (fullname, username, email, password_hash, address, dob, phone_number, role, created_at) 
-                    VALUES (@FullName, @Username, @Email, @PasswordHash, @Address, @Dob, @PhoneNumber, @Role, @CreatedAt)";
-
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    // Using parameters prevents SQL Injection attacks
-                    cmd.Parameters.AddWithValue("@FullName", user.FullName);
-                    cmd.Parameters.AddWithValue("@Username", user.Username);
-                    cmd.Parameters.AddWithValue("@Email", user.Email);
-                    cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
-
-                    // Handle nullable fields safely for PostgreSQL
-                    cmd.Parameters.AddWithValue("@Address", (object)user.Address ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Dob", user.Dob);
-                    cmd.Parameters.AddWithValue("@PhoneNumber", (object)user.PhoneNumber ?? DBNull.Value);
-
-                    cmd.Parameters.AddWithValue("@Role", user.Role ?? "customer"); // Default to customer
-                    cmd.Parameters.AddWithValue("@CreatedAt", DateTime.UtcNow);
-
-                    int rowsAffected = cmd.ExecuteNonQuery();
-                    return rowsAffected > 0;
-                }
-            }
-        }
-
-        // Returns "username" or "email" if already taken, null if both are available
-        public string CheckDuplicate(string username, string email)
-        {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
-            {
-                conn.Open();
-                string sql = @"
-                    SELECT
-                        (SELECT COUNT(*) FROM users WHERE LOWER(username) = LOWER(@Username)) AS un_count,
-                        (SELECT COUNT(*) FROM users WHERE LOWER(email)    = LOWER(@Email))    AS em_count";
-
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Username", username);
-                    cmd.Parameters.AddWithValue("@Email", email);
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            if (reader.GetInt64(0) > 0) return "username";
-                            if (reader.GetInt64(1) > 0) return "email";
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        // Retrieves a user by email for login validation
-        public User GetUserByEmail(string email)
-        {
-            // Explicitly initializing the Npgsql library for reading
-            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
-            {
-                conn.Open();
-                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE email = @Email";
-
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Email", email);
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            return new User
-                            {
-                                Id = reader.GetInt64(0),
-                                Username = reader.GetString(1),
-                                Email = reader.GetString(2),
-                                PasswordHash = reader.GetString(3),
-                                Role = reader.GetString(4)
-                            };
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        public User GetUserByUsername(string username)
-        {
-            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
-            {
-                conn.Open();
-                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE LOWER(username) = LOWER(@Username)";
-
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Username", username);
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            return new User
-                            {
-                                Id           = reader.GetInt64(0),
-                                Username     = reader.GetString(1),
-                                Email        = reader.GetString(2),
-                                PasswordHash = reader.GetString(3),
-                                Role         = reader.GetString(4)
-                            };
-                        }
-                    }
-                }
-            }
-            return null;
         }
 
         public List<UserSummary> GetAdminList()
@@ -516,19 +311,153 @@ namespace ONYX_DDAC.DAL
             return list;
         }
 
+        // =====================================================================
+        //  AUTH METHODS (used by AuthService)
+        // =====================================================================
+
+        public bool CreateUser(User user)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                string sql = @"
+                    INSERT INTO users (fullname, username, email, password_hash, address, dob, phone_number, role, created_at)
+                    VALUES (@FullName, @Username, @Email, @PasswordHash, @Address, @Dob, @PhoneNumber, @Role, @CreatedAt)";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@FullName",     user.FullName);
+                    cmd.Parameters.AddWithValue("@Username",     user.Username);
+                    cmd.Parameters.AddWithValue("@Email",        user.Email);
+                    cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
+                    cmd.Parameters.AddWithValue("@Address",      (object)user.Address      ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Dob",          user.Dob);
+                    cmd.Parameters.AddWithValue("@PhoneNumber",  (object)user.PhoneNumber  ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Role",         user.Role ?? "customer");
+                    cmd.Parameters.AddWithValue("@CreatedAt",    DateTime.UtcNow);
+
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public string CheckDuplicate(string username, string email)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                string sql = @"
+                    SELECT
+                        (SELECT COUNT(*) FROM users WHERE LOWER(username) = LOWER(@Username)) AS un_count,
+                        (SELECT COUNT(*) FROM users WHERE LOWER(email)    = LOWER(@Email))    AS em_count";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Username", username);
+                    cmd.Parameters.AddWithValue("@Email",    email);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            if (reader.GetInt64(0) > 0) return "username";
+                            if (reader.GetInt64(1) > 0) return "email";
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public User GetUserByEmail(string email)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            {
+                conn.Open();
+                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE email = @Email";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Email", email);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User
+                            {
+                                Id           = reader.GetInt64(0),
+                                Username     = reader.GetString(1),
+                                Email        = reader.GetString(2),
+                                PasswordHash = reader.GetString(3),
+                                Role         = reader.GetString(4)
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public User GetUserByUsername(string username)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            {
+                conn.Open();
+                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE LOWER(username) = LOWER(@Username)";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Username", username);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User
+                            {
+                                Id           = reader.GetInt64(0),
+                                Username     = reader.GetString(1),
+                                Email        = reader.GetString(2),
+                                PasswordHash = reader.GetString(3),
+                                Role         = reader.GetString(4)
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public void UpdatePasswordHash(long userId, string newHash)
         {
             using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand(
-                    "UPDATE users SET password_hash = @Hash WHERE id = @Id", conn))
+                using (var cmd = new NpgsqlCommand("UPDATE users SET password_hash = @Hash WHERE id = @Id", conn))
                 {
                     cmd.Parameters.AddWithValue("@Hash", newHash);
                     cmd.Parameters.AddWithValue("@Id",   userId);
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        // =====================================================================
+        //  HELPERS
+        // =====================================================================
+
+        private static string GetInitials(string fullName)
+        {
+            if (string.IsNullOrWhiteSpace(fullName)) return "?";
+            string[] parts = fullName.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 1) return parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper();
+            return (parts[0][0].ToString() + parts[parts.Length - 1][0].ToString()).ToUpper();
+        }
+
+        private string GetConnectionString(string connectionName = "DefaultConnection")
+        {
+            return ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
         }
     }
 }

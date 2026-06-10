@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ONYX_DDAC.DAL;
+using ONYX_DDAC.Models;
 
 namespace ONYX_DDAC.Services
 {
@@ -15,23 +16,23 @@ namespace ONYX_DDAC.Services
         }
 
         // ── Admin: order list ────────────────────────────────────────────────
-        public List<OrderRepository.OrderSummary> GetAllOrders()
+        public List<OrderSummary> GetAllOrders()
         {
             return _repo.GetAllOrders();
         }
 
-        public OrderRepository.OrderStats GetStats()
+        public OrderStats GetStats()
         {
             return _repo.GetStats();
         }
 
         // ── Admin: order detail ──────────────────────────────────────────────
-        public OrderRepository.OrderDetail GetOrderById(long id)
+        public OrderDetail GetOrderById(long id)
         {
             return _repo.GetOrderById(id);
         }
 
-        public List<OrderRepository.OrderItemDetail> GetOrderItems(long orderId)
+        public List<OrderItemDetail> GetOrderItems(long orderId)
         {
             return _repo.GetOrderItems(orderId);
         }

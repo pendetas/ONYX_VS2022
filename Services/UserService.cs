@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ONYX_DDAC.DAL;
+using ONYX_DDAC.Models;
 
 namespace ONYX_DDAC.Services
 {
@@ -15,23 +16,23 @@ namespace ONYX_DDAC.Services
         }
 
         // ── Admin: user list ─────────────────────────────────────────────────
-        public List<UserRepository.UserSummary> GetAllUsers()
+        public List<UserSummary> GetAllUsers()
         {
             return _repo.GetAllUsers();
         }
 
-        public UserRepository.UserStats GetStats()
+        public UserStats GetStats()
         {
             return _repo.GetStats();
         }
 
         // ── Admin: user detail ───────────────────────────────────────────────
-        public UserRepository.UserDetail GetUserById(long id)
+        public UserDetail GetUserById(long id)
         {
             return _repo.GetUserById(id);
         }
 
-        public List<UserRepository.UserOrderSummary> GetUserOrders(long userId)
+        public List<UserOrderSummary> GetUserOrders(long userId)
         {
             return _repo.GetUserOrders(userId);
         }
@@ -61,7 +62,7 @@ namespace ONYX_DDAC.Services
         }
 
         // ── Admin settings ───────────────────────────────────────────────────
-        public List<UserRepository.UserSummary> GetAdminList()
+        public List<UserSummary> GetAdminList()
         {
             return _repo.GetAdminList();
         }

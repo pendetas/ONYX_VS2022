@@ -378,6 +378,15 @@
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductVariant.cs" />
     <Compile Include="Models\LowStockProduct.cs" />
+    <Compile Include="Models\OrderDetail.cs" />
+    <Compile Include="Models\OrderItemDetail.cs" />
+    <Compile Include="Models\OrderStats.cs" />
+    <Compile Include="Models\OrderSummary.cs" />
+    <Compile Include="Models\RecentActivity.cs" />
+    <Compile Include="Models\UserDetail.cs" />
+    <Compile Include="Models\UserOrderSummary.cs" />
+    <Compile Include="Models\UserStats.cs" />
+    <Compile Include="Models\UserSummary.cs" />
     <Compile Include="Models\RecerntOrder.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\TopProduct.cs" />
