@@ -1,0 +1,413 @@
+.onyx-profile-page,
+.onyx-account-page {
+    background: #000000;
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 146px 26px 96px;
+}
+
+.onyx-account-layout {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: grid;
+    gap: 52px;
+    grid-template-columns: 290px minmax(0, 1fr);
+    margin: 0 auto;
+    max-width: 1280px;
+    padding-top: 64px;
+}
+
+.onyx-account-sidebar {
+    position: sticky;
+    top: 116px;
+}
+
+.onyx-account-title {
+    font-family: Syne, Inter, sans-serif;
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    margin: 0 0 8px;
+}
+
+.onyx-account-subtitle {
+    color: #a1a1aa;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.onyx-account-nav {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: grid;
+    gap: 8px;
+    margin-top: 36px;
+    padding-bottom: 28px;
+}
+
+.onyx-account-nav a {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: #c9c9d2;
+    display: flex;
+    gap: 14px;
+    min-height: 54px;
+    padding: 0 18px;
+    text-decoration: none;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.onyx-account-nav a:hover,
+.onyx-account-nav a.is-active {
+    background: #171717;
+    border-color: rgba(255, 255, 255, 0.78);
+    color: #ffffff;
+}
+
+.onyx-account-nav svg {
+    color: currentColor;
+    flex: 0 0 auto;
+    height: 18px;
+    width: 18px;
+}
+
+.onyx-account-main {
+    display: grid;
+    gap: 42px;
+    min-width: 0;
+}
+
+.onyx-account-section {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 42px;
+}
+
+.onyx-account-section:last-child {
+    border-bottom: 0;
+}
+
+.onyx-profile-card {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    display: grid;
+    gap: 28px;
+    grid-template-columns: 108px minmax(0, 1fr);
+    padding-bottom: 44px;
+}
+
+.onyx-profile-photo {
+    align-items: center;
+    background: #171717;
+    border: 2px solid rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    color: #8d8d96;
+    display: flex;
+    height: 108px;
+    justify-content: center;
+    width: 108px;
+}
+
+.onyx-profile-photo svg {
+    height: 42px;
+    width: 42px;
+}
+
+.onyx-profile-photo-content h2,
+.onyx-section-title {
+    font-family: Syne, Inter, sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    margin: 0;
+}
+
+.onyx-page-lede {
+    color: #a1a1aa;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 12px 0 0;
+    max-width: 680px;
+}
+
+.onyx-profile-actions,
+.onyx-settings-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.onyx-profile-actions {
+    margin-top: 14px;
+}
+
+.onyx-settings-actions {
+    margin-top: 28px;
+}
+
+.onyx-profile-button,
+.onyx-profile-ghost,
+.onyx-review-submit {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 800;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 24px;
+    text-decoration: none;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.onyx-profile-button,
+.onyx-review-submit {
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    color: #000000;
+}
+
+.onyx-profile-ghost {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+}
+
+.onyx-profile-button:hover,
+.onyx-profile-ghost:hover,
+.onyx-review-submit:hover {
+    transform: translateY(-2px);
+}
+
+.onyx-profile-note {
+    color: #8e8e98;
+    font-size: 13px;
+    margin: 16px 0 0;
+}
+
+.onyx-settings-grid,
+.onyx-review-grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 34px;
+}
+
+.onyx-profile-field,
+.onyx-review-field {
+    display: grid;
+    gap: 12px;
+}
+
+.onyx-profile-field.full,
+.onyx-review-field.full {
+    grid-column: 1 / -1;
+}
+
+.onyx-profile-field label,
+.onyx-review-field label {
+    color: #a1a1aa;
+    font-size: 14px;
+    line-height: 1.35;
+}
+
+.onyx-profile-input,
+.onyx-profile-textarea,
+.onyx-review-input,
+.onyx-review-textarea {
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 7px;
+    color: #ffffff;
+    font: inherit;
+    font-size: 17px;
+    outline: none;
+    padding: 16px 18px;
+    width: 100%;
+}
+
+.onyx-profile-textarea,
+.onyx-review-textarea {
+    min-height: 118px;
+    resize: vertical;
+}
+
+.onyx-profile-input:focus,
+.onyx-profile-textarea:focus,
+.onyx-review-input:focus,
+.onyx-review-textarea:focus {
+    border-color: rgba(255, 255, 255, 0.74);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+.onyx-hidden-field,
+.onyx-rating-source {
+    left: -9999px;
+    position: absolute;
+}
+
+.onyx-profile-feedback {
+    color: #d8dde3;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.onyx-order-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.onyx-order-card,
+.onyx-profile-empty {
+    background: #080808;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.onyx-order-top,
+.onyx-order-footer {
+    align-items: center;
+    display: flex;
+    gap: 18px;
+    justify-content: space-between;
+}
+
+.onyx-order-id {
+    color: #8e8e98;
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    margin-bottom: 7px;
+    text-transform: uppercase;
+}
+
+.onyx-order-date {
+    font-family: Syne, Inter, sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.onyx-order-status {
+    align-items: center;
+    border: 1px solid rgba(216, 221, 227, 0.32);
+    border-radius: 999px;
+    color: #d8dde3;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    min-height: 30px;
+    padding: 0 12px;
+    text-transform: uppercase;
+}
+
+.onyx-order-summary {
+    color: #a1a1aa;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 15px 0 0;
+}
+
+.onyx-order-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    margin-top: 18px;
+    padding-top: 16px;
+}
+
+.onyx-order-total {
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.onyx-star-rating {
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 7px;
+    display: grid;
+    gap: 12px;
+    padding: 13px 16px;
+}
+
+.onyx-star-row {
+    display: flex;
+    gap: 8px;
+}
+
+.onyx-star-button {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 13px;
+    color: #000000;
+    cursor: none;
+    display: inline-flex;
+    font-size: 20px;
+    height: 44px;
+    justify-content: center;
+    line-height: 1;
+    width: 44px;
+}
+
+.onyx-star-button::before {
+    content: "\2605";
+}
+
+.onyx-star-button:not(.is-active) {
+    background: #151515;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #55555d;
+}
+
+.onyx-rating-copy,
+.onyx-profile-empty {
+    color: #a1a1aa;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.onyx-profile-empty {
+    border-style: dashed;
+    margin-top: 28px;
+    padding: 28px;
+}
+
+@media (max-width: 980px) {
+    .onyx-account-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-account-sidebar {
+        position: static;
+    }
+
+    .onyx-account-nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+    .onyx-profile-page,
+    .onyx-account-page {
+        padding: 124px 18px 78px;
+    }
+
+    .onyx-profile-card,
+    .onyx-settings-grid,
+    .onyx-review-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-order-top,
+    .onyx-order-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

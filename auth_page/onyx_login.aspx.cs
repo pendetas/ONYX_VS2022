@@ -54,16 +54,23 @@ namespace ONYX_DDAC.auth_page
                 // Auto-detect role and route
                 if (string.Equals(user.Role, "admin", StringComparison.OrdinalIgnoreCase))
                 {
-                    Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx", true);
+                    RedirectAfterLogin("~/admin_page/onyx_admin_dashboard.aspx");
+                    return;
                 }
                 else
                 {
-                    Response.Redirect("~/customer_page/Home.aspx", true);
+                    string destination = Request.QueryString["profile"] == "true"
+                        ? "~/customer_page/onyx_profile.aspx"
+                        : "~/customer_page/Home.aspx";
+
+                    RedirectAfterLogin(destination);
+                    return;
                 }
             }
             catch (Exception ex)
             {
-                ShowMessage(ex.Message, false);
+                System.Diagnostics.Debug.WriteLine("Login Error: " + ex);
+                ShowMessage("Login is temporarily unavailable. Please check your database connection and try again.", false);
             }
         }
 
@@ -71,6 +78,12 @@ namespace ONYX_DDAC.auth_page
         {
             MessagePanel.Visible = true;
             MessageLiteral.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#00ff87" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
+        }
+
+        private void RedirectAfterLogin(string url)
+        {
+            Response.Redirect(url, false);
+            Context.ApplicationInstance.CompleteRequest();
         }
     }
 }

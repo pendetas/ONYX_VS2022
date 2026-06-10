@@ -97,7 +97,7 @@ CREATE TABLE wishlists (
 
 INSERT INTO users (fullname, username, email, password_hash, role)
 VALUES ('Admin', 'admin', 'admin@onyx.com',
-'$2a$11$rBnqKvmZLDzQr9G1dXQpxeKzO8NqNUh6V0Z3fMqOvKpBHV8Q7YPNG', 'admin');
+'$2a$11$FYR4Rhbh92HnhCgO7qLhqesjfb.BJwLu.ZpwRVqEh4T4b/kyv.QAy', 'admin');
 
 INSERT INTO products (name, brand, category, price, stock_qty, description)
 VALUES

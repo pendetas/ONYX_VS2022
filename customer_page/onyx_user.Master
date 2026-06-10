@@ -436,6 +436,7 @@
             letter-spacing: 0.08em;
             min-height: 40px;
             padding: 0 15px 0 12px;
+            text-decoration: none;
             text-transform: uppercase;
             transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
         }
@@ -492,7 +493,7 @@
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 14px;
             box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
-            min-width: 240px;
+            min-width: 210px;
             opacity: 0;
             padding: 10px;
             pointer-events: none;
@@ -855,7 +856,7 @@
                 <span class="text-secondary">|</span>
 
                 <% if (Session["UserId"] != null) { %>
-                    <a href="/customer_page/onyx_wishlist.aspx" class="hover-trigger onyx-ddac-nav-icon onyx-ddac-love-link" aria-label="Wishlist">
+                    <a href="/customer_page/onyx_wishlist" class="hover-trigger onyx-ddac-nav-icon onyx-ddac-love-link" aria-label="Wishlist">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M20.8 4.6c-1.5-1.4-3.9-1.4-5.4.1L12 8.1 8.6 4.7c-1.5-1.5-3.9-1.5-5.4-.1-1.6 1.5-1.6 4.1 0 5.7L12 19l8.8-8.7c1.6-1.6 1.6-4.2 0-5.7z"></path>
                         </svg>
@@ -869,7 +870,7 @@
                         <span class="onyx-ddac-nav-icon-count"><asp:Literal ID="litCartCount" runat="server" Text="0"></asp:Literal></span>
                     </a>
                     <div class="onyx-ddac-account">
-                        <button type="button" class="hover-trigger onyx-ddac-account-trigger" aria-haspopup="true">
+                        <a href="/customer_page/onyx_profile" class="hover-trigger onyx-ddac-account-trigger" aria-label="Open profile details">
                             <span class="onyx-ddac-account-avatar" aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M20 21a8 8 0 0 0-16 0"></path>
@@ -878,12 +879,9 @@
                             </span>
                             <span class="onyx-ddac-account-name"><%= Server.HtmlEncode((Session["Username"] ?? string.Empty).ToString()) %></span>
                             <span class="onyx-chev" aria-hidden="true"></span>
-                        </button>
+                        </a>
                         <div class="onyx-ddac-account-menu" role="menu">
-                            <a class="hover-trigger" href="/customer_page/onyx_profile.aspx#profile">Profile <span>01</span></a>
-                            <a class="hover-trigger" href="/customer_page/onyx_profile.aspx#settings">Settings <span>02</span></a>
-                            <a class="hover-trigger" href="/customer_page/onyx_profile.aspx#orders">Orders <span>03</span></a>
-                            <a class="hover-trigger" href="/customer_page/onyx_profile.aspx#reviews">Reviews <span>04</span></a>
+                            <a class="hover-trigger" href="/customer_page/onyx_profile">My Account <span>Open</span></a>
                             <div class="onyx-ddac-account-divider"></div>
                             <asp:LinkButton ID="btnCustomerLogout" runat="server" CssClass="hover-trigger onyx-ddac-account-action" CausesValidation="false" OnClientClick="return onyxRequestLogout(this);" OnClick="btnCustomerLogout_Click">
                                 Sign Out <span>Exit</span>

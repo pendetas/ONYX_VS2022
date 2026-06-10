@@ -191,8 +191,10 @@
     <Content Include="customer_page\onyx_cart.aspx" />
     <Content Include="customer_page\onyx_checkout.aspx" />
     <Content Include="customer_page\onyx_invoice.aspx" />
+    <Content Include="customer_page\onyx_order_history.aspx" />
     <Content Include="customer_page\onyx_product_details.aspx" />
     <Content Include="customer_page\onyx_profile.aspx" />
+    <Content Include="customer_page\onyx_reviews.aspx" />
     <Content Include="customer_page\onyx_wishlist.aspx" />
     <Content Include="customer_page\onyx_user.Master" />
     <Content Include="customer_page\onyx_catalog.aspx" />
@@ -215,6 +217,7 @@
     <Content Include="Content\home\team-logos\sentinels.svg" />
     <Content Include="Content\home\team-logos\team-liquid.svg" />
     <Content Include="Content\admin.css" />
+    <Content Include="Content\onyx-account.css" />
     <Content Include="Content\onyx.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Default.aspx" />
@@ -349,6 +352,13 @@
     <Compile Include="customer_page\onyx_invoice.aspx.designer.cs">
       <DependentUpon>onyx_invoice.aspx</DependentUpon>
     </Compile>
+    <Compile Include="customer_page\onyx_order_history.aspx.cs">
+      <DependentUpon>onyx_order_history.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="customer_page\onyx_order_history.aspx.designer.cs">
+      <DependentUpon>onyx_order_history.aspx</DependentUpon>
+    </Compile>
     <Compile Include="customer_page\onyx_product_details.aspx.cs">
       <DependentUpon>onyx_product_details.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -362,6 +372,13 @@
     </Compile>
     <Compile Include="customer_page\onyx_profile.aspx.designer.cs">
       <DependentUpon>onyx_profile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="customer_page\onyx_reviews.aspx.cs">
+      <DependentUpon>onyx_reviews.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="customer_page\onyx_reviews.aspx.designer.cs">
+      <DependentUpon>onyx_reviews.aspx</DependentUpon>
     </Compile>
     <Compile Include="customer_page\onyx_wishlist.aspx.cs">
       <DependentUpon>onyx_wishlist.aspx</DependentUpon>

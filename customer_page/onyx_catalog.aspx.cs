@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.UI;
+using System.Web.UI.WebControls;
+using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
@@ -9,6 +12,8 @@ namespace ONYX_DDAC.customer_page
     public partial class onyx_catalog : Page
     {
         private readonly ProductService productService = new ProductService();
+        private readonly WishlistRepository wishlistRepository = new WishlistRepository();
+        private HashSet<long> wishlistProductIds = new HashSet<long>();
 
         protected string SelectedCategory { get; private set; }
         protected string CatalogTitle { get; private set; }
@@ -17,12 +22,17 @@ namespace ONYX_DDAC.customer_page
         protected void Page_Load(object sender, EventArgs e)
         {
             SelectedCategory = NormalizeCategory(Request.QueryString["category"]);
-            BindCatalog();
+
+            if (!IsPostBack)
+            {
+                BindCatalog();
+            }
         }
 
         private void BindCatalog()
         {
             IList<Product> products = productService.GetCatalogProducts(SelectedCategory);
+            LoadWishlistProductIds();
 
             ProductsRepeater.DataSource = products;
             ProductsRepeater.DataBind();
@@ -35,6 +45,78 @@ namespace ONYX_DDAC.customer_page
 
             CatalogTitle = GetCatalogTitle(SelectedCategory);
             CatalogDescription = GetCatalogDescription(SelectedCategory);
+        }
+
+        protected void ProductsRepeater_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (!string.Equals(e.CommandName, "ToggleWishlist", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (!TryGetCurrentUserId(out long userId))
+            {
+                Response.Redirect("~/auth_page/onyx_login.aspx?wishlist=true");
+                return;
+            }
+
+            if (!long.TryParse((e.CommandArgument ?? string.Empty).ToString(), out long productId))
+            {
+                ShowCatalogFeedback("Unable to update wishlist.");
+                BindCatalog();
+                return;
+            }
+
+            if (wishlistRepository.IsInWishlist(userId, productId))
+            {
+                wishlistRepository.RemoveWishlistItem(userId, productId);
+                ShowCatalogFeedback("Removed from wishlist.");
+            }
+            else
+            {
+                wishlistRepository.AddWishlistItem(userId, productId);
+                ShowCatalogFeedback("Added to wishlist.");
+            }
+
+            BindCatalog();
+        }
+
+        protected string GetWishlistButtonClass(object productId)
+        {
+            return IsProductInWishlist(productId)
+                ? "onyx-product-love hover-trigger is-active"
+                : "onyx-product-love hover-trigger";
+        }
+
+        protected string GetWishlistButtonLabel(object productId)
+        {
+            return IsProductInWishlist(productId) ? "Remove from wishlist" : "Add to wishlist";
+        }
+
+        private bool IsProductInWishlist(object productId)
+        {
+            return productId != null
+                && long.TryParse(productId.ToString(), out long id)
+                && wishlistProductIds.Contains(id);
+        }
+
+        private void LoadWishlistProductIds()
+        {
+            wishlistProductIds = new HashSet<long>();
+
+            if (!TryGetCurrentUserId(out long userId))
+            {
+                return;
+            }
+
+            wishlistProductIds = new HashSet<long>(
+                wishlistRepository.GetWishlistProducts(userId).Select(product => product.Id));
+        }
+
+        private void ShowCatalogFeedback(string message)
+        {
+            CatalogFeedbackLabel.Text = Server.HtmlEncode(message);
+            CatalogFeedbackLabel.Visible = true;
         }
 
         protected string GetFilterClass(string category)
@@ -128,6 +210,25 @@ namespace ONYX_DDAC.customer_page
                 default:
                     return string.Empty;
             }
+        }
+
+        private static bool TryGetCurrentUserId(out long userId)
+        {
+            userId = 0;
+            object value = System.Web.HttpContext.Current.Session["UserId"];
+
+            if (value == null)
+            {
+                return false;
+            }
+
+            if (value is long longValue)
+            {
+                userId = longValue;
+                return true;
+            }
+
+            return long.TryParse(value.ToString(), out userId);
         }
 
         private static string GetCatalogTitle(string category)

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -11,9 +10,6 @@ namespace ONYX_DDAC.customer_page
     public partial class onyx_profile : Page
     {
         private readonly UserRepository userRepository = new UserRepository();
-        private readonly OrderRepository orderRepository = new OrderRepository();
-        private readonly ReviewRepository reviewRepository = new ReviewRepository();
-        private readonly WishlistRepository wishlistRepository = new WishlistRepository();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -31,97 +27,31 @@ namespace ONYX_DDAC.customer_page
 
         private void BindProfile(long userId)
         {
-            User user = userRepository.GetUserById(userId);
-            IList<Order> orders = orderRepository.GetOrdersForUser(userId, 5);
-            IList<Product> reviewProducts = orderRepository.GetPurchasedProductsForUser(userId);
-            int wishlistCount = wishlistRepository.GetWishlistProducts(userId).Count;
-
-            BindAccountDetails(user);
-            BindStats(orders.Count, reviewProducts.Count, wishlistCount);
-            BindOrders(orders);
-            BindReviewProducts(reviewProducts);
+            BindSettingsFields(TryLoadUser(userId));
         }
 
-        private void BindAccountDetails(User user)
+        private User TryLoadUser(long userId)
         {
-            string displayName = GetDisplayName(user);
-            litInitials.Text = Server.HtmlEncode(GetInitials(displayName));
-            litDisplayName.Text = Server.HtmlEncode(displayName);
-            litUsername.Text = Server.HtmlEncode(GetValueOrFallback(user == null ? null : user.Username, "onyx-user"));
-            litEmail.Text = Server.HtmlEncode(GetValueOrFallback(user == null ? null : user.Email, "Not provided"));
-            litPhone.Text = Server.HtmlEncode(GetValueOrFallback(user == null ? null : user.PhoneNumber, "Not provided"));
-            litAddress.Text = FormatAddress(user == null ? null : user.Address);
-            litMemberSince.Text = user == null || user.CreatedAt == DateTime.MinValue
-                ? "Recently joined"
-                : Server.HtmlEncode(user.CreatedAt.ToString("dd MMM yyyy"));
-
-            BindSettingsFields(user);
+            try
+            {
+                return userRepository.GetUserById(userId) ?? GetSessionFallbackUser();
+            }
+            catch
+            {
+                return GetSessionFallbackUser();
+            }
         }
 
-        private void BindStats(int orderCount, int reviewableCount, int wishlistCount)
+        private static User GetSessionFallbackUser()
         {
-            litOrderCount.Text = orderCount.ToString();
-            litReviewableCount.Text = reviewableCount.ToString();
-            litWishlistCount.Text = wishlistCount.ToString();
-        }
+            HttpContext context = HttpContext.Current;
+            object username = context == null ? null : context.Session["Username"];
 
-        private void BindOrders(IList<Order> orders)
-        {
-            pnlEmptyOrders.Visible = orders.Count == 0;
-            rptRecentOrders.Visible = orders.Count > 0;
-            rptRecentOrders.DataSource = orders;
-            rptRecentOrders.DataBind();
-        }
-
-        private void BindReviewProducts(IList<Product> products)
-        {
-            pnlReviewForm.Visible = products.Count > 0;
-            pnlNoReviewProducts.Visible = products.Count == 0;
-
-            ddlReviewProduct.DataSource = products;
-            ddlReviewProduct.DataTextField = "Name";
-            ddlReviewProduct.DataValueField = "Id";
-            ddlReviewProduct.DataBind();
-        }
-
-        protected void btnSubmitReview_Click(object sender, EventArgs e)
-        {
-            if (!TryGetCurrentUserId(out long userId))
+            return new User
             {
-                Response.Redirect("~/auth_page/onyx_login.aspx?profile=true");
-                return;
-            }
-
-            lblReviewFeedback.Visible = true;
-
-            if (!long.TryParse(ddlReviewProduct.SelectedValue, out long productId))
-            {
-                lblReviewFeedback.Text = "Choose a purchased product first.";
-                return;
-            }
-
-            if (!short.TryParse(ddlRating.SelectedValue, out short rating) || rating < 1 || rating > 5)
-            {
-                lblReviewFeedback.Text = "Choose a rating from 1 to 5.";
-                return;
-            }
-
-            if (!orderRepository.HasPurchasedProduct(userId, productId))
-            {
-                lblReviewFeedback.Text = "Reviews are only available for purchased gear.";
-                return;
-            }
-
-            string comment = (txtReviewComment.Text ?? string.Empty).Trim();
-            if (comment.Length > 1200)
-            {
-                lblReviewFeedback.Text = "Keep the review under 1200 characters.";
-                return;
-            }
-
-            reviewRepository.SaveReview(userId, productId, rating, comment);
-            txtReviewComment.Text = string.Empty;
-            lblReviewFeedback.Text = "Review saved. Thanks for testing the gear.";
+                Username = username == null ? "onyx-user" : username.ToString(),
+                CreatedAt = DateTime.MinValue
+            };
         }
 
         protected void btnSaveSettings_Click(object sender, EventArgs e)
@@ -134,7 +64,9 @@ namespace ONYX_DDAC.customer_page
 
             lblSettingsFeedback.Visible = true;
 
-            string fullName = NormalizeOptionalValue(txtSettingsFullName.Text);
+            string firstName = NormalizeOptionalValue(txtSettingsFirstName.Text);
+            string lastName = NormalizeOptionalValue(txtSettingsLastName.Text);
+            string fullName = NormalizeOptionalValue(string.Join(" ", new[] { firstName, lastName }.Where(value => !string.IsNullOrWhiteSpace(value))));
             string email = (txtSettingsEmail.Text ?? string.Empty).Trim();
             string phoneNumber = NormalizeOptionalValue(txtSettingsPhone.Text);
             string address = NormalizeOptionalValue(txtSettingsAddress.Text);
@@ -166,7 +98,7 @@ namespace ONYX_DDAC.customer_page
                 }
 
                 User updatedUser = userRepository.GetUserById(userId);
-                BindAccountDetails(updatedUser);
+                BindSettingsFields(updatedUser);
                 lblSettingsFeedback.Text = "Settings saved.";
             }
             catch (Npgsql.PostgresException ex) when (ex.SqlState == "23505")
@@ -175,89 +107,19 @@ namespace ONYX_DDAC.customer_page
             }
         }
 
-        protected string FormatOrderDate(object value)
-        {
-            if (value is DateTime date)
-            {
-                return Server.HtmlEncode(date.ToString("dd MMM yyyy"));
-            }
-
-            return "Recent order";
-        }
-
-        protected string GetOrderSummary(object dataItem)
-        {
-            Order order = dataItem as Order;
-            if (order == null || order.Items == null || order.Items.Count == 0)
-            {
-                return "Order details are being prepared.";
-            }
-
-            string[] names = order.Items
-                .Take(3)
-                .Select(item => string.Format("{0} x {1}", item.Quantity, item.ProductName))
-                .ToArray();
-
-            string summary = string.Join(", ", names);
-            if (order.Items.Count > 3)
-            {
-                summary += string.Format(" and {0} more", order.Items.Count - 3);
-            }
-
-            return Server.HtmlEncode(summary);
-        }
-
-        private string FormatAddress(string address)
-        {
-            string value = GetValueOrFallback(address, "Not provided");
-            return Server.HtmlEncode(value).Replace("\r\n", "<br />").Replace("\n", "<br />");
-        }
-
         private void BindSettingsFields(User user)
         {
-            txtSettingsFullName.Text = user == null ? string.Empty : GetValueOrFallback(user.FullName, string.Empty);
+            string fullName = user == null ? string.Empty : GetValueOrFallback(user.FullName, string.Empty);
+            string firstName;
+            string lastName;
+            SplitDisplayName(fullName, out firstName, out lastName);
+
+            txtSettingsFirstName.Text = firstName;
+            txtSettingsLastName.Text = lastName;
+            txtSettingsFullName.Text = fullName;
             txtSettingsEmail.Text = user == null ? string.Empty : GetValueOrFallback(user.Email, string.Empty);
             txtSettingsPhone.Text = user == null ? string.Empty : GetValueOrFallback(user.PhoneNumber, string.Empty);
             txtSettingsAddress.Text = user == null ? string.Empty : GetValueOrFallback(user.Address, string.Empty);
-        }
-
-        private static string GetDisplayName(User user)
-        {
-            if (user == null)
-            {
-                object sessionName = HttpContext.Current.Session["Username"];
-                return sessionName == null ? "ONYX Member" : sessionName.ToString();
-            }
-
-            if (!string.IsNullOrWhiteSpace(user.FullName))
-            {
-                return user.FullName;
-            }
-
-            if (!string.IsNullOrWhiteSpace(user.Username))
-            {
-                return user.Username;
-            }
-
-            return string.IsNullOrWhiteSpace(user.Email) ? "ONYX Member" : user.Email;
-        }
-
-        private static string GetInitials(string displayName)
-        {
-            string[] parts = (displayName ?? string.Empty)
-                .Split(new[] { ' ', '.', '_', '-' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (parts.Length == 0)
-            {
-                return "O";
-            }
-
-            if (parts.Length == 1)
-            {
-                return parts[0].Substring(0, 1).ToUpperInvariant();
-            }
-
-            return (parts[0].Substring(0, 1) + parts[1].Substring(0, 1)).ToUpperInvariant();
         }
 
         private static string GetValueOrFallback(string value, string fallback)
@@ -269,6 +131,22 @@ namespace ONYX_DDAC.customer_page
         {
             string normalized = (value ?? string.Empty).Trim();
             return normalized.Length == 0 ? null : normalized;
+        }
+
+        private static void SplitDisplayName(string fullName, out string firstName, out string lastName)
+        {
+            string normalized = (fullName ?? string.Empty).Trim();
+            int splitIndex = normalized.IndexOf(' ');
+
+            if (splitIndex < 0)
+            {
+                firstName = normalized;
+                lastName = string.Empty;
+                return;
+            }
+
+            firstName = normalized.Substring(0, splitIndex).Trim();
+            lastName = normalized.Substring(splitIndex + 1).Trim();
         }
 
         private static bool LooksLikeEmail(string email)

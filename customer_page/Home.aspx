@@ -115,9 +115,19 @@
             overflow: hidden;
         }
 
-        .onyx-ddac-hero-copy {
+        .onyx-ddac-hero-title {
+            color: #ffffff;
+            font-family: Syne, sans-serif;
+            font-size: clamp(64px, 11vw, 156px);
+            font-weight: 800;
+            letter-spacing: -0.06em;
+            line-height: 0.86;
+            margin: 0;
+            pointer-events: none;
             position: relative;
-            z-index: 3;
+            text-align: center;
+            text-transform: uppercase;
+            z-index: 2;
         }
 
         .onyx-ddac-nav-logo {
@@ -370,27 +380,6 @@
             top: 0;
         }
 
-        .onyx-ddac-hero-mouse {
-            bottom: clamp(1.5rem, 5vh, 4.5rem);
-            left: 50%;
-            opacity: 0.66;
-            pointer-events: none;
-            position: absolute;
-            transform: translateX(-50%);
-            width: min(72vw, 820px);
-            z-index: 1;
-        }
-
-        .onyx-ddac-hero-mouse img {
-            border-radius: 32px;
-            display: block;
-            filter: drop-shadow(0 34px 60px rgba(216, 221, 227, 0.14));
-            height: auto;
-            -webkit-mask-image: radial-gradient(ellipse at center, #000 58%, rgba(0, 0, 0, 0.82) 76%, transparent 100%);
-            mask-image: radial-gradient(ellipse at center, #000 58%, rgba(0, 0, 0, 0.82) 76%, transparent 100%);
-            width: 100%;
-        }
-
         .onyx-ddac-marquee-container {
             overflow: hidden;
             white-space: nowrap;
@@ -458,12 +447,6 @@
 
         .onyx-ddac-home::-webkit-scrollbar {
             display: none;
-        }
-
-        .onyx-ddac-split-char {
-            display: inline-block;
-            opacity: 0;
-            transform: translateY(50px);
         }
 
         .onyx-ddac-product-grid {
@@ -568,21 +551,8 @@
         }
 
         @media (max-width: 1024px) {
-            .onyx-ddac-hero-mouse {
-                bottom: 4rem;
-                opacity: 0.42;
-                width: min(110vw, 620px);
-            }
-
             .onyx-ddac-product-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        @media (max-height: 760px) {
-            .onyx-ddac-hero-mouse {
-                opacity: 0.38;
-                width: min(56vw, 640px);
             }
         }
 
@@ -636,65 +606,23 @@
                 animation: none;
             }
 
-            .onyx-ddac-split-char {
-                opacity: 1;
-                transform: none;
-            }
+        }
+
+        .onyx-ddac-home.is-ready .onyx-ddac-hero-section .reveal-item {
+            opacity: 1;
         }
     </style>
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <div class="onyx-ddac-home antialiased font-sans selection:bg-accent selection:text-black">
-        <div id="preloader" class="onyx-ddac-preloader">
-            <h1 id="loader-text" class="text-6xl md:text-8xl font-syne font-bold text-white tracking-tighter">0%</h1>
-        </div>
+        <div id="preloader" class="onyx-ddac-preloader"></div>
 
         <canvas id="webgl-canvas" class="onyx-ddac-canvas"></canvas>
 
         <main id="top">
-            <section class="onyx-ddac-hero-section relative w-full h-screen flex flex-col justify-center items-center px-6 pt-20">
-                <div class="onyx-ddac-hero-copy text-center w-full max-w-6xl mx-auto">
-                    <p class="text-secondary font-syne uppercase tracking-widest text-sm mb-6 reveal-item opacity-0">Premium Esports Peripherals</p>
-                    <h1 id="hero-title" class="text-6xl md:text-8xl lg:text-[8rem] leading-[0.9] font-syne font-bold tracking-tighter mb-12 uppercase">
-                        Dominate<br />the game.
-                    </h1>
-
-                    <div class="flex flex-col sm:flex-row gap-6 justify-center items-center reveal-item opacity-0">
-                        <a href="../customer_page/onyx_catalog.aspx" class="hover-trigger bg-accent text-black px-8 py-4 rounded-full font-bold text-sm tracking-wide uppercase hover:bg-white transition-colors no-underline">
-                            Shop Collection
-                        </a>
-                        <a href="#featured-products" class="hover-trigger border border-white/30 px-8 py-4 rounded-full font-bold text-sm tracking-wide uppercase hover:border-white transition-colors no-underline text-white">
-                            View Pro Gear
-                        </a>
-                    </div>
-                </div>
-
-                <div class="onyx-ddac-hero-mouse reveal-item opacity-0">
-                    <img src="/Content/home/onyx-pro-mouse.png" alt="Black and silver wireless esports gaming mouse" width="1536" height="1024" />
-                </div>
-
-                <div class="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-12 reveal-item opacity-0">
-                    <div>
-                        <h3 class="font-syne text-4xl font-bold text-white">1<span class="text-accent text-2xl">ms</span></h3>
-                        <p class="text-secondary text-sm">Ultra-Low Latency</p>
-                    </div>
-                    <div>
-                        <h3 class="font-syne text-4xl font-bold text-white">50<span class="text-accent text-2xl">h</span></h3>
-                        <p class="text-secondary text-sm">Competitive Battery Life</p>
-                    </div>
-                </div>
-
-                <div class="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-12 text-right reveal-item opacity-0">
-                    <div>
-                        <h3 class="font-syne text-4xl font-bold text-white">49<span class="text-accent text-2xl">g</span></h3>
-                        <p class="text-secondary text-sm">Featherweight Chassis</p>
-                    </div>
-                    <div>
-                        <h3 class="font-syne text-4xl font-bold text-white">30<span class="text-accent text-2xl">K</span></h3>
-                        <p class="text-secondary text-sm">DPI Optical Sensor</p>
-                    </div>
-                </div>
+            <section class="onyx-ddac-hero-section relative w-full h-screen flex flex-col justify-center items-center px-6 pt-20" aria-label="ONYX crystal hero">
+                <h1 class="onyx-ddac-hero-title reveal-item opacity-0">Dominate<br />the game.</h1>
             </section>
 
             <section class="w-full py-32 px-6 md:px-12 bg-[#050505] relative z-10 border-t border-white/10">
@@ -929,31 +857,24 @@
             }
 
             window.addEventListener('load', function () {
-                var loaderText = document.getElementById('loader-text');
+                var homeRoot = document.querySelector('.onyx-ddac-home');
 
                 if (window.gsap && !reduceMotion) {
-                    var counter = { value: 0 };
                     var timeline = gsap.timeline({
                         onComplete: function () {
+                            if (homeRoot) {
+                                homeRoot.classList.add('is-ready');
+                            }
+
                             initScrollAnimations();
                         }
                     });
 
-                    timeline.to(counter, {
-                        value: 100,
-                        duration: 1.6,
-                        ease: 'power2.inOut',
-                        onUpdate: function () {
-                            if (loaderText) {
-                                loaderText.innerText = Math.round(counter.value) + '%';
-                            }
-                        }
-                    })
-                    .to('#preloader', {
+                    timeline.to('#preloader', {
                         yPercent: -100,
-                        duration: 1.0,
+                        duration: 0.8,
                         ease: 'power4.inOut',
-                        delay: 0.1
+                        delay: 0.15
                     })
                     .to('.reveal-item', {
                         opacity: 1,
@@ -970,6 +891,11 @@
                         preloader.style.display = 'none';
                     }
 
+                    var homeRoot = document.querySelector('.onyx-ddac-home');
+                    if (homeRoot) {
+                        homeRoot.classList.add('is-ready');
+                    }
+
                     document.querySelectorAll('.reveal-item').forEach(function (item) {
                         item.style.opacity = '1';
                     });
@@ -978,33 +904,6 @@
             });
 
             function initScrollAnimations() {
-                var heroTitle = document.getElementById('hero-title');
-
-                if (heroTitle && window.gsap && !heroTitle.dataset.split) {
-                    var chars = heroTitle.innerText.split('');
-                    heroTitle.innerHTML = '';
-                    heroTitle.dataset.split = 'true';
-
-                    chars.forEach(function (char) {
-                        if (char === ' ') {
-                            heroTitle.innerHTML += '&nbsp;';
-                        } else if (char === '\n') {
-                            heroTitle.innerHTML += '<br />';
-                        } else {
-                            heroTitle.innerHTML += '<span class="onyx-ddac-split-char">' + char + '</span>';
-                        }
-                    });
-
-                    gsap.to('.onyx-ddac-split-char', {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.8,
-                        stagger: 0.02,
-                        ease: 'back.out(1.5)',
-                        delay: 0.2
-                    });
-                }
-
                 if (!window.gsap || !window.ScrollTrigger || reduceMotion) {
                     return;
                 }

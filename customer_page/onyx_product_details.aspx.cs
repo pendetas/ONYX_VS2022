@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.UI;
+using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 using ONYX_DDAC.Helpers;
@@ -10,6 +11,7 @@ namespace ONYX_DDAC.customer_page
     public partial class onyx_product_details : Page
     {
         private readonly ProductService productService = new ProductService();
+        private readonly WishlistRepository wishlistRepository = new WishlistRepository();
 
         // NEW: Property to track the currently selected variant across postbacks
         protected long? SelectedVariantId
@@ -37,6 +39,8 @@ namespace ONYX_DDAC.customer_page
             {
                 LoadProductDetails(productId);
             }
+
+            UpdateWishlistButton(productId);
         }
 
         private void LoadProductDetails(long productId)
@@ -254,6 +258,66 @@ namespace ONYX_DDAC.customer_page
             lblMessage.Text = $"Successfully added {qty} item(s) to your cart.";
             lblMessage.CssClass = "d-block mt-4 fw-bold text-success";
             lblMessage.Visible = true;
+        }
+
+        protected void btnWishlist_Click(object sender, EventArgs e)
+        {
+            if (!long.TryParse(Request.QueryString["id"], out long productId))
+            {
+                Response.Redirect("onyx_catalog.aspx");
+                return;
+            }
+
+            if (!TryGetCurrentUserId(out long userId))
+            {
+                Response.Redirect("~/auth_page/onyx_login.aspx?wishlist=true");
+                return;
+            }
+
+            if (wishlistRepository.IsInWishlist(userId, productId))
+            {
+                wishlistRepository.RemoveWishlistItem(userId, productId);
+                lblMessage.Text = "Removed from wishlist.";
+            }
+            else
+            {
+                wishlistRepository.AddWishlistItem(userId, productId);
+                lblMessage.Text = "Saved to wishlist.";
+            }
+
+            lblMessage.CssClass = "d-block mt-3 fw-bold text-success";
+            lblMessage.Visible = true;
+            UpdateWishlistButton(productId);
+        }
+
+        private void UpdateWishlistButton(long productId)
+        {
+            bool saved = TryGetCurrentUserId(out long userId)
+                && wishlistRepository.IsInWishlist(userId, productId);
+
+            btnWishlist.CssClass = saved
+                ? "onyx-detail-wishlist hover-trigger is-active"
+                : "onyx-detail-wishlist hover-trigger";
+            btnWishlist.ToolTip = saved ? "Remove from wishlist" : "Add to wishlist";
+        }
+
+        private static bool TryGetCurrentUserId(out long userId)
+        {
+            userId = 0;
+            object value = System.Web.HttpContext.Current.Session["UserId"];
+
+            if (value == null)
+            {
+                return false;
+            }
+
+            if (value is long longValue)
+            {
+                userId = longValue;
+                return true;
+            }
+
+            return long.TryParse(value.ToString(), out userId);
         }
     }
 }

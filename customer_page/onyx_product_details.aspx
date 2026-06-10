@@ -147,6 +147,47 @@
             box-shadow: none;
         }
 
+        .onyx-detail-wishlist {
+            align-items: center;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 999px;
+            color: #ffffff;
+            display: inline-flex;
+            font-family: Syne, sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            gap: 10px;
+            justify-content: center;
+            letter-spacing: 0.08em;
+            min-height: 56px;
+            padding: 0 22px;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+            white-space: nowrap;
+        }
+
+        .onyx-detail-wishlist svg {
+            fill: transparent;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            width: 18px;
+        }
+
+        .onyx-detail-wishlist:hover,
+        .onyx-detail-wishlist.is-active {
+            background: #ffffff;
+            border-color: #ffffff;
+            color: #050505;
+            transform: translateY(-1px);
+        }
+
+        .onyx-detail-wishlist.is-active svg {
+            fill: currentColor;
+        }
+
         /* New Specs Section to fill empty space */
         .onyx-specs-list {
             margin-top: 40px;
@@ -260,6 +301,12 @@
                     <div class="d-flex gap-3 mt-5">
                         <asp:TextBox ID="txtQty" runat="server" TextMode="Number" Text="1" min="1" CssClass="onyx-qty-input"></asp:TextBox>
                         <asp:Button ID="btnAddToCart" runat="server" Text="Add to Cart" CssClass="onyx-add-to-cart flex-grow-1" OnClick="btnAddToCart_Click" />
+                        <asp:LinkButton ID="btnWishlist" runat="server" CssClass="onyx-detail-wishlist hover-trigger" OnClick="btnWishlist_Click" ToolTip="Add to wishlist">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20.8 4.6c-1.8-1.7-4.7-1.7-6.5 0L12 6.8 9.7 4.6c-1.8-1.7-4.7-1.7-6.5 0-1.9 1.8-1.9 4.7 0 6.5l8.8 8.4 8.8-8.4c1.9-1.8 1.9-4.7 0-6.5z" />
+                            </svg>
+                            <span>Save</span>
+                        </asp:LinkButton>
                     </div>
                     
                     <!-- Success/Error Message -->

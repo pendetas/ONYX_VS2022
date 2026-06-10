@@ -55,8 +55,7 @@ namespace ONYX_DDAC.Services
             // 2. If user exists, verify the password against the stored BCrypt hash
             if (user != null)
             {
-                // Fix: Removed named arguments here as well. SHA384 is used by default.
-                bool isPasswordValid = BCrypt.Net.BCrypt.EnhancedVerify(rawPassword, user.PasswordHash);
+                bool isPasswordValid = VerifyPassword(rawPassword, user.PasswordHash);
 
                 if (isPasswordValid)
                 {
@@ -66,6 +65,34 @@ namespace ONYX_DDAC.Services
 
             // Login failed (either account not found or password incorrect)
             return null;
+        }
+
+        private static bool VerifyPassword(string rawPassword, string passwordHash)
+        {
+            if (string.IsNullOrWhiteSpace(rawPassword) || string.IsNullOrWhiteSpace(passwordHash))
+            {
+                return false;
+            }
+
+            if (TryVerify(() => BCrypt.Net.BCrypt.EnhancedVerify(rawPassword, passwordHash)))
+            {
+                return true;
+            }
+
+            return TryVerify(() => BCrypt.Net.BCrypt.Verify(rawPassword, passwordHash));
+        }
+
+        private static bool TryVerify(Func<bool> verifier)
+        {
+            try
+            {
+                return verifier();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Password verification skipped: " + ex.Message);
+                return false;
+            }
         }
     }
 }

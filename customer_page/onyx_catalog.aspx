@@ -134,6 +134,7 @@
             justify-content: center;
             overflow: hidden;
             padding: 24px;
+            position: relative;
         }
 
         .onyx-product-media img {
@@ -147,6 +148,54 @@
 
         .onyx-product-card:hover .onyx-product-media img {
             transform: scale(1.08);
+        }
+
+        .onyx-product-love {
+            align-items: center;
+            background: rgba(8,8,8,0.68);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 999px;
+            color: #ffffff;
+            display: inline-flex;
+            height: 44px;
+            justify-content: center;
+            position: absolute;
+            right: 18px;
+            text-decoration: none;
+            top: 18px;
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+            width: 44px;
+            z-index: 2;
+        }
+
+        .onyx-product-love svg {
+            fill: transparent;
+            height: 19px;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            width: 19px;
+        }
+
+        .onyx-product-love:hover,
+        .onyx-product-love.is-active {
+            background: #ffffff;
+            border-color: #ffffff;
+            color: #050505;
+            transform: translateY(-1px);
+        }
+
+        .onyx-product-love.is-active svg {
+            fill: currentColor;
+        }
+
+        .onyx-catalog-feedback {
+            color: rgba(255,255,255,0.72);
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.13em;
+            margin-top: 12px;
+            text-transform: uppercase;
         }
 
         .onyx-product-body {
@@ -287,11 +336,20 @@
                 <asp:Literal ID="CatalogCountLiteral" runat="server" />
             </div>
 
-            <asp:Repeater ID="ProductsRepeater" runat="server">
+            <asp:Repeater ID="ProductsRepeater" runat="server" OnItemCommand="ProductsRepeater_ItemCommand">
                 <HeaderTemplate><div class="onyx-product-grid"></HeaderTemplate>
                 <ItemTemplate>
                     <article class="onyx-product-card hover-trigger">
                         <div class="onyx-product-media">
+                            <asp:LinkButton ID="btnWishlist" runat="server"
+                                CommandName="ToggleWishlist"
+                                CommandArgument='<%# Eval("Id") %>'
+                                CssClass='<%# GetWishlistButtonClass(Eval("Id")) %>'
+                                ToolTip='<%# GetWishlistButtonLabel(Eval("Id")) %>'>
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M20.8 4.6c-1.8-1.7-4.7-1.7-6.5 0L12 6.8 9.7 4.6c-1.8-1.7-4.7-1.7-6.5 0-1.9 1.8-1.9 4.7 0 6.5l8.8 8.4 8.8-8.4c1.9-1.8 1.9-4.7 0-6.5z" />
+                                </svg>
+                            </asp:LinkButton>
                             <img src='<%# GetProductImageUrl(Eval("ImageUrl"), Eval("Category")) %>' alt='<%# Server.HtmlEncode(Eval("Name").ToString()) %>' loading="lazy" />
                         </div>
                         <div class="onyx-product-body">
@@ -310,6 +368,7 @@
                 </ItemTemplate>
                 <FooterTemplate></div></FooterTemplate>
             </asp:Repeater>
+            <asp:Label ID="CatalogFeedbackLabel" runat="server" CssClass="onyx-catalog-feedback" Visible="false" />
 
             <asp:Panel ID="EmptyCatalogPanel" runat="server" CssClass="onyx-empty-catalog" Visible="false">
                 No products match this catalog filter.
