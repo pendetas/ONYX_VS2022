@@ -1,15 +1,14 @@
 using System;
-using System.Linq;
 using System.Web;
 using System.Web.UI;
-using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.customer_page
 {
     public partial class onyx_profile : Page
     {
-        private readonly UserRepository userRepository = new UserRepository();
+        private readonly ProfileService profileService = new ProfileService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -27,31 +26,7 @@ namespace ONYX_DDAC.customer_page
 
         private void BindProfile(long userId)
         {
-            BindSettingsFields(TryLoadUser(userId));
-        }
-
-        private User TryLoadUser(long userId)
-        {
-            try
-            {
-                return userRepository.GetUserById(userId) ?? GetSessionFallbackUser();
-            }
-            catch
-            {
-                return GetSessionFallbackUser();
-            }
-        }
-
-        private static User GetSessionFallbackUser()
-        {
-            HttpContext context = HttpContext.Current;
-            object username = context == null ? null : context.Session["Username"];
-
-            return new User
-            {
-                Username = username == null ? "onyx-user" : username.ToString(),
-                CreatedAt = DateTime.MinValue
-            };
+            BindSettingsFields(profileService.GetUserProfile(userId));
         }
 
         protected void btnSaveSettings_Click(object sender, EventArgs e)
@@ -64,47 +39,20 @@ namespace ONYX_DDAC.customer_page
 
             lblSettingsFeedback.Visible = true;
 
-            string firstName = NormalizeOptionalValue(txtSettingsFirstName.Text);
-            string lastName = NormalizeOptionalValue(txtSettingsLastName.Text);
-            string fullName = NormalizeOptionalValue(string.Join(" ", new[] { firstName, lastName }.Where(value => !string.IsNullOrWhiteSpace(value))));
-            string email = (txtSettingsEmail.Text ?? string.Empty).Trim();
-            string phoneNumber = NormalizeOptionalValue(txtSettingsPhone.Text);
-            string address = NormalizeOptionalValue(txtSettingsAddress.Text);
+            ProfileUpdateResult result = profileService.UpdateUserSettings(
+                userId,
+                txtSettingsFirstName.Text,
+                txtSettingsLastName.Text,
+                txtSettingsEmail.Text,
+                txtSettingsPhone.Text,
+                txtSettingsAddress.Text);
 
-            if (string.IsNullOrWhiteSpace(fullName))
+            if (result.Success)
             {
-                lblSettingsFeedback.Text = "Full name is required.";
-                return;
+                BindSettingsFields(result.User);
             }
 
-            if (string.IsNullOrWhiteSpace(email) || !LooksLikeEmail(email))
-            {
-                lblSettingsFeedback.Text = "Enter a valid email address.";
-                return;
-            }
-
-            if (address != null && address.Length > 500)
-            {
-                lblSettingsFeedback.Text = "Keep the address under 500 characters.";
-                return;
-            }
-
-            try
-            {
-                if (!userRepository.UpdateUserSettings(userId, fullName, email, phoneNumber, address))
-                {
-                    lblSettingsFeedback.Text = "Settings could not be saved.";
-                    return;
-                }
-
-                User updatedUser = userRepository.GetUserById(userId);
-                BindSettingsFields(updatedUser);
-                lblSettingsFeedback.Text = "Settings saved.";
-            }
-            catch (Npgsql.PostgresException ex) when (ex.SqlState == "23505")
-            {
-                lblSettingsFeedback.Text = "That email is already used by another account.";
-            }
+            lblSettingsFeedback.Text = result.Message;
         }
 
         private void BindSettingsFields(User user)
@@ -127,12 +75,6 @@ namespace ONYX_DDAC.customer_page
             return string.IsNullOrWhiteSpace(value) ? fallback : value;
         }
 
-        private static string NormalizeOptionalValue(string value)
-        {
-            string normalized = (value ?? string.Empty).Trim();
-            return normalized.Length == 0 ? null : normalized;
-        }
-
         private static void SplitDisplayName(string fullName, out string firstName, out string lastName)
         {
             string normalized = (fullName ?? string.Empty).Trim();
@@ -147,12 +89,6 @@ namespace ONYX_DDAC.customer_page
 
             firstName = normalized.Substring(0, splitIndex).Trim();
             lastName = normalized.Substring(splitIndex + 1).Trim();
-        }
-
-        private static bool LooksLikeEmail(string email)
-        {
-            int atIndex = email.IndexOf('@');
-            return atIndex > 0 && atIndex < email.Length - 1 && email.IndexOf('.', atIndex) > atIndex + 1;
         }
 
         private static bool TryGetCurrentUserId(out long userId)

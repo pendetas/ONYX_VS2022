@@ -9,7 +9,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@500;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -23,7 +23,7 @@
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                        syne: ['Syne', 'sans-serif']
+                        mono: ['JetBrains Mono', 'monospace']
                     }
                 }
             }
@@ -84,50 +84,11 @@
             text-decoration: none;
         }
 
-        .onyx-user-shell.has-custom-cursor,
-        .onyx-user-shell.has-custom-cursor a,
-        .onyx-user-shell.has-custom-cursor button,
-        .onyx-user-shell.has-custom-cursor input,
-        .onyx-user-shell.has-custom-cursor label {
-            cursor: none;
-        }
-
-        .onyx-ddac-cursor {
-            background-color: #ffffff;
-            border-radius: 50%;
-            height: 12px;
-            left: 0;
-            mix-blend-mode: difference;
-            opacity: 0;
-            pointer-events: none;
-            position: fixed;
-            top: 0;
-            transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, background-color 0.3s, opacity 0.18s ease, border-color 0.3s;
-            visibility: hidden;
-            will-change: transform, width, height;
-            width: 12px;
-            z-index: 20000;
-        }
-
-        .onyx-ddac-cursor.is-visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .onyx-ddac-cursor.hover-state {
-            background-color: transparent;
-            border: 1px solid #d8dde3;
-            height: 60px;
-            mix-blend-mode: normal;
-            width: 60px;
-        }
-
         .onyx-ddac-nav {
             align-items: center;
-            background: rgba(5, 5, 5, 0.85);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background: rgba(5, 5, 5, 0.2);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 0;
             display: flex;
@@ -138,30 +99,32 @@
             right: 0;
             top: 0;
             transition:
-                box-shadow 0.55s cubic-bezier(0.4, 0, 0.2, 1),
-                border-color 0.4s ease,
-                background 0.4s ease;
+                background 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.45s cubic-bezier(0.4, 0, 0.2, 1);
             width: auto;
             z-index: 90;
         }
 
         .onyx-ddac-nav.is-scrolled {
-            background: rgba(8, 8, 10, 0.97);
-            border-bottom-color: rgba(255, 255, 255, 0.12);
-            box-shadow:
-                0 10px 30px rgba(0, 0, 0, 0.36),
-                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            background: #0a0a0a;
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
             left: 0;
             right: 0;
             top: 0;
         }
 
-        .onyx-ddac-nav-logo {
-            display: block;
-            height: 100px;
-            max-width: 300px;
-            object-fit: contain;
-            width: auto;
+        .onyx-wordmark {
+            color: #ffffff;
+            display: inline-flex;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: clamp(22px, 2.25vw, 32px);
+            font-weight: 400;
+            letter-spacing: -0.08em;
+            line-height: 1;
+            text-decoration: none;
+            text-transform: lowercase;
         }
 
         .onyx-ddac-nav-links {
@@ -169,8 +132,8 @@
             display: flex;
             gap: 2rem;
             font-size: 0.875rem;
-            font-weight: 600;
-            letter-spacing: 0.02em;
+            font-weight: 400;
+            letter-spacing: 1.2px;
         }
 
         .onyx-ddac-nav-links a,
@@ -189,8 +152,8 @@
             border-radius: 999px;
             color: #050505 !important;
             font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.06em;
+            font-weight: 400;
+            letter-spacing: 1.2px;
             padding: 9px 20px;
             text-transform: uppercase;
             transition: background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
@@ -305,17 +268,17 @@
         .onyx-ddac-mega-cat-num {
             color: rgba(255, 255, 255, 0.25);
             font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.18em;
+            font-weight: 400;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
         }
 
         .onyx-ddac-mega-cat-name {
             color: rgba(255, 255, 255, 0.9);
-            font-family: Syne, sans-serif;
+            font-family: "JetBrains Mono", ui-monospace, monospace;
             font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+            font-weight: 400;
+            letter-spacing: 1.2px;
             line-height: 1;
             transition: color 0.2s ease;
         }
@@ -327,7 +290,7 @@
         .onyx-ddac-mega-cat-sub {
             color: rgba(255, 255, 255, 0.32);
             font-size: 11px;
-            letter-spacing: 0.04em;
+            letter-spacing: 1.2px;
         }
 
         .onyx-ddac-mega-cta {
@@ -353,8 +316,8 @@
         .onyx-ddac-mega-cta-label {
             color: rgba(255, 255, 255, 0.35);
             font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.2em;
+            font-weight: 400;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
         }
 
@@ -365,9 +328,9 @@
             color: #050505 !important;
             display: inline-flex;
             font-size: 12px;
-            font-weight: 800;
+            font-weight: 400;
             gap: 8px;
-            letter-spacing: 0.06em;
+            letter-spacing: 1.2px;
             padding: 12px 22px;
             text-decoration: none !important;
             text-transform: uppercase;
@@ -407,7 +370,7 @@
             color: #050505;
             display: flex;
             font-size: 9px;
-            font-weight: 800;
+            font-weight: 400;
             height: 17px;
             justify-content: center;
             line-height: 1;
@@ -431,9 +394,9 @@
             display: inline-flex;
             font: inherit;
             font-size: 11px;
-            font-weight: 800;
+            font-weight: 400;
             gap: 9px;
-            letter-spacing: 0.08em;
+            letter-spacing: 1.2px;
             min-height: 40px;
             padding: 0 15px 0 12px;
             text-decoration: none;
@@ -530,9 +493,9 @@
             color: rgba(255, 255, 255, 0.76) !important;
             display: flex;
             font-size: 12px;
-            font-weight: 800;
+            font-weight: 400;
             justify-content: space-between;
-            letter-spacing: 0.08em;
+            letter-spacing: 1.2px;
             padding: 12px 14px;
             text-decoration: none !important;
             text-transform: uppercase;
@@ -558,67 +521,55 @@
         }
 
         .onyx-master-footer {
-            background:
-                radial-gradient(circle at 82% 0%, rgba(216, 221, 227, 0.12), transparent 18rem),
-                #050505;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0a0a0c;
+            border-top: 1px solid rgba(255, 255, 255, 0.14);
             color: #ffffff;
-            padding: clamp(48px, 7vw, 92px) 6vw 36px;
+            padding: clamp(34px, 5vw, 56px) 6vw 24px;
         }
 
         .onyx-master-footer-inner {
+            align-items: start;
             display: grid;
-            gap: clamp(32px, 5vw, 72px);
-            grid-template-columns: minmax(260px, 1.15fr) repeat(3, minmax(150px, 0.45fr));
+            gap: clamp(24px, 4vw, 56px);
+            grid-template-columns: minmax(260px, 1fr) minmax(320px, 1.4fr);
             margin: 0 auto;
-            max-width: 1440px;
+            max-width: 1240px;
         }
 
-        .onyx-master-footer-brand img {
-            display: block;
-            height: 72px;
-            max-width: 220px;
-            object-fit: contain;
-            width: auto;
+        .onyx-master-footer-brand .onyx-wordmark {
+            font-size: clamp(30px, 4vw, 46px);
         }
 
         .onyx-master-footer-brand p {
-            color: #9ca3af;
-            line-height: 1.7;
-            margin: 24px 0 0;
-            max-width: 480px;
-        }
-
-        .onyx-master-footer h2,
-        .onyx-master-footer h3 {
-            font-family: Syne, Inter, sans-serif;
-            letter-spacing: -0.04em;
-        }
-
-        .onyx-master-footer h2 {
-            font-size: clamp(36px, 5vw, 72px);
-            line-height: 0.95;
-            margin: 34px 0 0;
-            max-width: 640px;
-            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 15px;
+            line-height: 1.6;
+            margin: 14px 0 0;
+            max-width: 420px;
         }
 
         .onyx-master-footer h3 {
-            color: #d8dde3;
-            font-size: 13px;
-            font-weight: 800;
-            letter-spacing: 0.14em;
-            margin: 0 0 18px;
+            color: rgba(255, 255, 255, 0.92);
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 1.2px;
+            margin: 0 0 14px;
             text-transform: uppercase;
+        }
+
+        .onyx-master-footer-columns {
+            display: grid;
+            gap: 26px;
+            grid-template-columns: repeat(3, minmax(120px, 1fr));
         }
 
         .onyx-master-footer-links {
             display: grid;
-            gap: 12px;
+            gap: 9px;
         }
 
         .onyx-master-footer-links a {
-            color: #9ca3af;
+            color: rgba(255, 255, 255, 0.68);
             font-size: 14px;
             transition: color 160ms ease, transform 160ms ease;
         }
@@ -705,7 +656,7 @@
         .onyx-logout-button {
             align-items: center;
             border-radius: 999px;
-            cursor: none;
+            cursor: pointer;
             display: inline-flex;
             font-size: 11px;
             font-weight: 800;
@@ -741,9 +692,9 @@
             flex-wrap: wrap;
             gap: 16px;
             justify-content: space-between;
-            margin: clamp(46px, 6vw, 74px) auto 0;
-            max-width: 1440px;
-            padding-top: 24px;
+            margin: clamp(28px, 4vw, 42px) auto 0;
+            max-width: 1240px;
+            padding-top: 18px;
         }
 
         .onyx-master-footer-bottom a {
@@ -755,9 +706,8 @@
                 padding: 14px 20px;
             }
 
-            .onyx-ddac-nav-logo {
-                height: 70px;
-                max-width: 210px;
+            .onyx-wordmark {
+                font-size: 26px;
             }
 
             .onyx-ddac-nav-links {
@@ -765,7 +715,11 @@
             }
 
             .onyx-master-footer-inner {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
+            }
+
+            .onyx-master-footer-columns {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
         }
 
@@ -778,10 +732,6 @@
                 cursor: auto;
             }
 
-            .onyx-ddac-cursor {
-                display: none;
-            }
-
             .onyx-master-footer {
                 padding-left: 24px;
                 padding-right: 24px;
@@ -790,20 +740,23 @@
             .onyx-master-footer-inner {
                 grid-template-columns: 1fr;
             }
+
+            .onyx-master-footer-columns {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
     <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+    <link href="<%= ResolveUrl("~/Content/onyx-design-system.css") %>" rel="stylesheet" />
 </head>
 <body>
     <form id="form1" runat="server" class="onyx-user-shell antialiased selection:bg-accent selection:text-black">
-        <div id="cursor" class="onyx-ddac-cursor"></div>
-        
         <!-- REQUIRED FOR AJAX POSTBACKS (Like Add To Cart without full refresh) -->
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
 
         <nav id="onyx-main-nav" class="onyx-ddac-nav" aria-label="ONYX primary navigation">
             <a href="/customer_page/Home.aspx#top" class="hover-trigger no-underline text-white flex-shrink-0" aria-label="ONYX Home">
-                <img src="/Content/home/onyx-logo-horizontal.png" alt="ONYX" class="onyx-ddac-nav-logo" />
+                <span class="onyx-wordmark">onyx</span>
             </a>
 
             <div class="onyx-ddac-nav-links">
@@ -918,40 +871,38 @@
             <div class="onyx-master-footer-inner">
                 <div class="onyx-master-footer-brand">
                     <a href="/customer_page/Home.aspx#top" class="hover-trigger" aria-label="ONYX Home">
-                        <img src="/Content/home/onyx-logo-horizontal.png" alt="ONYX" />
+                        <span class="onyx-wordmark">onyx</span>
                     </a>
-                    <h2>Silver standard. Built for pressure.</h2>
-                    <p>Precision peripherals, warranty support, and black-silver hardware for competitive setups that need to stay calm under pressure.</p>
+                    <p>Black and silver gaming gear, support, warranty help, and account tools in one place.</p>
                 </div>
 
-                <div>
-                    <h3>Shop</h3>
-                    <div class="onyx-master-footer-links">
-                        <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Mouse">Gaming Mice</a>
-                        <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Keyboard">Keyboards</a>
-                        <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Headset">Audio</a>
-                        <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Accessory">Accessories</a>
-                        <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx">Catalog</a>
-                        <!-- Replaced footer count literal with standard text so it doesn't conflict with the navbar -->
-                        <a href="/customer_page/onyx_cart.aspx" class="hover-trigger">Cart</a>
+                <div class="onyx-master-footer-columns">
+                    <div>
+                        <h3>Shop</h3>
+                        <div class="onyx-master-footer-links">
+                            <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx">Catalog</a>
+                            <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Mouse">Gaming Mice</a>
+                            <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Keyboard">Keyboards</a>
+                            <a class="hover-trigger" href="/customer_page/onyx_cart.aspx">Cart</a>
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <h3>Company</h3>
-                    <div class="onyx-master-footer-links">
-                        <a class="hover-trigger" href="/customer_page/About.aspx">About</a>
-                        <a class="hover-trigger" href="/customer_page/Support.aspx">Support</a>
-                        <a class="hover-trigger" href="/customer_page/Home.aspx#featured-products">Pro Gear</a>
+                    <div>
+                        <h3>Company</h3>
+                        <div class="onyx-master-footer-links">
+                            <a class="hover-trigger" href="/customer_page/About.aspx">About</a>
+                            <a class="hover-trigger" href="/customer_page/Support.aspx">Support</a>
+                            <a class="hover-trigger" href="/customer_page/Home.aspx#featured-products">Pro Gear</a>
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <h3>Legal</h3>
-                    <div class="onyx-master-footer-links">
-                        <a class="hover-trigger" href="/customer_page/Privacy.aspx">Privacy Policy</a>
-                        <a class="hover-trigger" href="/customer_page/Terms.aspx">Terms of Sale</a>
-                        <a class="hover-trigger" href="mailto:support@onyxgaming.com">support@onyxgaming.com</a>
+                    <div>
+                        <h3>Help</h3>
+                        <div class="onyx-master-footer-links">
+                            <a class="hover-trigger" href="/customer_page/Privacy.aspx">Privacy</a>
+                            <a class="hover-trigger" href="/customer_page/Terms.aspx">Terms</a>
+                            <a class="hover-trigger" href="mailto:support@onyxgaming.com">Email Support</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -965,43 +916,7 @@
 
         <script>
             (function () {
-                var shell = document.querySelector('.onyx-user-shell');
-                var cursor = document.getElementById('cursor');
                 var mainNav = document.getElementById('onyx-main-nav');
-                var supportsCustomCursor = cursor &&
-                    window.matchMedia &&
-                    window.matchMedia('(pointer: fine)').matches &&
-                    !window.matchMedia('(max-width: 640px)').matches;
-
-                if (supportsCustomCursor && shell) {
-                    shell.classList.add('has-custom-cursor');
-
-                    document.addEventListener('pointermove', function (event) {
-                        cursor.style.transform = 'translate3d(' + event.clientX + 'px, ' + event.clientY + 'px, 0) translate(-50%, -50%)';
-                        cursor.classList.add('is-visible');
-                    }, { passive: true });
-
-                    function hideCursor() {
-                        cursor.classList.remove('is-visible', 'hover-state');
-                    }
-
-                    document.documentElement.addEventListener('pointerleave', hideCursor);
-                    window.addEventListener('blur', hideCursor);
-
-                    document.addEventListener('pointerover', function (event) {
-                        if (event.target.closest('.hover-trigger, a, button, input, select, textarea, label')) {
-                            cursor.classList.add('hover-state');
-                        }
-                    }, { passive: true });
-
-                    document.addEventListener('pointerout', function (event) {
-                        if (event.target.closest('.hover-trigger, a, button, input, select, textarea, label')) {
-                            cursor.classList.remove('hover-state');
-                        }
-                    }, { passive: true });
-                } else if (cursor) {
-                    cursor.remove();
-                }
 
                 if (mainNav) {
                     function updateNavScrolled() {

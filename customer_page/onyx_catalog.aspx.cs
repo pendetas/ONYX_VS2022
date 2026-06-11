@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
@@ -12,7 +10,7 @@ namespace ONYX_DDAC.customer_page
     public partial class onyx_catalog : Page
     {
         private readonly ProductService productService = new ProductService();
-        private readonly WishlistRepository wishlistRepository = new WishlistRepository();
+        private readonly WishlistService wishlistService = new WishlistService();
         private HashSet<long> wishlistProductIds = new HashSet<long>();
 
         protected string SelectedCategory { get; private set; }
@@ -67,16 +65,8 @@ namespace ONYX_DDAC.customer_page
                 return;
             }
 
-            if (wishlistRepository.IsInWishlist(userId, productId))
-            {
-                wishlistRepository.RemoveWishlistItem(userId, productId);
-                ShowCatalogFeedback("Removed from wishlist.");
-            }
-            else
-            {
-                wishlistRepository.AddWishlistItem(userId, productId);
-                ShowCatalogFeedback("Added to wishlist.");
-            }
+            bool saved = wishlistService.ToggleWishlistItem(userId, productId);
+            ShowCatalogFeedback(saved ? "Added to wishlist." : "Removed from wishlist.");
 
             BindCatalog();
         }
@@ -109,8 +99,7 @@ namespace ONYX_DDAC.customer_page
                 return;
             }
 
-            wishlistProductIds = new HashSet<long>(
-                wishlistRepository.GetWishlistProducts(userId).Select(product => product.Id));
+            wishlistProductIds = new HashSet<long>(wishlistService.GetWishlistProductIds(userId));
         }
 
         private void ShowCatalogFeedback(string message)

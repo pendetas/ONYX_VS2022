@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
@@ -10,8 +9,7 @@ namespace ONYX_DDAC.customer_page
 {
     public partial class onyx_wishlist : Page
     {
-        private readonly WishlistRepository wishlistRepository = new WishlistRepository();
-        private readonly CartService cartService = new CartService();
+        private readonly WishlistService wishlistService = new WishlistService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -29,7 +27,7 @@ namespace ONYX_DDAC.customer_page
 
         private void BindWishlist(long userId)
         {
-            IList<Product> products = wishlistRepository.GetWishlistProducts(userId);
+            IList<Product> products = wishlistService.GetWishlistProducts(userId);
 
             pnlEmptyWishlist.Visible = products.Count == 0;
             pnlWishlist.Visible = products.Count > 0;
@@ -60,13 +58,12 @@ namespace ONYX_DDAC.customer_page
 
             if (string.Equals(e.CommandName, "Remove", StringComparison.OrdinalIgnoreCase))
             {
-                wishlistRepository.RemoveWishlistItem(userId, productId);
+                wishlistService.RemoveWishlistItem(userId, productId);
                 ShowFeedback("Removed from wishlist.");
             }
             else if (string.Equals(e.CommandName, "MoveToCart", StringComparison.OrdinalIgnoreCase))
             {
-                cartService.AddToCart(productId, null, 1);
-                wishlistRepository.RemoveWishlistItem(userId, productId);
+                wishlistService.MoveWishlistItemToCart(userId, productId);
                 ShowFeedback("Moved to cart.");
             }
 

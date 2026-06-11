@@ -1,0 +1,387 @@
+:root {
+    --onyx-primary: #ffffff;
+    --onyx-on-primary: #09090b;
+    --onyx-ink: #ffffff;
+    --onyx-ink-hover: #f4f4f5;
+    --onyx-body: #a1a1aa;
+    --onyx-body-mid: #71717a;
+    --onyx-mute: #52525b;
+    --onyx-hairline: #27272a;
+    --onyx-canvas: #09090b;
+    --onyx-canvas-soft: #18181b;
+    --onyx-canvas-card: #121214;
+    --onyx-canvas-mid: #27272a;
+    --onyx-plasma: #00e5ff;
+    --onyx-laser: #ff2a5f;
+    --onyx-overclock: #ff9d00;
+    --onyx-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --onyx-mono: "JetBrains Mono", GeistMono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+html,
+body,
+.onyx-user-shell {
+    background: var(--onyx-canvas) !important;
+    color: var(--onyx-ink) !important;
+    font-family: var(--onyx-sans) !important;
+    font-weight: 400 !important;
+}
+
+body,
+p,
+li,
+input,
+select,
+textarea,
+button,
+a,
+span,
+label {
+    font-family: var(--onyx-sans) !important;
+    font-weight: 400 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.onyx-product-title,
+.onyx-product-name,
+.onyx-catalog-title,
+.onyx-home-title,
+.onyx-about-title,
+.onyx-support-title,
+.onyx-legal-title,
+.onyx-account-title,
+.auth-title,
+.onyx-master-footer h2,
+.onyx-master-footer h3,
+.onyx-logout-title {
+    font-family: var(--onyx-sans) !important;
+    font-weight: 400 !important;
+}
+
+.onyx-wordmark {
+    color: var(--onyx-ink) !important;
+    font-family: var(--onyx-sans) !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.08em !important;
+    line-height: 1 !important;
+    text-transform: lowercase !important;
+}
+
+h1,
+.onyx-home-title,
+.onyx-about-title,
+.onyx-support-title,
+.onyx-catalog-title {
+    letter-spacing: -2.4px !important;
+}
+
+h2,
+.onyx-account-title,
+.onyx-master-footer h2 {
+    letter-spacing: -1.8px !important;
+}
+
+h3,
+h4,
+.onyx-product-title,
+.onyx-product-name,
+.auth-title {
+    letter-spacing: -1.2px !important;
+}
+
+p,
+.onyx-catalog-copy,
+.onyx-product-description,
+.onyx-master-footer-brand p,
+.onyx-logout-copy,
+.auth-input {
+    color: var(--onyx-body) !important;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.onyx-ddac-nav,
+.onyx-ddac-nav-links,
+.onyx-ddac-dropdown-trigger,
+.onyx-ddac-megapanel,
+.onyx-ddac-mega-cat,
+.onyx-ddac-mega-cat-num,
+.onyx-ddac-mega-cat-name,
+.onyx-ddac-mega-cat-sub,
+.onyx-ddac-mega-cta-label,
+.onyx-ddac-mega-cta-link,
+.onyx-ddac-nav-register,
+.onyx-ddac-nav-icon,
+.onyx-ddac-nav-icon-count,
+.onyx-ddac-account-trigger,
+.onyx-ddac-account-name,
+.onyx-ddac-account-menu,
+.onyx-ddac-account-menu a,
+.onyx-ddac-account-action,
+.onyx-mobile-nav,
+.onyx-mobile-nav-label,
+.onyx-master-footer h3,
+.onyx-master-footer-bottom,
+.onyx-catalog-kicker,
+.onyx-catalog-count,
+.onyx-product-meta,
+.onyx-product-price,
+.onyx-wishlist-kicker,
+.onyx-wishlist-count,
+.onyx-wishlist-price,
+.onyx-stock-status,
+.onyx-logout-kicker,
+.auth-field label,
+.auth-forgot-link,
+.auth-submit-btn,
+.auth-alert,
+.onyx-account-nav,
+.onyx-account-meta,
+.onyx-account-stat-label,
+.onyx-account-button,
+.onyx-product-view,
+.onyx-catalog-pill,
+.onyx-detail-wishlist {
+    font-family: var(--onyx-mono) !important;
+    font-weight: 400 !important;
+    letter-spacing: 1.2px !important;
+    text-transform: uppercase;
+}
+
+.onyx-ddac-nav *,
+.onyx-ddac-megapanel *,
+.onyx-ddac-account-menu * {
+    font-family: var(--onyx-mono) !important;
+    font-weight: 400 !important;
+}
+
+.onyx-ddac-nav .onyx-wordmark {
+    font-family: var(--onyx-sans) !important;
+    font-size: clamp(22px, 2.25vw, 32px) !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.08em !important;
+    text-transform: lowercase !important;
+}
+
+.onyx-ddac-nav-links,
+.onyx-ddac-nav-links a,
+.onyx-ddac-dropdown-trigger,
+.onyx-ddac-nav-register,
+.onyx-ddac-account-trigger,
+.onyx-ddac-account-menu a,
+.onyx-ddac-account-action {
+    font-size: 12px !important;
+    line-height: 16px !important;
+}
+
+.onyx-ddac-mega-cat-name {
+    color: var(--onyx-ink) !important;
+    font-size: 24px !important;
+    letter-spacing: 1.2px !important;
+    line-height: 28px !important;
+}
+
+.onyx-ddac-mega-cat-num,
+.onyx-ddac-mega-cat-sub,
+.onyx-ddac-mega-cta-label {
+    color: var(--onyx-body-mid) !important;
+    font-size: 12px !important;
+    line-height: 16px !important;
+}
+
+.onyx-ddac-nav {
+    min-height: 88px !important;
+    padding: 18px 48px !important;
+}
+
+.onyx-logout-card,
+.auth-container,
+.onyx-account-shell,
+.onyx-product-card,
+.onyx-empty-catalog,
+.onyx-wishlist-card,
+.onyx-support-card,
+.onyx-about-card,
+.onyx-legal-panel,
+.onyx-image-stage,
+.onyx-specs-list,
+.onyx-checkout-panel,
+.onyx-cart-page,
+.onyx-profile-panel {
+    background: var(--onyx-canvas-card) !important;
+    border: 1px solid var(--onyx-hairline) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+.onyx-master-footer {
+    background: var(--onyx-canvas-card) !important;
+    border: 0 !important;
+    border-top: 1px solid var(--onyx-hairline) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.onyx-master-footer-brand p,
+.onyx-master-footer-links a,
+.onyx-master-footer-bottom {
+    color: var(--onyx-body) !important;
+}
+
+.onyx-master-footer h3 {
+    color: var(--onyx-ink) !important;
+}
+
+.onyx-product-media,
+.onyx-wishlist-media,
+.auth-left,
+.auth-right,
+.auth-takeover {
+    background: var(--onyx-canvas) !important;
+    box-shadow: none !important;
+}
+
+.onyx-product-card::before,
+.onyx-home-card::before {
+    display: none !important;
+}
+
+.onyx-product-media img,
+.onyx-wishlist-media img,
+.onyx-image-stage img {
+    filter: none !important;
+}
+
+.onyx-ddac-nav-register,
+.onyx-product-view,
+.onyx-add-to-cart,
+.onyx-checkout-btn,
+.auth-submit-btn,
+.onyx-account-button-primary,
+.onyx-logout-confirm {
+    background: var(--onyx-primary) !important;
+    border: 1px solid var(--onyx-primary) !important;
+    border-radius: 9999px !important;
+    color: var(--onyx-on-primary) !important;
+    box-shadow: none !important;
+}
+
+.onyx-catalog-pill,
+.onyx-detail-wishlist,
+.onyx-product-love,
+.onyx-account-button-secondary,
+.onyx-logout-cancel,
+.onyx-wishlist-secondary,
+.onyx-wishlist-action {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 9999px !important;
+    color: var(--onyx-ink) !important;
+    box-shadow: none !important;
+}
+
+.onyx-catalog-pill:hover,
+.onyx-catalog-pill.is-active,
+.onyx-product-love:hover,
+.onyx-product-love.is-active,
+.onyx-detail-wishlist:hover,
+.onyx-detail-wishlist.is-active,
+.onyx-wishlist-action:hover {
+    background: var(--onyx-primary) !important;
+    border-color: var(--onyx-primary) !important;
+    color: var(--onyx-on-primary) !important;
+}
+
+.auth-container {
+    background: var(--onyx-canvas-card) !important;
+    height: min(90vh, 860px);
+}
+
+.auth-copyright {
+    font-family: var(--onyx-mono) !important;
+    font-weight: 400 !important;
+    letter-spacing: 1.2px !important;
+    text-transform: uppercase;
+}
+
+.auth-brand {
+    color: var(--onyx-ink) !important;
+    font-family: var(--onyx-sans) !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.08em !important;
+    line-height: 1 !important;
+    text-transform: lowercase !important;
+}
+
+.auth-input {
+    border-bottom-color: var(--onyx-hairline) !important;
+    color: var(--onyx-ink) !important;
+}
+
+.auth-input:focus {
+    border-bottom-color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.auth-alert[style] {
+    color: var(--onyx-laser) !important;
+}
+
+.onyx-stock-status:not(.is-out),
+.onyx-catalog-feedback,
+.text-success {
+    color: var(--onyx-plasma) !important;
+}
+
+.text-danger,
+.onyx-stock-status.is-out {
+    color: var(--onyx-laser) !important;
+}
+
+.text-warning,
+.onyx-stock-status.is-low {
+    color: var(--onyx-overclock) !important;
+}
+
+.text-secondary,
+.text-muted {
+    color: var(--onyx-body-mid) !important;
+}
+
+.fw-bold,
+.fw-semibold,
+.fw-medium,
+strong,
+b {
+    font-weight: 400 !important;
+}
+
+* {
+    text-shadow: none !important;
+}
+
+.onyx-user-shell,
+.onyx-user-shell * {
+    cursor: auto !important;
+}
+
+a,
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+select,
+label,
+.hover-trigger,
+[role="button"] {
+    cursor: pointer !important;
+}
+
+input,
+textarea {
+    cursor: text !important;
+}

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
+using System.Data.Common;
 using Npgsql;
 using ONYX_DDAC.Models;
 
@@ -9,29 +8,22 @@ namespace ONYX_DDAC.DAL
 {
     public class ProductRepository
     {
-        // Helper method to grab the read connection string from Web.config
-        private string GetConnectionString()
-        {
-            return ConfigurationManager.ConnectionStrings["ReadConnection"].ConnectionString;
-        }
-
         public IList<Product> GetFeaturedProducts(int count)
         {
             var products = new List<Product>();
 
-            using (var conn = new NpgsqlConnection(GetConnectionString()))
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
             {
                 conn.Open();
-                string sql = @"
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
                     SELECT id, name, brand, category, description, price, stock_qty, image_url, created_at 
                     FROM products 
                     ORDER BY created_at DESC 
                     LIMIT @Count";
-
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Count", count);
-                    using (var reader = cmd.ExecuteReader())
+                    cmd.Parameters.Add(new NpgsqlParameter("@Count", count));
+                    using (DbDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -47,24 +39,22 @@ namespace ONYX_DDAC.DAL
         {
             var products = new List<Product>();
 
-            using (var conn = new NpgsqlConnection(GetConnectionString()))
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
             {
                 conn.Open();
-                string sql = "SELECT id, name, brand, category, description, price, stock_qty, image_url, created_at FROM products";
-
-                if (!string.IsNullOrWhiteSpace(category))
+                using (DbCommand cmd = conn.CreateCommand())
                 {
-                    sql += " WHERE category ILIKE @Category";
-                }
-                sql += " ORDER BY name ASC";
+                    cmd.CommandText = "SELECT id, name, brand, category, description, price, stock_qty, image_url, created_at FROM products";
 
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
                     if (!string.IsNullOrWhiteSpace(category))
                     {
-                        cmd.Parameters.AddWithValue("@Category", category);
+                        cmd.CommandText += " WHERE category ILIKE @Category";
+                        cmd.Parameters.Add(new NpgsqlParameter("@Category", category));
                     }
-                    using (var reader = cmd.ExecuteReader())
+
+                    cmd.CommandText += " ORDER BY name ASC";
+
+                    using (DbDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -79,15 +69,14 @@ namespace ONYX_DDAC.DAL
         // New Method: Fetch a single product for the Details page
         public Product GetProductById(long id)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString()))
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
             {
                 conn.Open();
-                string sql = "SELECT id, name, brand, category, description, price, stock_qty, image_url, created_at FROM products WHERE id = @Id";
-
-                using (var cmd = new NpgsqlCommand(sql, conn))
+                using (DbCommand cmd = conn.CreateCommand())
                 {
-                    cmd.Parameters.AddWithValue("@Id", id);
-                    using (var reader = cmd.ExecuteReader())
+                    cmd.CommandText = "SELECT id, name, brand, category, description, price, stock_qty, image_url, created_at FROM products WHERE id = @Id";
+                    cmd.Parameters.Add(new NpgsqlParameter("@Id", id));
+                    using (DbDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
                         {
@@ -103,15 +92,14 @@ namespace ONYX_DDAC.DAL
         public IList<ProductVariant> GetProductVariants(long productId)
         {
             var variants = new List<ProductVariant>();
-            using (var conn = new NpgsqlConnection(GetConnectionString()))
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
             {
                 conn.Open();
-                string sql = "SELECT product_variant_id, product_id, variant_type, variant_value, variant_price, stock_qty, image_url FROM product_variants WHERE product_id = @ProductId";
-
-                using (var cmd = new NpgsqlCommand(sql, conn))
+                using (DbCommand cmd = conn.CreateCommand())
                 {
-                    cmd.Parameters.AddWithValue("@ProductId", productId);
-                    using (var reader = cmd.ExecuteReader())
+                    cmd.CommandText = "SELECT product_variant_id, product_id, variant_type, variant_value, variant_price, stock_qty, image_url FROM product_variants WHERE product_id = @ProductId";
+                    cmd.Parameters.Add(new NpgsqlParameter("@ProductId", productId));
+                    using (DbDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -133,7 +121,7 @@ namespace ONYX_DDAC.DAL
         }
 
         // Helper method to safely map PostgreSQL rows to the C# Product object
-        private Product MapReaderToProduct(NpgsqlDataReader reader)
+        private Product MapReaderToProduct(DbDataReader reader)
         {
             return new Product
             {

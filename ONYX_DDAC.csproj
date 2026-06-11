@@ -170,6 +170,7 @@
     <Content Include="admin_page\onyx_admin_dashboard.aspx" />
     <Content Include="admin_page\onyx_admin_products.aspx" />
     <Content Include="App_Data\onyx_schema.sql" />
+    <Content Include="auth_page\onyx_forgotpassword.aspx" />
     <Content Include="auth_page\onyx_login.aspx" />
     <Content Include="auth_page\onyx_register.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
@@ -218,6 +219,7 @@
     <Content Include="Content\home\team-logos\team-liquid.svg" />
     <Content Include="Content\admin.css" />
     <Content Include="Content\onyx-account.css" />
+    <Content Include="Content\onyx-design-system.css" />
     <Content Include="Content\onyx.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Default.aspx" />
@@ -324,6 +326,13 @@
       <DependentUpon>onyx_admin_users.aspx</DependentUpon>
     </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="auth_page\onyx_forgotpassword.aspx.cs">
+      <DependentUpon>onyx_forgotpassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="auth_page\onyx_forgotpassword.aspx.designer.cs">
+      <DependentUpon>onyx_forgotpassword.aspx</DependentUpon>
+    </Compile>
     <Compile Include="auth_page\onyx_login.aspx.cs">
       <DependentUpon>onyx_login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -402,9 +411,11 @@
     <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderItem.cs" />
+    <Compile Include="Models\ProfileUpdateResult.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductVariant.cs" />
     <Compile Include="Models\Review.cs" />
+    <Compile Include="Models\ReviewSubmissionResult.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Wishlist.cs" />
     <Compile Include="About.aspx.cs">
@@ -473,8 +484,11 @@
     <Compile Include="Services\LambdaService.cs" />
     <Compile Include="Services\OrderService.cs" />
     <Compile Include="Services\ProductService.cs" />
+    <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\ReceiptService.cs" />
+    <Compile Include="Services\ReviewService.cs" />
     <Compile Include="Services\S3Service.cs" />
+    <Compile Include="Services\WishlistService.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

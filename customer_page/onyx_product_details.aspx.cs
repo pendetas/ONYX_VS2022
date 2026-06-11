@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Web.UI;
-using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 using ONYX_DDAC.Helpers;
@@ -11,7 +10,7 @@ namespace ONYX_DDAC.customer_page
     public partial class onyx_product_details : Page
     {
         private readonly ProductService productService = new ProductService();
-        private readonly WishlistRepository wishlistRepository = new WishlistRepository();
+        private readonly WishlistService wishlistService = new WishlistService();
 
         // NEW: Property to track the currently selected variant across postbacks
         protected long? SelectedVariantId
@@ -274,16 +273,8 @@ namespace ONYX_DDAC.customer_page
                 return;
             }
 
-            if (wishlistRepository.IsInWishlist(userId, productId))
-            {
-                wishlistRepository.RemoveWishlistItem(userId, productId);
-                lblMessage.Text = "Removed from wishlist.";
-            }
-            else
-            {
-                wishlistRepository.AddWishlistItem(userId, productId);
-                lblMessage.Text = "Saved to wishlist.";
-            }
+            bool saved = wishlistService.ToggleWishlistItem(userId, productId);
+            lblMessage.Text = saved ? "Saved to wishlist." : "Removed from wishlist.";
 
             lblMessage.CssClass = "d-block mt-3 fw-bold text-success";
             lblMessage.Visible = true;
@@ -293,7 +284,7 @@ namespace ONYX_DDAC.customer_page
         private void UpdateWishlistButton(long productId)
         {
             bool saved = TryGetCurrentUserId(out long userId)
-                && wishlistRepository.IsInWishlist(userId, productId);
+                && wishlistService.IsInWishlist(userId, productId);
 
             btnWishlist.CssClass = saved
                 ? "onyx-detail-wishlist hover-trigger is-active"

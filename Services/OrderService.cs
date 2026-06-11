@@ -41,5 +41,20 @@ namespace ONYX_DDAC.Services
 
             return invoice;
         }
+
+        public IList<Order> GetOrdersForUser(long userId, int limit)
+        {
+            return _orderRepository.GetOrdersForUser(userId, limit) ?? new List<Order>();
+        }
+
+        public IList<Product> GetPurchasedProductsForUser(long userId)
+        {
+            return _orderRepository.GetPurchasedProductsForUser(userId) ?? new List<Product>();
+        }
+
+        public bool HasPurchasedProduct(long userId, long productId)
+        {
+            return _orderRepository.HasPurchasedProduct(userId, productId);
+        }
     }
 }

@@ -53,10 +53,19 @@
             position: absolute;
             top: 30px;
             left: 40px;
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
+            color: #ffffff;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: -0.08em;
+            line-height: 1;
+            text-decoration: none;
+            text-transform: lowercase;
             z-index: 2; /* Brought above video */
+        }
+
+        .auth-brand:hover {
+            color: #d8dde3;
         }
 
         .auth-copyright {
@@ -267,7 +276,7 @@
             
             <!-- Left Side: Video Background -->
             <div class="auth-left">
-                <div class="auth-brand">ONYX&deg;</div>
+                <a href="<%= ResolveUrl("~/customer_page/Home.aspx") %>" class="auth-brand hover-trigger" aria-label="Back to ONYX home">onyx</a>
                 
                 <!-- MP4 Video Background with updated ASP.NET path resolving -->
                 <video autoplay loop muted playsinline class="auth-video-bg">

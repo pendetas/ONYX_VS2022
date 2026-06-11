@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
-using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.customer_page
 {
     public partial class onyx_order_history : Page
     {
-        private readonly OrderRepository orderRepository = new OrderRepository();
+        private readonly OrderService orderService = new OrderService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -28,24 +28,12 @@ namespace ONYX_DDAC.customer_page
 
         private void BindOrders(long userId)
         {
-            IList<Order> orders = TryLoadList(() => orderRepository.GetOrdersForUser(userId, 20));
+            IList<Order> orders = orderService.GetOrdersForUser(userId, 20);
 
             pnlEmptyOrders.Visible = orders.Count == 0;
             rptRecentOrders.Visible = orders.Count > 0;
             rptRecentOrders.DataSource = orders;
             rptRecentOrders.DataBind();
-        }
-
-        private static IList<T> TryLoadList<T>(Func<IList<T>> load)
-        {
-            try
-            {
-                return load() ?? new List<T>();
-            }
-            catch
-            {
-                return new List<T>();
-            }
         }
 
         protected string FormatOrderDate(object value)

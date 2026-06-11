@@ -1,5 +1,5 @@
 using System;
-using System.Configuration;
+using System.Data.Common;
 using Npgsql;
 using ONYX_DDAC.Models; 
 
@@ -7,38 +7,27 @@ namespace ONYX_DDAC.DAL
 {
     public class UserRepository
     {
-        // Helper method to grab the connection string from Web.config
-        private string GetConnectionString(string connectionName = "DefaultConnection")
-        {
-            return ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
-        }
-
         // Inserts a new user into the database
         public bool CreateUser(User user)
         {
-            // Explicitly initializing the Npgsql library connection right here
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
             {
                 conn.Open();
-                string sql = @"
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
                     INSERT INTO users (fullname, username, email, password_hash, address, dob, phone_number, role, created_at) 
                     VALUES (@FullName, @Username, @Email, @PasswordHash, @Address, @Dob, @PhoneNumber, @Role, @CreatedAt)";
 
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    // Using parameters prevents SQL Injection attacks
-                    cmd.Parameters.AddWithValue("@FullName", user.FullName);
-                    cmd.Parameters.AddWithValue("@Username", user.Username);
-                    cmd.Parameters.AddWithValue("@Email", user.Email);
-                    cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
-
-                    // Handle nullable fields safely for PostgreSQL
-                    cmd.Parameters.AddWithValue("@Address", (object)user.Address ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Dob", user.Dob);
-                    cmd.Parameters.AddWithValue("@PhoneNumber", (object)user.PhoneNumber ?? DBNull.Value);
-
-                    cmd.Parameters.AddWithValue("@Role", user.Role ?? "customer"); // Default to customer
-                    cmd.Parameters.AddWithValue("@CreatedAt", DateTime.UtcNow);
+                    cmd.Parameters.Add(new NpgsqlParameter("@FullName", user.FullName));
+                    cmd.Parameters.Add(new NpgsqlParameter("@Username", user.Username));
+                    cmd.Parameters.Add(new NpgsqlParameter("@Email", user.Email));
+                    cmd.Parameters.Add(new NpgsqlParameter("@PasswordHash", user.PasswordHash));
+                    cmd.Parameters.Add(new NpgsqlParameter("@Address", (object)user.Address ?? DBNull.Value));
+                    cmd.Parameters.Add(new NpgsqlParameter("@Dob", user.Dob.HasValue ? (object)user.Dob.Value : DBNull.Value));
+                    cmd.Parameters.Add(new NpgsqlParameter("@PhoneNumber", (object)user.PhoneNumber ?? DBNull.Value));
+                    cmd.Parameters.Add(new NpgsqlParameter("@Role", user.Role ?? "customer"));
+                    cmd.Parameters.Add(new NpgsqlParameter("@CreatedAt", DateTime.UtcNow));
 
                     int rowsAffected = cmd.ExecuteNonQuery();
                     return rowsAffected > 0;
@@ -49,21 +38,20 @@ namespace ONYX_DDAC.DAL
         // Retrieves a user by email or username for login validation
         public User GetUserByEmailOrUsername(string emailOrUsername)
         {
-            // Explicitly initializing the Npgsql library for reading
-            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
             {
                 conn.Open();
-                string sql = @"
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
                     SELECT id, username, email, password_hash, role
                     FROM users
                     WHERE lower(email) = lower(@LoginIdentifier)
                        OR lower(username) = lower(@LoginIdentifier)";
 
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@LoginIdentifier", emailOrUsername);
+                    cmd.Parameters.Add(new NpgsqlParameter("@LoginIdentifier", emailOrUsername));
 
-                    using (var reader = cmd.ExecuteReader())
+                    using (DbDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
                         {
@@ -84,19 +72,19 @@ namespace ONYX_DDAC.DAL
 
         public User GetUserById(long userId)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
             {
                 conn.Open();
-                string sql = @"
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
                     SELECT id, fullname, username, email, address, dob, phone_number, role, created_at
                     FROM users
                     WHERE id = @UserId";
 
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@UserId", userId);
+                    cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
 
-                    using (var reader = cmd.ExecuteReader())
+                    using (DbDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
                         {
@@ -122,10 +110,12 @@ namespace ONYX_DDAC.DAL
 
         public bool UpdateUserSettings(long userId, string fullName, string email, string phoneNumber, string address)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
             {
                 conn.Open();
-                string sql = @"
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
                     UPDATE users
                     SET fullname = @FullName,
                         email = @Email,
@@ -133,13 +123,11 @@ namespace ONYX_DDAC.DAL
                         address = @Address
                     WHERE id = @UserId";
 
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-                    cmd.Parameters.AddWithValue("@FullName", (object)fullName ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Email", email);
-                    cmd.Parameters.AddWithValue("@PhoneNumber", (object)phoneNumber ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Address", (object)address ?? DBNull.Value);
+                    cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@FullName", (object)fullName ?? DBNull.Value));
+                    cmd.Parameters.Add(new NpgsqlParameter("@Email", email));
+                    cmd.Parameters.Add(new NpgsqlParameter("@PhoneNumber", (object)phoneNumber ?? DBNull.Value));
+                    cmd.Parameters.Add(new NpgsqlParameter("@Address", (object)address ?? DBNull.Value));
 
                     return cmd.ExecuteNonQuery() > 0;
                 }

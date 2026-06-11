@@ -2,15 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.UI;
-using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.customer_page
 {
     public partial class onyx_reviews : Page
     {
-        private readonly OrderRepository orderRepository = new OrderRepository();
-        private readonly ReviewRepository reviewRepository = new ReviewRepository();
+        private readonly ReviewService reviewService = new ReviewService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -28,7 +27,7 @@ namespace ONYX_DDAC.customer_page
 
         private void BindReviewProducts(long userId)
         {
-            IList<Product> products = TryLoadList(() => orderRepository.GetPurchasedProductsForUser(userId));
+            IList<Product> products = reviewService.GetReviewableProducts(userId);
 
             pnlReviewForm.Visible = products.Count > 0;
             pnlNoReviewProducts.Visible = products.Count == 0;
@@ -61,34 +60,13 @@ namespace ONYX_DDAC.customer_page
                 return;
             }
 
-            if (!orderRepository.HasPurchasedProduct(userId, productId))
+            ReviewSubmissionResult result = reviewService.SaveReview(userId, productId, rating, txtReviewComment.Text);
+            if (result.Success)
             {
-                lblReviewFeedback.Text = "Reviews are only available for purchased gear.";
-                return;
+                txtReviewComment.Text = string.Empty;
             }
 
-            string comment = (txtReviewComment.Text ?? string.Empty).Trim();
-            if (comment.Length > 1200)
-            {
-                lblReviewFeedback.Text = "Keep the review under 1200 characters.";
-                return;
-            }
-
-            reviewRepository.SaveReview(userId, productId, rating, comment);
-            txtReviewComment.Text = string.Empty;
-            lblReviewFeedback.Text = "Review saved. Thanks for testing the gear.";
-        }
-
-        private static IList<T> TryLoadList<T>(Func<IList<T>> load)
-        {
-            try
-            {
-                return load() ?? new List<T>();
-            }
-            catch
-            {
-                return new List<T>();
-            }
+            lblReviewFeedback.Text = result.Message;
         }
 
         private static bool TryGetCurrentUserId(out long userId)

@@ -26,7 +26,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         .onyx-shell > .onyx-nav,
@@ -48,71 +47,33 @@
             isolation: isolate;
         }
 
-        .onyx-ddac-home.has-custom-cursor,
-        .onyx-ddac-home.has-custom-cursor a,
-        .onyx-ddac-home.has-custom-cursor button,
-        .onyx-ddac-home.has-custom-cursor input,
-        .onyx-ddac-home.has-custom-cursor label {
-            cursor: none;
-        }
-
-        .onyx-ddac-cursor {
-            background-color: #ffffff;
-            border-radius: 50%;
-            height: 12px;
-            left: 0;
-            mix-blend-mode: difference;
-            opacity: 0;
-            pointer-events: none;
-            position: fixed;
-            top: 0;
-            transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, background-color 0.3s, opacity 0.18s ease, border-color 0.3s;
-            visibility: hidden;
-            will-change: transform, width, height;
-            width: 12px;
-            z-index: 9999;
-        }
-
-        .onyx-ddac-cursor.is-visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .onyx-ddac-cursor.hover-state {
-            background-color: transparent;
-            border: 1px solid #d8dde3;
-            height: 60px;
-            mix-blend-mode: normal;
-            width: 60px;
-        }
-
-        .onyx-ddac-preloader {
-            align-items: center;
-            background-color: #050505;
-            display: flex;
-            font-family: Syne, sans-serif;
-            height: 100vh;
-            justify-content: center;
-            left: 0;
-            position: fixed;
-            top: 0;
-            width: 100vw;
-            z-index: 9998;
-        }
-
-        .onyx-ddac-canvas {
-            height: 100vh;
-            left: 0;
-            pointer-events: none;
-            position: fixed;
-            top: 0;
-            width: 100vw;
-            z-index: -1;
-        }
-
         .onyx-ddac-hero-section {
+            background: #050505;
+            isolation: isolate;
             overflow: hidden;
+        }
+
+        .onyx-ddac-hero-video {
+            filter: grayscale(0.3) contrast(1.06) brightness(0.88);
+            height: 100%;
+            inset: 0;
+            object-fit: cover;
+            opacity: 0.92;
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+            z-index: 0;
+        }
+
+        .onyx-ddac-hero-scrim {
+            background:
+                radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.06), transparent 34%),
+                linear-gradient(90deg, rgba(5, 5, 5, 0.52), rgba(5, 5, 5, 0.14) 48%, rgba(5, 5, 5, 0.52)),
+                linear-gradient(180deg, rgba(5, 5, 5, 0.28), rgba(5, 5, 5, 0.04) 44%, rgba(5, 5, 5, 0.76));
+            inset: 0;
+            pointer-events: none;
+            position: absolute;
+            z-index: 1;
         }
 
         .onyx-ddac-hero-title {
@@ -130,12 +91,151 @@
             z-index: 2;
         }
 
-        .onyx-ddac-nav-logo {
+        .onyx-home-context {
+            background: #09090b;
+            border-top: 1px solid #27272a;
+            color: #ffffff;
+            padding: clamp(72px, 9vw, 128px) 6vw;
+            position: relative;
+            z-index: 10;
+        }
+
+        .onyx-home-context-inner {
+            display: grid;
+            gap: clamp(32px, 6vw, 88px);
+            grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+            margin: 0 auto;
+            max-width: 1240px;
+        }
+
+        .onyx-home-kicker {
+            align-items: center;
+            color: #a1a1aa;
+            display: inline-flex;
+            font-family: "JetBrains Mono", ui-monospace, monospace;
+            font-size: 12px;
+            gap: 14px;
+            letter-spacing: 1.2px;
+            margin-bottom: 26px;
+            text-transform: uppercase;
+        }
+
+        .onyx-home-kicker::before {
+            background: #d8dde3;
+            content: "";
+            display: inline-block;
+            height: 1px;
+            width: 44px;
+        }
+
+        .onyx-home-context h2 {
+            color: #ffffff;
+            font-family: Inter, system-ui, sans-serif;
+            font-size: clamp(42px, 6vw, 84px);
+            font-weight: 400;
+            letter-spacing: -2.6px;
+            line-height: 0.96;
+            margin: 0;
+            max-width: 680px;
+        }
+
+        .onyx-home-context-copy {
+            color: #a1a1aa;
+            font-size: clamp(18px, 2vw, 24px);
+            line-height: 1.55;
+            margin: 0;
+            max-width: 620px;
+        }
+
+        .onyx-home-context-copy strong {
+            color: #ffffff;
+            font-weight: 400;
+        }
+
+        .onyx-home-standard-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-top: 34px;
+        }
+
+        .onyx-home-standard-card {
+            background: #121214;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            min-height: 170px;
+            padding: 24px;
+        }
+
+        .onyx-home-standard-card span {
+            color: #71717a;
             display: block;
-            height: 100px;
-            max-width: 300px;
-            object-fit: contain;
-            width: auto;
+            font-family: "JetBrains Mono", ui-monospace, monospace;
+            font-size: 11px;
+            letter-spacing: 1.2px;
+            margin-bottom: 28px;
+            text-transform: uppercase;
+        }
+
+        .onyx-home-standard-card h3 {
+            color: #ffffff;
+            font-family: Inter, system-ui, sans-serif;
+            font-size: 22px;
+            font-weight: 400;
+            letter-spacing: -0.8px;
+            line-height: 1.12;
+            margin: 0 0 12px;
+        }
+
+        .onyx-home-standard-card p {
+            color: #a1a1aa;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .onyx-home-trust-row {
+            border-top: 1px solid #27272a;
+            display: grid;
+            gap: 18px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin: clamp(42px, 6vw, 72px) auto 0;
+            max-width: 1240px;
+            padding-top: 26px;
+        }
+
+        .onyx-home-trust-row a {
+            border: 1px solid transparent;
+            border-radius: 8px;
+            display: block;
+            padding: 18px;
+            text-decoration: none;
+            transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+        }
+
+        .onyx-home-trust-row a:hover {
+            background: #121214;
+            border-color: #27272a;
+            transform: translateY(-2px);
+        }
+
+        .onyx-home-trust-row strong {
+            color: #ffffff;
+            display: block;
+            font-family: Inter, system-ui, sans-serif;
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .onyx-home-trust-row span {
+            color: #a1a1aa;
+            font-family: "JetBrains Mono", ui-monospace, monospace;
+            font-size: 11px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
         }
 
         .onyx-ddac-nav-register {
@@ -344,16 +444,15 @@
             background: #d8dde3;
             transform: scale(1.03);
         }
-
         .onyx-ddac-mega-cta-link svg {
             flex-shrink: 0;
         }
 
         /* ── Navbar rectangle → floating pill (scroll only) ─────────── */
         .onyx-ddac-nav {
-            background: rgba(5, 5, 5, 0.85);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background: rgba(5, 5, 5, 0.2);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 0px;
             left: 0;
@@ -362,19 +461,21 @@
             right: 0;
             top: 0;
             transition:
-                box-shadow 0.55s cubic-bezier(0.4, 0, 0.2, 1),
-                border-color 0.4s ease,
-                background 0.4s ease;
+                background 0.45s ease,
+                border-color 0.45s ease,
+                box-shadow 0.45s ease,
+                backdrop-filter 0.45s ease,
+                -webkit-backdrop-filter 0.45s ease;
             width: auto;
             z-index: 90;
         }
 
         .onyx-ddac-nav.is-scrolled {
-            background: rgba(8, 8, 10, 0.97);
+            background: rgba(5, 5, 5, 0.65);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
             border-bottom-color: rgba(255, 255, 255, 0.12);
-            box-shadow:
-                0 10px 30px rgba(0, 0, 0, 0.36),
-                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
             left: 0;
             right: 0;
             top: 0;
@@ -551,6 +652,11 @@
         }
 
         @media (max-width: 1024px) {
+            .onyx-home-context-inner,
+            .onyx-home-trust-row {
+                grid-template-columns: 1fr;
+            }
+
             .onyx-ddac-product-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
@@ -565,29 +671,15 @@
                 cursor: auto;
             }
 
-            .onyx-ddac-cursor {
-                display: none;
-            }
-
-            .onyx-ddac-nav-logo {
-                height: 70px;
-                max-width: 210px;
-                width: auto;
-            }
-
             .onyx-ddac-nav {
                 padding: 14px 20px;
             }
 
-            .onyx-ddac-home.has-custom-cursor,
-            .onyx-ddac-home.has-custom-cursor a,
-            .onyx-ddac-home.has-custom-cursor button,
-            .onyx-ddac-home.has-custom-cursor input,
-            .onyx-ddac-home.has-custom-cursor label {
-                cursor: auto;
+            .onyx-ddac-product-grid {
+                grid-template-columns: 1fr;
             }
 
-            .onyx-ddac-product-grid {
+            .onyx-home-standard-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -616,13 +708,63 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <div class="onyx-ddac-home antialiased font-sans selection:bg-accent selection:text-black">
-        <div id="preloader" class="onyx-ddac-preloader"></div>
-
-        <canvas id="webgl-canvas" class="onyx-ddac-canvas"></canvas>
-
         <main id="top">
-            <section class="onyx-ddac-hero-section relative w-full h-screen flex flex-col justify-center items-center px-6 pt-20" aria-label="ONYX crystal hero">
+            <section class="onyx-ddac-hero-section relative w-full h-screen flex flex-col justify-center items-center px-6 pt-20" aria-label="ONYX hero video">
+                <video class="onyx-ddac-hero-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+                    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_055001_8e16d972-3b2b-441c-86ad-2901a54682f9.mp4" type="video/mp4" />
+                </video>
+                <div class="onyx-ddac-hero-scrim" aria-hidden="true"></div>
                 <h1 class="onyx-ddac-hero-title reveal-item opacity-0">Dominate<br />the game.</h1>
+            </section>
+
+            <section class="onyx-home-context" aria-label="Why ONYX">
+                <div class="onyx-home-context-inner">
+                    <div class="reveal-item">
+                        <span class="onyx-home-kicker">Why ONYX</span>
+                        <h2>Built for players who notice every millisecond.</h2>
+                    </div>
+                    <div class="reveal-item">
+                        <p class="onyx-home-context-copy">
+                            <strong>ONYX designs black-and-silver gaming peripherals</strong> for competitive players who need precise aim, fast inputs, clean audio, and hardware that holds up under pressure.
+                        </p>
+                        <div class="onyx-home-standard-grid" aria-label="ONYX product standards">
+                            <article class="onyx-home-standard-card">
+                                <span>01 / Precision</span>
+                                <h3>Controlled movement</h3>
+                                <p>Sensors and surfaces are selected for stable tracking, low latency, and confident aim adjustments.</p>
+                            </article>
+                            <article class="onyx-home-standard-card">
+                                <span>02 / Response</span>
+                                <h3>Faster inputs</h3>
+                                <p>Switches, keyboards, and click systems focus on crisp actuation when timing decides the round.</p>
+                            </article>
+                            <article class="onyx-home-standard-card">
+                                <span>03 / Endurance</span>
+                                <h3>Daily-use durability</h3>
+                                <p>Reinforced materials, clean finishes, and warranty support keep your setup reliable after long sessions.</p>
+                            </article>
+                            <article class="onyx-home-standard-card">
+                                <span>04 / Setup</span>
+                                <h3>One connected store</h3>
+                                <p>Browse gear, save wishlist picks, manage orders, and post reviews from the same ONYX account flow.</p>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+                <div class="onyx-home-trust-row reveal-item">
+                    <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Mouse">
+                        <strong>Aim control</strong>
+                        <span>Shop gaming mice for tracking, grip, and click timing</span>
+                    </a>
+                    <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Keyboard">
+                        <strong>Fast inputs</strong>
+                        <span>Compare keyboards for response, switch feel, and layout</span>
+                    </a>
+                    <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx">
+                        <strong>Build setup</strong>
+                        <span>Browse the full catalog and save gear to your wishlist</span>
+                    </a>
+                </div>
             </section>
 
             <section class="w-full py-32 px-6 md:px-12 bg-[#050505] relative z-10 border-t border-white/10">
@@ -635,12 +777,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center mb-40">
                         <div class="reveal-item">
                             <h2 class="text-5xl md:text-7xl font-syne font-bold tracking-tighter mb-8 leading-tight">
-                                The foundation<br />of your next<br /><span class="onyx-ddac-text-outline">Victory</span>
+                                Hardware that<br />keeps pressure<br /><span class="onyx-ddac-text-outline">controlled</span>
                             </h2>
                         </div>
                         <div class="reveal-item md:pl-20">
                             <p class="text-secondary text-lg md:text-xl leading-relaxed">
-                                Equip yourself with elite-grade hardware designed for esports players. Experience uncompromised precision, speed, and black-silver build quality.
+                                From mice to audio, ONYX gear is built around the moments where one missed click, one late keypress, or one unclear sound cue changes the match.
                             </p>
                         </div>
                     </div>
@@ -666,7 +808,7 @@
 
             <section class="onyx-ddac-trusted-section w-full py-20 border-y border-white/5 relative z-10 overflow-hidden">
                 <div class="text-center mb-10 reveal-item">
-                    <span class="border border-accent text-accent px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Trusted By Pro Teams</span>
+                    <span class="border border-accent text-accent px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Competitive setup references</span>
                 </div>
                 <div class="onyx-ddac-marquee-container opacity-60 hover:opacity-100 transition-opacity duration-500">
                     <div class="onyx-ddac-marquee-content onyx-ddac-logo-track">
@@ -775,87 +917,6 @@
                 gsap.registerPlugin(ScrollTrigger);
             }
 
-            var canvas = document.getElementById('webgl-canvas');
-
-            if (canvas && window.THREE && !reduceMotion) {
-                var scene = new THREE.Scene();
-                var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                camera.position.z = 30;
-
-                var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-                scene.add(new THREE.AmbientLight(0xffffff, 0.15));
-
-                var pointLight = new THREE.PointLight(0xffffff, 1.5);
-                pointLight.position.set(15, 15, 15);
-                scene.add(pointLight);
-
-                var silverLight = new THREE.PointLight(0xd8dde3, 1.25);
-                silverLight.position.set(-15, -15, 15);
-                scene.add(silverLight);
-
-                var geometry = new THREE.OctahedronGeometry(14, 0);
-                var material = new THREE.MeshStandardMaterial({
-                    color: 0x111111,
-                    roughness: 0.2,
-                    metalness: 0.9,
-                    flatShading: true
-                });
-                var crystal = new THREE.Mesh(geometry, material);
-
-                var wireGeom = new THREE.OctahedronGeometry(14.5, 0);
-                var wireMat = new THREE.MeshBasicMaterial({
-                    color: 0xd8dde3,
-                    wireframe: true,
-                    transparent: true,
-                    opacity: 0.18
-                });
-                var wireframe = new THREE.Mesh(wireGeom, wireMat);
-
-                var crystalGroup = new THREE.Group();
-                crystalGroup.add(crystal);
-                crystalGroup.add(wireframe);
-                scene.add(crystalGroup);
-
-                var mouseX = 0;
-                var mouseY = 0;
-                var targetX = 0;
-                var targetY = 0;
-
-                document.addEventListener('mousemove', function (event) {
-                    mouseX = (event.clientX - window.innerWidth / 2) * 0.005;
-                    mouseY = (event.clientY - window.innerHeight / 2) * 0.005;
-                });
-
-                var clock = new THREE.Clock();
-
-                function animateThreeJS() {
-                    requestAnimationFrame(animateThreeJS);
-                    var time = clock.getElapsedTime();
-
-                    crystalGroup.rotation.x += 0.002;
-                    crystalGroup.rotation.y += 0.003;
-                    crystalGroup.position.y = Math.sin(time) * 1.5;
-
-                    targetX = mouseX * 3;
-                    targetY = mouseY * 3;
-                    crystalGroup.position.x += (targetX - crystalGroup.position.x) * 0.05;
-                    crystalGroup.position.y += (-targetY - (crystalGroup.position.y - Math.sin(time) * 1.5)) * 0.05;
-
-                    renderer.render(scene, camera);
-                }
-
-                animateThreeJS();
-
-                window.addEventListener('resize', function () {
-                    camera.aspect = window.innerWidth / window.innerHeight;
-                    camera.updateProjectionMatrix();
-                    renderer.setSize(window.innerWidth, window.innerHeight);
-                });
-            }
-
             window.addEventListener('load', function () {
                 var homeRoot = document.querySelector('.onyx-ddac-home');
 
@@ -870,33 +931,19 @@
                         }
                     });
 
-                    timeline.to('#preloader', {
-                        yPercent: -100,
-                        duration: 0.8,
-                        ease: 'power4.inOut',
-                        delay: 0.15
-                    })
-                    .to('.reveal-item', {
+                    timeline.to('.onyx-ddac-hero-title', {
                         opacity: 1,
                         y: 0,
                         duration: 0.9,
-                        stagger: 0.08,
-                        ease: 'power3.out',
-                        clearProps: 'all'
-                    }, '-=0.45');
+                        ease: 'power3.out'
+                    }, 0.15);
                 } else {
-                    var preloader = document.getElementById('preloader');
-
-                    if (preloader) {
-                        preloader.style.display = 'none';
-                    }
-
                     var homeRoot = document.querySelector('.onyx-ddac-home');
                     if (homeRoot) {
                         homeRoot.classList.add('is-ready');
                     }
 
-                    document.querySelectorAll('.reveal-item').forEach(function (item) {
+                    document.querySelectorAll('.onyx-ddac-hero-title').forEach(function (item) {
                         item.style.opacity = '1';
                     });
                     initScrollAnimations();
@@ -929,7 +976,7 @@
                 ScrollTrigger.refresh();
             }
 
-            /* ── Floating nav on scroll ─────────────────────────── */
+            /* Back to top */
             var backToTop = document.getElementById('onyx-back-to-top');
 
             if (backToTop) {

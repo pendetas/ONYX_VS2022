@@ -3,400 +3,360 @@
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
         .onyx-about {
-            background: #050505;
-            color: #f8fafc;
+            background: #09090b;
+            color: #ffffff;
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             overflow: hidden;
         }
 
+        .onyx-about *,
         .onyx-about h1,
         .onyx-about h2,
-        .onyx-about h3 {
-            font-family: Syne, Inter, sans-serif;
-            letter-spacing: -0.04em;
+        .onyx-about h3,
+        .onyx-about p,
+        .onyx-about a,
+        .onyx-about span {
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-weight: 400;
+        }
+
+        .onyx-about-shell {
+            margin: 0 auto;
+            max-width: 1240px;
+            width: min(100% - 48px, 1240px);
+        }
+
+        .onyx-about-kicker,
+        .onyx-about-index,
+        .onyx-about-label,
+        .onyx-about-meta,
+        .onyx-about-link {
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+            font-size: 12px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
         }
 
         .onyx-about-hero {
-            align-items: flex-end;
-            background:
-                radial-gradient(circle at 78% 20%, rgba(216, 221, 227, 0.18), transparent 18rem),
-                linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 34%),
-                #050505;
-            display: grid;
+            border-bottom: 1px solid #27272a;
             min-height: 100vh;
-            padding: 150px 6vw 72px;
-            position: relative;
+            padding: 164px 0 78px;
         }
 
-        .onyx-about-hero::before {
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-            background-size: 64px 64px;
-            content: "";
-            inset: 0;
-            mask-image: linear-gradient(180deg, #000, transparent 80%);
-            opacity: 0.28;
-            position: absolute;
-        }
-
-        .onyx-about-hero-inner {
+        .onyx-about-hero-grid {
+            align-items: end;
             display: grid;
-            gap: 56px;
-            grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-            margin: 0 auto;
-            max-width: 1500px;
-            position: relative;
-            width: 100%;
-            z-index: 1;
+            gap: clamp(38px, 7vw, 96px);
+            grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
         }
 
-        .onyx-about-eyebrow {
-            color: #d8dde3;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.22em;
-            margin-bottom: 24px;
-            text-transform: uppercase;
+        .onyx-about-kicker {
+            color: #a1a1aa;
+            display: inline-flex;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .onyx-about-kicker::before {
+            background: #d8dde3;
+            content: "";
+            height: 1px;
+            margin-top: 8px;
+            width: 44px;
         }
 
         .onyx-about h1 {
-            font-size: clamp(64px, 10vw, 168px);
-            font-weight: 800;
-            line-height: 0.86;
+            color: #ffffff;
+            font-size: clamp(58px, 9vw, 136px);
+            letter-spacing: -4.8px;
+            line-height: 0.92;
             margin: 0;
-            max-width: 980px;
-            text-transform: uppercase;
+            max-width: 900px;
         }
 
         .onyx-about-lede {
-            color: #a8b0ba;
-            font-size: clamp(17px, 1.5vw, 23px);
-            line-height: 1.7;
+            color: #a1a1aa;
+            font-size: clamp(18px, 2vw, 24px);
+            line-height: 1.58;
             margin: 34px 0 0;
             max-width: 720px;
+        }
+
+        .onyx-about-lede strong {
+            color: #ffffff;
+            font-weight: 400;
+        }
+
+        .onyx-about-hero-panel {
+            background: #121214;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .onyx-about-hero-image {
+            aspect-ratio: 4 / 3;
+            background: #050505;
+            overflow: hidden;
+        }
+
+        .onyx-about-hero-image img {
+            display: block;
+            height: 100%;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .onyx-about-hero-panel-body {
+            border-top: 1px solid #27272a;
+            padding: 24px;
+        }
+
+        .onyx-about-label {
+            color: #71717a;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .onyx-about-hero-panel-body p {
+            color: #d4d4d8;
+            font-size: 18px;
+            line-height: 1.55;
+            margin: 0;
         }
 
         .onyx-about-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 40px;
+            gap: 12px;
+            margin-top: 38px;
         }
 
-        .onyx-about-pill {
+        .onyx-about-button {
             align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.28);
             border-radius: 999px;
             color: #ffffff;
             display: inline-flex;
+            font-family: "JetBrains Mono", ui-monospace, monospace !important;
             font-size: 12px;
-            font-weight: 800;
             gap: 10px;
-            letter-spacing: 0.1em;
-            min-height: 52px;
-            padding: 0 24px;
+            letter-spacing: 1.2px;
+            min-height: 48px;
+            padding: 0 22px;
+            text-decoration: none;
             text-transform: uppercase;
-            transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
         }
 
-        .onyx-about-pill:hover {
+        .onyx-about-button:hover {
             background: #ffffff;
             border-color: #ffffff;
-            color: #050505;
+            color: #09090b;
             transform: translateY(-2px);
         }
 
-        .onyx-about-visual {
-            align-self: stretch;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            min-height: 560px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .onyx-about-visual img {
-            height: 100%;
-            inset: 0;
-            object-fit: cover;
-            position: absolute;
-            width: 100%;
-        }
-
-        .onyx-about-visual::after {
-            background:
-                linear-gradient(180deg, transparent 46%, rgba(5, 5, 5, 0.82)),
-                linear-gradient(90deg, rgba(5, 5, 5, 0.35), transparent 42%);
-            content: "";
-            inset: 0;
-            position: absolute;
-        }
-
-        .onyx-about-award {
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            bottom: 24px;
-            left: 24px;
-            padding: 18px 20px;
-            position: absolute;
-            right: 24px;
-            z-index: 1;
-        }
-
-        .onyx-about-award span {
-            color: #9ca3af;
-            display: block;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-        }
-
-        .onyx-about-award strong {
-            display: block;
-            font-family: Syne, Inter, sans-serif;
-            font-size: 26px;
-            letter-spacing: -0.04em;
-            margin-top: 8px;
-        }
-
         .onyx-about-section {
-            padding: 120px 6vw;
-            position: relative;
+            border-bottom: 1px solid #27272a;
+            padding: clamp(72px, 9vw, 118px) 0;
         }
 
-        .onyx-about-wrap {
-            margin: 0 auto;
-            max-width: 1500px;
+        .onyx-about-section-heading {
+            display: grid;
+            gap: 28px;
+            grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr);
+            margin-bottom: 46px;
         }
 
-        .onyx-about-manifesto {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        .onyx-about-index {
+            color: #71717a;
         }
 
-        .onyx-about-manifesto h2 {
-            font-size: clamp(44px, 7vw, 112px);
-            font-weight: 800;
-            line-height: 0.95;
+        .onyx-about h2 {
+            color: #ffffff;
+            font-size: clamp(38px, 6vw, 78px);
+            letter-spacing: -2.6px;
+            line-height: 0.98;
             margin: 0;
-            max-width: 1200px;
-            text-transform: uppercase;
+            max-width: 860px;
         }
 
-        .onyx-about-manifesto p {
-            color: #a8b0ba;
-            font-size: clamp(18px, 1.8vw, 28px);
-            line-height: 1.55;
-            margin: 42px 0 0 auto;
+        .onyx-about-section-copy {
+            color: #a1a1aa;
+            font-size: clamp(17px, 1.7vw, 22px);
+            line-height: 1.6;
+            margin: 22px 0 0;
             max-width: 760px;
         }
 
-        .onyx-about-craft {
+        .onyx-about-principles {
             display: grid;
-            gap: 28px;
+            gap: 14px;
             grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
-        .onyx-about-craft article {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025));
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            min-height: 330px;
-            padding: 28px;
-            position: relative;
+        .onyx-about-principle {
+            background: #121214;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            min-height: 270px;
+            padding: 24px;
         }
 
-        .onyx-about-craft article::before {
-            color: rgba(216, 221, 227, 0.34);
-            content: attr(data-index);
-            font-family: Syne, Inter, sans-serif;
-            font-size: 52px;
-            font-weight: 800;
-            letter-spacing: -0.06em;
-        }
-
-        .onyx-about-craft h3 {
+        .onyx-about-principle h3,
+        .onyx-about-operation h3,
+        .onyx-about-support-card h3 {
+            color: #ffffff;
             font-size: 24px;
-            margin: 72px 0 16px;
+            letter-spacing: -0.9px;
+            line-height: 1.12;
+            margin: 0 0 14px;
         }
 
-        .onyx-about-craft p {
-            color: #a8b0ba;
+        .onyx-about-principle p,
+        .onyx-about-operation p,
+        .onyx-about-support-card p {
+            color: #a1a1aa;
+            font-size: 15px;
             line-height: 1.65;
             margin: 0;
         }
 
-        .onyx-about-wide-shot {
-            border: 1px solid rgba(255, 255, 255, 0.12);
+        .onyx-about-principle .onyx-about-label {
+            margin-bottom: 48px;
+        }
+
+        .onyx-about-statement {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            margin-top: 36px;
-            min-height: 520px;
+            gap: 42px;
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        }
+
+        .onyx-about-statement-copy {
+            align-self: end;
+        }
+
+        .onyx-about-statement-copy p {
+            color: #a1a1aa;
+            font-size: clamp(18px, 2vw, 25px);
+            line-height: 1.55;
+            margin: 0;
+        }
+
+        .onyx-about-statement-copy p + p {
+            margin-top: 22px;
+        }
+
+        .onyx-about-statement-media {
+            background: #121214;
+            border: 1px solid #27272a;
+            border-radius: 8px;
             overflow: hidden;
         }
 
-        .onyx-about-wide-shot img {
-            height: 100%;
+        .onyx-about-statement-media img {
+            aspect-ratio: 16 / 10;
+            display: block;
+            height: auto;
             object-fit: cover;
             width: 100%;
         }
 
-        .onyx-about-wide-copy {
-            align-content: end;
-            background:
-                radial-gradient(circle at 12% 8%, rgba(216, 221, 227, 0.16), transparent 14rem),
-                #090909;
+        .onyx-about-operations {
             display: grid;
-            padding: clamp(32px, 5vw, 70px);
+            gap: 0;
         }
 
-        .onyx-about-wide-copy h2 {
-            font-size: clamp(38px, 5vw, 76px);
-            line-height: 0.96;
-            margin: 0;
-            text-transform: uppercase;
-        }
-
-        .onyx-about-wide-copy p {
-            color: #a8b0ba;
-            font-size: 18px;
-            line-height: 1.65;
-            margin: 26px 0 0;
-            max-width: 560px;
-        }
-
-        .onyx-about-stats {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            margin-top: 36px;
-        }
-
-        .onyx-about-stat {
-            border-top: 1px solid rgba(255, 255, 255, 0.14);
-            padding: 28px 24px 0 0;
-        }
-
-        .onyx-about-stat strong {
-            display: block;
-            font-family: Syne, Inter, sans-serif;
-            font-size: clamp(42px, 5vw, 76px);
-            letter-spacing: -0.06em;
-            line-height: 0.9;
-        }
-
-        .onyx-about-stat span {
-            color: #9ca3af;
-            display: block;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.12em;
-            margin-top: 14px;
-            text-transform: uppercase;
-        }
-
-        .onyx-about-timeline {
-            display: grid;
-        }
-
-        .onyx-about-timeline-row {
-            align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        .onyx-about-operation {
+            align-items: start;
+            border-top: 1px solid #27272a;
             display: grid;
             gap: 32px;
-            grid-template-columns: 160px 1fr 1.2fr;
-            padding: 34px 0;
+            grid-template-columns: 150px 1fr 1.05fr;
+            padding: 30px 0;
         }
 
-        .onyx-about-timeline-row:last-child {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        .onyx-about-operation:last-child {
+            border-bottom: 1px solid #27272a;
         }
 
-        .onyx-about-timeline-row span {
-            color: #d8dde3;
-            font-family: Syne, Inter, sans-serif;
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -0.04em;
-        }
-
-        .onyx-about-timeline-row strong {
-            font-family: Syne, Inter, sans-serif;
-            font-size: clamp(24px, 3vw, 44px);
-            letter-spacing: -0.04em;
-        }
-
-        .onyx-about-timeline-row p {
-            color: #a8b0ba;
-            line-height: 1.65;
+        .onyx-about-operation .onyx-about-label {
             margin: 0;
+        }
+
+        .onyx-about-support-grid {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .onyx-about-support-card {
+            background: #121214;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            min-height: 220px;
+            padding: 24px;
+        }
+
+        .onyx-about-support-card strong {
+            color: #ffffff;
+            display: block;
+            font-size: clamp(26px, 3.2vw, 42px);
+            letter-spacing: -1.2px;
+            line-height: 1;
+            margin-bottom: 22px;
         }
 
         .onyx-about-cta {
             align-items: center;
-            background:
-                radial-gradient(circle at 72% 30%, rgba(216, 221, 227, 0.18), transparent 18rem),
-                linear-gradient(135deg, #0c0c0d, #050505);
-            border: 1px solid rgba(255, 255, 255, 0.14);
             display: grid;
-            gap: 36px;
+            gap: 30px;
             grid-template-columns: 1fr auto;
-            padding: clamp(34px, 6vw, 78px);
-        }
-
-        .onyx-about-cta h2 {
-            font-size: clamp(44px, 7vw, 104px);
-            line-height: 0.92;
-            margin: 0;
-            text-transform: uppercase;
         }
 
         .onyx-about-cta p {
-            color: #a8b0ba;
+            color: #a1a1aa;
             font-size: 18px;
             line-height: 1.6;
-            margin: 26px 0 0;
+            margin: 22px 0 0;
             max-width: 720px;
         }
 
         @media (max-width: 1100px) {
-            .onyx-about-hero-inner,
-            .onyx-about-wide-shot,
+            .onyx-about-hero-grid,
+            .onyx-about-statement,
             .onyx-about-cta {
                 grid-template-columns: 1fr;
             }
 
-            .onyx-about-visual {
-                min-height: 520px;
-            }
-
-            .onyx-about-craft,
-            .onyx-about-stats {
+            .onyx-about-principles,
+            .onyx-about-support-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
 
-        @media (max-width: 720px) {
-            .onyx-about-hero,
-            .onyx-about-section {
-                padding-left: 24px;
-                padding-right: 24px;
+        @media (max-width: 760px) {
+            .onyx-about-shell {
+                width: min(100% - 32px, 1240px);
             }
 
             .onyx-about-hero {
-                padding-top: 118px;
+                padding-top: 124px;
             }
 
-            .onyx-about-craft,
-            .onyx-about-stats {
+            .onyx-about-section-heading,
+            .onyx-about-operation,
+            .onyx-about-principles,
+            .onyx-about-support-grid {
                 grid-template-columns: 1fr;
             }
 
-            .onyx-about-timeline-row {
-                gap: 14px;
-                grid-template-columns: 1fr;
+            .onyx-about-principle {
+                min-height: 0;
             }
 
-            .onyx-about-visual {
-                min-height: 420px;
+            .onyx-about-principle .onyx-about-label {
+                margin-bottom: 26px;
             }
         }
     </style>
@@ -405,126 +365,151 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <main class="onyx-about" aria-labelledby="about-title">
         <section class="onyx-about-hero">
-            <div class="onyx-about-hero-inner">
+            <div class="onyx-about-shell onyx-about-hero-grid">
                 <div>
-                    <p class="onyx-about-eyebrow">ONYX Performance Studio / Malaysia</p>
-                    <h1 id="about-title">Built for the last round.</h1>
+                    <span class="onyx-about-kicker">About ONYX</span>
+                    <h1 id="about-title">Performance hardware for focused play.</h1>
                     <p class="onyx-about-lede">
-                        ONYX creates black-silver esports hardware for players who care about feel, response, and confidence under pressure. Every surface, click, and gram is tuned for the moment where hesitation loses.
+                        <strong>ONYX is a black-and-silver gaming hardware company</strong> building peripherals for players who care about control, reliability, and a setup that stays quiet under pressure.
                     </p>
                     <div class="onyx-about-actions">
-                        <a class="onyx-about-pill hover-trigger" href="/customer_page/onyx_products.aspx">Explore gear <span>+</span></a>
-                        <a class="onyx-about-pill hover-trigger" href="/customer_page/Support.aspx">Talk to ONYX <span>+</span></a>
+                        <a class="onyx-about-button hover-trigger" href="/customer_page/onyx_catalog.aspx">Explore catalog</a>
+                        <a class="onyx-about-button hover-trigger" href="/customer_page/Support.aspx">Support promise</a>
                     </div>
                 </div>
 
-                <aside class="onyx-about-visual" aria-label="ONYX product studio photograph">
-                    <img src="/Content/home/products/onyx-mouse.png?v=20260603-studio" alt="ONYX black and silver gaming mouse studio photograph" />
-                    <div class="onyx-about-award">
-                        <span>Design direction</span>
-                        <strong>Competition-grade hardware with a studio finish.</strong>
+                <aside class="onyx-about-hero-panel" aria-label="ONYX product direction">
+                    <div class="onyx-about-hero-image">
+                        <img src="/Content/home/products/onyx-mouse.png?v=20260610-about" alt="ONYX black and silver gaming mouse on a dark studio surface" />
+                    </div>
+                    <div class="onyx-about-hero-panel-body">
+                        <span class="onyx-about-label">Company focus</span>
+                        <p>Make competitive gear feel precise, durable, and easy to trust from first click to final round.</p>
                     </div>
                 </aside>
             </div>
         </section>
 
-        <section class="onyx-about-section onyx-about-manifesto">
-            <div class="onyx-about-wrap">
-                <p class="onyx-about-eyebrow">Manifesto</p>
-                <h2>Precision should feel inevitable.</h2>
-                <p>
-                    We design peripherals like instruments: quiet in the hand, exact in motion, and durable enough for daily training. ONYX is minimal by sight, aggressive by engineering, and obsessed with the details that disappear when you are locked in.
-                </p>
-            </div>
-        </section>
-
         <section class="onyx-about-section">
-            <div class="onyx-about-wrap">
-                <p class="onyx-about-eyebrow">What we obsess over</p>
-                <div class="onyx-about-craft">
-                    <article data-index="01">
-                        <h3>Latency feel</h3>
-                        <p>Clicks, scrolls, and keypresses are tuned around response confidence, not spec-sheet noise.</p>
-                    </article>
-                    <article data-index="02">
-                        <h3>Surface control</h3>
-                        <p>Matte shells, brushed rails, and shaped contact zones keep grip predictable through long sessions.</p>
-                    </article>
-                    <article data-index="03">
-                        <h3>Weight balance</h3>
-                        <p>We trim mass where it distracts and keep structure where it protects aim, typing, and audio comfort.</p>
-                    </article>
-                    <article data-index="04">
-                        <h3>Visual restraint</h3>
-                        <p>ONYX hardware uses black, silver, and white light because focus should belong to the match.</p>
-                    </article>
-                </div>
-
-                <div class="onyx-about-wide-shot">
-                    <img src="/Content/home/products/onyx-keyboard.png?v=20260603-studio" alt="ONYX mechanical keyboard studio photograph" />
-                    <div class="onyx-about-wide-copy">
-                        <p class="onyx-about-eyebrow">Studio standard</p>
-                        <h2>Made to look calm. Built to play fast.</h2>
-                        <p>
-                            The design language is deliberately reduced: fewer colors, sharper silhouettes, and materials that catch light like a blade. The result is gear that belongs on a championship desk without shouting over the player.
+            <div class="onyx-about-shell">
+                <div class="onyx-about-section-heading">
+                    <span class="onyx-about-index">01 / Mission</span>
+                    <div>
+                        <h2>We design around the moments that decide a match.</h2>
+                        <p class="onyx-about-section-copy">
+                            A big setup does not need to be loud. ONYX keeps the visual language restrained so the engineering can do the talking: accurate sensors, crisp inputs, stable audio, and account tools that make ownership simple.
                         </p>
                     </div>
                 </div>
 
-                <div class="onyx-about-stats" aria-label="ONYX performance statistics">
-                    <div class="onyx-about-stat">
-                        <strong>1ms</strong>
-                        <span>Response target</span>
-                    </div>
-                    <div class="onyx-about-stat">
-                        <strong>49g</strong>
-                        <span>Mouse concept weight</span>
-                    </div>
-                    <div class="onyx-about-stat">
-                        <strong>30K</strong>
-                        <span>Sensor class</span>
-                    </div>
-                    <div class="onyx-about-stat">
-                        <strong>50h</strong>
-                        <span>Battery ambition</span>
-                    </div>
+                <div class="onyx-about-principles" aria-label="ONYX company principles">
+                    <article class="onyx-about-principle">
+                        <span class="onyx-about-label">Precision</span>
+                        <h3>Control before spectacle</h3>
+                        <p>Every product page and hardware promise starts with the same question: will this help the player act with more confidence?</p>
+                    </article>
+                    <article class="onyx-about-principle">
+                        <span class="onyx-about-label">Durability</span>
+                        <h3>Built for daily use</h3>
+                        <p>Materials, switches, and finishes are selected for repeated sessions, travel, desk wear, and long ownership.</p>
+                    </article>
+                    <article class="onyx-about-principle">
+                        <span class="onyx-about-label">Clarity</span>
+                        <h3>No confusing ownership</h3>
+                        <p>Wishlist, checkout, order history, settings, support, and reviews are connected around a single customer account.</p>
+                    </article>
+                    <article class="onyx-about-principle">
+                        <span class="onyx-about-label">Restraint</span>
+                        <h3>Black, silver, purpose</h3>
+                        <p>The design system avoids noisy decoration so the gear feels premium, readable, and focused across every page.</p>
+                    </article>
                 </div>
             </div>
         </section>
 
         <section class="onyx-about-section">
-            <div class="onyx-about-wrap">
-                <p class="onyx-about-eyebrow">How ONYX moves</p>
-                <div class="onyx-about-timeline">
-                    <div class="onyx-about-timeline-row">
-                        <span>01</span>
-                        <strong>Prototype in silence</strong>
-                        <p>We start with hand feel, balance, switch force, and material contrast before visual polish enters the room.</p>
-                    </div>
-                    <div class="onyx-about-timeline-row">
-                        <span>02</span>
-                        <strong>Pressure test the details</strong>
-                        <p>Every shape is judged against repeated flicks, rapid strafes, late-night typing, and hours of voice comms.</p>
-                    </div>
-                    <div class="onyx-about-timeline-row">
-                        <span>03</span>
-                        <strong>Finish like a campaign</strong>
-                        <p>The final hardware needs to survive the desk, the travel bag, and the close-up shot.</p>
-                    </div>
+            <div class="onyx-about-shell onyx-about-statement">
+                <div class="onyx-about-statement-media">
+                    <img src="/Content/home/products/onyx-keyboard.png?v=20260610-about" alt="ONYX keyboard product photograph in black and silver" />
+                </div>
+                <div class="onyx-about-statement-copy">
+                    <span class="onyx-about-kicker">Product philosophy</span>
+                    <p>
+                        ONYX products are presented like professional tools, not collectibles. The store is built to help customers compare categories, save gear, buy confidently, and return to their profile when they need order history or reviews.
+                    </p>
+                    <p>
+                        That is the company standard: the product experience and the website experience should feel like they came from the same engineering culture.
+                    </p>
                 </div>
             </div>
         </section>
 
         <section class="onyx-about-section">
-            <div class="onyx-about-wrap">
-                <div class="onyx-about-cta">
+            <div class="onyx-about-shell">
+                <div class="onyx-about-section-heading">
+                    <span class="onyx-about-index">02 / Operating model</span>
                     <div>
-                        <p class="onyx-about-eyebrow">Next drop</p>
-                        <h2>Step into the silver standard.</h2>
-                        <p>Explore the current ONYX lineup and build a setup that feels quiet, exact, and ready for the last round.</p>
+                        <h2>How ONYX turns a gaming setup into a serviceable product ecosystem.</h2>
                     </div>
-                    <a class="onyx-about-pill hover-trigger" href="/customer_page/Home.aspx">Shop ONYX <span>+</span></a>
                 </div>
+
+                <div class="onyx-about-operations">
+                    <article class="onyx-about-operation">
+                        <span class="onyx-about-label">Research</span>
+                        <h3>Start with real player friction.</h3>
+                        <p>We identify where hardware interrupts performance: missed tracking, unclear audio cues, poor grip, inconsistent switches, or messy account flows.</p>
+                    </article>
+                    <article class="onyx-about-operation">
+                        <span class="onyx-about-label">Build</span>
+                        <h3>Translate standards into products.</h3>
+                        <p>Mice, keyboards, audio, and accessories are organized by use case so customers can build a complete setup without guessing.</p>
+                    </article>
+                    <article class="onyx-about-operation">
+                        <span class="onyx-about-label">Support</span>
+                        <h3>Keep ownership visible.</h3>
+                        <p>Orders, reviews, wishlist items, and support paths are kept close to the profile so post-purchase care does not feel hidden.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="onyx-about-section">
+            <div class="onyx-about-shell">
+                <div class="onyx-about-section-heading">
+                    <span class="onyx-about-index">03 / Customer promise</span>
+                    <div>
+                        <h2>What the ONYX experience should prove.</h2>
+                    </div>
+                </div>
+
+                <div class="onyx-about-support-grid">
+                    <article class="onyx-about-support-card">
+                        <strong>Product</strong>
+                        <h3>Performance before decoration.</h3>
+                        <p>Every product section should make the practical difference clear: control, response, sound, comfort, and setup fit.</p>
+                    </article>
+                    <article class="onyx-about-support-card">
+                        <strong>Account</strong>
+                        <h3>Ownership stays connected.</h3>
+                        <p>Wishlist, checkout, orders, reviews, and profile details should feel like one customer journey instead of separate pages.</p>
+                    </article>
+                    <article class="onyx-about-support-card">
+                        <strong>Store</strong>
+                        <h3>Shopping should stay focused.</h3>
+                        <p>The site should guide customers toward the right setup quickly, with fewer repeated claims and clearer next actions.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="onyx-about-section">
+            <div class="onyx-about-shell onyx-about-cta">
+                <div>
+                    <span class="onyx-about-kicker">Next step</span>
+                    <h2>Build your ONYX setup.</h2>
+                    <p>Browse the catalog, save the gear you are considering, and keep your order history and reviews connected to your account.</p>
+                </div>
+                <a class="onyx-about-button hover-trigger" href="/customer_page/onyx_catalog.aspx">Shop ONYX</a>
             </div>
         </section>
     </main>
