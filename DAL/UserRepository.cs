@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.Common;
 using Npgsql;
 using ONYX_DDAC.Models;
@@ -102,6 +103,10 @@ namespace ONYX_DDAC.DAL
             }
             return new UserStats();
         }
+
+        // =====================================================================
+        //  DETAIL CRUD
+        // =====================================================================
 
         public UserDetail GetUserById(long id)
         {
@@ -312,7 +317,7 @@ namespace ONYX_DDAC.DAL
         }
 
         // =====================================================================
-        //  AUTH METHODS (used by AuthService)
+        //  AUTH HELPERS (used by AuthService)
         // =====================================================================
 
         public bool CreateUser(User user)
@@ -330,9 +335,9 @@ namespace ONYX_DDAC.DAL
                     cmd.Parameters.AddWithValue("@Username",     user.Username);
                     cmd.Parameters.AddWithValue("@Email",        user.Email);
                     cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
-                    cmd.Parameters.AddWithValue("@Address",      (object)user.Address      ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Address",      (object)user.Address ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Dob",          user.Dob);
-                    cmd.Parameters.AddWithValue("@PhoneNumber",  (object)user.PhoneNumber  ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@PhoneNumber",  (object)user.PhoneNumber ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Role",         user.Role ?? "customer");
                     cmd.Parameters.AddWithValue("@CreatedAt",    DateTime.UtcNow);
 
@@ -434,7 +439,8 @@ namespace ONYX_DDAC.DAL
             using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand("UPDATE users SET password_hash = @Hash WHERE id = @Id", conn))
+                using (var cmd = new NpgsqlCommand(
+                    "UPDATE users SET password_hash = @Hash WHERE id = @Id", conn))
                 {
                     cmd.Parameters.AddWithValue("@Hash", newHash);
                     cmd.Parameters.AddWithValue("@Id",   userId);
@@ -444,7 +450,7 @@ namespace ONYX_DDAC.DAL
         }
 
         // =====================================================================
-        //  HELPERS
+        //  PRIVATE HELPERS
         // =====================================================================
 
         private static string GetInitials(string fullName)
