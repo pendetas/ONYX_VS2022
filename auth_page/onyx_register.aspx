@@ -352,6 +352,10 @@
                     <source src="<%= ResolveUrl("~/Videos/onyx_headset.mp4") %>" type="video/mp4" />
                 </video>
 
+
+                <div class="auth-copyright">&copy; ONYX 2026. All rights reserved.</div>
+
+
                 <div class="auth-copyright">&copy; ONYX 2026. All rights reserved.</div>
             </div>
 
@@ -446,7 +450,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
 
-            // Lenis smooth scroll — wrapper clips, content is the full scrollable area
+            // Lenis smooth scroll � wrapper clips, content is the full scrollable area
             const lenisWrapper  = document.querySelector('.auth-right');
             const lenisContent  = document.querySelector('.auth-scroll-content');
             if (lenisWrapper && lenisContent) {
