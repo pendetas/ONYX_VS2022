@@ -42,8 +42,8 @@ namespace ONYX_DDAC.admin_page
             pnlOrderDetail.Visible = true;
             pnlNotFound.Visible    = false;
 
-            string statusKey = order.Status.ToLower();
-            string statusCap = char.ToUpper(order.Status[0]) + order.Status.Substring(1);
+            string statusKey = string.IsNullOrEmpty(order.Status) ? "" : order.Status.ToLower();
+            string statusCap = string.IsNullOrEmpty(order.Status) ? "Unknown" : char.ToUpper(order.Status[0]) + order.Status.Substring(1);
 
             litOrderId.Text            = "#ORD-" + order.Id;
             litOrderDate.Text          = order.OrderedAt.ToString("d MMM yyyy, h:mm tt");
@@ -104,8 +104,16 @@ namespace ONYX_DDAC.admin_page
             long id = CurrentOrderId;
             if (id <= 0) return;
 
-            _svc.DeleteOrder(id);
-            Response.Redirect("~/admin_page/onyx_admin_orders.aspx");
+            try
+            {
+                _svc.DeleteOrder(id);
+                Response.Redirect("~/admin_page/onyx_admin_orders.aspx");
+            }
+            catch (Exception)
+            {
+                pnlStatusMsg.Visible = true;
+                litStatusMsg.Text    = "Failed to delete order. Please try again.";
+            }
         }
 
         private void ShowNotFound()

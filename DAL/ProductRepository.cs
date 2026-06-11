@@ -176,13 +176,21 @@ namespace ONYX_DDAC.DAL
                 conn.Open();
                 using (DbCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "DELETE FROM product_variants WHERE product_variant_id = @VariantId";
+                    cmd.CommandText = "UPDATE order_items SET product_variant_id = NULL WHERE product_variant_id = @VariantId";
 
                     DbParameter p = cmd.CreateParameter();
                     p.ParameterName = "@VariantId";
                     p.Value = variantId;
                     cmd.Parameters.Add(p);
+                    cmd.ExecuteNonQuery();
 
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = "DELETE FROM product_variants WHERE product_variant_id = @VariantId";
+
+                    DbParameter p2 = cmd.CreateParameter();
+                    p2.ParameterName = "@VariantId";
+                    p2.Value = variantId;
+                    cmd.Parameters.Add(p2);
                     cmd.ExecuteNonQuery();
                 }
             }

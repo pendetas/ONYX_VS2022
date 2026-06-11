@@ -62,7 +62,7 @@ namespace ONYX_DDAC.admin_page
         private void LoadProduct(long id)
         {
             Product p = _svc.GetProductById(id);
-            if (p == null) return;
+            if (p == null) { Response.Redirect("~/admin_page/onyx_admin_products.aspx"); return; }
 
             txtName.Text        = p.Name;
             txtBrand.Text       = p.Brand ?? "";

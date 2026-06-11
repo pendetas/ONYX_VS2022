@@ -41,14 +41,14 @@ namespace ONYX_DDAC.admin_page
             pnlUserDetail.Visible = true;
             pnlNotFound.Visible   = false;
 
-            string roleKey = user.Role.ToLower();
-            string roleCap = char.ToUpper(user.Role[0]) + user.Role.Substring(1);
+            string roleKey = string.IsNullOrEmpty(user.Role) ? "" : user.Role.ToLower();
+            string roleCap = string.IsNullOrEmpty(user.Role) ? "Unknown" : char.ToUpper(user.Role[0]) + user.Role.Substring(1);
 
-            litPageTitle.Text = user.FullName;
+            litPageTitle.Text = Server.HtmlEncode(user.FullName);
             litJoinDate.Text  = user.CreatedAt.ToString("d MMM yyyy");
             litUsername.Text  = Server.HtmlEncode(user.Username);
 
-            litInitials.Text  = user.Initials;
+            litInitials.Text  = Server.HtmlEncode(user.Initials);
             litHeroName.Text  = Server.HtmlEncode(user.FullName);
             litHeroEmail.Text = Server.HtmlEncode(user.Email);
 
@@ -105,8 +105,15 @@ namespace ONYX_DDAC.admin_page
             long id = CurrentUserId;
             if (id <= 0) return;
 
-            _svc.DeleteUser(id);
-            Response.Redirect("~/admin_page/onyx_admin_users.aspx");
+            try
+            {
+                _svc.DeleteUser(id);
+                Response.Redirect("~/admin_page/onyx_admin_users.aspx");
+            }
+            catch (Exception)
+            {
+                ShowAlert("Failed to delete user. Please try again.", success: false);
+            }
         }
 
         private void ShowNotFound()

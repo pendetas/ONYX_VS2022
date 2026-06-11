@@ -17,6 +17,9 @@ namespace ONYX_DDAC.Services
         // Returns null on success, or an error message string on failure
         public string Register(string fullName, string username, string email, string rawPassword, DateTime dob, string address, string phoneNumber)
         {
+            if (rawPassword == null || rawPassword.Length < 8)
+                return "Password must be at least 8 characters.";
+
             try
             {
                 // 1. Pre-check for duplicate username / email before attempting INSERT
@@ -49,7 +52,7 @@ namespace ONYX_DDAC.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("Registration Error: " + ex.Message);
-                return "DB Error: " + ex.Message;
+                return "Registration failed due to a server error. Please try again.";
             }
         }
 

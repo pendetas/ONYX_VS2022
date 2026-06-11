@@ -65,6 +65,8 @@ namespace ONYX_DDAC.Services
                 throw new System.ArgumentException("Category is required.");
             if (price < 0)
                 throw new System.ArgumentException("Price must be 0 or greater.");
+            if (stockQty < 0)
+                throw new System.ArgumentException("Stock quantity must be 0 or greater.");
 
             _repo.UpdateProduct(id, name, brand, category, description, price, stockQty, imageUrl);
         }

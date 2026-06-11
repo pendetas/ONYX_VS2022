@@ -10,7 +10,10 @@ namespace ONYX_DDAC.auth_page
     {
         private readonly UserRepository _repo = new UserRepository();
 
-        protected void Page_Load(object sender, EventArgs e) { }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            Helpers.AuthHelper.RequireAdmin(Page);
+        }
 
         protected void btnRegister_Click(object sender, EventArgs e)
         {

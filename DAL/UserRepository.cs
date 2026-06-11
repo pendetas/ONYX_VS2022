@@ -53,8 +53,8 @@ namespace ONYX_DDAC.DAL
                                 FullName    = fullName,
                                 Email       = r.GetString(2),
                                 Phone       = r.GetString(3),
-                                Role        = char.ToUpper(role[0]) + role.Substring(1),
-                                RoleKey     = role.ToLower(),
+                                Role        = string.IsNullOrEmpty(role) ? "Unknown" : char.ToUpper(role[0]) + role.Substring(1),
+                                RoleKey     = string.IsNullOrEmpty(role) ? "" : role.ToLower(),
                                 Initials    = GetInitials(fullName),
                                 JoinDate    = r.GetDateTime(5).ToString("d MMM yyyy"),
                                 TotalOrders = orders == 0 ? "0" : orders.ToString(),
@@ -197,8 +197,8 @@ namespace ONYX_DDAC.DAL
                                 OrderId   = "#ORD-" + r.GetInt64(0),
                                 Date      = r.GetDateTime(1).ToString("d MMM yyyy"),
                                 Total     = "RM " + Convert.ToDecimal(r[2]).ToString("N2"),
-                                Status    = char.ToUpper(status[0]) + status.Substring(1),
-                                StatusKey = status.ToLower()
+                                Status    = string.IsNullOrEmpty(status) ? "Unknown" : char.ToUpper(status[0]) + status.Substring(1),
+                                StatusKey = string.IsNullOrEmpty(status) ? "" : status.ToLower()
                             });
                         }
                     }
@@ -253,21 +253,33 @@ namespace ONYX_DDAC.DAL
                     {
                         cmd.Transaction = tx;
 
-                        cmd.CommandText = "DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE user_id = @Id)";
+                        cmd.CommandText = "DELETE FROM wishlists WHERE user_id = @Id";
+                        DbParameter p0 = cmd.CreateParameter(); p0.ParameterName = "@Id"; p0.Value = id;
+                        cmd.Parameters.Add(p0);
+                        cmd.ExecuteNonQuery();
+
+                        cmd.Parameters.Clear();
+                        cmd.CommandText = "DELETE FROM reviews WHERE user_id = @Id";
                         DbParameter p1 = cmd.CreateParameter(); p1.ParameterName = "@Id"; p1.Value = id;
                         cmd.Parameters.Add(p1);
                         cmd.ExecuteNonQuery();
 
                         cmd.Parameters.Clear();
-                        cmd.CommandText = "DELETE FROM orders WHERE user_id = @Id";
+                        cmd.CommandText = "DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE user_id = @Id)";
                         DbParameter p2 = cmd.CreateParameter(); p2.ParameterName = "@Id"; p2.Value = id;
                         cmd.Parameters.Add(p2);
                         cmd.ExecuteNonQuery();
 
                         cmd.Parameters.Clear();
-                        cmd.CommandText = "DELETE FROM users WHERE id = @Id";
+                        cmd.CommandText = "DELETE FROM orders WHERE user_id = @Id";
                         DbParameter p3 = cmd.CreateParameter(); p3.ParameterName = "@Id"; p3.Value = id;
                         cmd.Parameters.Add(p3);
+                        cmd.ExecuteNonQuery();
+
+                        cmd.Parameters.Clear();
+                        cmd.CommandText = "DELETE FROM users WHERE id = @Id";
+                        DbParameter p4 = cmd.CreateParameter(); p4.ParameterName = "@Id"; p4.Value = id;
+                        cmd.Parameters.Add(p4);
                         cmd.ExecuteNonQuery();
                     }
                     tx.Commit();

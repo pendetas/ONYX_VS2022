@@ -39,7 +39,7 @@ namespace ONYX_DDAC.DAL
                         while (r.Read())
                         {
                             string status = r.GetString(5);
-                            string cap    = char.ToUpper(status[0]) + status.Substring(1);
+                            string cap    = string.IsNullOrEmpty(status) ? "Unknown" : char.ToUpper(status[0]) + status.Substring(1);
 
                             list.Add(new OrderSummary
                             {
