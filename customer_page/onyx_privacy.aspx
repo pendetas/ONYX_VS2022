@@ -1,4 +1,4 @@
-<%@ Page Title="Privacy Policy" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Privacy.aspx.cs" Inherits="ONYX_DDAC.customer_page.Privacy" %>
+<%@ Page Title="Privacy Policy" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_privacy.aspx.cs" Inherits="ONYX_DDAC.customer_page.Privacy" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
@@ -154,13 +154,13 @@
             <aside class="onyx-legal-aside">
                 <p class="onyx-legal-toc-title">Contents</p>
                 <nav class="onyx-legal-toc" aria-label="Privacy contents">
-                    <a class="hover-trigger" href="#collect">Information we collect</a>
-                    <a class="hover-trigger" href="#use">How we use it</a>
-                    <a class="hover-trigger" href="#sharing">Data sharing</a>
-                    <a class="hover-trigger" href="#cookies">Cookies</a>
-                    <a class="hover-trigger" href="#rights">Your rights</a>
-                    <a class="hover-trigger" href="#security">Security</a>
-                    <a class="hover-trigger" href="#contact">Contact</a>
+                    <a  href="#collect">Information we collect</a>
+                    <a  href="#use">How we use it</a>
+                    <a  href="#sharing">Data sharing</a>
+                    <a  href="#cookies">Cookies</a>
+                    <a  href="#rights">Your rights</a>
+                    <a  href="#security">Security</a>
+                    <a  href="#contact">Contact</a>
                 </nav>
             </aside>
 
@@ -256,7 +256,7 @@
             window.addEventListener('scroll', function () {
                 var activeId = '';
                 sections.forEach(function (section) {
-                    if (window.scrollY >= section.offsetTop - 160) {
+                    if (window.scrollY>= section.offsetTop - 160) {
                         activeId = section.id;
                     }
                 });

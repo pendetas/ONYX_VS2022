@@ -1,4 +1,4 @@
-<%@ Page Title="Support" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Support.aspx.cs" Inherits="ONYX_DDAC.customer_page.Support" %>
+<%@ Page Title="Support" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_support.aspx.cs" Inherits="ONYX_DDAC.customer_page.Support" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
@@ -408,7 +408,6 @@
         }
 
         .onyx-support-faq summary {
-            cursor: pointer;
             list-style: none;
             padding: 24px 0;
         }
@@ -473,8 +472,8 @@
                         <strong>ONYX support is built around fast diagnosis, transparent next steps, and reliable post-purchase care.</strong> Get help with orders, warranty coverage, returns, setup, and account access without guessing where to start.
                     </p>
                     <div class="onyx-support-actions">
-                        <a href="#contact-support" class="onyx-support-button hover-trigger">Contact support</a>
-                        <a href="#support-faq" class="onyx-support-button hover-trigger">Read FAQ</a>
+                        <a href="#contact-support" class="onyx-support-button">Contact support</a>
+                        <a href="#support-faq" class="onyx-support-button">Read FAQ</a>
                     </div>
                 </div>
 
@@ -509,7 +508,7 @@
                         <div class="onyx-support-channel-list">
                             <div class="onyx-support-channel">
                                 <span class="onyx-support-label">Email</span>
-                                <a class="hover-trigger" href="mailto:support@onyxgaming.com">support@onyxgaming.com</a>
+                                <a  href="mailto:support@onyxgaming.com">support@onyxgaming.com</a>
                             </div>
                             <div class="onyx-support-channel">
                                 <span class="onyx-support-label">Hours</span>
@@ -545,7 +544,7 @@
                             <label for="support-message">Message</label>
                             <textarea id="support-message" placeholder="Order ID, product, serial number, and what happened"></textarea>
                         </div>
-                        <a class="onyx-support-button hover-trigger" href="mailto:support@onyxgaming.com?subject=ONYX%20Support%20Request">Email support</a>
+                        <a class="onyx-support-button" href="mailto:support@onyxgaming.com?subject=ONYX%20Support%20Request">Email support</a>
                         <p class="onyx-support-form-note">This form is a preparation guide. Use the email button to send your request through your mail app.</p>
                     </div>
                 </div>
@@ -563,22 +562,22 @@
                 </div>
 
                 <div class="onyx-support-lanes">
-                    <a class="onyx-support-lane hover-trigger" href="#contact-support">
+                    <a class="onyx-support-lane" href="#contact-support">
                         <span class="onyx-support-label">01 / Orders</span>
                         <h3>Payment, delivery, and invoices</h3>
                         <p>Use this path for tracking, receipt requests, delivery problems, wrong addresses, or missing items.</p>
                     </a>
-                    <a class="onyx-support-lane hover-trigger" href="#contact-support">
+                    <a class="onyx-support-lane" href="#contact-support">
                         <span class="onyx-support-label">02 / Warranty</span>
                         <h3>Defects and hardware faults</h3>
                         <p>Use this path for sensor issues, switch faults, charging problems, headset audio, and manufacturing defects.</p>
                     </a>
-                    <a class="onyx-support-lane hover-trigger" href="#contact-support">
+                    <a class="onyx-support-lane" href="#contact-support">
                         <span class="onyx-support-label">03 / Returns</span>
                         <h3>Return or replacement flow</h3>
                         <p>Use this path for unopened items, damaged deliveries, wrong products, or replacement eligibility.</p>
                     </a>
-                    <a class="onyx-support-lane hover-trigger" href="#support-faq">
+                    <a class="onyx-support-lane" href="#support-faq">
                         <span class="onyx-support-label">04 / Setup</span>
                         <h3>Device and account guidance</h3>
                         <p>Use this path for pairing, profiles, DPI, keyboard modes, care, login, wishlist, and order history questions.</p>

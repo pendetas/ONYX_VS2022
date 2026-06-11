@@ -1,4 +1,4 @@
-<%@ Page Title="Home" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="ONYX_DDAC.customer_page.Home" %>
+<%@ Page Title="Home" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_home.aspx.cs" Inherits="ONYX_DDAC.customer_page.Home" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -28,8 +28,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <style>
-        .onyx-shell > .onyx-nav,
-        .onyx-shell > .onyx-footer {
+        .onyx-shell> .onyx-nav,
+        .onyx-shell> .onyx-footer {
             display: none;
         }
 
@@ -264,7 +264,6 @@
         .onyx-ddac-dropdown-trigger {
             align-items: center;
             color: rgba(255,255,255,0.82);
-            cursor: pointer;
             display: inline-flex;
             gap: 6px;
             text-decoration: none;
@@ -752,15 +751,15 @@
                     </div>
                 </div>
                 <div class="onyx-home-trust-row reveal-item">
-                    <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Mouse">
+                    <a  href="/customer_page/onyx_catalog.aspx?category=Mouse">
                         <strong>Aim control</strong>
                         <span>Shop gaming mice for tracking, grip, and click timing</span>
                     </a>
-                    <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Keyboard">
+                    <a  href="/customer_page/onyx_catalog.aspx?category=Keyboard">
                         <strong>Fast inputs</strong>
                         <span>Compare keyboards for response, switch feel, and layout</span>
                     </a>
-                    <a class="hover-trigger" href="/customer_page/onyx_catalog.aspx">
+                    <a  href="/customer_page/onyx_catalog.aspx">
                         <strong>Build setup</strong>
                         <span>Browse the full catalog and save gear to your wishlist</span>
                     </a>
@@ -839,7 +838,7 @@
                             <p class="text-accent uppercase tracking-widest text-sm font-bold mb-4">Featured Gear</p>
                             <h2 class="text-5xl md:text-7xl font-syne font-bold tracking-tighter leading-tight">Shop the silver standard.</h2>
                         </div>
-                        <a href="../customer_page/onyx_catalog.aspx" class="hover-trigger border border-white/30 px-8 py-4 rounded-full font-bold text-sm tracking-wide uppercase hover:border-white transition-colors no-underline text-white">View All</a>
+                        <a href="../customer_page/onyx_catalog.aspx" class="border border-white/30 px-8 py-4 rounded-full font-bold text-sm tracking-wide uppercase hover:border-white transition-colors no-underline text-white">View All</a>
                     </div>
 
                     <div class="onyx-ddac-product-grid">
@@ -854,7 +853,7 @@
                                         <h3><%# GetFeaturedProductName(Eval("Category"), Container.ItemIndex) %></h3>
                                         <div class="onyx-ddac-product-meta">
                                             <strong><%# ONYX_DDAC.Helpers.CurrencyHelper.FormatMyr((decimal)Eval("Price")) %></strong>
-                                            <a href="../customer_page/onyx_catalog.aspx" class="hover-trigger">View</a>
+                                            <a href="../customer_page/onyx_catalog.aspx">View</a>
                                         </div>
                                     </div>
                                 </article>
@@ -872,9 +871,9 @@
                         </h2>
                         <div class="mt-12 flex flex-col sm:flex-row gap-4 border-b border-white/20 pb-4">
                             <input type="email" placeholder="Email address" class="bg-transparent outline-none flex-grow text-white placeholder:text-white/30 font-inter text-lg" />
-                            <button type="button" class="hover-trigger font-syne font-bold uppercase tracking-widest text-sm text-accent hover:text-white transition-colors">Subscribe</button>
+                            <button type="button" class="font-syne font-bold uppercase tracking-widest text-sm text-accent hover:text-white transition-colors">Subscribe</button>
                         </div>
-                        <label class="flex items-center gap-3 mt-6 text-sm text-secondary hover-trigger">
+                        <label class="flex items-center gap-3 mt-6 text-sm text-secondary">
                             <input type="checkbox" class="accent-slate-200 w-4 h-4" />
                             I agree to receive promotional emails.
                         </label>
@@ -883,11 +882,11 @@
                     <div class="flex md:justify-end reveal-item">
                         <div class="flex flex-col gap-4 text-right">
                             <h4 class="text-secondary text-sm font-bold uppercase tracking-widest mb-4">Shop Onyx</h4>
-                            <a href="../customer_page/onyx_catalog.aspx?category=Mouse" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Gaming Mice</a>
-                            <a href="../customer_page/onyx_catalog.aspx?category=Keyboard" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Mechanical Keyboards</a>
-                            <a href="../customer_page/onyx_catalog.aspx?category=Headset" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Headsets</a>
-                            <a href="../customer_page/onyx_catalog.aspx?category=Accessory" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Accessories</a>
-                            <a href="/customer_page/Support.aspx" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Support & Warranty</a>
+                            <a href="../customer_page/onyx_catalog.aspx?category=Mouse" class="text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Gaming Mice</a>
+                            <a href="../customer_page/onyx_catalog.aspx?category=Keyboard" class="text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Mechanical Keyboards</a>
+                            <a href="../customer_page/onyx_catalog.aspx?category=Headset" class="text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Headsets</a>
+                            <a href="../customer_page/onyx_catalog.aspx?category=Accessory" class="text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Accessories</a>
+                            <a href="/customer_page/Support.aspx" class="text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Support & Warranty</a>
                         </div>
                     </div>
                 </div>
@@ -895,10 +894,10 @@
                 <div class="max-w-7xl mx-auto mt-32 flex flex-col md:flex-row justify-between items-center text-xs text-secondary border-t border-white/10 pt-8 reveal-item">
                     <p>Onyx Gaming Technologies, 2026</p>
                     <div class="flex gap-6 mt-4 md:mt-0">
-                        <a href="/customer_page/Terms.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Terms of Sale</a>
-                        <a href="/customer_page/Privacy.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Privacy Policy</a>
+                        <a href="/customer_page/Terms.aspx" class="hover:text-white transition-colors no-underline text-secondary">Terms of Sale</a>
+                        <a href="/customer_page/Privacy.aspx" class="hover:text-white transition-colors no-underline text-secondary">Privacy Policy</a>
                     </div>
-                    <button type="button" id="onyx-back-to-top" class="mt-4 md:mt-0 hover:text-white transition-colors hover-trigger uppercase tracking-widest font-bold">Back to Top</button>
+                    <button type="button" id="onyx-back-to-top" class="mt-4 md:mt-0 hover:text-white transition-colors uppercase tracking-widest font-bold">Back to Top</button>
                 </div>
             </footer>
         </main>

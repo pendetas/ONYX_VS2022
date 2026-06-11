@@ -1,0 +1,713 @@
+html {
+    background: #050505;
+    scrollbar-color: #d8dde3 #050505;
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #050505;
+    color: #ffffff;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: 14px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+    background: #050505;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+    background:
+        linear-gradient(180deg, #f8fafc 0%, #d8dde3 38%, #7f8791 100%);
+    border: 4px solid #050505;
+    border-radius: 999px;
+    min-height: 72px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+    background:
+        linear-gradient(180deg, #ffffff 0%, #eef1f5 42%, #aeb5bf 100%);
+}
+
+.onyx-user-shell {
+    background: #050505;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+.onyx-user-shell a {
+    text-decoration: none;
+}
+
+.onyx-ddac-nav {
+    align-items: center;
+    background: rgba(5, 5, 5, 0.2);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0;
+    display: flex;
+    justify-content: space-between;
+    left: 0;
+    padding: 16px 48px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition:
+        background 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    width: auto;
+    z-index: 90;
+}
+
+.onyx-ddac-nav.is-scrolled {
+    background: #0a0a0a;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+    left: 0;
+    right: 0;
+    top: 0;
+}
+
+.onyx-wordmark {
+    color: #ffffff;
+    display: inline-flex;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: clamp(22px, 2.25vw, 32px);
+    font-weight: 400;
+    letter-spacing: -0.08em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: lowercase;
+}
+
+.onyx-ddac-nav-links {
+    align-items: center;
+    display: flex;
+    gap: 2rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: 1.2px;
+}
+
+.onyx-ddac-nav-links a,
+.onyx-ddac-dropdown-trigger {
+    color: rgba(255, 255, 255, 0.88);
+    transition: color 0.2s ease;
+}
+
+.onyx-ddac-nav-links a:hover,
+.onyx-ddac-dropdown-trigger:hover {
+    color: #d8dde3;
+}
+
+.onyx-ddac-nav-register {
+    background: #ffffff;
+    border-radius: 999px;
+    color: #050505 !important;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 1.2px;
+    padding: 9px 20px;
+    text-transform: uppercase;
+    transition: background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.onyx-ddac-nav-register:hover {
+    background: #d8dde3;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18);
+    color: #050505 !important;
+}
+
+.onyx-ddac-dropdown {
+    position: static;
+}
+
+.onyx-ddac-dropdown-trigger {
+    align-items: center;
+    display: inline-flex;
+    gap: 6px;
+    user-select: none;
+}
+
+.onyx-ddac-dropdown-trigger .onyx-chev {
+    border-right: 1.5px solid currentColor;
+    border-top: 1.5px solid currentColor;
+    display: inline-block;
+    height: 6px;
+    opacity: 0.55;
+    transform: rotate(135deg) translateY(-2px);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+    width: 6px;
+}
+
+.onyx-ddac-dropdown:hover .onyx-ddac-dropdown-trigger {
+    color: #ffffff;
+}
+
+.onyx-ddac-dropdown:hover .onyx-chev {
+    opacity: 1;
+    transform: rotate(-45deg) translateY(-2px);
+}
+
+.onyx-ddac-megapanel {
+    background: rgba(7, 7, 9, 0.99);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    clip-path: inset(0 0 100% 0);
+    left: 0;
+    padding-bottom: 0;
+    padding-top: 130px;
+    pointer-events: none;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition: clip-path 0.48s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 80;
+}
+
+.onyx-ddac-nav.is-scrolled .onyx-ddac-megapanel {
+    padding-top: 110px;
+}
+
+.onyx-ddac-dropdown:hover .onyx-ddac-megapanel {
+    clip-path: inset(0 0 0% 0);
+    pointer-events: auto;
+}
+
+.onyx-ddac-megapanel-inner {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: grid;
+    gap: 0;
+    grid-template-columns: 1fr auto;
+    margin: 0 auto;
+    max-width: 1400px;
+    padding: 0 48px;
+}
+
+.onyx-ddac-mega-cats {
+    display: grid;
+    gap: 0;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 40px 0;
+}
+
+.onyx-ddac-mega-cat {
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-right: 32px;
+    opacity: 0;
+    padding: 0 32px 0 0;
+    text-decoration: none !important;
+    transform: translateY(16px);
+    transition:
+        opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.onyx-ddac-mega-cat:last-child {
+    border-right: 0;
+    margin-right: 0;
+    padding-right: 0;
+}
+
+.onyx-ddac-dropdown:hover .onyx-ddac-mega-cat:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.06s; }
+.onyx-ddac-dropdown:hover .onyx-ddac-mega-cat:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.12s; }
+.onyx-ddac-dropdown:hover .onyx-ddac-mega-cat:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.18s; }
+.onyx-ddac-dropdown:hover .onyx-ddac-mega-cat:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.24s; }
+
+.onyx-ddac-mega-cat-num {
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.onyx-ddac-mega-cat-name {
+    color: rgba(255, 255, 255, 0.9);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 1.2px;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.onyx-ddac-mega-cat:hover .onyx-ddac-mega-cat-name {
+    color: #d8dde3;
+}
+
+.onyx-ddac-mega-cat-sub {
+    color: rgba(255, 255, 255, 0.32);
+    font-size: 11px;
+    letter-spacing: 1.2px;
+}
+
+.onyx-ddac-mega-cta {
+    align-items: flex-start;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+    opacity: 0;
+    padding: 40px 0 40px 48px;
+    transform: translateX(12px);
+    transition:
+        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.28s,
+        transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.28s;
+}
+
+.onyx-ddac-dropdown:hover .onyx-ddac-mega-cta {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.onyx-ddac-mega-cta-label {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.onyx-ddac-mega-cta-link {
+    align-items: center;
+    background: #ffffff;
+    border-radius: 999px;
+    color: #050505 !important;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 400;
+    gap: 8px;
+    letter-spacing: 1.2px;
+    padding: 12px 22px;
+    text-decoration: none !important;
+    text-transform: uppercase;
+    transition: background 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+}
+
+.onyx-ddac-mega-cta-link:hover {
+    background: #d8dde3;
+    transform: scale(1.03);
+}
+
+.onyx-ddac-nav-icon {
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.88) !important;
+    display: inline-flex;
+    height: 40px;
+    justify-content: center;
+    position: relative;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    width: 40px;
+}
+
+.onyx-ddac-nav-icon:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(216, 221, 227, 0.5);
+    color: #ffffff !important;
+    transform: translateY(-2px);
+}
+
+.onyx-ddac-nav-icon-count {
+    align-items: center;
+    background: #ffffff;
+    border-radius: 999px;
+    color: #050505;
+    display: flex;
+    font-size: 9px;
+    font-weight: 400;
+    height: 17px;
+    justify-content: center;
+    line-height: 1;
+    min-width: 17px;
+    padding: 0 4px;
+    position: absolute;
+    right: -5px;
+    top: -6px;
+}
+
+.onyx-ddac-account {
+    position: relative;
+}
+
+.onyx-ddac-account-trigger {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.92);
+    border-radius: 999px;
+    color: #050505;
+    display: inline-flex;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 400;
+    gap: 9px;
+    letter-spacing: 1.2px;
+    min-height: 40px;
+    padding: 0 15px 0 12px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.onyx-ddac-account-trigger:hover,
+.onyx-ddac-account:focus-within .onyx-ddac-account-trigger,
+.onyx-ddac-account:hover .onyx-ddac-account-trigger {
+    background: #ffffff;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14);
+    color: #050505;
+    transform: translateY(-1px);
+}
+
+.onyx-ddac-account-avatar {
+    align-items: center;
+    background: #050505;
+    border-radius: 50%;
+    color: #ffffff;
+    display: inline-flex;
+    height: 24px;
+    justify-content: center;
+    width: 24px;
+}
+
+.onyx-ddac-account-name {
+    color: #050505;
+    display: inline-block;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.onyx-ddac-account-trigger .onyx-chev {
+    border-right: 1.5px solid currentColor;
+    border-top: 1.5px solid currentColor;
+    display: inline-block;
+    height: 6px;
+    opacity: 0.55;
+    transform: rotate(135deg) translateY(-2px);
+    transition: transform 0.25s ease, opacity 0.2s ease;
+    width: 6px;
+}
+
+.onyx-ddac-account:hover .onyx-ddac-account-trigger .onyx-chev,
+.onyx-ddac-account:focus-within .onyx-ddac-account-trigger .onyx-chev {
+    opacity: 1;
+    transform: rotate(-45deg) translateY(-2px);
+}
+
+.onyx-ddac-account-menu {
+    background: rgba(7, 7, 9, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+    min-width: 210px;
+    opacity: 0;
+    padding: 10px;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 12px);
+    transform: translateY(10px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 140;
+}
+
+.onyx-ddac-account:hover .onyx-ddac-account-menu,
+.onyx-ddac-account:focus-within .onyx-ddac-account-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.onyx-ddac-account-menu::before {
+    content: "";
+    height: 14px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: -14px;
+}
+
+.onyx-ddac-account-menu a,
+.onyx-ddac-account-action {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.76) !important;
+    display: flex;
+    font-size: 12px;
+    font-weight: 400;
+    justify-content: space-between;
+    letter-spacing: 1.2px;
+    padding: 12px 14px;
+    text-decoration: none !important;
+    text-transform: uppercase;
+    transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
+    width: 100%;
+}
+
+.onyx-ddac-account-menu a:hover,
+.onyx-ddac-account-action:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff !important;
+    transform: translateX(2px);
+}
+
+.onyx-ddac-account-divider {
+    background: rgba(255, 255, 255, 0.1);
+    height: 1px;
+    margin: 8px 4px;
+}
+
+.onyx-user-main {
+    min-height: 100vh;
+}
+
+.onyx-master-footer {
+    background: #0a0a0c;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    padding: clamp(34px, 5vw, 56px) 6vw 24px;
+}
+
+.onyx-master-footer-inner {
+    align-items: start;
+    display: grid;
+    gap: clamp(24px, 4vw, 56px);
+    grid-template-columns: minmax(260px, 1fr) minmax(320px, 1.4fr);
+    margin: 0 auto;
+    max-width: 1240px;
+}
+
+.onyx-master-footer-brand .onyx-wordmark {
+    font-size: clamp(30px, 4vw, 46px);
+}
+
+.onyx-master-footer-brand p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 14px 0 0;
+    max-width: 420px;
+}
+
+.onyx-master-footer h3 {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 1.2px;
+    margin: 0 0 14px;
+    text-transform: uppercase;
+}
+
+.onyx-master-footer-columns {
+    display: grid;
+    gap: 26px;
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+}
+
+.onyx-master-footer-links {
+    display: grid;
+    gap: 9px;
+}
+
+.onyx-master-footer-links a {
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 14px;
+    transition: color 160ms ease, transform 160ms ease;
+}
+
+.onyx-master-footer-links a:hover {
+    color: #ffffff;
+    transform: translateX(3px);
+}
+
+.onyx-logout-modal {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.74);
+    backdrop-filter: blur(18px);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    opacity: 0;
+    padding: 24px;
+    pointer-events: none;
+    position: fixed;
+    transition: opacity 180ms ease;
+    z-index: 260;
+}
+
+.onyx-logout-modal.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.onyx-logout-card {
+    background:
+        radial-gradient(circle at 78% 0%, rgba(216, 221, 227, 0.14), transparent 16rem),
+        linear-gradient(180deg, rgba(24, 24, 26, 0.98), rgba(5, 5, 5, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    box-shadow: 0 32px 100px rgba(0, 0, 0, 0.62);
+    color: #ffffff;
+    max-width: 440px;
+    padding: clamp(26px, 4vw, 38px);
+    transform: translateY(16px) scale(0.98);
+    transition: transform 180ms ease;
+    width: min(100%, 440px);
+}
+
+.onyx-logout-modal.is-visible .onyx-logout-card {
+    transform: translateY(0) scale(1);
+}
+
+.onyx-logout-kicker {
+    color: rgba(255, 255, 255, 0.48);
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+.onyx-logout-title {
+    font-family: Syne, Inter, sans-serif;
+    font-size: clamp(34px, 5vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 0.96;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.onyx-logout-copy {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 15px;
+    line-height: 1.65;
+    margin: 18px 0 0;
+}
+
+.onyx-logout-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 28px;
+}
+
+.onyx-logout-button {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 800;
+    justify-content: center;
+    letter-spacing: 0.09em;
+    min-height: 44px;
+    min-width: 128px;
+    padding: 0 20px;
+    text-transform: uppercase;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.onyx-logout-button:hover {
+    transform: translateY(-2px);
+}
+
+.onyx-logout-cancel {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.onyx-logout-confirm {
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    color: #050505;
+}
+
+.onyx-master-footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: #858d98;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: space-between;
+    margin: clamp(28px, 4vw, 42px) auto 0;
+    max-width: 1240px;
+    padding-top: 18px;
+}
+
+.onyx-master-footer-bottom a {
+    color: #d8dde3;
+}
+
+@media (max-width: 920px) {
+    .onyx-ddac-nav {
+        padding: 14px 20px;
+    }
+
+    .onyx-wordmark {
+        font-size: 26px;
+    }
+
+    .onyx-ddac-nav-links {
+        display: none;
+    }
+
+    .onyx-master-footer-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-master-footer-columns {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px), (pointer: coarse) {
+    .onyx-user-shell,
+    .onyx-user-shell a,
+    .onyx-user-shell button,
+    .onyx-user-shell input,
+    .onyx-user-shell label {
+        cursor: auto;
+    }
+
+    .onyx-master-footer {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .onyx-master-footer-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-master-footer-columns {
+        grid-template-columns: 1fr;
+    }
+}

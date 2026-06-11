@@ -1,4 +1,4 @@
-<%@ Page Title="About" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="About.aspx.cs" Inherits="ONYX_DDAC.customer_page.About" %>
+<%@ Page Title="About" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_about.aspx.cs" Inherits="ONYX_DDAC.customer_page.About" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
@@ -373,8 +373,8 @@
                         <strong>ONYX is a black-and-silver gaming hardware company</strong> building peripherals for players who care about control, reliability, and a setup that stays quiet under pressure.
                     </p>
                     <div class="onyx-about-actions">
-                        <a class="onyx-about-button hover-trigger" href="/customer_page/onyx_catalog.aspx">Explore catalog</a>
-                        <a class="onyx-about-button hover-trigger" href="/customer_page/Support.aspx">Support promise</a>
+                        <a class="onyx-about-button" href="/customer_page/onyx_catalog.aspx">Explore catalog</a>
+                        <a class="onyx-about-button" href="/customer_page/Support.aspx">Support promise</a>
                     </div>
                 </div>
 
@@ -509,7 +509,7 @@
                     <h2>Build your ONYX setup.</h2>
                     <p>Browse the catalog, save the gear you are considering, and keep your order history and reviews connected to your account.</p>
                 </div>
-                <a class="onyx-about-button hover-trigger" href="/customer_page/onyx_catalog.aspx">Shop ONYX</a>
+                <a class="onyx-about-button" href="/customer_page/onyx_catalog.aspx">Shop ONYX</a>
             </div>
         </section>
     </main>

@@ -1,4 +1,4 @@
-<%@ Page Title="Terms and Conditions" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="Terms.aspx.cs" Inherits="ONYX_DDAC.customer_page.Terms" %>
+<%@ Page Title="Terms and Conditions" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_terms.aspx.cs" Inherits="ONYX_DDAC.customer_page.Terms" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
@@ -154,14 +154,14 @@
             <aside class="onyx-legal-aside">
                 <p class="onyx-legal-toc-title">Contents</p>
                 <nav class="onyx-legal-toc" aria-label="Terms contents">
-                    <a class="hover-trigger" href="#acceptance">Acceptance</a>
-                    <a class="hover-trigger" href="#products">Products and pricing</a>
-                    <a class="hover-trigger" href="#orders">Orders and payment</a>
-                    <a class="hover-trigger" href="#shipping">Shipping</a>
-                    <a class="hover-trigger" href="#returns">Returns and warranty</a>
-                    <a class="hover-trigger" href="#property">Intellectual property</a>
-                    <a class="hover-trigger" href="#liability">Liability</a>
-                    <a class="hover-trigger" href="#law">Governing law</a>
+                    <a  href="#acceptance">Acceptance</a>
+                    <a  href="#products">Products and pricing</a>
+                    <a  href="#orders">Orders and payment</a>
+                    <a  href="#shipping">Shipping</a>
+                    <a  href="#returns">Returns and warranty</a>
+                    <a  href="#property">Intellectual property</a>
+                    <a  href="#liability">Liability</a>
+                    <a  href="#law">Governing law</a>
                 </nav>
             </aside>
 
@@ -263,7 +263,7 @@
             window.addEventListener('scroll', function () {
                 var activeId = '';
                 sections.forEach(function (section) {
-                    if (window.scrollY >= section.offsetTop - 160) {
+                    if (window.scrollY>= section.offsetTop - 160) {
                         activeId = section.id;
                     }
                 });

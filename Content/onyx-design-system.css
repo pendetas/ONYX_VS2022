@@ -363,25 +363,3 @@ b {
 * {
     text-shadow: none !important;
 }
-
-.onyx-user-shell,
-.onyx-user-shell * {
-    cursor: auto !important;
-}
-
-a,
-button,
-input[type="button"],
-input[type="submit"],
-input[type="reset"],
-select,
-label,
-.hover-trigger,
-[role="button"] {
-    cursor: pointer !important;
-}
-
-input,
-textarea {
-    cursor: text !important;
-}
