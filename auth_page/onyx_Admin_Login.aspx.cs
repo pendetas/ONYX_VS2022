@@ -1,58 +1,61 @@
 using System;
-using System.Web.Security;
 using System.Web.UI;
-using BCrypt.Net;
-using ONYX_DDAC.DAL;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.auth_page
 {
     public partial class onyx_Admin_Login : Page
     {
-        private readonly UserRepository _repo = new UserRepository();
+        private readonly AuthService _authService = new AuthService();
+
+        protected override void OnInit(EventArgs e)
+        {
+            base.OnInit(e);
+            ViewStateUserKey = AuthHelper.GetOrCreateViewStateUserKey(this);
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack && Session["Role"] != null && Session["Role"].ToString() == "admin")
-                Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx");
+            if (!IsPostBack && AuthHelper.IsAdmin(this))
+            {
+                Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
         }
 
         protected void btnLogin_Click(object sender, EventArgs e)
         {
-            string username = txtUser.Text.Trim();
-            string password = txtPass.Text;
-
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            try
             {
-                ShowError("Please enter your username and password.");
-                return;
+                User user = _authService.Login(
+                    txtUser.Text,
+                    txtPass.Text,
+                    Request.UserHostAddress);
+
+                if (user == null ||
+                    !string.Equals(user.Role, "admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    ShowError(AuthService.LoginFailureMessage);
+                    return;
+                }
+
+                AuthHelper.EstablishAuthenticatedSession(this, user);
+                Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
             }
-
-            User user = _repo.GetUserByUsername(username);
-
-            if (user == null || !user.Role.Equals("admin", StringComparison.OrdinalIgnoreCase))
+            catch (Exception exception)
             {
-                ShowError("Invalid credentials. Access denied.");
-                return;
+                System.Diagnostics.Trace.TraceError(
+                    "Admin login page failure: " + exception.GetType().Name);
+                ShowError(AuthService.LoginFailureMessage);
             }
-
-            bool valid = BCrypt.Net.BCrypt.EnhancedVerify(password, user.PasswordHash);
-            if (!valid)
-            {
-                ShowError("Invalid credentials. Access denied.");
-                return;
-            }
-
-            Session["UserId"]   = user.Id;
-            Session["Username"] = user.Username;
-            Session["Role"]     = "admin";
-            FormsAuthentication.SetAuthCookie(user.Email, false);
-            Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx");
         }
 
         private void ShowError(string message)
         {
-            lblError.Text    = Server.HtmlEncode(message);
+            lblError.Text = Server.HtmlEncode(message);
             lblError.Visible = true;
         }
     }

@@ -1,5 +1,4 @@
 using System;
-using System.Web.Security;
 using System.Web.UI;
 using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
@@ -11,79 +10,72 @@ namespace ONYX_DDAC.auth_page
     {
         private readonly AuthService authService = new AuthService();
 
+        protected override void OnInit(EventArgs e)
+        {
+            base.OnInit(e);
+            ViewStateUserKey = AuthHelper.GetOrCreateViewStateUserKey(this);
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["UserId"] != null)
             {
-                Response.Redirect("~/customer_page/onyx_catalog.aspx");
+                RedirectForRole(Session["Role"] as string);
                 return;
             }
 
-            if (Request.QueryString["registered"] == "true")
-            {
+            if (!IsPostBack && Request.QueryString["registered"] == "true")
                 ShowMessage("Registration successful. You can now sign in.", true);
-            }
         }
 
         protected void LoginButton_Click(object sender, EventArgs e)
         {
-            string emailOrUser = EmailTextBox.Text.Trim();
-            string password = PasswordTextBox.Text;
-
-            if (string.IsNullOrEmpty(emailOrUser) || string.IsNullOrEmpty(password))
-            {
-                ShowMessage("Please enter both email and password.", false);
-                return;
-            }
-
             try
             {
-                // Hardcoded bypass logic for Admin as requested in the instructions
-                if (emailOrUser.ToLower() == "admin" && password == "admin123")
-                {
-                    Session["UserId"] = 1; // Assuming 1 is the Admin seeded ID
-                    Session["Username"] = "Admin";
-                    Session["Role"] = "admin";
-                    FormsAuthentication.SetAuthCookie("admin@onyx.com", false);
-                    Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx", true);
-                    return;
-                }
-
-                // Normal Database Authentication Flow
-                User user = authService.Login(emailOrUser, password);
+                User user = authService.Login(
+                    EmailTextBox.Text,
+                    PasswordTextBox.Text,
+                    Request.UserHostAddress);
 
                 if (user == null)
                 {
-                    ShowMessage("Invalid credentials. Access denied.", false);
+                    ShowMessage(AuthService.LoginFailureMessage, false);
                     return;
                 }
 
-                // Establish session state per PRD requirements
-                Session["UserId"] = user.Id;
-                Session["Username"] = user.Username;
-                Session["Role"] = user.Role;
-                FormsAuthentication.SetAuthCookie(user.Email, false);
-
-                // Auto-detect role and route
-                if (string.Equals(user.Role, "admin", StringComparison.OrdinalIgnoreCase))
-                {
-                    Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx", true);
-                }
-                else
-                {
-                    Response.Redirect("~/customer_page/onyx_catalog.aspx", true);
-                }
+                AuthHelper.EstablishAuthenticatedSession(this, user);
+                RedirectForRole(user.Role);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                ShowMessage(ex.Message, false);
+                System.Diagnostics.Trace.TraceError(
+                    "Login page failure: " + exception.GetType().Name);
+                ShowMessage(AuthService.LoginFailureMessage, false);
             }
+        }
+
+        private void RedirectForRole(string role)
+        {
+            string target = string.Equals(
+                role,
+                "admin",
+                StringComparison.OrdinalIgnoreCase)
+                ? "~/admin_page/onyx_admin_dashboard.aspx"
+                : "~/customer_page/onyx_catalog.aspx";
+
+            Response.Redirect(target, false);
+            Context.ApplicationInstance.CompleteRequest();
         }
 
         private void ShowMessage(string message, bool isSuccess)
         {
             MessagePanel.Visible = true;
-            MessageLiteral.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#c0c0c0" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
+            MessageLiteral.Text =
+                "<span class=\"auth-alert\" style=\"color: " +
+                (isSuccess ? "#c0c0c0" : "#ff4444") +
+                ";\">" +
+                Server.HtmlEncode(message) +
+                "</span>";
         }
     }
 }

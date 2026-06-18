@@ -293,7 +293,7 @@
                     <div class="auth-form-grid">
                         <div class="auth-field">
                             <label>Email / Username</label>
-                            <asp:TextBox ID="EmailTextBox" runat="server" CssClass="auth-input" placeholder="Enter email or 'admin'" />
+                            <asp:TextBox ID="EmailTextBox" runat="server" CssClass="auth-input" placeholder="Enter email or username" />
                         </div>
 
                         <div class="auth-field">

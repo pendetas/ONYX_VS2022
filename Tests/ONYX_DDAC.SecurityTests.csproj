@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="SecurityTests.cs" />
+    <Compile Include="..\Helpers\OtpSecurityHelper.cs" Link="Helpers\OtpSecurityHelper.cs" />
+    <Compile Include="..\Helpers\ValidationHelper.cs" Link="Helpers\ValidationHelper.cs" />
+  </ItemGroup>
+</Project>

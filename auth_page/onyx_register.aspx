@@ -1,4 +1,4 @@
-<%@ Page Title="Register - ONYX" Language="C#" MasterPageFile="~/customer_page/onyx_layout.Master" AutoEventWireup="true" CodeBehind="onyx_register.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_register" %>
+<%@ Page Title="Register - ONYX" Language="C#" MasterPageFile="~/customer_page/onyx_layout.Master" AutoEventWireup="true" Async="true" CodeBehind="onyx_register.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_register" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -341,6 +341,44 @@
 
         .match-indicator.matched { color: #c0c0c0; }
         .match-indicator.unmatched { color: #ff4444; }
+
+        .server-hidden { display: none !important; }
+
+        .captcha-wrapper {
+            margin-top: 30px;
+            min-height: 65px;
+        }
+
+        .cta.captcha-pending {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .otp-copy {
+            color: #888;
+            line-height: 1.7;
+            margin: -25px 0 35px;
+            font-size: 13px;
+        }
+
+        .otp-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .secondary-action {
+            color: #888;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: underline;
+        }
     </style>
 
     <div class="auth-takeover">
@@ -354,9 +392,6 @@
 
 
                 <div class="auth-copyright">&copy; ONYX 2026. All rights reserved.</div>
-
-
-                <div class="auth-copyright">&copy; ONYX 2026. All rights reserved.</div>
             </div>
 
             <div class="auth-right">
@@ -366,78 +401,122 @@
                 </div>
 
                 <div class="auth-form-wrapper">
-                    <h1 class="auth-title">Register</h1>
-
                     <asp:Label ID="lblMessage" runat="server" Visible="false"></asp:Label>
 
-                    <div class="auth-form-grid">
+                    <asp:Panel ID="pnlRegistration" runat="server" DefaultButton="btnRegister">
+                        <h1 class="auth-title">Register</h1>
 
-                        <div class="auth-field">
-                            <label>Full Name</label>
-                            <asp:TextBox ID="txtFullName" runat="server" CssClass="auth-input" required="true" placeholder="John Doe" />
-                        </div>
+                        <div class="auth-form-grid">
+                            <div class="auth-field">
+                                <label>Full Name</label>
+                                <asp:TextBox ID="txtFullName" runat="server" CssClass="auth-input" MaxLength="100" placeholder="John Doe" />
+                            </div>
 
-                        <div class="auth-field">
-                            <label>Username</label>
-                            <asp:TextBox ID="txtUsername" runat="server" CssClass="auth-input" required="true" placeholder="johndoe99" />
-                        </div>
+                            <div class="auth-field">
+                                <label>Username</label>
+                                <asp:TextBox ID="txtUsername" runat="server" CssClass="auth-input" MaxLength="50" placeholder="johndoe99" />
+                            </div>
 
-                        <div class="auth-field">
-                            <label>Email Address</label>
-                            <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="auth-input" required="true" placeholder="name@example.com" />
-                        </div>
+                            <div class="auth-field">
+                                <label>Email Address</label>
+                                <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="auth-input" MaxLength="255" placeholder="name@example.com" />
+                            </div>
 
-                        <div class="auth-field">
-                            <label>Phone Number</label>
-                            <asp:TextBox ID="txtPhone" runat="server" TextMode="Phone" CssClass="auth-input" placeholder="+60 12-345 6789" />
-                        </div>
+                            <div class="auth-field">
+                                <label>Phone Number</label>
+                                <asp:TextBox ID="txtPhone" runat="server" TextMode="Phone" CssClass="auth-input" MaxLength="30" placeholder="+60 12-345 6789" />
+                            </div>
 
-                        <div class="auth-field">
-                            <label>Password</label>
-                            <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" CssClass="auth-input" required="true" placeholder="Enter strong password" />
-                            <div class="strength-wrapper" id="strengthWrapper">
-                                <div class="strength-bars">
-                                    <div class="strength-bar" id="sbar1"></div>
-                                    <div class="strength-bar" id="sbar2"></div>
-                                    <div class="strength-bar" id="sbar3"></div>
-                                    <div class="strength-bar" id="sbar4"></div>
+                            <div class="auth-field">
+                                <label>Password</label>
+                                <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" CssClass="auth-input" MaxLength="128" placeholder="Enter strong password" />
+                                <div class="strength-wrapper" id="strengthWrapper">
+                                    <div class="strength-bars">
+                                        <div class="strength-bar" id="sbar1"></div>
+                                        <div class="strength-bar" id="sbar2"></div>
+                                        <div class="strength-bar" id="sbar3"></div>
+                                        <div class="strength-bar" id="sbar4"></div>
+                                    </div>
+                                    <span class="strength-text" id="strengthText"></span>
                                 </div>
-                                <span class="strength-text" id="strengthText"></span>
+                            </div>
+
+                            <div class="auth-field">
+                                <label>Confirm Password</label>
+                                <asp:TextBox ID="txtConfirmPassword" runat="server" TextMode="Password" CssClass="auth-input" MaxLength="128" placeholder="Confirm password" />
+                                <div class="match-indicator" id="matchIndicator"></div>
+                            </div>
+
+                            <div class="auth-field">
+                                <label>Date of Birth</label>
+                                <asp:TextBox ID="txtDob" runat="server" CssClass="auth-input" style="display:none" />
+                                <div class="date-seg-wrapper" id="dateSegWrapper">
+                                    <input type="text" id="segDD" class="date-seg" placeholder="DD" maxlength="2" inputmode="numeric" autocomplete="off" />
+                                    <span class="date-sep">/</span>
+                                    <input type="text" id="segMM" class="date-seg" placeholder="MM" maxlength="2" inputmode="numeric" autocomplete="off" />
+                                    <span class="date-sep">/</span>
+                                    <input type="text" id="segYYYY" class="date-seg yyyy" placeholder="YYYY" maxlength="4" inputmode="numeric" autocomplete="off" />
+                                </div>
+                                <div id="dateMsg" class="date-feedback"></div>
+                            </div>
+
+                            <div class="auth-field full-width">
+                                <label>Shipping Address</label>
+                                <asp:TextBox ID="txtAddress" runat="server" CssClass="auth-input" MaxLength="1000" placeholder="Your default delivery address" />
                             </div>
                         </div>
 
+                        <div class="captcha-wrapper">
+                            <div class="cf-turnstile"
+                                 data-sitekey="<%= Server.HtmlEncode(TurnstileSiteKey) %>"
+                                 data-theme="dark"
+                                 data-callback="onTurnstileSuccess"
+                                 data-expired-callback="onTurnstileExpired"
+                                 data-error-callback="onTurnstileExpired"></div>
+                        </div>
+
+                        <asp:LinkButton ID="btnRegister" runat="server"
+                            CssClass="cta captcha-pending"
+                            OnClientClick="return ensureCaptchaCompleted();"
+                            OnClick="btnRegister_Click">
+                            <span class="hover-underline-animation">SEND VERIFICATION CODE</span>
+                            <svg viewBox="0 0 46 16" height="10" width="30" xmlns="http://www.w3.org/2000/svg" id="arrow-horizontal">
+                                <path transform="translate(30)" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z" data-name="Path 10" id="Path_10"></path>
+                            </svg>
+                        </asp:LinkButton>
+                    </asp:Panel>
+
+                    <asp:Panel ID="pnlOtpVerification" runat="server" DefaultButton="btnVerifyOtp">
+                        <h1 class="auth-title">Verify Email</h1>
+                        <p class="otp-copy">
+                            Enter the six-digit code sent to
+                            <strong><asp:Literal ID="litOtpDestination" runat="server" /></strong>.
+                            The code expires shortly.
+                        </p>
+                        <asp:Label ID="lblOtpMessage" runat="server" Visible="false"></asp:Label>
+
                         <div class="auth-field">
-                            <label>Confirm Password</label>
-                            <asp:TextBox ID="txtConfirmPassword" runat="server" TextMode="Password" CssClass="auth-input" required="true" placeholder="Confirm password" />
-                            <div class="match-indicator" id="matchIndicator"></div>
+                            <label>Verification Code</label>
+                            <asp:TextBox ID="txtOtp" runat="server" CssClass="auth-input"
+                                MaxLength="6" inputmode="numeric" autocomplete="one-time-code"
+                                placeholder="000000" />
                         </div>
 
-                        <div class="auth-field">
-                            <label>Date of Birth</label>
-                            <asp:TextBox ID="txtDob" runat="server" CssClass="auth-input" style="display:none" />
-                            <div class="date-seg-wrapper" id="dateSegWrapper">
-                                <input type="text" id="segDD"   class="date-seg"      placeholder="DD"   maxlength="2" inputmode="numeric" autocomplete="off" />
-                                <span class="date-sep">/</span>
-                                <input type="text" id="segMM"   class="date-seg"      placeholder="MM"   maxlength="2" inputmode="numeric" autocomplete="off" />
-                                <span class="date-sep">/</span>
-                                <input type="text" id="segYYYY" class="date-seg yyyy" placeholder="YYYY" maxlength="4" inputmode="numeric" autocomplete="off" />
-                            </div>
-                            <div id="dateMsg" class="date-feedback"></div>
+                        <asp:LinkButton ID="btnVerifyOtp" runat="server" CssClass="cta"
+                            OnClick="btnVerifyOtp_Click">
+                            <span class="hover-underline-animation">VERIFY ACCOUNT</span>
+                            <svg viewBox="0 0 46 16" height="10" width="30" xmlns="http://www.w3.org/2000/svg">
+                                <path transform="translate(30)" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z"></path>
+                            </svg>
+                        </asp:LinkButton>
+
+                        <div class="otp-actions">
+                            <asp:LinkButton ID="btnResendOtp" runat="server" CssClass="secondary-action"
+                                CausesValidation="false" OnClick="btnResendOtp_Click">Resend code</asp:LinkButton>
+                            <asp:LinkButton ID="btnStartOver" runat="server" CssClass="secondary-action"
+                                CausesValidation="false" OnClick="btnStartOver_Click">Start over</asp:LinkButton>
                         </div>
-
-                        <div class="auth-field full-width">
-                            <label>Shipping Address</label>
-                            <asp:TextBox ID="txtAddress" runat="server" CssClass="auth-input" placeholder="Your default delivery address" />
-                        </div>
-
-                    </div>
-
-                    <asp:LinkButton ID="btnRegister" runat="server" CssClass="cta" OnClick="btnRegister_Click">
-                        <span class="hover-underline-animation">REGISTER NOW</span>
-                        <svg viewBox="0 0 46 16" height="10" width="30" xmlns="http://www.w3.org/2000/svg" id="arrow-horizontal">
-                            <path transform="translate(30)" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z" data-name="Path 10" id="Path_10"></path>
-                        </svg>
-                    </asp:LinkButton>
+                    </asp:Panel>
                 </div>
                 </div><!-- /.auth-scroll-content -->
             </div>
@@ -446,8 +525,27 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <script>
+        let captchaCompleted = false;
+
+        function onTurnstileSuccess() {
+            captchaCompleted = true;
+            const button = document.getElementById('<%= btnRegister.ClientID %>');
+            if (button) button.classList.remove('captcha-pending');
+        }
+
+        function onTurnstileExpired() {
+            captchaCompleted = false;
+            const button = document.getElementById('<%= btnRegister.ClientID %>');
+            if (button) button.classList.add('captcha-pending');
+        }
+
+        function ensureCaptchaCompleted() {
+            return captchaCompleted;
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
 
             // Lenis smooth scroll � wrapper clips, content is the full scrollable area

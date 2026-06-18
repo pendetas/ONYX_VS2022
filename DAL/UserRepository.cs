@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using Npgsql;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
 
 namespace ONYX_DDAC.DAL
@@ -365,13 +366,13 @@ namespace ONYX_DDAC.DAL
                 conn.Open();
                 string sql = @"
                     SELECT
-                        (SELECT COUNT(*) FROM users WHERE LOWER(username) = LOWER(@Username)) AS un_count,
-                        (SELECT COUNT(*) FROM users WHERE LOWER(email)    = LOWER(@Email))    AS em_count";
+                        (SELECT COUNT(*) FROM users WHERE LOWER(username) = @Username) AS un_count,
+                        (SELECT COUNT(*) FROM users WHERE LOWER(email) = @Email) AS em_count";
 
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@Username", username);
-                    cmd.Parameters.AddWithValue("@Email",    email);
+                    cmd.Parameters.AddWithValue("@Username", ValidationHelper.NormalizeIdentifier(username));
+                    cmd.Parameters.AddWithValue("@Email", ValidationHelper.NormalizeIdentifier(email));
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -388,14 +389,14 @@ namespace ONYX_DDAC.DAL
 
         public User GetUserByEmail(string email)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
             {
                 conn.Open();
-                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE email = @Email";
+                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE LOWER(email) = @Email";
 
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@Email", email);
+                    cmd.Parameters.AddWithValue("@Email", ValidationHelper.NormalizeIdentifier(email));
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -416,16 +417,57 @@ namespace ONYX_DDAC.DAL
             return null;
         }
 
-        public User GetUserByUsername(string username)
+        public User GetUserByLoginIdentifier(string identifier)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
             {
                 conn.Open();
-                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE LOWER(username) = LOWER(@Username)";
+                const string sql = @"
+                    SELECT id, username, email, password_hash, role
+                    FROM users
+                    WHERE LOWER(email) = @Identifier
+                       OR LOWER(username) = @Identifier
+                    LIMIT 1";
 
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@Username", username);
+                    cmd.Parameters.AddWithValue("@Identifier", ValidationHelper.NormalizeIdentifier(identifier));
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User
+                            {
+                                Id = reader.GetInt64(0),
+                                Username = reader.GetString(1),
+                                Email = reader.GetString(2),
+                                PasswordHash = reader.GetString(3),
+                                Role = reader.GetString(4)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public User GetUserByEmailOrUsername(string identifier)
+        {
+            return GetUserByLoginIdentifier(identifier);
+        }
+
+        public User GetUserByUsername(string username)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE LOWER(username) = @Username";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Username", ValidationHelper.NormalizeIdentifier(username));
 
                     using (var reader = cmd.ExecuteReader())
                     {

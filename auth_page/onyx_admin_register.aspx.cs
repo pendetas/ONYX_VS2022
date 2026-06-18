@@ -1,18 +1,25 @@
 using System;
 using System.Web.UI;
-using BCrypt.Net;
-using ONYX_DDAC.DAL;
-using ONYX_DDAC.Models;
+using ONYX_DDAC.Helpers;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.auth_page
 {
     public partial class onyx_admin_register : Page
     {
-        private readonly UserRepository _repo = new UserRepository();
+        private readonly AuthService _authService = new AuthService();
+
+        protected override void OnInit(EventArgs e)
+        {
+            base.OnInit(e);
+            ViewStateUserKey = AuthHelper.GetOrCreateViewStateUserKey(this);
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            Helpers.AuthHelper.RequireAdmin(Page);
+            AuthHelper.RequireAdmin(Page);
+            if (!AuthHelper.IsAdmin(Page))
+                return;
         }
 
         protected void btnRegister_Click(object sender, EventArgs e)
@@ -23,58 +30,15 @@ namespace ONYX_DDAC.auth_page
             string password  = txtPassword.Text;
             string confirm   = txtConfirm.Text;
 
-            // Basic validation
-            if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(username) ||
-                string.IsNullOrEmpty(email)    || string.IsNullOrEmpty(password))
+            string error = _authService.RegisterAdmin(
+                fullName,
+                username,
+                email,
+                password,
+                confirm);
+            if (error != null)
             {
-                ShowError("All fields are required.");
-                return;
-            }
-
-            if (password != confirm)
-            {
-                ShowError("Passwords do not match.");
-                return;
-            }
-
-            if (password.Length < 8)
-            {
-                ShowError("Password must be at least 8 characters.");
-                return;
-            }
-
-            // Duplicate check
-            string duplicate = _repo.CheckDuplicate(username, email);
-            if (duplicate == "username")
-            {
-                ShowError("That username is already taken.");
-                return;
-            }
-            if (duplicate == "email")
-            {
-                ShowError("An account with that email already exists.");
-                return;
-            }
-
-            // Hash and create
-            string hash = BCrypt.Net.BCrypt.EnhancedHashPassword(password, 12);
-
-            var user = new User
-            {
-                FullName     = fullName,
-                Username     = username,
-                Email        = email,
-                PasswordHash = hash,
-                Role         = "admin",
-                Dob          = DateTime.Today,
-                Address      = null,
-                PhoneNumber  = null
-            };
-
-            bool created = _repo.CreateUser(user);
-            if (!created)
-            {
-                ShowError("Registration failed. Please try again.");
+                ShowError(error);
                 return;
             }
 
