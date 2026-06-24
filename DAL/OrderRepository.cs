@@ -8,7 +8,7 @@ namespace ONYX_DDAC.DAL
 {
     public class OrderRepository
     {
-        public IList<Order> GetOrdersForUser(long userId, int limit)
+        public IList<Order> GetOrdersForUser(long userId, string status, int limit)
         {
             var orders = new List<Order>();
             var orderLookup = new Dictionary<long, Order>();
@@ -25,6 +25,12 @@ namespace ONYX_DDAC.DAL
                             o.status,
                             o.total_amount,
                             o.shipping_address,
+                            o.delivery_method,
+                            o.stripe_checkout_session_id,
+                            o.stripe_payment_intent_id,
+                            o.payment_method,
+                            o.payment_expires_at,
+                            o.paid_at,
                             o.receipt_s3_key,
                             o.ordered_at,
                             oi.order_item_id,
@@ -38,6 +44,7 @@ namespace ONYX_DDAC.DAL
                             SELECT *
                             FROM orders
                             WHERE user_id = @UserId
+                              AND (@Status IS NULL OR status = @Status)
                             ORDER BY ordered_at DESC, id DESC
                             LIMIT @Limit
                         ) o
@@ -46,6 +53,10 @@ namespace ONYX_DDAC.DAL
                         LEFT JOIN product_variants pv ON pv.product_variant_id = oi.product_variant_id
                         ORDER BY o.ordered_at DESC, o.id DESC, oi.order_item_id ASC";
                     cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@Status", NpgsqlTypes.NpgsqlDbType.Varchar)
+                    {
+                        Value = string.IsNullOrWhiteSpace(status) ? (object)DBNull.Value : status
+                    });
                     cmd.Parameters.Add(new NpgsqlParameter("@Limit", Math.Max(limit, 1)));
 
                     using (DbDataReader reader = cmd.ExecuteReader())
@@ -72,6 +83,31 @@ namespace ONYX_DDAC.DAL
             return orders;
         }
 
+        public Order GetOrderForUser(long orderId, long userId)
+        {
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
+            {
+                conn.Open();
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT
+                            id, user_id, status, total_amount, shipping_address, delivery_method,
+                            stripe_checkout_session_id, stripe_payment_intent_id, payment_method,
+                            payment_expires_at, paid_at, receipt_s3_key, ordered_at
+                        FROM orders
+                        WHERE id = @OrderId AND user_id = @UserId";
+                    cmd.Parameters.Add(new NpgsqlParameter("@OrderId", orderId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+
+                    using (DbDataReader reader = cmd.ExecuteReader())
+                    {
+                        return reader.Read() ? MapOrderHeader(reader) : null;
+                    }
+                }
+            }
+        }
+
         public IList<Product> GetPurchasedProductsForUser(long userId)
         {
             var products = new List<Product>();
@@ -96,8 +132,10 @@ namespace ONYX_DDAC.DAL
                         INNER JOIN order_items oi ON oi.order_id = o.id
                         INNER JOIN products p ON p.id = oi.product_id
                         WHERE o.user_id = @UserId
+                          AND o.status = @PaidStatus
                         ORDER BY p.name ASC";
                     cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@PaidStatus", OrderStatuses.Paid));
 
                     using (DbDataReader reader = cmd.ExecuteReader())
                     {
@@ -125,9 +163,11 @@ namespace ONYX_DDAC.DAL
                         INNER JOIN order_items oi ON oi.order_id = o.id
                         WHERE o.user_id = @UserId
                           AND oi.product_id = @ProductId
+                          AND o.status = @PaidStatus
                         LIMIT 1";
                     cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
                     cmd.Parameters.Add(new NpgsqlParameter("@ProductId", productId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@PaidStatus", OrderStatuses.Paid));
                     object result = cmd.ExecuteScalar();
                     return result != null;
                 }
@@ -177,7 +217,7 @@ namespace ONYX_DDAC.DAL
                     VALUES (@UserId, @Status, @TotalAmount, @ShippingAddress, @ReceiptS3Key)
                     RETURNING id";
                 cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
-                cmd.Parameters.Add(new NpgsqlParameter("@Status", "paid"));
+                cmd.Parameters.Add(new NpgsqlParameter("@Status", OrderStatuses.Paid));
                 cmd.Parameters.Add(new NpgsqlParameter("@TotalAmount", totalAmount));
                 cmd.Parameters.Add(new NpgsqlParameter("@ShippingAddress", shippingAddress));
                 cmd.Parameters.Add(new NpgsqlParameter("@ReceiptS3Key", string.IsNullOrWhiteSpace(receiptS3Key) ? (object)DBNull.Value : receiptS3Key));
@@ -219,6 +259,12 @@ namespace ONYX_DDAC.DAL
                             o.status,
                             o.total_amount,
                             o.shipping_address,
+                            o.delivery_method,
+                            o.stripe_checkout_session_id,
+                            o.stripe_payment_intent_id,
+                            o.payment_method,
+                            o.payment_expires_at,
+                            o.paid_at,
                             o.receipt_s3_key,
                             o.ordered_at,
                             u.fullname,
@@ -230,15 +276,21 @@ namespace ONYX_DDAC.DAL
                             oi.product_id,
                             oi.product_variant_id,
                             oi.quantity,
-                            oi.unit_price
+                            oi.unit_price,
+                            p.name AS product_name,
+                            pv.variant_value
                         FROM orders o
                         JOIN users u ON u.id = o.user_id
                         LEFT JOIN order_items oi ON oi.order_id = o.id
+                        LEFT JOIN products p ON p.id = oi.product_id
+                        LEFT JOIN product_variants pv ON pv.product_variant_id = oi.product_variant_id
                         WHERE o.id = @OrderId
                           AND o.user_id = @UserId
+                          AND o.status = @PaidStatus
                         ORDER BY oi.order_item_id ASC";
                     cmd.Parameters.Add(new NpgsqlParameter("@OrderId", orderId));
                     cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@PaidStatus", OrderStatuses.Paid));
 
                     using (DbDataReader reader = cmd.ExecuteReader())
                     {
@@ -272,6 +324,12 @@ namespace ONYX_DDAC.DAL
                     Status = reader.GetString(reader.GetOrdinal("status")),
                     TotalAmount = reader.GetDecimal(reader.GetOrdinal("total_amount")),
                     ShippingAddress = reader.GetString(reader.GetOrdinal("shipping_address")),
+                    DeliveryMethod = ReadNullableString(reader, "delivery_method"),
+                    StripeCheckoutSessionId = ReadNullableString(reader, "stripe_checkout_session_id"),
+                    StripePaymentIntentId = ReadNullableString(reader, "stripe_payment_intent_id"),
+                    PaymentMethod = ReadNullableString(reader, "payment_method"),
+                    PaymentExpiresAt = ReadNullableDateTimeOffset(reader, "payment_expires_at"),
+                    PaidAt = ReadNullableDateTimeOffset(reader, "paid_at"),
                     ReceiptS3Key = reader.IsDBNull(reader.GetOrdinal("receipt_s3_key")) ? null : reader.GetString(reader.GetOrdinal("receipt_s3_key")),
                     OrderedAt = reader.GetDateTime(reader.GetOrdinal("ordered_at"))
                 },
@@ -296,9 +354,53 @@ namespace ONYX_DDAC.DAL
                 Status = reader.GetString(reader.GetOrdinal("status")),
                 TotalAmount = reader.GetDecimal(reader.GetOrdinal("total_amount")),
                 ShippingAddress = reader.GetString(reader.GetOrdinal("shipping_address")),
+                DeliveryMethod = ReadNullableString(reader, "delivery_method"),
+                StripeCheckoutSessionId = ReadNullableString(reader, "stripe_checkout_session_id"),
+                StripePaymentIntentId = ReadNullableString(reader, "stripe_payment_intent_id"),
+                PaymentMethod = ReadNullableString(reader, "payment_method"),
+                PaymentExpiresAt = ReadNullableDateTimeOffset(reader, "payment_expires_at"),
+                PaidAt = ReadNullableDateTimeOffset(reader, "paid_at"),
                 ReceiptS3Key = reader.IsDBNull(reader.GetOrdinal("receipt_s3_key")) ? null : reader.GetString(reader.GetOrdinal("receipt_s3_key")),
                 OrderedAt = reader.GetDateTime(reader.GetOrdinal("ordered_at"))
             };
+        }
+
+        private static string ReadNullableString(DbDataReader reader, string columnName)
+        {
+            int ordinal = reader.GetOrdinal(columnName);
+            return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
+        }
+
+        private static DateTimeOffset? ReadNullableDateTimeOffset(DbDataReader reader, string columnName)
+        {
+            int ordinal = reader.GetOrdinal(columnName);
+            if (reader.IsDBNull(ordinal))
+            {
+                return null;
+            }
+
+            object value = reader.GetValue(ordinal);
+            if (value is DateTimeOffset)
+            {
+                return (DateTimeOffset)value;
+            }
+
+            if (value is DateTime)
+            {
+                DateTime dateTime = (DateTime)value;
+                if (dateTime.Kind == DateTimeKind.Unspecified)
+                {
+                    dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+                }
+
+                return new DateTimeOffset(dateTime).ToUniversalTime();
+            }
+
+            return DateTimeOffset.Parse(
+                Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture),
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.AssumeUniversal |
+                System.Globalization.DateTimeStyles.AdjustToUniversal);
         }
 
         private static OrderItem MapOrderHistoryItem(DbDataReader reader)
@@ -345,20 +447,23 @@ namespace ONYX_DDAC.DAL
 
         private static OrderItem MapInvoiceItem(DbDataReader reader)
         {
-            long productId = reader.GetInt64(reader.GetOrdinal("product_id"));
             long? variantId = reader.IsDBNull(reader.GetOrdinal("product_variant_id"))
                 ? (long?)null
                 : reader.GetInt64(reader.GetOrdinal("product_variant_id"));
+            string productName = reader.IsDBNull(reader.GetOrdinal("product_name"))
+                ? $"Product #{reader.GetInt64(reader.GetOrdinal("product_id"))}"
+                : reader.GetString(reader.GetOrdinal("product_name"));
+            string variantValue = reader.IsDBNull(reader.GetOrdinal("variant_value"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("variant_value"));
 
             return new OrderItem
             {
                 OrderItemId = reader.GetInt64(reader.GetOrdinal("order_item_id")),
                 OrderId = reader.GetInt64(reader.GetOrdinal("id")),
-                ProductId = productId,
+                ProductId = reader.GetInt64(reader.GetOrdinal("product_id")),
                 ProductVariantId = variantId,
-                ProductName = variantId.HasValue
-                    ? $"Product #{productId} / Variant #{variantId.Value}"
-                    : $"Product #{productId}",
+                ProductName = string.IsNullOrWhiteSpace(variantValue) ? productName : $"{productName} ({variantValue})",
                 Quantity = reader.GetInt32(reader.GetOrdinal("quantity")),
                 UnitPrice = reader.GetDecimal(reader.GetOrdinal("unit_price"))
             };

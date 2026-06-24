@@ -1,0 +1,1117 @@
+/* onyx_cart.aspx */
+.onyx-cart-page {
+    background: #050505;
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 168px 32px 120px;
+}
+
+.onyx-cart-shell {
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.onyx-cart-title {
+    font-family: Syne, Inter, sans-serif;
+    font-size: clamp(42px, 6vw, 84px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+}
+
+.onyx-cart-table th {
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 16px;
+}
+
+.onyx-cart-table td {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    vertical-align: middle;
+}
+
+.onyx-cart-image {
+    width: 80px;
+    height: 80px;
+    background: #111;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin-right: 20px;
+}
+
+.onyx-cart-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.onyx-checkout-btn {
+    background: #ffffff; /* Changed from green to white */
+    color: #000000;
+    font-family: Syne, sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 999px;
+    padding: 18px 48px;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.onyx-checkout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2); /* Changed glow to white */
+    color: #000000;
+}
+
+.onyx-remove-btn {
+    color: #ef4444;
+    background: transparent;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: color 0.2s ease;
+}
+
+.onyx-remove-btn:hover {
+    color: #f87171;
+    text-decoration: underline;
+}
+
+.empty-cart-box {
+    border: 1px dashed rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+/* onyx_checkout.aspx */
+.onyx-checkout-page {
+    background: #050505;
+    color: #fff;
+    min-height: 100vh;
+    padding: 180px 48px 80px;
+}
+
+.onyx-checkout-shell {
+    margin: 0 auto;
+    max-width: 1100px;
+}
+
+.onyx-checkout-title {
+    font-family: Syne, sans-serif;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    margin: 0 0 32px;
+    text-transform: uppercase;
+}
+
+.onyx-checkout-grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+}
+
+.onyx-checkout-panel {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 28px;
+}
+
+.onyx-checkout-panel h2 {
+    font-family: Syne, sans-serif;
+    font-size: 1.3rem;
+    margin: 0 0 20px;
+    text-transform: uppercase;
+}
+
+.onyx-checkout-item {
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 78px minmax(0, 1fr) auto;
+    padding: 18px 0;
+}
+
+.onyx-checkout-item:first-child {
+    padding-top: 0;
+}
+
+.onyx-checkout-item img {
+    aspect-ratio: 1;
+    background: #111;
+    object-fit: contain;
+    width: 78px;
+}
+
+.onyx-checkout-name {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.onyx-checkout-meta {
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+.onyx-checkout-field {
+    margin-bottom: 18px;
+}
+
+.onyx-checkout-field label {
+    color: #d8dde3;
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.onyx-checkout-input {
+    background: #0b0b0b;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+    min-height: 46px;
+    padding: 12px 14px;
+    width: 100%;
+}
+
+.onyx-checkout-total {
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    display: flex;
+    font-size: 1.2rem;
+    font-weight: 800;
+    justify-content: space-between;
+    margin-top: 22px;
+    padding-top: 22px;
+}
+
+.onyx-pay-btn {
+    background: #fff;
+    border: 0;
+    color: #050505;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin-top: 18px;
+    padding: 15px 22px;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.onyx-stripe-checkout-note {
+    background: rgba(18, 61, 105, 0.24);
+    border: 1px solid rgba(101, 174, 255, 0.28);
+    display: grid;
+    gap: 6px;
+    margin-top: 18px;
+    padding: 14px 16px;
+}
+
+.onyx-stripe-checkout-note strong {
+    color: #f4f8ff;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+}
+
+.onyx-stripe-checkout-note span {
+    color: #aab9ca;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.onyx-checkout-message {
+    display: block;
+    font-weight: 700;
+    margin-top: 16px;
+}
+
+@media (max-width: 860px) {
+    .onyx-checkout-page {
+        padding: 150px 20px 60px;
+    }
+
+    .onyx-checkout-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* onyx_invoice.aspx */
+.onyx-invoice-page {
+    background: #050505;
+    color: #050505;
+    min-height: 100vh;
+    padding: 170px 24px 80px;
+}
+
+.onyx-invoice-paper {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.08);
+    margin: 0 auto;
+    max-width: 620px;
+    padding: 42px 46px;
+}
+
+.onyx-invoice-brand {
+    font-family: Syne, sans-serif;
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.onyx-invoice-subtitle {
+    color: #6b7280;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    margin-top: 5px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.onyx-invoice-row {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 1fr auto;
+    margin-top: 34px;
+}
+
+.onyx-invoice-label {
+    color: #8a8a8a;
+    display: block;
+    font-size: 0.56rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.onyx-invoice-value {
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1.55;
+    text-transform: uppercase;
+}
+
+.onyx-invoice-muted {
+    color: #6b7280;
+    font-size: 0.68rem;
+    line-height: 1.6;
+    text-transform: none;
+}
+
+.onyx-invoice-boxes {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 28px;
+}
+
+.onyx-invoice-box {
+    background: #f7f7f7;
+    padding: 16px;
+}
+
+.onyx-invoice-payment {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.onyx-payment-dot {
+    background: #2f6df6;
+    border-radius: 2px;
+    display: inline-block;
+    height: 8px;
+    width: 12px;
+}
+
+.onyx-invoice-table {
+    border-collapse: collapse;
+    margin-top: 30px;
+    width: 100%;
+}
+
+.onyx-invoice-table th {
+    border-bottom: 1px solid #050505;
+    color: #777;
+    font-size: 0.56rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0 0 10px;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.onyx-invoice-table td {
+    border-bottom: 1px solid #050505;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 14px 0;
+    vertical-align: top;
+}
+
+.onyx-invoice-table .right {
+    text-align: right;
+}
+
+.onyx-invoice-product-sub {
+    color: #777;
+    display: block;
+    font-size: 0.56rem;
+    font-weight: 700;
+    margin-top: 3px;
+}
+
+.onyx-invoice-total {
+    align-items: baseline;
+    display: flex;
+    gap: 18px;
+    justify-content: flex-end;
+    margin-top: 26px;
+}
+
+.onyx-invoice-total span {
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.onyx-invoice-total strong {
+    font-size: 1.35rem;
+    font-weight: 900;
+}
+
+.onyx-invoice-thanks {
+    border-top: 1px solid #ededed;
+    color: #8a8a8a;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    margin-top: 34px;
+    padding-top: 22px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.onyx-invoice-signature {
+    font-family: Syne, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 800;
+    margin-top: 10px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.onyx-invoice-actions {
+    margin-top: 34px;
+    text-align: center;
+}
+
+.onyx-invoice-back {
+    background: #050505;
+    color: #fff;
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    padding: 14px 28px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.onyx-invoice-error {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    margin: 0 auto;
+    max-width: 560px;
+    padding: 32px;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .onyx-invoice-paper {
+        padding: 30px 22px;
+    }
+
+    .onyx-invoice-row,
+    .onyx-invoice-boxes {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* onyx_product_details.aspx */
+.onyx-details-page {
+    background: #050505;
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 140px 32px 120px;
+}
+
+.onyx-details-shell {
+    margin: 0 auto;
+    max-width: 1200px; /* Tighter max-width to prevent massive spreading */
+}
+
+/* Fixed the image stage to be much more controlled */
+.onyx-image-stage {
+    background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent 70%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4/3; /* Forces a reasonable rectangle instead of stretching */
+    max-height: 550px;
+    overflow: hidden;
+}
+
+.onyx-image-stage img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8));
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.onyx-image-stage:hover img {
+    transform: scale(1.08);
+}
+
+.onyx-product-title {
+    font-family: Syne, Inter, sans-serif;
+    font-size: clamp(32px, 4vw, 48px); /* Slightly smaller so it doesn't wrap awkwardly */
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.onyx-product-price {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.onyx-stock-status {
+    color: #d8dde3;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin-bottom: 22px;
+    text-transform: uppercase;
+}
+
+.onyx-stock-status.is-low {
+    color: #facc15;
+}
+
+.onyx-stock-status.is-out {
+    color: #ff4444;
+}
+
+/* Improved Variant Dropdown styling */
+.onyx-variant-select {
+    background: #0a0a0a;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 14px 18px;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    appearance: none; /* Removes default browser styling */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    transition: border-color 0.2s ease;
+}
+
+.onyx-variant-select:focus {
+    outline: none;
+    border-color: #39FF14; /* Toxic green accent on focus */
+}
+
+/* Improved Button & Input Layout */
+.onyx-qty-input {
+    background: #0a0a0a;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    padding: 16px;
+    width: 90px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.onyx-qty-input:focus {
+    outline: none;
+    border-color: #ffffff;
+}
+
+.onyx-add-to-cart {
+    background: #ffffff;
+    color: #000000;
+    font-family: Syne, sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 999px;
+    padding: 16px 42px;
+    border: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+
+.onyx-add-to-cart:hover {
+    transform: translateY(-2px);
+    background: #e0e0e0;
+    box-shadow: 0 10px 20px rgba(255,255,255,0.1);
+}
+
+.onyx-add-to-cart.disabled,
+.onyx-add-to-cart:disabled {
+    background: #444;
+    color: #aaa;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.onyx-detail-wishlist {
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 999px;
+    color: #ffffff;
+    display: inline-flex;
+    font-family: Syne, sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    gap: 10px;
+    justify-content: center;
+    letter-spacing: 0.08em;
+    min-height: 56px;
+    padding: 0 22px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+    white-space: nowrap;
+}
+
+.onyx-detail-wishlist svg {
+    fill: transparent;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    width: 18px;
+}
+
+.onyx-detail-wishlist:hover,
+.onyx-detail-wishlist.is-active {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #050505;
+    transform: translateY(-1px);
+}
+
+.onyx-detail-wishlist.is-active svg {
+    fill: currentColor;
+}
+
+/* New Specs Section to fill empty space */
+.onyx-specs-list {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.onyx-spec-item {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed rgba(255,255,255,0.1);
+    font-size: 13px;
+}
+
+ .onyx-qty-input:focus {
+    outline: none;
+    border-color: #ffffff;
+}
+
+/* NEW: Color Swatch Styling */
+.onyx-variants-flex {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.onyx-color-swatch {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.onyx-color-swatch:hover {
+    transform: scale(1.1);
+    border-color: rgba(255,255,255,0.6);
+}
+
+.onyx-color-swatch.is-active {
+    border-color: #39FF14;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+}
+
+.onyx-add-to-cart {
+    background: #ffffff;
+}
+
+/* onyx_wishlist.aspx */
+.onyx-wishlist-page {
+    background: transparent;
+    color: var(--onyx-ink, #eef6ff);
+    min-height: 100vh;
+    padding: 132px 24px 80px;
+}
+
+.onyx-wishlist-shell {
+    margin: 0 auto;
+    max-width: 1120px;
+}
+
+.onyx-wishlist-hero {
+    align-items: flex-start;
+    background: var(--onyx-canvas-soft, #091321);
+    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+    padding: 24px;
+}
+
+.onyx-wishlist-title {
+    color: var(--onyx-ink, #eef6ff);
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: -1.2px !important;
+    line-height: 1.15;
+    margin: 0;
+}
+
+.onyx-wishlist-copy {
+    color: var(--onyx-body, #9baabd);
+    font-size: 14px !important;
+    line-height: 1.5;
+    margin: 6px 0 0;
+    max-width: 62ch;
+}
+
+.onyx-wishlist-summary {
+    align-items: flex-end;
+    display: grid;
+    flex: 0 0 auto;
+    gap: 8px;
+    justify-items: end;
+}
+
+.onyx-wishlist-count {
+    align-items: center;
+    background: var(--onyx-canvas-deep, #02070d);
+    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+    border-radius: 6px;
+    color: var(--onyx-body, #9baabd);
+    display: inline-flex;
+    font-family: var(--onyx-mono, monospace) !important;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    min-height: 34px;
+    padding: 0 10px;
+    text-transform: uppercase;
+}
+
+.onyx-wishlist-feedback {
+    color: var(--onyx-body, #9baabd);
+    display: block;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 34ch;
+    text-align: right;
+}
+
+.onyx-wishlist-grid {
+    border-bottom: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+}
+
+.onyx-wishlist-ledger-labels,
+.onyx-wishlist-page .onyx-wishlist-card {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr) minmax(210px, 0.34fr);
+}
+
+.onyx-wishlist-ledger-labels {
+    background: var(--onyx-canvas-deep, #02070d);
+    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+    border-top: 0;
+    color: var(--onyx-body-mid, #6f8197);
+    font-family: var(--onyx-mono, monospace);
+    font-size: 10px;
+    gap: 18px;
+    letter-spacing: 0.8px;
+    padding: 10px 14px;
+    text-transform: uppercase;
+}
+
+.onyx-wishlist-page .onyx-wishlist-card {
+    align-items: center;
+    background: var(--onyx-canvas-soft, #091321) !important;
+    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18)) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    gap: 18px;
+    margin-top: -1px;
+    min-height: 136px;
+    padding: 16px 14px;
+}
+
+.onyx-wishlist-page .onyx-wishlist-media {
+    align-items: center;
+    aspect-ratio: 1;
+    background: var(--onyx-canvas-deep, #02070d) !important;
+    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18)) !important;
+    border-radius: 6px !important;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    padding: 10px;
+    width: 112px;
+}
+
+.onyx-wishlist-media img {
+    height: 88px;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.onyx-wishlist-body {
+    min-width: 0;
+}
+
+.onyx-wishlist-meta {
+    color: var(--onyx-body-mid, #6f8197);
+    display: flex;
+    font-size: 10px;
+    gap: 12px;
+    justify-content: flex-start;
+    letter-spacing: 0.7px;
+    margin-bottom: 7px;
+    text-transform: uppercase;
+}
+
+.onyx-wishlist-meta span + span::before {
+    color: var(--onyx-mute, #4d6076);
+    content: "/";
+    margin-right: 12px;
+}
+
+.onyx-wishlist-name {
+    color: var(--onyx-ink, #eef6ff);
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.4px !important;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.onyx-wishlist-description {
+    color: var(--onyx-body, #9baabd);
+    display: -webkit-box;
+    font-size: 13px !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.5;
+    margin: 7px 0 0;
+    max-width: 62ch;
+    overflow: hidden;
+}
+
+.onyx-wishlist-commerce {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.onyx-wishlist-actions {
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.onyx-wishlist-price {
+    color: var(--onyx-ink, #eef6ff);
+    font-family: var(--onyx-mono, monospace) !important;
+    font-size: 14px;
+    letter-spacing: 0.4px;
+}
+
+.onyx-wishlist-button,
+.onyx-wishlist-link,
+.onyx-wishlist-remove {
+    align-items: center;
+    border-radius: 6px;
+    display: inline-flex;
+    font-family: var(--onyx-mono, monospace) !important;
+    font-size: 9px;
+    justify-content: center;
+    letter-spacing: 0.5px;
+    min-height: 32px;
+    padding: 0 10px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+    white-space: nowrap;
+}
+
+.onyx-wishlist-page .onyx-wishlist-button {
+    background: rgba(75, 156, 255, 0.14) !important;
+    border: 1px solid rgba(75, 156, 255, 0.42) !important;
+    border-radius: 6px !important;
+    color: var(--onyx-ink, #eef6ff) !important;
+}
+
+.onyx-wishlist-button:hover,
+.onyx-wishlist-link:hover,
+.onyx-wishlist-remove:hover {
+    transform: translateY(-1px);
+}
+
+.onyx-wishlist-link {
+    background: transparent;
+    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+    color: var(--onyx-body, #9baabd);
+}
+
+.onyx-wishlist-link:hover {
+    border-color: rgba(75, 156, 255, 0.42);
+    color: var(--onyx-ink, #eef6ff);
+}
+
+.onyx-wishlist-remove {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--onyx-body-mid, #6f8197);
+}
+
+.onyx-wishlist-remove:hover {
+    border-color: rgba(255, 42, 95, 0.36);
+    color: #ff8aa7;
+}
+
+.onyx-wishlist-button:focus-visible,
+.onyx-wishlist-link:focus-visible,
+.onyx-wishlist-remove:focus-visible {
+    box-shadow: 0 0 0 3px rgba(75, 156, 255, 0.12);
+    outline: 1px solid var(--onyx-accent, #4b9cff);
+    outline-offset: 2px;
+}
+
+.onyx-empty-wishlist {
+    background: var(--onyx-canvas-soft, #091321);
+    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+    border-radius: 0 0 8px 8px;
+    border-top: 0;
+}
+
+.onyx-empty-wishlist-inner {
+    max-width: 62ch;
+    padding: 32px 24px;
+}
+
+.onyx-empty-wishlist h2 {
+    color: var(--onyx-ink, #eef6ff);
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: -0.5px !important;
+    line-height: 1.3;
+    margin: 0 0 8px;
+}
+
+.onyx-empty-wishlist p {
+    color: var(--onyx-body, #9baabd);
+    font-size: 14px !important;
+    line-height: 1.5;
+    margin: 0 0 18px;
+}
+
+@media (max-width: 1080px) {
+    .onyx-wishlist-ledger-labels {
+        display: none;
+    }
+
+    .onyx-wishlist-page .onyx-wishlist-card {
+        grid-template-columns: 96px minmax(0, 1fr);
+    }
+
+    .onyx-wishlist-page .onyx-wishlist-media {
+        width: 96px;
+    }
+
+    .onyx-wishlist-media img {
+        height: 74px;
+    }
+
+    .onyx-wishlist-commerce {
+        align-items: center;
+        flex-direction: row;
+        grid-column: 2;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 720px) {
+    .onyx-wishlist-page {
+        padding: 124px 18px 78px;
+    }
+
+    .onyx-wishlist-hero {
+        display: grid;
+        padding: 20px;
+    }
+
+    .onyx-wishlist-summary {
+        justify-items: start;
+    }
+
+    .onyx-wishlist-feedback {
+        text-align: left;
+    }
+
+    .onyx-wishlist-page .onyx-wishlist-card {
+        align-items: start;
+        grid-template-columns: 1fr;
+        padding: 18px;
+    }
+
+    .onyx-wishlist-page .onyx-wishlist-media {
+        width: 88px;
+    }
+
+    .onyx-wishlist-media img {
+        height: 68px;
+    }
+
+    .onyx-wishlist-commerce {
+        align-items: flex-start;
+        grid-column: 1;
+    }
+
+    .onyx-wishlist-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .onyx-wishlist-button,
+    .onyx-wishlist-link,
+    .onyx-wishlist-remove {
+        transition: none;
+    }
+
+    .onyx-wishlist-button:hover,
+    .onyx-wishlist-link:hover,
+    .onyx-wishlist-remove:hover {
+        transform: none;
+    }
+}
+
+.onyx-payment-state-page {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 72vh;
+    padding: 140px 20px 80px;
+}
+
+.onyx-payment-state-panel {
+    background: rgba(8, 20, 34, 0.72);
+    border: 1px solid rgba(115, 158, 202, 0.22);
+    border-radius: 8px;
+    box-shadow: 0 26px 80px rgba(0, 0, 0, 0.38);
+    max-width: 620px;
+    padding: clamp(34px, 7vw, 70px);
+    text-align: center;
+}
+
+.onyx-payment-state-kicker {
+    color: #75aff4;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.onyx-payment-state-panel h1 {
+    color: #f4f8fc;
+    font-family: Syne, Inter, sans-serif;
+    font-size: clamp(34px, 6vw, 60px);
+    line-height: 1;
+    margin: 18px 0;
+}
+
+.onyx-payment-state-panel p {
+    color: #9eb0c4;
+    line-height: 1.7;
+}
+
+.onyx-payment-state-link {
+    border: 1px solid rgba(100, 164, 235, 0.42);
+    border-radius: 7px;
+    color: #e8f3ff;
+    display: inline-flex;
+    margin-top: 20px;
+    padding: 12px 18px;
+    text-decoration: none;
+}
+
+.onyx-invoice-label-spaced {
+    margin-top: 18px;
+}

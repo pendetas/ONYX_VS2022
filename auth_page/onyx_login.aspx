@@ -276,7 +276,7 @@
             
             <!-- Left Side: Video Background -->
             <div class="auth-left">
-                <a href="<%= ResolveUrl("~/customer_page/Home.aspx") %>" class="auth-brand hover-trigger" aria-label="Back to ONYX home">onyx</a>
+                <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" class="auth-brand" aria-label="Back to ONYX home">onyx</a>
                 
                 <!-- MP4 Video Background with ASP.NET path resolving -->
                 <video autoplay loop muted playsinline class="auth-video-bg">
@@ -312,8 +312,8 @@
                     </div>
 
                     <div class="auth-action-row">
-                        <a href="onyx_forgotpassword.aspx" class="auth-forgot-link hover-trigger">Forgot password?</a>
-                        <asp:Button ID="LoginButton" runat="server" CssClass="auth-submit-btn hover-trigger" Text="LOGIN" OnClick="LoginButton_Click" />
+                        <a href="onyx_forgotpassword.aspx" class="auth-forgot-link">Forgot password?</a>
+                        <asp:Button ID="LoginButton" runat="server" CssClass="auth-submit-btn" Text="LOGIN" OnClick="LoginButton_Click" />
                     </div>
                 </div>
             </div>

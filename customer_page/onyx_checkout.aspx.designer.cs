@@ -15,23 +15,17 @@ namespace ONYX_DDAC.customer_page
 
         protected global::System.Web.UI.WebControls.Panel pnlEmptyCheckout;
 
-        protected global::System.Web.UI.WebControls.Panel pnlOrderSuccess;
-
-        protected global::System.Web.UI.WebControls.Literal litOrderSuccess;
-
         protected global::System.Web.UI.WebControls.Panel pnlCheckout;
 
         protected global::System.Web.UI.WebControls.Repeater rptCheckoutItems;
 
         protected global::System.Web.UI.WebControls.DropDownList ddlDeliveryMethod;
 
-        protected global::System.Web.UI.WebControls.DropDownList ddlPaymentMethod;
-
         protected global::System.Web.UI.WebControls.TextBox txtShippingAddress;
 
         protected global::System.Web.UI.WebControls.Literal litCheckoutTotal;
 
-        protected global::System.Web.UI.WebControls.Button btnPay;
+        protected global::System.Web.UI.WebControls.Button btnPayWithStripe;
 
         protected global::System.Web.UI.WebControls.Label lblCheckoutMessage;
     }

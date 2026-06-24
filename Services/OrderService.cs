@@ -42,9 +42,28 @@ namespace ONYX_DDAC.Services
             return invoice;
         }
 
-        public IList<Order> GetOrdersForUser(long userId, int limit)
+        public IList<Order> GetOrdersForUser(long userId, string status, int limit)
         {
-            return _orderRepository.GetOrdersForUser(userId, limit) ?? new List<Order>();
+            string normalized = NormalizeFilter(status);
+            return _orderRepository.GetOrdersForUser(userId, normalized, limit) ?? new List<Order>();
+        }
+
+        public Order GetOrderForUser(long orderId, long userId)
+        {
+            return _orderRepository.GetOrderForUser(orderId, userId);
+        }
+
+        private static string NormalizeFilter(string status)
+        {
+            string value = (status ?? string.Empty).Trim().ToLowerInvariant();
+            if (value == OrderStatuses.PendingPayment ||
+                value == OrderStatuses.Paid ||
+                value == OrderStatuses.Cancelled)
+            {
+                return value;
+            }
+
+            return null;
         }
 
         public IList<Product> GetPurchasedProductsForUser(long userId)

@@ -21,10 +21,18 @@ namespace ONYX_DDAC.Services
         // Retrieves the cart from Session, rehydrating from the temporary cart table for logged-in users.
         public List<CartItem> GetCartItems()
         {
+            long? userId = GetCurrentUserId();
+            if (userId.HasValue)
+            {
+                List<CartItem> persistedCart = LoadPersistedCartForUser(userId.Value);
+                HttpContext.Current.Session["Cart"] = persistedCart;
+                return persistedCart;
+            }
+
             var cart = HttpContext.Current.Session["Cart"] as List<CartItem>;
             if (cart == null)
             {
-                cart = LoadPersistedCartForCurrentUser();
+                cart = new List<CartItem>();
                 HttpContext.Current.Session["Cart"] = cart;
             }
             return cart;
@@ -39,6 +47,25 @@ namespace ONYX_DDAC.Services
         // Adds an item or increases its quantity if it already exists
         public void AddToCart(long productId, long? variantId, int quantity)
         {
+            long? userId = GetCurrentUserId();
+            if (userId.HasValue)
+            {
+                Product product = _productRepository.GetProductById(productId);
+                if (product == null)
+                {
+                    return;
+                }
+
+                _cartRepository.UpsertCartItem(userId.Value, new CartItem
+                {
+                    ProductId = productId,
+                    VariantId = variantId,
+                    Quantity = quantity
+                });
+                RefreshCurrentUserCartFromDatabase();
+                return;
+            }
+
             var cart = GetCartItems();
 
             // Check if this exact product+variant is already in the cart
@@ -86,7 +113,6 @@ namespace ONYX_DDAC.Services
 
             // Save back to session
             HttpContext.Current.Session["Cart"] = cart;
-            PersistCartForCurrentUser();
         }
 
         // Calculates the grand total of the cart
@@ -99,6 +125,14 @@ namespace ONYX_DDAC.Services
         // Removes a specific item from the cart entirely
         public void RemoveFromCart(long productId, long? variantId)
         {
+            long? userId = GetCurrentUserId();
+            if (userId.HasValue)
+            {
+                _cartRepository.RemoveCartItem(userId.Value, productId, variantId);
+                RefreshCurrentUserCartFromDatabase();
+                return;
+            }
+
             var cart = GetCartItems();
             var itemToRemove = cart.FirstOrDefault(i => i.ProductId == productId && i.VariantId == variantId);
 
@@ -106,7 +140,6 @@ namespace ONYX_DDAC.Services
             {
                 cart.Remove(itemToRemove);
                 HttpContext.Current.Session["Cart"] = cart;
-                PersistCartForCurrentUser();
             }
         }
 
@@ -119,6 +152,14 @@ namespace ONYX_DDAC.Services
                 return;
             }
 
+            long? userId = GetCurrentUserId();
+            if (userId.HasValue)
+            {
+                _cartRepository.SetCartItemQuantity(userId.Value, productId, variantId, newQuantity);
+                RefreshCurrentUserCartFromDatabase();
+                return;
+            }
+
             var cart = GetCartItems();
             var item = cart.FirstOrDefault(i => i.ProductId == productId && i.VariantId == variantId);
 
@@ -126,7 +167,6 @@ namespace ONYX_DDAC.Services
             {
                 item.Quantity = newQuantity;
                 HttpContext.Current.Session["Cart"] = cart;
-                PersistCartForCurrentUser();
             }
         }
 
@@ -150,10 +190,7 @@ namespace ONYX_DDAC.Services
                 return;
             }
 
-            foreach (CartItem item in sessionCart)
-            {
-                _cartRepository.UpsertCartItem(userId, item);
-            }
+            _cartRepository.MergeCartItems(userId, sessionCart);
 
             HttpContext.Current.Session["Cart"] = LoadPersistedCartForUser(userId);
         }
@@ -166,18 +203,9 @@ namespace ONYX_DDAC.Services
                 return;
             }
 
-            _cartRepository.ClearCart(userId.Value);
-
-            var cart = HttpContext.Current.Session["Cart"] as List<CartItem>;
-            if (cart == null)
-            {
-                return;
-            }
-
-            foreach (CartItem item in cart)
-            {
-                _cartRepository.SetCartItemQuantity(userId.Value, item.ProductId, item.VariantId, item.Quantity);
-            }
+            // Logged-in carts are database-authoritative. Never rewrite them from
+            // potentially stale session state.
+            RefreshCurrentUserCartFromDatabase();
         }
 
         public List<CartItem> LoadPersistedCartForCurrentUser()
@@ -186,6 +214,13 @@ namespace ONYX_DDAC.Services
             return userId.HasValue
                 ? LoadPersistedCartForUser(userId.Value)
                 : new List<CartItem>();
+        }
+
+        public List<CartItem> RefreshCurrentUserCartFromDatabase()
+        {
+            List<CartItem> cart = LoadPersistedCartForCurrentUser();
+            HttpContext.Current.Session["Cart"] = cart;
+            return cart;
         }
 
         private List<CartItem> LoadPersistedCartForUser(long userId)

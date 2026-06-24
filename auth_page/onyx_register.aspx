@@ -236,7 +236,6 @@
             font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.08em;
-            cursor: pointer;
             transition: transform 0.2s ease, background-color 0.2s ease;
             display: inline-flex;
             align-items: center;
@@ -276,7 +275,7 @@
             
             <!-- Left Side: Video Background -->
             <div class="auth-left">
-                <a href="<%= ResolveUrl("~/customer_page/Home.aspx") %>" class="auth-brand hover-trigger" aria-label="Back to ONYX home">onyx</a>
+                <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" class="auth-brand" aria-label="Back to ONYX home">onyx</a>
                 
                 <!-- MP4 Video Background with updated ASP.NET path resolving -->
                 <video autoplay loop muted playsinline class="auth-video-bg">

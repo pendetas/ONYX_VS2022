@@ -1,107 +1,8 @@
 <%@ Page Title="Your Cart" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_cart.aspx.cs" Inherits="ONYX_DDAC.customer_page.onyx_cart" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <style>
-        .onyx-cart-page {
-            background: #050505;
-            color: #ffffff;
-            min-height: 100vh;
-            padding: 168px 32px 120px;
-        }
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-commerce.css") %>" />
 
-        .onyx-cart-shell {
-            margin: 0 auto;
-            max-width: 1200px;
-        }
-
-        .onyx-cart-title {
-            font-family: Syne, Inter, sans-serif;
-            font-size: clamp(42px, 6vw, 84px);
-            font-weight: 800;
-            letter-spacing: -0.04em;
-            line-height: 0.9;
-            text-transform: uppercase;
-            margin-bottom: 48px;
-        }
-
-        .onyx-cart-table th {
-            color: #9ca3af;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 16px;
-        }
-
-        .onyx-cart-table td {
-            padding: 24px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            vertical-align: middle;
-        }
-
-        .onyx-cart-image {
-            width: 80px;
-            height: 80px;
-            background: #111;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            margin-right: 20px;
-        }
-
-        .onyx-cart-image img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .onyx-checkout-btn {
-            background: #ffffff; /* Changed from green to white */
-            color: #000000;
-            font-family: Syne, sans-serif;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            border-radius: 999px;
-            padding: 18px 48px;
-            border: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            display: inline-block;
-            text-decoration: none;
-        }
-
-        .onyx-checkout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2); /* Changed glow to white */
-            color: #000000;
-        }
-
-        .onyx-remove-btn {
-            color: #ef4444;
-            background: transparent;
-            border: none;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: color 0.2s ease;
-        }
-
-        .onyx-remove-btn:hover {
-            color: #f87171;
-            text-decoration: underline;
-        }
-
-        .empty-cart-box {
-            border: 1px dashed rgba(255,255,255,0.2);
-            border-radius: 20px;
-            padding: 80px 20px;
-            text-align: center;
-        }
-    </style>
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
@@ -156,7 +57,7 @@
                                         <asp:LinkButton ID="btnRemove" runat="server" 
                                             CommandName="Remove" 
                                             CommandArgument='<%# Eval("ProductId") + "|" + Eval("VariantId") %>' 
-                                            CssClass="onyx-remove-btn hover-trigger">
+                                            CssClass="onyx-remove-btn">
                                             Remove
                                         </asp:LinkButton>
                                     </td>
@@ -176,7 +77,7 @@
                         <h2 class="font-syne font-bold text-4xl md:text-5xl mb-6">
                             <asp:Literal ID="litGrandTotal" runat="server"></asp:Literal>
                         </h2>
-                        <asp:Button ID="btnCheckout" runat="server" Text="Proceed to Checkout" CssClass="onyx-checkout-btn hover-trigger" OnClick="btnCheckout_Click" />
+                        <asp:Button ID="btnCheckout" runat="server" Text="Proceed to Checkout" CssClass="onyx-checkout-btn" OnClick="btnCheckout_Click" />
                     </div>
                 </div>
             </asp:Panel>

@@ -13,6 +13,8 @@ namespace ONYX_DDAC.customer_page
     {
         protected global::System.Web.UI.WebControls.Panel pnlEmptyOrders;
 
+        protected global::System.Web.UI.WebControls.Literal litOrderMessage;
+
         protected global::System.Web.UI.WebControls.Repeater rptRecentOrders;
     }
 }

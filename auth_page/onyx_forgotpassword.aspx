@@ -285,7 +285,7 @@
     <div class="auth-takeover">
         <div class="auth-container">
             <div class="auth-left">
-                <a href="<%= ResolveUrl("~/customer_page/Home.aspx") %>" class="auth-brand hover-trigger" aria-label="Back to ONYX home">onyx</a>
+                <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" class="auth-brand" aria-label="Back to ONYX home">onyx</a>
                 <video autoplay loop muted playsinline class="auth-video-bg">
                     <source src="<%= ResolveUrl("~/Videos/ONYX_Cinematic_Logo.mp4") %>" type="video/mp4" />
                 </video>
@@ -314,8 +314,8 @@
                     </div>
 
                     <div class="auth-action-row">
-                        <a href="onyx_login.aspx" class="auth-secondary-link hover-trigger">I remember it</a>
-                        <asp:Button ID="ResetButton" runat="server" CssClass="auth-submit-btn hover-trigger" Text="REQUEST RESET" OnClick="ResetButton_Click" />
+                        <a href="onyx_login.aspx" class="auth-secondary-link">I remember it</a>
+                        <asp:Button ID="ResetButton" runat="server" CssClass="auth-submit-btn" Text="REQUEST RESET" OnClick="ResetButton_Click" />
                     </div>
                 </div>
             </div>

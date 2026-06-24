@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Web.UI;
 using ONYX_DDAC.Models;
@@ -180,7 +180,7 @@ namespace ONYX_DDAC.customer_page
         protected string GetSwatchClass(object variantIdObj)
         {
             long variantId = Convert.ToInt64(variantIdObj);
-            string baseClass = "onyx-color-swatch hover-trigger";
+            string baseClass = "onyx-color-swatch";
 
             if (SelectedVariantId.HasValue && SelectedVariantId.Value == variantId)
             {
@@ -287,8 +287,8 @@ namespace ONYX_DDAC.customer_page
                 && wishlistService.IsInWishlist(userId, productId);
 
             btnWishlist.CssClass = saved
-                ? "onyx-detail-wishlist hover-trigger is-active"
-                : "onyx-detail-wishlist hover-trigger";
+                ? "onyx-detail-wishlist is-active"
+                : "onyx-detail-wishlist";
             btnWishlist.ToolTip = saved ? "Remove from wishlist" : "Add to wishlist";
         }
 

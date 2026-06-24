@@ -1,17 +1,18 @@
 using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
+using ONYX_DDAC.DAL;
 using ONYX_DDAC.Helpers;
+using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.customer_page
 {
     public partial class onyx_checkout : Page
     {
-        private readonly CartService _cartService = new CartService();
-        private readonly OrderService _orderService = new OrderService();
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["UserId"] == null)
@@ -22,33 +23,38 @@ namespace ONYX_DDAC.customer_page
 
             if (!IsPostBack)
             {
-                if (ShowOrderSuccess())
-                {
-                    return;
-                }
-
+                CheckoutAttemptToken = Guid.NewGuid().ToString("D");
                 BindCheckout();
+                if (string.Equals(Request.QueryString["payment"], "cancelled", StringComparison.OrdinalIgnoreCase))
+                {
+                    lblCheckoutMessage.Text = "Stripe payment was cancelled. Your cart remains unchanged and reserved stock was released.";
+                    lblCheckoutMessage.Visible = true;
+                }
             }
-        }
-
-        private bool ShowOrderSuccess()
-        {
-            string orderId = Request.QueryString["orderId"];
-            if (string.IsNullOrWhiteSpace(orderId))
-            {
-                return false;
-            }
-
-            pnlOrderSuccess.Visible = true;
-            pnlEmptyCheckout.Visible = false;
-            pnlCheckout.Visible = false;
-            litOrderSuccess.Text = $"<p>Your dummy payment was accepted. Order #{Server.HtmlEncode(orderId)} has been created.</p>";
-            return true;
         }
 
         private void BindCheckout()
         {
-            var cartItems = _cartService.GetCartItems();
+            long userId = Convert.ToInt64(Session["UserId"]);
+            var checkoutService = new CheckoutService();
+            IList<CartItem> cartItems;
+
+            try
+            {
+                cartItems = checkoutService.GetValidatedCheckoutCart(userId);
+                Session["Cart"] = cartItems.ToList();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Checkout cart validation failed for user {0}: {1}", userId, ex);
+                pnlEmptyCheckout.Visible = false;
+                pnlCheckout.Visible = true;
+                btnPayWithStripe.Enabled = false;
+                lblCheckoutMessage.Text = "Checkout is currently unavailable. Return to your cart and verify item quantities.";
+                lblCheckoutMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ff4444");
+                lblCheckoutMessage.Visible = true;
+                return;
+            }
 
             pnlEmptyCheckout.Visible = cartItems.Count == 0;
             pnlCheckout.Visible = cartItems.Count > 0;
@@ -63,49 +69,92 @@ namespace ONYX_DDAC.customer_page
             litCheckoutTotal.Text = CurrencyHelper.FormatMyr(cartItems.Sum(item => item.Price * item.Quantity));
         }
 
-        protected void btnPay_Click(object sender, EventArgs e)
+        protected void btnPayWithStripe_Click(object sender, EventArgs e)
         {
-            long? createdOrderId = null;
-
             try
             {
-                var cartItems = _cartService.GetCartItems();
                 long userId = Convert.ToInt64(Session["UserId"]);
-                string shippingAddress = BuildShippingAddress();
+                string shippingAddress = txtShippingAddress.Text.Trim();
+                string deliveryMethod = ddlDeliveryMethod.SelectedValue;
+                string applicationBaseUrl = ConfigurationManager.AppSettings["StripeAppBaseUrl"];
 
-                createdOrderId = _orderService.CreateOrderFromCart(userId, shippingAddress, cartItems);
-                _cartService.ClearCart();
+                var checkoutService = new CheckoutService();
+                var result = checkoutService.StartCheckout(
+                    userId,
+                    shippingAddress,
+                    deliveryMethod,
+                    CheckoutAttemptToken,
+                    applicationBaseUrl);
+
+                Response.Redirect(result.CheckoutUrl, false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
+            catch (ActiveCheckoutAttemptException ex)
+            {
+                lblCheckoutMessage.Text = Server.HtmlEncode(ex.Message);
+                lblCheckoutMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ffb74d");
+                lblCheckoutMessage.Visible = true;
+                btnPayWithStripe.Enabled = true;
             }
             catch (Exception ex)
             {
-                lblCheckoutMessage.Text = Server.HtmlEncode(ex.Message);
+                long userId = Session["UserId"] == null ? 0 : Convert.ToInt64(Session["UserId"]);
+                System.Diagnostics.Trace.TraceError("Stripe Checkout start failed for user {0}: {1}", userId, ex);
+                lblCheckoutMessage.Text = "Unable to start Stripe Checkout. Please try again. Any uncertain payment attempt remains pending for safe recovery.";
                 lblCheckoutMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ff4444");
                 lblCheckoutMessage.Visible = true;
-                return;
+                btnPayWithStripe.Enabled = true;
             }
-
-            string invoiceUrl = ResolveUrl($"~/customer_page/onyx_invoice.aspx?orderId={createdOrderId.Value}");
-            string redirectScript = $"window.location.replace('{HttpUtility.JavaScriptStringEncode(invoiceUrl)}');";
-            ClientScript.RegisterStartupScript(GetType(), "redirectToInvoice", redirectScript, true);
         }
 
-        private string BuildShippingAddress()
+        protected string GetSafeImageUrl(object imageUrl)
         {
-            string address = txtShippingAddress.Text.Trim();
-            if (string.IsNullOrWhiteSpace(address))
+            const string fallback = "~/Content/home/products/onyx-mouse.png";
+            string value = Convert.ToString(imageUrl)?.Trim();
+            string resolved = ResolveUrl(fallback);
+
+            if (!string.IsNullOrWhiteSpace(value) && !value.Contains("\\"))
             {
-                throw new InvalidOperationException("Shipping address is required.");
+                if (Uri.TryCreate(value, UriKind.Absolute, out Uri absoluteUri))
+                {
+                    if (absoluteUri.Scheme == Uri.UriSchemeHttp ||
+                        absoluteUri.Scheme == Uri.UriSchemeHttps)
+                    {
+                        resolved = absoluteUri.AbsoluteUri;
+                    }
+                }
+                else if (!value.StartsWith("//", StringComparison.Ordinal) &&
+                         !value.Contains(":"))
+                {
+                    string applicationPath = value.StartsWith("~/", StringComparison.Ordinal)
+                        ? value
+                        : "~/" + value.TrimStart('/');
+                    resolved = ResolveUrl(applicationPath);
+                }
             }
 
-            return $"{address}\nDelivery Method: {ddlDeliveryMethod.SelectedValue}\nPayment Method: {ddlPaymentMethod.SelectedValue}";
+            return HttpUtility.HtmlAttributeEncode(resolved);
         }
 
-        protected string GetImageUrl(object imageUrl)
+        protected string EncodeProductName(object productName)
         {
-            string url = (imageUrl ?? string.Empty).ToString();
-            return string.IsNullOrWhiteSpace(url)
-                ? "/Content/home/products/onyx-mouse.png"
-                : url;
+            return Server.HtmlEncode(Convert.ToString(productName) ?? string.Empty);
+        }
+
+        private string CheckoutAttemptToken
+        {
+            get
+            {
+                string value = Convert.ToString(ViewState["CheckoutAttemptToken"]);
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    value = Guid.NewGuid().ToString("D");
+                    ViewState["CheckoutAttemptToken"] = value;
+                }
+
+                return value;
+            }
+            set { ViewState["CheckoutAttemptToken"] = value; }
         }
     }
 }

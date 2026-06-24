@@ -25,6 +25,8 @@ namespace ONYX_DDAC.customer_page
 
         protected global::System.Web.UI.WebControls.Literal litShippingAddress;
 
+        protected global::System.Web.UI.WebControls.Literal litDeliveryMethod;
+
         protected global::System.Web.UI.WebControls.Literal litPaymentMethod;
 
         protected global::System.Web.UI.WebControls.Repeater rptInvoiceItems;

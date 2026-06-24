@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using ONYX_DDAC.Models;
@@ -14,12 +15,18 @@ namespace ONYX_DDAC.customer_page
         private HashSet<long> wishlistProductIds = new HashSet<long>();
 
         protected string SelectedCategory { get; private set; }
+        protected string SearchTerm { get; private set; }
+        protected string SelectedSort { get; private set; }
+        protected int CurrentPage { get; private set; }
         protected string CatalogTitle { get; private set; }
         protected string CatalogDescription { get; private set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             SelectedCategory = NormalizeCategory(Request.QueryString["category"]);
+            SearchTerm = (Request.QueryString["q"] ?? string.Empty).Trim();
+            SelectedSort = NormalizeSort(Request.QueryString["sort"]);
+            CurrentPage = ParsePage(Request.QueryString["page"]);
 
             if (!IsPostBack)
             {
@@ -29,17 +36,26 @@ namespace ONYX_DDAC.customer_page
 
         private void BindCatalog()
         {
-            IList<Product> products = productService.GetCatalogProducts(SelectedCategory);
+            PagedResult<Product> result = productService.GetCatalogProducts(new CatalogQuery
+            {
+                Category = SelectedCategory,
+                SearchTerm = SearchTerm,
+                Sort = SelectedSort,
+                Page = CurrentPage,
+                PageSize = 8
+            });
+            CurrentPage = result.Page;
             LoadWishlistProductIds();
 
-            ProductsRepeater.DataSource = products;
+            ProductsRepeater.DataSource = result.Items;
             ProductsRepeater.DataBind();
 
-            EmptyCatalogPanel.Visible = products.Count == 0;
+            EmptyCatalogPanel.Visible = result.TotalCount == 0;
             CatalogCountLiteral.Text = string.Format(
                 "<span class=\"onyx-catalog-count\">{0} {1}</span>",
-                products.Count,
-                products.Count == 1 ? "drop" : "drops");
+                result.TotalCount,
+                result.TotalCount == 1 ? "product" : "products");
+            CatalogPagerLiteral.Text = BuildPager(result);
 
             CatalogTitle = GetCatalogTitle(SelectedCategory);
             CatalogDescription = GetCatalogDescription(SelectedCategory);
@@ -74,8 +90,8 @@ namespace ONYX_DDAC.customer_page
         protected string GetWishlistButtonClass(object productId)
         {
             return IsProductInWishlist(productId)
-                ? "onyx-product-love hover-trigger is-active"
-                : "onyx-product-love hover-trigger";
+                ? "onyx-product-love is-active"
+                : "onyx-product-love";
         }
 
         protected string GetWishlistButtonLabel(object productId)
@@ -111,7 +127,104 @@ namespace ONYX_DDAC.customer_page
         protected string GetFilterClass(string category)
         {
             bool isActive = string.Equals(SelectedCategory ?? string.Empty, category ?? string.Empty, StringComparison.OrdinalIgnoreCase);
-            return isActive ? "onyx-catalog-pill is-active hover-trigger" : "onyx-catalog-pill hover-trigger";
+            return isActive ? "onyx-catalog-pill is-active" : "onyx-catalog-pill";
+        }
+
+        protected string GetCatalogUrl(string category)
+        {
+            return BuildCatalogUrl(1, category, SearchTerm, SelectedSort);
+        }
+
+        protected string GetSelectedSortAttribute(string sort)
+        {
+            return string.Equals(SelectedSort, sort, StringComparison.OrdinalIgnoreCase)
+                ? " selected=\"selected\""
+                : string.Empty;
+        }
+
+        private string BuildPager(PagedResult<Product> result)
+        {
+            if (result.TotalPages <= 1)
+            {
+                return string.Empty;
+            }
+
+            var html = new StringBuilder();
+            html.Append("<nav class=\"onyx-catalog-pager\" aria-label=\"Catalog pages\">");
+            AppendPagerLink(html, result.Page - 1, "Previous", result.Page == 1);
+
+            for (int page = 1; page <= result.TotalPages; page++)
+            {
+                string activeClass = page == result.Page ? " is-active" : string.Empty;
+                html.AppendFormat(
+                    "<a class=\"onyx-catalog-page-link{0}\" href=\"{1}\" aria-label=\"Page {2}\">{2}</a>",
+                    activeClass,
+                    Server.HtmlEncode(BuildCatalogUrl(page, SelectedCategory, SearchTerm, SelectedSort)),
+                    page);
+            }
+
+            AppendPagerLink(html, result.Page + 1, "Next", result.Page == result.TotalPages);
+            html.Append("</nav>");
+            return html.ToString();
+        }
+
+        private void AppendPagerLink(StringBuilder html, int page, string label, bool disabled)
+        {
+            if (disabled)
+            {
+                html.AppendFormat("<span class=\"onyx-catalog-page-link is-disabled\">{0}</span>", label);
+                return;
+            }
+
+            html.AppendFormat(
+                "<a class=\"onyx-catalog-page-link\" href=\"{0}\">{1}</a>",
+                Server.HtmlEncode(BuildCatalogUrl(page, SelectedCategory, SearchTerm, SelectedSort)),
+                label);
+        }
+
+        private static string BuildCatalogUrl(int page, string category, string searchTerm, string sort)
+        {
+            var parameters = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                parameters.Add("category=" + Uri.EscapeDataString(category));
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                parameters.Add("q=" + Uri.EscapeDataString(searchTerm));
+            }
+
+            if (!string.IsNullOrWhiteSpace(sort) && !string.Equals(sort, "newest", StringComparison.OrdinalIgnoreCase))
+            {
+                parameters.Add("sort=" + Uri.EscapeDataString(sort));
+            }
+
+            if (page > 1)
+            {
+                parameters.Add("page=" + page);
+            }
+
+            return "onyx_catalog.aspx" + (parameters.Count == 0 ? string.Empty : "?" + string.Join("&", parameters));
+        }
+
+        private static int ParsePage(string value)
+        {
+            return int.TryParse(value, out int page) && page > 0 ? page : 1;
+        }
+
+        private static string NormalizeSort(string value)
+        {
+            switch ((value ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "name":
+                case "price-asc":
+                case "price-desc":
+                    return value.Trim().ToLowerInvariant();
+                default:
+                    return "newest";
+            }
         }
 
         protected string GetCategoryDisplayName(object category)
@@ -131,23 +244,36 @@ namespace ONYX_DDAC.customer_page
             return value;
         }
 
+        // Returns a browser-safe DB image URL, or a category fallback when none is stored.
         protected string GetProductImageUrl(object imageUrl, object category)
         {
-            string value = (imageUrl ?? string.Empty).ToString();
+            string value = (imageUrl ?? string.Empty).ToString().Trim().Replace('\\', '/');
             if (!string.IsNullOrWhiteSpace(value))
             {
-                return value;
+                Uri absoluteUri;
+                if (Uri.TryCreate(value, UriKind.Absolute, out absoluteUri)
+                    && (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
+                {
+                    return value;
+                }
+
+                string applicationPath = value.StartsWith("~/", StringComparison.Ordinal)
+                    ? value.Substring(2)
+                    : value.TrimStart('/');
+
+                return ResolveUrl("~/" + applicationPath);
             }
 
+            // Fallback: no image in DB — serve by category from products folder
             switch (NormalizeCategory((category ?? string.Empty).ToString()))
             {
                 case "Keyboard":
                     return "/Content/home/products/onyx-keyboard.png";
                 case "Headset":
                     return "/Content/home/products/onyx-headset.png";
-                case "Accessory":
-                    return "/Content/home/onyx-pro-mouse.png";
-                default:
+                case "Monitor":
+                    return "/Content/home/products/onyx-monitor.png";
+                default: // Mouse, Chair, Accessory, unknown
                     return "/Content/home/products/onyx-mouse.png";
             }
         }

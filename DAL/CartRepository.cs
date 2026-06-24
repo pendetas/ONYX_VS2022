@@ -12,7 +12,7 @@ namespace ONYX_DDAC.DAL
         {
             var items = new List<CartItem>();
 
-            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
+            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
             {
                 conn.Open();
                 using (DbCommand cmd = conn.CreateCommand())
@@ -89,11 +89,11 @@ namespace ONYX_DDAC.DAL
                 return;
             }
 
-            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+            ExecuteUserCartMutation(userId, (conn, tx) =>
             {
-                conn.Open();
                 using (DbCommand cmd = conn.CreateCommand())
                 {
+                    cmd.Transaction = tx;
                     cmd.CommandText = @"
                         INSERT INTO cart (user_id, product_id, product_variant_id, quantity)
                         VALUES (@UserId, @ProductId, @VariantId, @Quantity)
@@ -104,7 +104,7 @@ namespace ONYX_DDAC.DAL
                     AddCartParameters(cmd, userId, item.ProductId, item.VariantId, item.Quantity);
                     cmd.ExecuteNonQuery();
                 }
-            }
+            });
         }
 
         public void SetCartItemQuantity(long userId, long productId, long? variantId, int quantity)
@@ -115,11 +115,11 @@ namespace ONYX_DDAC.DAL
                 return;
             }
 
-            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+            ExecuteUserCartMutation(userId, (conn, tx) =>
             {
-                conn.Open();
                 using (DbCommand cmd = conn.CreateCommand())
                 {
+                    cmd.Transaction = tx;
                     cmd.CommandText = @"
                         INSERT INTO cart (user_id, product_id, product_variant_id, quantity)
                         VALUES (@UserId, @ProductId, @VariantId, @Quantity)
@@ -130,16 +130,16 @@ namespace ONYX_DDAC.DAL
                     AddCartParameters(cmd, userId, productId, variantId, quantity);
                     cmd.ExecuteNonQuery();
                 }
-            }
+            });
         }
 
         public void RemoveCartItem(long userId, long productId, long? variantId)
         {
-            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+            ExecuteUserCartMutation(userId, (conn, tx) =>
             {
-                conn.Open();
                 using (DbCommand cmd = conn.CreateCommand())
                 {
+                    cmd.Transaction = tx;
                     cmd.CommandText = @"
                         DELETE FROM cart
                         WHERE user_id = @UserId
@@ -148,19 +148,127 @@ namespace ONYX_DDAC.DAL
                     AddCartParameters(cmd, userId, productId, variantId, 0);
                     cmd.ExecuteNonQuery();
                 }
-            }
+            });
         }
 
         public void ClearCart(long userId)
         {
-            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+            ExecuteUserCartMutation(userId, (conn, tx) =>
             {
-                conn.Open();
                 using (DbCommand cmd = conn.CreateCommand())
                 {
+                    cmd.Transaction = tx;
                     cmd.CommandText = "DELETE FROM cart WHERE user_id = @UserId";
                     cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
                     cmd.ExecuteNonQuery();
+                }
+            });
+        }
+
+        public void MergeCartItems(long userId, IEnumerable<CartItem> items)
+        {
+            if (items == null)
+            {
+                return;
+            }
+
+            ExecuteUserCartMutation(userId, (conn, tx) =>
+            {
+                foreach (CartItem item in items)
+                {
+                    if (item == null || item.Quantity <= 0)
+                    {
+                        continue;
+                    }
+
+                    using (DbCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.Transaction = tx;
+                        cmd.CommandText = @"
+                            INSERT INTO cart (user_id, product_id, product_variant_id, quantity)
+                            VALUES (@UserId, @ProductId, @VariantId, @Quantity)
+                            ON CONFLICT (user_id, product_id, variant_key)
+                            DO UPDATE SET
+                                quantity = cart.quantity + EXCLUDED.quantity,
+                                updated_at = now()";
+                        AddCartParameters(cmd, userId, item.ProductId, item.VariantId, item.Quantity);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            });
+        }
+
+        internal static void DecrementPurchasedQuantity(
+            DbConnection conn,
+            DbTransaction tx,
+            long userId,
+            long productId,
+            long? variantId,
+            int purchasedQuantity)
+        {
+            using (DbCommand delete = conn.CreateCommand())
+            {
+                delete.Transaction = tx;
+                delete.CommandText = @"
+                    DELETE FROM cart
+                    WHERE user_id = @UserId
+                      AND product_id = @ProductId
+                      AND product_variant_id IS NOT DISTINCT FROM @VariantId
+                      AND quantity <= @Quantity";
+                AddCartParameters(delete, userId, productId, variantId, purchasedQuantity);
+                if (delete.ExecuteNonQuery() == 1)
+                {
+                    return;
+                }
+            }
+
+            using (DbCommand update = conn.CreateCommand())
+            {
+                update.Transaction = tx;
+                update.CommandText = @"
+                    UPDATE cart
+                    SET quantity = quantity - @Quantity,
+                        updated_at = now()
+                    WHERE user_id = @UserId
+                      AND product_id = @ProductId
+                      AND product_variant_id IS NOT DISTINCT FROM @VariantId
+                      AND quantity > @Quantity";
+                AddCartParameters(update, userId, productId, variantId, purchasedQuantity);
+                update.ExecuteNonQuery();
+            }
+        }
+
+        internal static void LockUserCart(DbConnection conn, DbTransaction tx, long userId)
+        {
+            using (DbCommand cmd = conn.CreateCommand())
+            {
+                cmd.Transaction = tx;
+                cmd.CommandText = "SELECT pg_advisory_xact_lock(@UserId)";
+                cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void ExecuteUserCartMutation(
+            long userId,
+            Action<DbConnection, DbTransaction> mutation)
+        {
+            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+            {
+                conn.Open();
+                using (DbTransaction tx = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        LockUserCart(conn, tx, userId);
+                        mutation(conn, tx);
+                        tx.Commit();
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
                 }
             }
         }

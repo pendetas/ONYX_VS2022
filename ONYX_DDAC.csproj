@@ -83,6 +83,10 @@
       <HintPath>packages\Npgsql.4.1.13\lib\net461\Npgsql.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Stripe.net, Version=50.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Stripe.net.50.0.0\lib\net462\Stripe.net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath>
     </Reference>
@@ -100,6 +104,10 @@
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Text.Encodings.Web.8.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
@@ -159,7 +167,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="About.aspx" />
     <Content Include="admin_page\onyx_admin_orders.aspx" />
     <Content Include="admin_page\onyx_admin_order_details.aspx" />
     <Content Include="admin_page\onyx_admin_products_form.aspx" />
@@ -170,6 +177,7 @@
     <Content Include="admin_page\onyx_admin_dashboard.aspx" />
     <Content Include="admin_page\onyx_admin_products.aspx" />
     <Content Include="App_Data\onyx_schema.sql" />
+    <Content Include="App_Data\stripe_checkout_migration.sql" />
     <Content Include="auth_page\onyx_forgotpassword.aspx" />
     <Content Include="auth_page\onyx_login.aspx" />
     <Content Include="auth_page\onyx_register.aspx" />
@@ -193,15 +201,17 @@
     <Content Include="customer_page\onyx_checkout.aspx" />
     <Content Include="customer_page\onyx_invoice.aspx" />
     <Content Include="customer_page\onyx_order_history.aspx" />
+    <Content Include="customer_page\onyx_payment_cancel.aspx" />
+    <Content Include="customer_page\onyx_payment_confirmation.aspx" />
     <Content Include="customer_page\onyx_product_details.aspx" />
     <Content Include="customer_page\onyx_profile.aspx" />
     <Content Include="customer_page\onyx_reviews.aspx" />
     <Content Include="customer_page\onyx_wishlist.aspx" />
     <Content Include="customer_page\onyx_user.Master" />
     <Content Include="customer_page\onyx_catalog.aspx" />
-    <Content Include="customer_page\About.aspx" />
-    <Content Include="customer_page\Home.aspx" />
-    <Content Include="customer_page\Support.aspx" />
+    <Content Include="customer_page\onyx_about.aspx" />
+    <Content Include="customer_page\onyx_home.aspx" />
+    <Content Include="customer_page\onyx_support.aspx" />
     <Content Include="Content\home\onyx-logo-horizontal.png" />
     <Content Include="Content\home\onyx-logo-stacked.png" />
     <Content Include="Content\home\onyx-pro-mouse.png" />
@@ -219,12 +229,17 @@
     <Content Include="Content\home\team-logos\team-liquid.svg" />
     <Content Include="Content\admin.css" />
     <Content Include="Content\onyx-account.css" />
+    <Content Include="Content\onyx-catalog.css" />
+    <Content Include="Content\onyx-commerce.css" />
+    <Content Include="Content\onyx-content.css" />
     <Content Include="Content\onyx-design-system.css" />
+    <Content Include="Content\onyx-home.css" />
+    <Content Include="Content\onyx-user-master.css" />
     <Content Include="Content\onyx.css" />
     <Content Include="Content\Site.css" />
-    <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="stripe_webhook.ashx" />
     <Content Include="PRD.md" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -239,6 +254,7 @@
     <Content Include="Scripts\jquery-3.7.0.slim.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\onyx.js" />
+    <Content Include="Scripts\onyx-user-master.js" />
     <Content Include="Scripts\WebForms\DetailsView.js" />
     <Content Include="Scripts\WebForms\Focus.js" />
     <Content Include="Scripts\WebForms\GridView.js" />
@@ -261,8 +277,8 @@
     <Content Include="Scripts\WebForms\WebParts.js" />
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Site.Master" />
-    <Content Include="customer_page\Privacy.aspx" />
-    <Content Include="customer_page\Terms.aspx" />
+    <Content Include="customer_page\onyx_privacy.aspx" />
+    <Content Include="customer_page\onyx_terms.aspx" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -368,6 +384,20 @@
     <Compile Include="customer_page\onyx_order_history.aspx.designer.cs">
       <DependentUpon>onyx_order_history.aspx</DependentUpon>
     </Compile>
+    <Compile Include="customer_page\onyx_payment_cancel.aspx.cs">
+      <DependentUpon>onyx_payment_cancel.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="customer_page\onyx_payment_cancel.aspx.designer.cs">
+      <DependentUpon>onyx_payment_cancel.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="customer_page\onyx_payment_confirmation.aspx.cs">
+      <DependentUpon>onyx_payment_confirmation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="customer_page\onyx_payment_confirmation.aspx.designer.cs">
+      <DependentUpon>onyx_payment_confirmation.aspx</DependentUpon>
+    </Compile>
     <Compile Include="customer_page\onyx_product_details.aspx.cs">
       <DependentUpon>onyx_product_details.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -398,8 +428,10 @@
     </Compile>
     <Compile Include="DAL\AdminRepository.cs" />
     <Compile Include="DAL\CartRepository.cs" />
+    <Compile Include="DAL\CheckoutRepository.cs" />
     <Compile Include="DAL\DbConnectionFactory.cs" />
     <Compile Include="DAL\OrderRepository.cs" />
+    <Compile Include="DAL\PaymentRepository.cs" />
     <Compile Include="DAL\ProductRepository.cs" />
     <Compile Include="DAL\ReviewRepository.cs" />
     <Compile Include="DAL\UserRepository.cs" />
@@ -408,23 +440,23 @@
     <Compile Include="Helpers\CurrencyHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Models\CartItem.cs" />
+    <Compile Include="Models\CatalogQuery.cs" />
     <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderItem.cs" />
+    <Compile Include="Models\OrderStatuses.cs" />
+    <Compile Include="Models\PaymentReconciliationResult.cs" />
+    <Compile Include="Models\PagedResult.cs" />
     <Compile Include="Models\ProfileUpdateResult.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductVariant.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\ReviewSubmissionResult.cs" />
+    <Compile Include="Models\StockReservation.cs" />
+    <Compile Include="Models\StripeCheckoutResult.cs" />
+    <Compile Include="Models\StripePaymentState.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Wishlist.cs" />
-    <Compile Include="About.aspx.cs">
-      <DependentUpon>About.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="About.aspx.designer.cs">
-      <DependentUpon>About.aspx</DependentUpon>
-    </Compile>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Contact.aspx.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
@@ -454,26 +486,19 @@
     <Compile Include="customer_page\onyx_catalog.aspx.designer.cs">
       <DependentUpon>onyx_catalog.aspx</DependentUpon>
     </Compile>
-    <Compile Include="customer_page\About.aspx.cs">
-      <DependentUpon>About.aspx</DependentUpon>
+    <Compile Include="customer_page\onyx_about.aspx.cs">
+      <DependentUpon>onyx_about.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="customer_page\About.aspx.designer.cs">
-      <DependentUpon>About.aspx</DependentUpon>
+    <Compile Include="customer_page\onyx_about.aspx.designer.cs">
+      <DependentUpon>onyx_about.aspx</DependentUpon>
     </Compile>
-    <Compile Include="customer_page\Home.aspx.cs">
-      <DependentUpon>Home.aspx</DependentUpon>
+    <Compile Include="customer_page\onyx_home.aspx.cs">
+      <DependentUpon>onyx_home.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="customer_page\Home.aspx.designer.cs">
-      <DependentUpon>Home.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
+    <Compile Include="customer_page\onyx_home.aspx.designer.cs">
+      <DependentUpon>onyx_home.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -481,13 +506,20 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\CartService.cs" />
+    <Compile Include="Services\CheckoutService.cs" />
     <Compile Include="Services\LambdaService.cs" />
     <Compile Include="Services\OrderService.cs" />
+    <Compile Include="Services\PaymentCancellationTokenService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\ReceiptService.cs" />
     <Compile Include="Services\ReviewService.cs" />
     <Compile Include="Services\S3Service.cs" />
+    <Compile Include="Services\StripePaymentService.cs" />
+    <Compile Include="Services\PaymentCompletionService.cs" />
+    <Compile Include="stripe_webhook.ashx.cs">
+      <DependentUpon>stripe_webhook.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Services\WishlistService.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
@@ -503,26 +535,26 @@
     <Compile Include="Site.Mobile.Master.designer.cs">
       <DependentUpon>Site.Mobile.Master</DependentUpon>
     </Compile>
-    <Compile Include="customer_page\Privacy.aspx.cs">
-      <DependentUpon>Privacy.aspx</DependentUpon>
+    <Compile Include="customer_page\onyx_privacy.aspx.cs">
+      <DependentUpon>onyx_privacy.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="customer_page\Privacy.aspx.designer.cs">
-      <DependentUpon>Privacy.aspx</DependentUpon>
+    <Compile Include="customer_page\onyx_privacy.aspx.designer.cs">
+      <DependentUpon>onyx_privacy.aspx</DependentUpon>
     </Compile>
-    <Compile Include="customer_page\Support.aspx.cs">
-      <DependentUpon>Support.aspx</DependentUpon>
+    <Compile Include="customer_page\onyx_support.aspx.cs">
+      <DependentUpon>onyx_support.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="customer_page\Support.aspx.designer.cs">
-      <DependentUpon>Support.aspx</DependentUpon>
+    <Compile Include="customer_page\onyx_support.aspx.designer.cs">
+      <DependentUpon>onyx_support.aspx</DependentUpon>
     </Compile>
-    <Compile Include="customer_page\Terms.aspx.cs">
-      <DependentUpon>Terms.aspx</DependentUpon>
+    <Compile Include="customer_page\onyx_terms.aspx.cs">
+      <DependentUpon>onyx_terms.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="customer_page\Terms.aspx.designer.cs">
-      <DependentUpon>Terms.aspx</DependentUpon>
+    <Compile Include="customer_page\onyx_terms.aspx.designer.cs">
+      <DependentUpon>onyx_terms.aspx</DependentUpon>
     </Compile>
     <Compile Include="ViewSwitcher.ascx.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>

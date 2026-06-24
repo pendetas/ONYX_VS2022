@@ -26,3 +26,11 @@ App_Data/*.ldf
 Thumbs.db
 *.tmp
 *.temp
+
+# Local agent/tooling state
+.agents/
+.impeccable/
+
+# Local secrets
+.env
+.env.*

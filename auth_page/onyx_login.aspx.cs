@@ -61,7 +61,7 @@ namespace ONYX_DDAC.auth_page
                 {
                     string destination = Request.QueryString["profile"] == "true"
                         ? "~/customer_page/onyx_profile.aspx"
-                        : "~/customer_page/Home.aspx";
+                        : "~/customer_page/onyx_home.aspx";
 
                     RedirectAfterLogin(destination);
                     return;

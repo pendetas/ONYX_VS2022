@@ -12,7 +12,7 @@ namespace ONYX_DDAC.auth_page
         {
             if (Session["UserId"] != null)
             {
-                Response.Redirect("~/customer_page/Home.aspx");
+                Response.Redirect("~/customer_page/onyx_home.aspx");
             }
         }
 

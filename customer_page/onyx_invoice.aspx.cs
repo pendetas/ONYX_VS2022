@@ -41,7 +41,8 @@ namespace ONYX_DDAC.customer_page
             }
             catch (Exception ex)
             {
-                ShowError(Server.HtmlEncode(ex.Message));
+                System.Diagnostics.Trace.TraceError("Invoice load failed: {0}", ex);
+                ShowError("This paid invoice is unavailable or does not belong to your account.");
             }
         }
 
@@ -55,7 +56,8 @@ namespace ONYX_DDAC.customer_page
             litOrderId.Text = Server.HtmlEncode(invoice.OrderReference);
             litOrderDate.Text = Server.HtmlEncode(invoice.Order.OrderedAt.ToString("dd MMM yyyy, hh:mm tt"));
             litShippingAddress.Text = FormatAddress(invoice.Order.ShippingAddress);
-            litPaymentMethod.Text = Server.HtmlEncode(GetPaymentMethod(invoice.Order.ShippingAddress));
+            litDeliveryMethod.Text = Server.HtmlEncode(string.IsNullOrWhiteSpace(invoice.Order.DeliveryMethod) ? "Standard Delivery" : invoice.Order.DeliveryMethod);
+            litPaymentMethod.Text = Server.HtmlEncode(string.IsNullOrWhiteSpace(invoice.Order.PaymentMethod) ? "Stripe" : invoice.Order.PaymentMethod);
             litGrandTotal.Text = CurrencyHelper.FormatMyr(invoice.Order.TotalAmount);
 
             rptInvoiceItems.DataSource = invoice.Order.Items;
@@ -92,37 +94,9 @@ namespace ONYX_DDAC.customer_page
 
         private string FormatAddress(string shippingAddress)
         {
-            return Server.HtmlEncode(CleanCheckoutLine(shippingAddress, "Payment Method:"))
+            return Server.HtmlEncode(shippingAddress ?? string.Empty)
                 .Replace("\r\n", "<br />")
                 .Replace("\n", "<br />");
-        }
-
-        private string GetPaymentMethod(string shippingAddress)
-        {
-            if (string.IsNullOrWhiteSpace(shippingAddress))
-            {
-                return "Dummy Payment";
-            }
-
-            string marker = "Payment Method:";
-            int index = shippingAddress.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
-            if (index < 0)
-            {
-                return "Dummy Payment";
-            }
-
-            return shippingAddress.Substring(index + marker.Length).Trim();
-        }
-
-        private string CleanCheckoutLine(string value, string marker)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return string.Empty;
-            }
-
-            int index = value.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
-            return index < 0 ? value : value.Substring(0, index).Trim();
         }
     }
 }

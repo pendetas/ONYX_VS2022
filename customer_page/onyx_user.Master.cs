@@ -14,8 +14,15 @@ namespace ONYX_DDAC.customer_page
 
         protected void Page_PreRender(object sender, EventArgs e)
         {
-            var cartService = new CartService();
-            litCartCount.Text = cartService.GetCartItemCount().ToString();
+            try
+            {
+                var cartService = new CartService();
+                litCartCount.Text = cartService.GetCartItemCount().ToString();
+            }
+            catch (Exception)
+            {
+                litCartCount.Text = "0";
+            }
         }
         protected string CurrentUsername
         {
@@ -30,7 +37,7 @@ namespace ONYX_DDAC.customer_page
         {
             get
             {
-                return !Page.AppRelativeVirtualPath.EndsWith("/Home.aspx", StringComparison.OrdinalIgnoreCase);
+                return !Page.AppRelativeVirtualPath.EndsWith("/onyx_home.aspx", StringComparison.OrdinalIgnoreCase);
             }
         }
 

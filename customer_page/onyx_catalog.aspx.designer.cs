@@ -42,6 +42,11 @@ namespace ONYX_DDAC.customer_page
         protected global::System.Web.UI.WebControls.Label CatalogFeedbackLabel;
 
         /// <summary>
+        /// CatalogPagerLiteral control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal CatalogPagerLiteral;
+
+        /// <summary>
         /// EmptyCatalogPanel control.
         /// </summary>
         /// <remarks>
