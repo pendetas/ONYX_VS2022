@@ -51,7 +51,7 @@
                     <asp:Panel ID="pnlEmptyOrders" runat="server" Visible="false" CssClass="onyx-profile-empty" role="status">
                         Your order history is empty for now. Browse the catalog and build your ONYX setup.
                     </asp:Panel>
-                    <asp:Repeater ID="rptRecentOrders" runat="server">
+                    <asp:Repeater ID="rptRecentOrders" runat="server" OnItemCommand="rptRecentOrders_ItemCommand">
                         <HeaderTemplate>
                             <div class="onyx-order-ledger-labels" aria-hidden="true">
                                 <span>Order</span>
@@ -79,6 +79,16 @@
                                         </asp:PlaceHolder>
                                         <asp:PlaceHolder runat="server" Visible='<%# CanContinuePayment(Eval("Id")) %>'>
                                             <a class="onyx-profile-ghost is-primary" href='<%# GetContinuePaymentUrl(Eval("Id")) %>'>Continue Payment</a>
+                                        </asp:PlaceHolder>
+                                        <asp:PlaceHolder runat="server" Visible='<%# IsPendingPayment(Eval("Status")) %>'>
+                                            <asp:LinkButton
+                                                ID="btnCancelPayment"
+                                                runat="server"
+                                                CssClass="onyx-profile-ghost"
+                                                CommandName="CancelPayment"
+                                                CommandArgument='<%# Eval("Id") %>'
+                                                CausesValidation="false"
+                                                OnClientClick="return confirm('Cancel this payment and release its reserved stock?');">Cancel Payment</asp:LinkButton>
                                         </asp:PlaceHolder>
                                     </div>
                                 </div>

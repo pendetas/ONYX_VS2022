@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
@@ -144,6 +145,56 @@ namespace ONYX_DDAC.customer_page
         protected bool CanContinuePayment(object orderId)
         {
             return long.TryParse(Convert.ToString(orderId), out long id) && continuePaymentUrls.ContainsKey(id);
+        }
+
+        protected bool IsPendingPayment(object status)
+        {
+            return string.Equals(
+                Convert.ToString(status),
+                OrderStatuses.PendingPayment,
+                StringComparison.Ordinal);
+        }
+
+        protected void rptRecentOrders_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (!string.Equals(e.CommandName, "CancelPayment", StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            if (!TryGetCurrentUserId(out long userId))
+            {
+                Response.Redirect("~/auth_page/onyx_login.aspx?profile=true");
+                return;
+            }
+
+            currentFilter = NormalizeFilter(Request.QueryString["status"]);
+            string message;
+            if (!long.TryParse(Convert.ToString(e.CommandArgument), out long orderId) || orderId <= 0)
+            {
+                message = "The pending payment could not be identified.";
+            }
+            else
+            {
+                try
+                {
+                    new CheckoutService().CancelPendingPayment(orderId, userId);
+                    new CartService().RefreshCurrentUserCartFromDatabase();
+                    message = "Payment was cancelled and reserved stock was released.";
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.TraceError(
+                        "Order-history cancellation failed for order {0}: {1}",
+                        orderId,
+                        ex);
+                    message = "The payment could not be cancelled safely. Refresh and try again.";
+                }
+            }
+
+            BindOrders(userId);
+            litOrderMessage.Text = "<p class=\"onyx-order-notice\">" +
+                Server.HtmlEncode(message) + "</p>";
         }
 
         protected string GetContinuePaymentUrl(object orderId)

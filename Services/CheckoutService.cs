@@ -191,5 +191,35 @@ namespace ONYX_DDAC.Services
                 ? order
                 : null;
         }
+
+        public PaymentReconciliationResult CancelPendingPayment(long orderId, long userId)
+        {
+            if (orderId <= 0 || userId <= 0)
+            {
+                throw new InvalidOperationException("A valid pending order and user are required.");
+            }
+
+            Order order = _checkoutRepository.GetPendingOrderForCancellation(orderId, userId);
+            if (order == null || string.IsNullOrWhiteSpace(order.StripeCheckoutSessionId))
+            {
+                throw new InvalidOperationException("The pending payment was not found.");
+            }
+
+            var stripe = new StripePaymentService();
+            if (!stripe.TryExpireCheckoutSessionConfirmed(order.StripeCheckoutSessionId))
+            {
+                throw new InvalidOperationException(
+                    "Stripe could not confirm cancellation. Refresh the order before retrying.");
+            }
+
+            PaymentReconciliationResult result =
+                new PaymentCompletionService().ReconcileForUser(order.StripeCheckoutSessionId, userId);
+            if (!string.Equals(result.OrderStatus, OrderStatuses.Cancelled, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("The payment was not cancelled.");
+            }
+
+            return result;
+        }
     }
 }
