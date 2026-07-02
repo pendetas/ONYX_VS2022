@@ -67,6 +67,7 @@ CREATE TABLE orders (
   paid_at TIMESTAMPTZ,
   receipt_s3_key TEXT,
   ordered_at TIMESTAMP NOT NULL DEFAULT now(),
+  status_updated_at TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 

@@ -13,6 +13,12 @@ namespace ONYX_DDAC.auth_page
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["UserId"] != null)
+            {
+                Response.Redirect("~/customer_page/onyx_catalog.aspx");
+                return;
+            }
+
             if (Request.QueryString["registered"] == "true")
             {
                 ShowMessage("Registration successful. You can now sign in.", true);
@@ -77,7 +83,7 @@ namespace ONYX_DDAC.auth_page
         private void ShowMessage(string message, bool isSuccess)
         {
             MessagePanel.Visible = true;
-            MessageLiteral.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#00ff87" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
+            MessageLiteral.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#c0c0c0" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
         }
 
         private void RedirectAfterLogin(string url)

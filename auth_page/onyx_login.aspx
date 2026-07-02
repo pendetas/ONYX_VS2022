@@ -1,7 +1,21 @@
-<%@ Page Title="Login" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_login.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_login" %>
+<%@ Page Title="Login" Language="C#" MasterPageFile="~/customer_page/onyx_layout.Master" AutoEventWireup="true" CodeBehind="onyx_login.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_login" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
+        /* Force scrollbar removal across all browsers */
+        * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+        
+        ::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            background: transparent !important;
+            -webkit-appearance: none !important;
+        }
+
         /* Fullscreen takeover to override MasterPage formatting */
         .auth-takeover {
             position: fixed;
@@ -10,20 +24,13 @@
             width: 100vw;
             height: 100vh;
             background-color: #050505;
-            z-index: 12000;
+            z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #ffffff;
-            pointer-events: auto;
             overflow: hidden;
-            overscroll-behavior: none;
-        }
-
-        body.auth-lock-scroll {
-            height: 100vh;
-            overflow: hidden !important;
         }
 
         .auth-container {
@@ -38,7 +45,7 @@
             border: 1px solid #1f1f1f;
         }
 
-        /* Left Panel - Video Placeholder */
+        /* Left Panel - Video BG */
         .auth-left {
             flex: 1;
             position: relative;
@@ -47,26 +54,17 @@
             align-items: center;
             justify-content: center;
             background: #030303;
-            overflow: hidden; /* Added to keep video within bounds */
+            overflow: hidden; 
         }
 
         .auth-brand {
             position: absolute;
             top: 30px;
             left: 40px;
-            color: #ffffff;
-            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 28px;
-            font-weight: 400;
-            letter-spacing: -0.08em;
-            line-height: 1;
-            text-decoration: none;
-            text-transform: lowercase;
-            z-index: 2; /* Brought above video */
-        }
-
-        .auth-brand:hover {
-            color: #d8dde3;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            z-index: 2;
         }
 
         .auth-copyright {
@@ -75,7 +73,7 @@
             left: 40px;
             font-size: 11px;
             color: #555;
-            z-index: 2; /* Brought above video */
+            z-index: 2;
         }
 
         .auth-video-bg {
@@ -85,7 +83,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.5; /* Dimmed slightly for elegance */
+            opacity: 0.5;
             z-index: 1;
         }
 
@@ -97,9 +95,7 @@
             background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            z-index: 2;
-            pointer-events: auto;
+            overflow-y: auto !important; 
         }
 
         .auth-top-nav {
@@ -107,6 +103,7 @@
             display: flex;
             justify-content: flex-end;
             z-index: 10;
+            flex-shrink: 0;
         }
         
         .auth-top-nav a {
@@ -132,22 +129,24 @@
         }
 
         .auth-top-nav a:hover {
-            color: #d8dde3;
+            color: #c0c0c0;
         }
 
         .auth-top-nav a:hover::after {
             width: 50px;
-            background-color: #d8dde3;
+            background-color: #c0c0c0;
         }
 
+        /* Fixed missing button by preventing squishing */
         .auth-form-wrapper {
-            margin: auto 0;
-            max-width: 520px;
+            margin: auto 0; /* Centers it vertically */
+            max-width: 480px;
             width: 100%;
-            padding-bottom: 0;
-            position: relative;
-            z-index: 20;
-            pointer-events: auto;
+            flex-shrink: 0; /* Forces scrolling if screen is too small */
+            padding-top: 40px;
+            padding-bottom: 40px;
+            display: flex;
+            flex-direction: column;
         }
 
         .auth-title {
@@ -159,17 +158,13 @@
 
         .auth-form-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 26px;
-            margin-bottom: 0;
+            grid-template-columns: 1fr; 
+            gap: 40px;
         }
 
         .auth-field {
             display: flex;
             flex-direction: column;
-            position: relative;
-            z-index: 21;
-            pointer-events: auto;
         }
 
         .auth-field label {
@@ -178,6 +173,7 @@
             margin-bottom: 8px;
             font-weight: 500;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .auth-input {
@@ -188,68 +184,76 @@
             font-size: 16px;
             padding: 8px 0;
             outline: none;
-            transition: border-color 0.3s;
-            position: relative;
-            z-index: 22;
-            pointer-events: auto;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .auth-input:focus {
             border-bottom-color: #fff;
+            box-shadow: 0 1px 0 #fff;
         }
 
-        .auth-action-row {
-            align-items: center;
-            display: flex;
-            gap: 18px;
-            justify-content: space-between;
-            margin-top: 38px;
-            position: static;
-        }
-
-        .auth-forgot-link {
-            color: #9ca3af;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-decoration: none;
-            text-transform: uppercase;
-            transition: color 0.2s ease;
-        }
-
-        .auth-forgot-link:hover {
-            color: #ffffff;
-        }
-
-        .auth-submit-btn {
-            appearance: none;
-            -webkit-appearance: none;
-            opacity: 1 !important;
-            visibility: visible !important;
-            flex-shrink: 0;
-            position: static;
-            width: auto;
-            min-width: 150px;
-            height: 52px;
-            border-radius: 999px;
-            padding: 0 30px;
-            background-color: #fff;
-            color: #000;
+        /* UIverse Button "empty-moose-12" */
+        .cta {
             border: none;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            background: none;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            z-index: 10;
+            text-decoration: none;
+            margin-top: 50px;
+            align-self: flex-end;
         }
 
-        .auth-submit-btn:hover {
-            transform: translateY(-2px);
-            background-color: #d8dde3;
-            box-shadow: 0 16px 40px rgba(216, 221, 227, 0.18);
+        .cta span {
+            padding-bottom: 7px;
+            letter-spacing: 4px;
+            font-size: 13px;
+            padding-right: 15px;
+            text-transform: uppercase;
+            color: #ffffff;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .cta svg {
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            fill: #ffffff;
+        }
+
+        .cta:hover svg {
+            transform: translateX(0);
+            fill: #c0c0c0;
+        }
+
+        .cta:active svg {
+            transform: scale(0.9);
+        }
+
+        .hover-underline-animation {
+            position: relative;
+        }
+
+        .hover-underline-animation:after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #c0c0c0;
+            transform-origin: bottom right;
+            transition: transform 0.25s ease-out;
+        }
+
+        .cta:hover .hover-underline-animation {
+            color: #c0c0c0;
+        }
+
+        .cta:hover .hover-underline-animation:after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
         }
 
         .auth-alert {
@@ -258,17 +262,6 @@
             margin-bottom: 20px;
             display: block;
         }
-
-        @media (max-width: 720px) {
-            .auth-action-row {
-                align-items: stretch;
-                flex-direction: column;
-            }
-
-            .auth-submit-btn {
-                width: 100%;
-            }
-        }
     </style>
 
     <div class="auth-takeover">
@@ -276,17 +269,15 @@
             
             <!-- Left Side: Video Background -->
             <div class="auth-left">
-                <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" class="auth-brand" aria-label="Back to ONYX home">onyx</a>
+                <div class="auth-brand">ONYX&deg;</div>
                 
-                <!-- MP4 Video Background with ASP.NET path resolving -->
                 <video autoplay loop muted playsinline class="auth-video-bg">
                     <source src="<%= ResolveUrl("~/Videos/ONYX_Cinematic_Logo.mp4") %>" type="video/mp4" />
                 </video>
 
-                <div class="auth-copyright">&copy; ONYX 2026. All rights reserved.</div>
+                <div class="auth-copyright">&copy; ONYX 2025. All rights reserved.</div>
             </div>
 
-            <!-- Right Side: Login Form -->
             <div class="auth-right">
                 <div class="auth-top-nav">
                     <a href="onyx_register.aspx"><span>Create an account</span></a>
@@ -311,37 +302,52 @@
                         </div>
                     </div>
 
-                    <div class="auth-action-row">
-                        <a href="onyx_forgotpassword.aspx" class="auth-forgot-link">Forgot password?</a>
-                        <asp:Button ID="LoginButton" runat="server" CssClass="auth-submit-btn" Text="LOGIN" OnClick="LoginButton_Click" />
-                    </div>
+                    <!-- Uiverse "empty-moose-12" LinkButton -->
+                    <asp:LinkButton ID="LoginButton" runat="server" CssClass="cta" OnClick="LoginButton_Click">
+                        <span class="hover-underline-animation">LOG IN</span>
+                        <svg viewBox="0 0 46 16" height="10" width="30" xmlns="http://www.w3.org/2000/svg" id="arrow-horizontal">
+                            <path transform="translate(30)" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z" data-name="Path 10" id="Path_10"></path>
+                        </svg>
+                    </asp:LinkButton>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Animation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            document.body.classList.add("auth-lock-scroll");
 
-            // 1. GSAP Entrance Animations
+            // 1. Lenis Smooth Scroll Initialization on Right Panel
+            const scrollContainer = document.querySelector('.auth-right');
+            const scrollContent = document.querySelector('.auth-form-wrapper');
+
+            if (scrollContainer && scrollContent) {
+                const lenis = new Lenis({
+                    wrapper: scrollContainer,
+                    content: scrollContent,
+                    lerp: 0.08,
+                    smoothWheel: true
+                });
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+            }
+
+            // 2. Cinematic GSAP Timeline Sequence
             const tl = gsap.timeline();
 
-            // Base container scaling in smoothly
             tl.from(".auth-container", { duration: 1.2, scale: 0.96, opacity: 0, ease: "power4.out" })
-                // Fade in video background
                 .from(".auth-video-bg", { duration: 2, opacity: 0, ease: "power2.out" }, "-=0.8")
-                // Reveal left branding
                 .from(".auth-brand, .auth-copyright", { duration: 0.8, x: -30, opacity: 0, stagger: 0.2, ease: "power3.out" }, "-=1.5")
-                // Reveal right form headers
                 .from(".auth-top-nav, .auth-title", { duration: 0.8, y: 20, opacity: 0, stagger: 0.1, ease: "power3.out" }, "-=1.2")
-                // Staggered reveal of form fields
-                .from(".auth-field", { duration: 0.6, y: 20, opacity: 0, stagger: 0.1, ease: "power3.out" }, "-=0.8");
-
-            gsap.from(".auth-action-row", { duration: 0.6, y: 12, opacity: 0, delay: 0.4, ease: "power3.out" });
+                .from(".auth-field", { duration: 0.6, y: 20, opacity: 0, stagger: 0.1, ease: "power3.out" }, "-=0.8")
+                // Uiverse button elegantly slides in. clearProps ensures hover CSS works smoothly afterwards!
+                .from(".cta", { duration: 1.2, y: 30, opacity: 0, ease: "expo.out", clearProps: "all" }, "-=0.4");
         });
     </script>
 </asp:Content>

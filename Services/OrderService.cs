@@ -8,11 +8,15 @@ namespace ONYX_DDAC.Services
 {
     public class OrderService
     {
-        private readonly OrderRepository _orderRepository;
+        private readonly OrderRepository _repo;
 
-        public OrderService()
+        public OrderService() : this(new OrderRepository())
         {
-            _orderRepository = new OrderRepository();
+        }
+
+        public OrderService(OrderRepository repo)
+        {
+            _repo = repo;
         }
 
         public long CreateOrderFromCart(long userId, string shippingAddress, IList<CartItem> cartItems)
@@ -28,12 +32,12 @@ namespace ONYX_DDAC.Services
             }
 
             decimal totalAmount = cartItems.Sum(item => item.Price * item.Quantity);
-            return _orderRepository.CreateOrder(userId, totalAmount, shippingAddress.Trim(), null, cartItems);
+            return _repo.CreateOrder(userId, totalAmount, shippingAddress.Trim(), null, cartItems);
         }
 
         public Invoice GetInvoice(long orderId, long userId)
         {
-            Invoice invoice = _orderRepository.GetInvoice(orderId, userId);
+            Invoice invoice = _repo.GetInvoice(orderId, userId);
             if (invoice == null)
             {
                 throw new InvalidOperationException("Invoice not found.");
@@ -45,12 +49,12 @@ namespace ONYX_DDAC.Services
         public IList<Order> GetOrdersForUser(long userId, string status, int limit)
         {
             string normalized = NormalizeFilter(status);
-            return _orderRepository.GetOrdersForUser(userId, normalized, limit) ?? new List<Order>();
+            return _repo.GetOrdersForUser(userId, normalized, limit) ?? new List<Order>();
         }
 
         public Order GetOrderForUser(long orderId, long userId)
         {
-            return _orderRepository.GetOrderForUser(orderId, userId);
+            return _repo.GetOrderForUser(orderId, userId);
         }
 
         private static string NormalizeFilter(string status)
@@ -68,12 +72,49 @@ namespace ONYX_DDAC.Services
 
         public IList<Product> GetPurchasedProductsForUser(long userId)
         {
-            return _orderRepository.GetPurchasedProductsForUser(userId) ?? new List<Product>();
+            return _repo.GetPurchasedProductsForUser(userId) ?? new List<Product>();
         }
 
         public bool HasPurchasedProduct(long userId, long productId)
         {
-            return _orderRepository.HasPurchasedProduct(userId, productId);
+            return _repo.HasPurchasedProduct(userId, productId);
+        }
+
+        public List<OrderSummary> GetAllOrders()
+        {
+            return _repo.GetAllOrders();
+        }
+
+        public OrderStats GetStats()
+        {
+            return _repo.GetStats();
+        }
+
+        public OrderDetail GetOrderById(long id)
+        {
+            return _repo.GetOrderById(id);
+        }
+
+        public List<OrderItemDetail> GetOrderItems(long orderId)
+        {
+            return _repo.GetOrderItems(orderId);
+        }
+
+        public string UpdateStatus(long orderId, string status)
+        {
+            var allowed = new[] { "pending", "shipped", "delivered", "cancelled" };
+            if (!allowed.Contains(status))
+            {
+                return "Invalid status value.";
+            }
+
+            _repo.UpdateStatus(orderId, status);
+            return null;
+        }
+
+        public void DeleteOrder(long orderId)
+        {
+            _repo.DeleteOrder(orderId);
         }
     }
 }
