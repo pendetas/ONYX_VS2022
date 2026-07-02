@@ -38,17 +38,6 @@ namespace ONYX_DDAC.auth_page
 
             try
             {
-                // Hardcoded bypass logic for Admin as requested in the instructions
-                if (emailOrUser.ToLower() == "admin" && password == "admin123")
-                {
-                    Session["UserId"] = 1; // Assuming 1 is the Admin seeded ID
-                    Session["Username"] = "Admin";
-                    Session["Role"] = "admin";
-                    FormsAuthentication.SetAuthCookie("admin@onyx.com", false);
-                    Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx", true);
-                    return;
-                }
-
                 // Normal Database Authentication Flow
                 User user = authService.Login(emailOrUser, password);
 
@@ -58,25 +47,36 @@ namespace ONYX_DDAC.auth_page
                     return;
                 }
 
-                // Establish session state per PRD requirements
+                var savedCart = Session["Cart"] as System.Collections.Generic.List<CartItem>;
+
+                
                 Session["UserId"] = user.Id;
                 Session["Username"] = user.Username;
                 Session["Role"] = user.Role;
                 FormsAuthentication.SetAuthCookie(user.Email, false);
 
+                new CartService().MergeSessionCartForUser(user.Id, savedCart);
+
                 // Auto-detect role and route
                 if (string.Equals(user.Role, "admin", StringComparison.OrdinalIgnoreCase))
                 {
-                    Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx", true);
+                    RedirectAfterLogin("~/admin_page/onyx_admin_dashboard.aspx");
+                    return;
                 }
                 else
                 {
-                    Response.Redirect("~/customer_page/onyx_catalog.aspx", true);
+                    string destination = Request.QueryString["profile"] == "true"
+                        ? "~/customer_page/onyx_profile.aspx"
+                        : "~/customer_page/onyx_home.aspx";
+
+                    RedirectAfterLogin(destination);
+                    return;
                 }
             }
             catch (Exception ex)
             {
-                ShowMessage(ex.Message, false);
+                System.Diagnostics.Debug.WriteLine("Login Error: " + ex);
+                ShowMessage("Login is temporarily unavailable. Please check your database connection and try again.", false);
             }
         }
 
@@ -84,6 +84,12 @@ namespace ONYX_DDAC.auth_page
         {
             MessagePanel.Visible = true;
             MessageLiteral.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#c0c0c0" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
+        }
+
+        private void RedirectAfterLogin(string url)
+        {
+            Response.Redirect(url, false);
+            Context.ApplicationInstance.CompleteRequest();
         }
     }
 }

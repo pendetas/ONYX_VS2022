@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using Npgsql;
 using ONYX_DDAC.Models;
 
 namespace ONYX_DDAC.DAL
@@ -296,11 +297,131 @@ namespace ONYX_DDAC.DAL
             }
         }
 
-        // kept for backward-compat with ProductService.GetFeaturedProducts
         public IList<Product> GetFeaturedProducts(int count)
         {
-            var all = GetAllProducts();
-            return all.Count <= count ? all : all.GetRange(0, count);
+            var products = new List<Product>();
+
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
+            {
+                conn.Open();
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT id, name, brand, category, description, price, stock_qty, image_url, created_at
+                        FROM products
+                        ORDER BY created_at DESC
+                        LIMIT @Count";
+                    cmd.Parameters.Add(new NpgsqlParameter("@Count", count));
+
+                    using (DbDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            products.Add(MapRow(reader));
+                        }
+                    }
+                }
+            }
+
+            return products;
+        }
+
+        public PagedResult<Product> GetCatalogProducts(CatalogQuery query)
+        {
+            var result = new PagedResult<Product>
+            {
+                Page = query.Page,
+                PageSize = query.PageSize
+            };
+
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
+            {
+                conn.Open();
+                string whereClause = BuildCatalogWhereClause(query);
+
+                using (DbCommand countCommand = conn.CreateCommand())
+                {
+                    countCommand.CommandText = "SELECT COUNT(*) FROM products" + whereClause;
+                    AddCatalogFilterParameters(countCommand, query);
+                    result.TotalCount = Convert.ToInt32(countCommand.ExecuteScalar());
+                }
+
+                int totalPages = Math.Max(1, (int)Math.Ceiling(result.TotalCount / (double)query.PageSize));
+                result.Page = Math.Min(query.Page, totalPages);
+
+                using (DbCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT id, name, brand, category, description, price, stock_qty, image_url, created_at
+                        FROM products"
+                        + whereClause
+                        + " ORDER BY " + GetCatalogOrderBy(query.Sort)
+                        + " LIMIT @PageSize OFFSET @Offset";
+                    AddCatalogFilterParameters(command, query);
+                    command.Parameters.Add(new NpgsqlParameter("@PageSize", query.PageSize));
+                    command.Parameters.Add(new NpgsqlParameter("@Offset", (result.Page - 1) * query.PageSize));
+
+                    using (DbDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            result.Items.Add(MapRow(reader));
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public IList<ProductVariant> GetProductVariants(long productId)
+        {
+            return GetVariantsByProductId(productId);
+        }
+
+        private static string BuildCatalogWhereClause(CatalogQuery query)
+        {
+            var filters = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(query.Category))
+            {
+                filters.Add("category ILIKE @Category");
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                filters.Add("(name ILIKE @Search OR brand ILIKE @Search OR category ILIKE @Search OR description ILIKE @Search)");
+            }
+
+            return filters.Count == 0 ? string.Empty : " WHERE " + string.Join(" AND ", filters);
+        }
+
+        private static void AddCatalogFilterParameters(DbCommand command, CatalogQuery query)
+        {
+            if (!string.IsNullOrWhiteSpace(query.Category))
+            {
+                command.Parameters.Add(new NpgsqlParameter("@Category", query.Category));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                command.Parameters.Add(new NpgsqlParameter("@Search", "%" + query.SearchTerm + "%"));
+            }
+        }
+
+        private static string GetCatalogOrderBy(string sort)
+        {
+            switch (sort)
+            {
+                case "name":
+                    return "name ASC, id ASC";
+                case "price-asc":
+                    return "price ASC, name ASC";
+                case "price-desc":
+                    return "price DESC, name ASC";
+                default:
+                    return "created_at DESC, id DESC";
+            }
         }
 
         private static Product MapRow(DbDataReader r)

@@ -83,16 +83,15 @@ namespace ONYX_DDAC.Services
         }
 
         // Handles the business logic for logging in
-        public User Login(string email, string rawPassword)
+        public User Login(string emailOrUsername, string rawPassword)
         {
             // 1. Fetch the user from the database
-            User user = _userRepository.GetUserByEmail(email);
+            User user = _userRepository.GetUserByEmailOrUsername(emailOrUsername);
 
             // 2. If user exists, verify the password against the stored BCrypt hash
             if (user != null)
             {
-                // Fix: Removed named arguments here as well. SHA384 is used by default.
-                bool isPasswordValid = BCrypt.Net.BCrypt.EnhancedVerify(rawPassword, user.PasswordHash);
+                bool isPasswordValid = VerifyPassword(rawPassword, user.PasswordHash);
 
                 if (isPasswordValid)
                 {
@@ -100,8 +99,36 @@ namespace ONYX_DDAC.Services
                 }
             }
 
-            // Login failed (either username not found or password incorrect)
+            // Login failed (either account not found or password incorrect)
             return null;
+        }
+
+        private static bool VerifyPassword(string rawPassword, string passwordHash)
+        {
+            if (string.IsNullOrWhiteSpace(rawPassword) || string.IsNullOrWhiteSpace(passwordHash))
+            {
+                return false;
+            }
+
+            if (TryVerify(() => BCrypt.Net.BCrypt.EnhancedVerify(rawPassword, passwordHash)))
+            {
+                return true;
+            }
+
+            return TryVerify(() => BCrypt.Net.BCrypt.Verify(rawPassword, passwordHash));
+        }
+
+        private static bool TryVerify(Func<bool> verifier)
+        {
+            try
+            {
+                return verifier();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Password verification skipped: " + ex.Message);
+                return false;
+            }
         }
     }
 }

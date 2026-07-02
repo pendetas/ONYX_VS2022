@@ -29,7 +29,7 @@ namespace ONYX_DDAC.Services
         // ── Admin: user detail ───────────────────────────────────────────────
         public UserDetail GetUserById(long id)
         {
-            return _repo.GetUserById(id);
+            return _repo.GetAdminUserById(id);
         }
 
         public List<UserOrderSummary> GetUserOrders(long userId)

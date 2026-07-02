@@ -104,5 +104,37 @@ namespace ONYX_DDAC.Services
         {
             _repo.DeleteVariant(variantId, productId);
         }
+
+        public PagedResult<Product> GetCatalogProducts(CatalogQuery query)
+        {
+            CatalogQuery normalizedQuery = query ?? new CatalogQuery();
+            normalizedQuery.Category = (normalizedQuery.Category ?? string.Empty).Trim();
+            normalizedQuery.SearchTerm = (normalizedQuery.SearchTerm ?? string.Empty).Trim();
+            normalizedQuery.Sort = NormalizeSort(normalizedQuery.Sort);
+            normalizedQuery.Page = normalizedQuery.Page < 1 ? 1 : normalizedQuery.Page;
+            normalizedQuery.PageSize = normalizedQuery.PageSize < 1 || normalizedQuery.PageSize > 48
+                ? 8
+                : normalizedQuery.PageSize;
+
+            return _repo.GetCatalogProducts(normalizedQuery);
+        }
+
+        public IList<ProductVariant> GetProductVariants(long productId)
+        {
+            return _repo.GetProductVariants(productId);
+        }
+
+        private static string NormalizeSort(string sort)
+        {
+            switch ((sort ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "name":
+                case "price-asc":
+                case "price-desc":
+                    return sort.Trim().ToLowerInvariant();
+                default:
+                    return "newest";
+            }
+        }
     }
 }

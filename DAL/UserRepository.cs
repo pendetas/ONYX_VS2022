@@ -108,7 +108,7 @@ namespace ONYX_DDAC.DAL
         //  DETAIL CRUD
         // =====================================================================
 
-        public UserDetail GetUserById(long id)
+        public UserDetail GetAdminUserById(long id)
         {
             using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
             {
@@ -457,6 +457,101 @@ namespace ONYX_DDAC.DAL
                     cmd.Parameters.AddWithValue("@Hash", newHash);
                     cmd.Parameters.AddWithValue("@Id",   userId);
                     cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public User GetUserByEmailOrUsername(string emailOrUsername)
+        {
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
+            {
+                conn.Open();
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT id, username, email, password_hash, role
+                        FROM users
+                        WHERE LOWER(email) = LOWER(@LoginIdentifier)
+                           OR LOWER(username) = LOWER(@LoginIdentifier)";
+                    cmd.Parameters.Add(new NpgsqlParameter("@LoginIdentifier", emailOrUsername));
+
+                    using (DbDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User
+                            {
+                                Id = reader.GetInt64(0),
+                                Username = reader.GetString(1),
+                                Email = reader.GetString(2),
+                                PasswordHash = reader.GetString(3),
+                                Role = reader.GetString(4)
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public User GetUserById(long userId)
+        {
+            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
+            {
+                conn.Open();
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT id, fullname, username, email, address, dob, phone_number, role, created_at
+                        FROM users
+                        WHERE id = @UserId";
+                    cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+
+                    using (DbDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User
+                            {
+                                Id = reader.GetInt64(reader.GetOrdinal("id")),
+                                FullName = reader.IsDBNull(reader.GetOrdinal("fullname")) ? null : reader.GetString(reader.GetOrdinal("fullname")),
+                                Username = reader.IsDBNull(reader.GetOrdinal("username")) ? null : reader.GetString(reader.GetOrdinal("username")),
+                                Email = reader.IsDBNull(reader.GetOrdinal("email")) ? null : reader.GetString(reader.GetOrdinal("email")),
+                                Address = reader.IsDBNull(reader.GetOrdinal("address")) ? null : reader.GetString(reader.GetOrdinal("address")),
+                                Dob = reader.IsDBNull(reader.GetOrdinal("dob")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("dob")),
+                                PhoneNumber = reader.IsDBNull(reader.GetOrdinal("phone_number")) ? null : reader.GetString(reader.GetOrdinal("phone_number")),
+                                Role = reader.IsDBNull(reader.GetOrdinal("role")) ? null : reader.GetString(reader.GetOrdinal("role")),
+                                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at"))
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public bool UpdateUserSettings(long userId, string fullName, string email, string phoneNumber, string address)
+        {
+            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+            {
+                conn.Open();
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        UPDATE users
+                        SET fullname = @FullName,
+                            email = @Email,
+                            phone_number = @PhoneNumber,
+                            address = @Address
+                        WHERE id = @UserId";
+                    cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@FullName", (object)fullName ?? DBNull.Value));
+                    cmd.Parameters.Add(new NpgsqlParameter("@Email", email));
+                    cmd.Parameters.Add(new NpgsqlParameter("@PhoneNumber", (object)phoneNumber ?? DBNull.Value));
+                    cmd.Parameters.Add(new NpgsqlParameter("@Address", (object)address ?? DBNull.Value));
+
+                    return cmd.ExecuteNonQuery() > 0;
                 }
             }
         }

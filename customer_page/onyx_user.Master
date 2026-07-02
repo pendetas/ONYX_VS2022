@@ -1,0 +1,213 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="onyx_user.Master.cs" Inherits="ONYX_DDAC.customer_page.onyx_user" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - ONYX</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+    <link href="<%= ResolveUrl("~/Content/onyx-design-system.css") %>" rel="stylesheet" />
+    <link href="<%= ResolveUrl("~/Content/onyx-user-master.css") %>" rel="stylesheet" />
+    <script src="<%= ResolveUrl("~/Scripts/onyx-user-master.js") %>"></script>
+</head>
+<body data-catalog-url="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>">
+    <form id="form1" runat="server" class="onyx-user-shell antialiased selection:bg-accent selection:text-black">
+        <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+
+        <nav id="onyx-main-nav" class="onyx-ddac-nav" aria-label="ONYX primary navigation">
+            <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" class="onyx-nav-brand" aria-label="ONYX Home">
+                <span class="onyx-wordmark">onyx</span>
+            </a>
+
+            <label class="onyx-nav-search" for="onyx-nav-search-input">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+                <input id="onyx-nav-search-input" type="search" placeholder="Search gaming gear" autocomplete="off" />
+            </label>
+
+            <div class="onyx-ddac-nav-links">
+                <a class="<%= Page.AppRelativeVirtualPath.EndsWith("/onyx_home.aspx", StringComparison.OrdinalIgnoreCase) ? "is-active" : string.Empty %>" href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>">Home</a>
+                <div class="onyx-ddac-dropdown">
+                    <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>" class="onyx-ddac-dropdown-trigger <%= Page.AppRelativeVirtualPath.EndsWith("/onyx_catalog.aspx", StringComparison.OrdinalIgnoreCase) ? "is-active" : string.Empty %>">
+                        Catalog
+                        <span class="onyx-chev"></span>
+                    </a>
+                    <div class="onyx-ddac-megapanel">
+                        <div class="onyx-ddac-megapanel-inner">
+                            <div class="onyx-ddac-mega-cats">
+                                <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>?category=Mouse" class="onyx-ddac-mega-cat">
+                                    <span class="onyx-ddac-mega-cat-num">01</span>
+                                    <span class="onyx-ddac-mega-cat-name">Gaming Mice</span>
+                                    <span class="onyx-ddac-mega-cat-sub">Precision tracking</span>
+                                </a>
+                                <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>?category=Keyboard" class="onyx-ddac-mega-cat">
+                                    <span class="onyx-ddac-mega-cat-num">02</span>
+                                    <span class="onyx-ddac-mega-cat-name">Keyboards</span>
+                                    <span class="onyx-ddac-mega-cat-sub">Tactile response</span>
+                                </a>
+                                <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>?category=Headset" class="onyx-ddac-mega-cat">
+                                    <span class="onyx-ddac-mega-cat-num">03</span>
+                                    <span class="onyx-ddac-mega-cat-name">Audio</span>
+                                    <span class="onyx-ddac-mega-cat-sub">Spatial surround</span>
+                                </a>
+                                <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>?category=Accessory" class="onyx-ddac-mega-cat">
+                                    <span class="onyx-ddac-mega-cat-num">04</span>
+                                    <span class="onyx-ddac-mega-cat-name">Accessories</span>
+                                    <span class="onyx-ddac-mega-cat-sub">Desk essentials</span>
+                                </a>
+                            </div>
+                            <div class="onyx-ddac-mega-cta">
+                                <span class="onyx-ddac-mega-cta-label">New season</span>
+                                <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>" class="onyx-ddac-mega-cta-link">
+                                    Shop All
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                                        <path d="M2 6h8M6.5 2.5L10 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="<%= Page.AppRelativeVirtualPath.EndsWith("/onyx_about.aspx", StringComparison.OrdinalIgnoreCase) ? "is-active" : string.Empty %>" href="<%= ResolveUrl("~/customer_page/onyx_about.aspx") %>">About</a>
+                <a class="<%= Page.AppRelativeVirtualPath.EndsWith("/onyx_support.aspx", StringComparison.OrdinalIgnoreCase) ? "is-active" : string.Empty %>" href="<%= ResolveUrl("~/customer_page/onyx_support.aspx") %>">Support</a>
+
+                <span class="text-secondary">|</span>
+
+                <% if (Session["UserId"] != null) { %>
+                    <a href="<%= ResolveUrl("~/customer_page/onyx_wishlist.aspx") %>" class="onyx-ddac-nav-icon onyx-ddac-love-link" aria-label="Wishlist">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20.8 4.6c-1.5-1.4-3.9-1.4-5.4.1L12 8.1 8.6 4.7c-1.5-1.5-3.9-1.5-5.4-.1-1.6 1.5-1.6 4.1 0 5.7L12 19l8.8-8.7c1.6-1.6 1.6-4.2 0-5.7z"></path>
+                        </svg>
+                    </a>
+                    <a href="<%= ResolveUrl("~/customer_page/onyx_cart.aspx") %>" class="onyx-ddac-nav-icon" aria-label="Cart">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="onyx-ddac-nav-icon-count"><asp:Literal ID="litCartCount" runat="server" Text="0"></asp:Literal></span>
+                    </a>
+                    <div class="onyx-ddac-account">
+                        <a href="<%= ResolveUrl("~/customer_page/onyx_profile.aspx") %>" class="onyx-ddac-account-trigger" aria-label="Open profile details">
+                            <span class="onyx-ddac-account-avatar" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21a8 8 0 0 0-16 0"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </span>
+                            <span class="onyx-ddac-account-name"><%= Server.HtmlEncode((Session["Username"] ?? string.Empty).ToString()) %></span>
+                            <span class="onyx-chev" aria-hidden="true"></span>
+                        </a>
+                        <div class="onyx-ddac-account-menu" role="menu">
+                            <a  href="<%= ResolveUrl("~/customer_page/onyx_profile.aspx") %>">My Account <span>Open</span></a>
+                            <div class="onyx-ddac-account-divider"></div>
+                            <asp:LinkButton ID="btnCustomerLogout" runat="server" CssClass="onyx-ddac-account-action" CausesValidation="false" OnClientClick="return onyxRequestLogout(this);" OnClick="btnCustomerLogout_Click">
+                                Sign Out <span>Exit</span>
+                            </asp:LinkButton>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <a href="<%= ResolveUrl("~/auth_page/onyx_login.aspx") %>">Login</a>
+                    <a href="<%= ResolveUrl("~/auth_page/onyx_register.aspx") %>" class="onyx-ddac-nav-register">Sign Up</a>
+                <% } %>
+            </div>
+
+            <button id="onyxMobileMenuButton" type="button" class="onyx-mobile-menu-button" aria-label="Open navigation" aria-expanded="false" aria-controls="onyxMobileMenu">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+
+        <div id="onyxMobileMenu" class="onyx-mobile-menu" aria-hidden="true">
+            <label class="onyx-nav-search onyx-mobile-search" for="onyx-mobile-search-input">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+                <input id="onyx-mobile-search-input" type="search" placeholder="Search gaming gear" autocomplete="off" />
+            </label>
+            <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>">Home</a>
+            <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>">Catalog</a>
+            <a href="<%= ResolveUrl("~/customer_page/onyx_about.aspx") %>">About</a>
+            <a href="<%= ResolveUrl("~/customer_page/onyx_support.aspx") %>">Support</a>
+            <% if (Session["UserId"] != null) { %>
+                <a href="<%= ResolveUrl("~/customer_page/onyx_wishlist.aspx") %>">Wishlist</a>
+                <a href="<%= ResolveUrl("~/customer_page/onyx_cart.aspx") %>">Cart</a>
+                <a href="<%= ResolveUrl("~/customer_page/onyx_profile.aspx") %>">My Account</a>
+            <% } else { %>
+                <a href="<%= ResolveUrl("~/auth_page/onyx_login.aspx") %>">Login</a>
+                <a href="<%= ResolveUrl("~/auth_page/onyx_register.aspx") %>">Sign Up</a>
+            <% } %>
+        </div>
+
+        <div id="onyxLogoutDialog" class="onyx-logout-modal" aria-hidden="true">
+            <div class="onyx-logout-card" role="dialog" aria-modal="true" aria-labelledby="onyxLogoutTitle" aria-describedby="onyxLogoutCopy">
+                <span class="onyx-logout-kicker">Session Control</span>
+                <h2 id="onyxLogoutTitle" class="onyx-logout-title">Log out?</h2>
+                <p id="onyxLogoutCopy" class="onyx-logout-copy">
+                    Your ONYX session will end on this browser. Saved cart items and order history stay connected to your account.
+                </p>
+                <div class="onyx-logout-actions">
+                    <button id="onyxLogoutCancel" type="button" class="onyx-logout-button onyx-logout-cancel">Stay</button>
+                    <button id="onyxLogoutConfirm" type="button" class="onyx-logout-button onyx-logout-confirm">Log Out</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="onyx-user-main">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </div>
+
+        <% if (ShowMasterFooter) { %>
+        <footer class="onyx-master-footer" aria-label="ONYX footer">
+            <div class="onyx-master-footer-inner">
+                <div class="onyx-master-footer-brand">
+                    <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" aria-label="ONYX Home">
+                        <span class="onyx-wordmark">onyx</span>
+                    </a>
+                    <p>Black and silver gaming gear, support, warranty help, and account tools in one place.</p>
+                </div>
+
+                <div class="onyx-master-footer-columns">
+                    <div>
+                        <h3>Shop</h3>
+                        <div class="onyx-master-footer-links">
+                            <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>">Catalog</a>
+                            <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>?category=Mouse">Gaming Mice</a>
+                            <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>?category=Keyboard">Keyboards</a>
+                            <a href="<%= ResolveUrl("~/customer_page/onyx_cart.aspx") %>">Cart</a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3>Company</h3>
+                        <div class="onyx-master-footer-links">
+                            <a href="<%= ResolveUrl("~/customer_page/onyx_about.aspx") %>">About</a>
+                            <a href="<%= ResolveUrl("~/customer_page/onyx_support.aspx") %>">Support</a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3>Help</h3>
+                        <div class="onyx-master-footer-links">
+                            <a href="<%= ResolveUrl("~/customer_page/onyx_privacy.aspx") %>">Privacy</a>
+                            <a href="<%= ResolveUrl("~/customer_page/onyx_terms.aspx") %>">Terms</a>
+                            <a href="mailto:support@onyxgaming.com">Email Support</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="onyx-master-footer-bottom">
+                <span>&copy; 2026 ONYX Gaming Technologies.</span>
+                <span>Malaysia / Performance gear studio</span>
+            </div>
+        </footer>
+        <% } %>
+
+
+    </form>
+</body>
+</html>

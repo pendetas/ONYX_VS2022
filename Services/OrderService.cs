@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 
@@ -8,14 +10,76 @@ namespace ONYX_DDAC.Services
     {
         private readonly OrderRepository _repo;
 
-        public OrderService() : this(new OrderRepository()) { }
+        public OrderService() : this(new OrderRepository())
+        {
+        }
 
         public OrderService(OrderRepository repo)
         {
             _repo = repo;
         }
 
-        // ── Admin: order list ────────────────────────────────────────────────
+        public long CreateOrderFromCart(long userId, string shippingAddress, IList<CartItem> cartItems)
+        {
+            if (string.IsNullOrWhiteSpace(shippingAddress))
+            {
+                throw new InvalidOperationException("Shipping address is required.");
+            }
+
+            if (cartItems == null || cartItems.Count == 0)
+            {
+                throw new InvalidOperationException("Your cart is empty.");
+            }
+
+            decimal totalAmount = cartItems.Sum(item => item.Price * item.Quantity);
+            return _repo.CreateOrder(userId, totalAmount, shippingAddress.Trim(), null, cartItems);
+        }
+
+        public Invoice GetInvoice(long orderId, long userId)
+        {
+            Invoice invoice = _repo.GetInvoice(orderId, userId);
+            if (invoice == null)
+            {
+                throw new InvalidOperationException("Invoice not found.");
+            }
+
+            return invoice;
+        }
+
+        public IList<Order> GetOrdersForUser(long userId, string status, int limit)
+        {
+            string normalized = NormalizeFilter(status);
+            return _repo.GetOrdersForUser(userId, normalized, limit) ?? new List<Order>();
+        }
+
+        public Order GetOrderForUser(long orderId, long userId)
+        {
+            return _repo.GetOrderForUser(orderId, userId);
+        }
+
+        private static string NormalizeFilter(string status)
+        {
+            string value = (status ?? string.Empty).Trim().ToLowerInvariant();
+            if (value == OrderStatuses.PendingPayment ||
+                value == OrderStatuses.Paid ||
+                value == OrderStatuses.Cancelled)
+            {
+                return value;
+            }
+
+            return null;
+        }
+
+        public IList<Product> GetPurchasedProductsForUser(long userId)
+        {
+            return _repo.GetPurchasedProductsForUser(userId) ?? new List<Product>();
+        }
+
+        public bool HasPurchasedProduct(long userId, long productId)
+        {
+            return _repo.HasPurchasedProduct(userId, productId);
+        }
+
         public List<OrderSummary> GetAllOrders()
         {
             return _repo.GetAllOrders();
@@ -26,7 +90,6 @@ namespace ONYX_DDAC.Services
             return _repo.GetStats();
         }
 
-        // ── Admin: order detail ──────────────────────────────────────────────
         public OrderDetail GetOrderById(long id)
         {
             return _repo.GetOrderById(id);
@@ -37,14 +100,13 @@ namespace ONYX_DDAC.Services
             return _repo.GetOrderItems(orderId);
         }
 
-        // Validates the status value before updating.
-        // Returns error string or null on success.
         public string UpdateStatus(long orderId, string status)
         {
             var allowed = new[] { "pending", "shipped", "delivered", "cancelled" };
-            bool valid = false;
-            foreach (var s in allowed) if (s == status) { valid = true; break; }
-            if (!valid) return "Invalid status value.";
+            if (!allowed.Contains(status))
+            {
+                return "Invalid status value.";
+            }
 
             _repo.UpdateStatus(orderId, status);
             return null;

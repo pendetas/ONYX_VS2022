@@ -1,0 +1,55 @@
+using ONYX_DDAC.Services;
+using System;
+using System.Web.UI;
+
+namespace ONYX_DDAC.customer_page
+{
+    public partial class onyx_user : MasterPage
+    {
+        protected bool IsLoggedIn
+        {
+            get { return Session["UserId"] != null; }
+        }
+
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            try
+            {
+                var cartService = new CartService();
+                litCartCount.Text = cartService.GetCartItemCount().ToString();
+            }
+            catch (Exception)
+            {
+                litCartCount.Text = "0";
+            }
+        }
+        protected string CurrentUsername
+        {
+            get
+            {
+                var username = Session["Username"];
+                return username == null ? string.Empty : username.ToString();
+            }
+        }
+
+        protected bool ShowMasterFooter
+        {
+            get
+            {
+                return !Page.AppRelativeVirtualPath.EndsWith("/onyx_home.aspx", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+        }
+
+        protected void btnCustomerLogout_Click(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Session.Abandon();
+            Response.Redirect("~/auth_page/onyx_login.aspx", true);
+        }
+    }
+}

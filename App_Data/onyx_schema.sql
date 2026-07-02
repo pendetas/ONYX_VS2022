@@ -31,20 +31,62 @@ CREATE TABLE product_variants (
   variant_price NUMERIC(10,2) NOT NULL,
   stock_qty INTEGER NOT NULL,
   image_url TEXT,
-  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  CONSTRAINT ux_product_variants_product_variant
+    UNIQUE (product_id, product_variant_id)
+);
+
+CREATE TABLE cart (
+  cart_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  product_id BIGINT NOT NULL,
+  product_variant_id BIGINT,
+  variant_key BIGINT GENERATED ALWAYS AS (COALESCE(product_variant_id, 0)) STORED,
+  quantity INTEGER NOT NULL CHECK (quantity > 0),
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP NOT NULL DEFAULT now(),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id) ON DELETE CASCADE,
+  UNIQUE (user_id, product_id, variant_key)
 );
 
 CREATE TABLE orders (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id BIGINT NOT NULL,
-  status VARCHAR(30) NOT NULL DEFAULT 'pending',
+  status VARCHAR(30) NOT NULL DEFAULT 'pending_payment',
   total_amount NUMERIC(10,2) NOT NULL DEFAULT 0.00,
   shipping_address TEXT NOT NULL,
+  delivery_method VARCHAR(50),
+  checkout_attempt_token TEXT,
+  payment_cancel_token_hash TEXT,
+  stripe_checkout_session_id TEXT,
+  stripe_payment_intent_id TEXT,
+  payment_method VARCHAR(100),
+  payment_expires_at TIMESTAMPTZ,
+  paid_at TIMESTAMPTZ,
   receipt_s3_key TEXT,
   ordered_at TIMESTAMP NOT NULL DEFAULT now(),
   status_updated_at TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE UNIQUE INDEX ux_orders_stripe_checkout_session
+  ON orders (stripe_checkout_session_id)
+  WHERE stripe_checkout_session_id IS NOT NULL;
+
+CREATE UNIQUE INDEX ux_orders_active_checkout_attempt
+  ON orders (checkout_attempt_token)
+  WHERE checkout_attempt_token IS NOT NULL
+    AND status = 'pending_payment';
+
+CREATE UNIQUE INDEX ux_orders_payment_cancel_token_hash
+  ON orders (payment_cancel_token_hash)
+  WHERE payment_cancel_token_hash IS NOT NULL;
+
+CREATE UNIQUE INDEX ux_orders_stripe_payment_intent
+  ON orders (stripe_payment_intent_id)
+  WHERE stripe_payment_intent_id IS NOT NULL;
 
 CREATE TABLE order_items (
   order_item_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -57,6 +99,34 @@ CREATE TABLE order_items (
   FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
   FOREIGN KEY (product_id) REFERENCES products(id),
   FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
+);
+
+CREATE TABLE stock_reservations (
+  reservation_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  order_id BIGINT NOT NULL,
+  product_id BIGINT NOT NULL,
+  product_variant_id BIGINT,
+  variant_key BIGINT GENERATED ALWAYS AS (COALESCE(product_variant_id, 0)) STORED,
+  quantity INTEGER NOT NULL CHECK (quantity > 0),
+  status VARCHAR(20) NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'completed', 'released')),
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id),
+  CONSTRAINT fk_stock_reservations_product_variant
+    FOREIGN KEY (product_id, product_variant_id)
+    REFERENCES product_variants(product_id, product_variant_id),
+  UNIQUE (order_id, product_id, variant_key)
+);
+
+CREATE INDEX ix_stock_reservations_availability
+  ON stock_reservations (product_id, variant_key, status, expires_at);
+
+CREATE TABLE stripe_events (
+  stripe_event_id TEXT PRIMARY KEY,
+  event_type VARCHAR(100) NOT NULL,
+  processed_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE reviews (
@@ -83,7 +153,7 @@ CREATE TABLE wishlists (
 
 INSERT INTO users (fullname, username, email, password_hash, role)
 VALUES ('Admin', 'admin', 'admin@onyx.com',
-'$2a$11$rBnqKvmZLDzQr9G1dXQpxeKzO8NqNUh6V0Z3fMqOvKpBHV8Q7YPNG', 'admin');
+'$2a$11$FYR4Rhbh92HnhCgO7qLhqesjfb.BJwLu.ZpwRVqEh4T4b/kyv.QAy', 'admin');
 
 INSERT INTO products (name, brand, category, price, stock_qty, description)
 VALUES
