@@ -227,9 +227,42 @@ namespace ONYX_DDAC.Services
                 {
                     return value;
                 }
+
+                value = Environment.GetEnvironmentVariable(key) ??
+                        Environment.GetEnvironmentVariable(ToEnvironmentKey(key));
+
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    value = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.User) ??
+                            Environment.GetEnvironmentVariable(ToEnvironmentKey(key), EnvironmentVariableTarget.User);
+                }
+
+                if (!string.IsNullOrWhiteSpace(value) &&
+                    value.IndexOf("REPLACE_", StringComparison.OrdinalIgnoreCase) < 0)
+                {
+                    return value;
+                }
             }
 
             return null;
+        }
+
+        private static string ToEnvironmentKey(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                return key;
+
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+            for (int i = 0; i < key.Length; i++)
+            {
+                char c = key[i];
+                if (i > 0 && char.IsUpper(c) && char.IsLower(key[i - 1]))
+                    builder.Append('_');
+
+                builder.Append(char.ToUpperInvariant(c));
+            }
+
+            return builder.ToString();
         }
     }
 }
