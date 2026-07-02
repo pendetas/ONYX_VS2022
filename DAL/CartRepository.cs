@@ -238,6 +238,30 @@ namespace ONYX_DDAC.DAL
             }
         }
 
+        internal static void RestoreCartItems(
+            DbConnection conn,
+            DbTransaction tx,
+            long userId,
+            long orderId)
+        {
+            using (DbCommand cmd = conn.CreateCommand())
+            {
+                cmd.Transaction = tx;
+                cmd.CommandText = @"
+                    INSERT INTO cart (user_id, product_id, product_variant_id, quantity)
+                    SELECT @UserId, product_id, product_variant_id, quantity
+                    FROM order_items
+                    WHERE order_id = @OrderId
+                    ON CONFLICT (user_id, product_id, variant_key)
+                    DO UPDATE SET
+                        quantity = cart.quantity + EXCLUDED.quantity,
+                        updated_at = now()";
+                cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+                cmd.Parameters.Add(new NpgsqlParameter("@OrderId", orderId));
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         internal static void LockUserCart(DbConnection conn, DbTransaction tx, long userId)
         {
             using (DbCommand cmd = conn.CreateCommand())

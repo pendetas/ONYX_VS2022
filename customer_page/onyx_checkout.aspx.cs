@@ -86,6 +86,7 @@ namespace ONYX_DDAC.customer_page
                     CheckoutAttemptToken,
                     applicationBaseUrl);
 
+                new CartService().RefreshCurrentUserCartFromDatabase();
                 Response.Redirect(result.CheckoutUrl, false);
                 Context.ApplicationInstance.CompleteRequest();
             }

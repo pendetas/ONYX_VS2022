@@ -117,6 +117,8 @@ namespace ONYX_DDAC.DAL
                             InsertReservation(conn, tx, orderId, item, expiresAt);
                         }
 
+                        RemoveCheckedOutCartItems(conn, tx, userId, items);
+
                         tx.Commit();
                         return new Order
                         {
@@ -455,6 +457,7 @@ namespace ONYX_DDAC.DAL
                     {
                         LockUserCheckout(conn, tx, userId);
                         LockPendingOrderForCancellation(conn, tx, orderId, userId);
+                        CartRepository.RestoreCartItems(conn, tx, userId, orderId);
 
                         using (DbCommand release = conn.CreateCommand())
                         {
@@ -755,6 +758,24 @@ namespace ONYX_DDAC.DAL
                 cmd.Parameters.Add(new NpgsqlParameter("@ActiveStatus", StockReservation.Active));
                 cmd.Parameters.Add(new NpgsqlParameter("@ExpiresAt", expiresAt));
                 cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void RemoveCheckedOutCartItems(
+            DbConnection conn,
+            DbTransaction tx,
+            long userId,
+            IEnumerable<CheckoutItem> items)
+        {
+            foreach (CheckoutItem item in items)
+            {
+                CartRepository.DecrementPurchasedQuantity(
+                    conn,
+                    tx,
+                    userId,
+                    item.ProductId,
+                    item.VariantId,
+                    item.Quantity);
             }
         }
 

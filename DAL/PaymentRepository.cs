@@ -101,7 +101,6 @@ namespace ONYX_DDAC.DAL
 
                         CompleteReservations(conn, tx, order.OrderId, reservations.Count);
                         MarkOrderPaid(conn, tx, order.OrderId, payment);
-                        DecrementPurchasedCartQuantities(conn, tx, order.UserId, reservations);
 
                         tx.Commit();
                         return new PaymentReconciliationResult
@@ -149,6 +148,8 @@ namespace ONYX_DDAC.DAL
                         {
                             throw new InvalidOperationException("The order cannot be cancelled from its current state.");
                         }
+
+                        CartRepository.RestoreCartItems(conn, tx, order.UserId, order.OrderId);
 
                         using (DbCommand release = conn.CreateCommand())
                         {
@@ -438,24 +439,6 @@ namespace ONYX_DDAC.DAL
                 {
                     throw new InvalidOperationException("The pending order could not be marked paid.");
                 }
-            }
-        }
-
-        private static void DecrementPurchasedCartQuantities(
-            DbConnection conn,
-            DbTransaction tx,
-            long userId,
-            IList<LockedReservation> reservations)
-        {
-            foreach (LockedReservation reservation in reservations)
-            {
-                CartRepository.DecrementPurchasedQuantity(
-                    conn,
-                    tx,
-                    userId,
-                    reservation.ProductId,
-                    reservation.ProductVariantId,
-                    reservation.Quantity);
             }
         }
 

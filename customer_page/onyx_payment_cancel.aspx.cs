@@ -47,6 +47,7 @@ namespace ONYX_DDAC.customer_page
                     new PaymentCompletionService().ReconcileForUser(order.StripeCheckoutSessionId, userId);
                 if (string.Equals(result.OrderStatus, OrderStatuses.Cancelled, StringComparison.OrdinalIgnoreCase))
                 {
+                    new CartService().RefreshCurrentUserCartFromDatabase();
                     RedirectTo("~/customer_page/onyx_checkout.aspx?payment=cancelled");
                     return;
                 }

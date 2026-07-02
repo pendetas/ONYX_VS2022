@@ -92,7 +92,11 @@ namespace ONYX_DDAC.customer_page
                     {
                         continuePaymentUrls[order.Id] = result.CheckoutUrl;
                     }
-                    else if (result.IsPaid)
+                    else if (result.IsPaid ||
+                        string.Equals(
+                            result.OrderStatus,
+                            OrderStatuses.Cancelled,
+                            StringComparison.OrdinalIgnoreCase))
                     {
                         cartChanged = true;
                     }
