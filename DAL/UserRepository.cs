@@ -829,7 +829,62 @@ namespace ONYX_DDAC.DAL
 
         private string GetConnectionString(string connectionName = "DefaultConnection")
         {
+            string host = GetEnvironmentValue("ONYX_DB_HOST");
+            string portValue = GetEnvironmentValue("ONYX_DB_PORT");
+            string database = GetEnvironmentValue("ONYX_DB_NAME");
+            string username = GetEnvironmentValue("ONYX_DB_USER");
+            string password = GetEnvironmentValue("ONYX_DB_PASSWORD");
+
+            bool hasAnyRdsSetting =
+                !string.IsNullOrWhiteSpace(host) ||
+                !string.IsNullOrWhiteSpace(portValue) ||
+                !string.IsNullOrWhiteSpace(database) ||
+                !string.IsNullOrWhiteSpace(username) ||
+                !string.IsNullOrWhiteSpace(password);
+
+            if (hasAnyRdsSetting)
+            {
+                if (string.IsNullOrWhiteSpace(host) ||
+                    string.IsNullOrWhiteSpace(portValue) ||
+                    string.IsNullOrWhiteSpace(database) ||
+                    string.IsNullOrWhiteSpace(username) ||
+                    string.IsNullOrWhiteSpace(password))
+                {
+                    throw new ConfigurationErrorsException(
+                        "RDS database configuration is incomplete. Check ONYX_DB_HOST, ONYX_DB_PORT, ONYX_DB_NAME, ONYX_DB_USER, and ONYX_DB_PASSWORD.");
+                }
+
+                int port;
+                if (!int.TryParse(portValue, out port) || port < 1 || port > 65535)
+                    throw new ConfigurationErrorsException("ONYX_DB_PORT must be a valid TCP port number.");
+
+                return new NpgsqlConnectionStringBuilder
+                {
+                    Host = host,
+                    Port = port,
+                    Database = database,
+                    Username = username,
+                    Password = password,
+                    SslMode = SslMode.Require,
+                    TrustServerCertificate = true,
+                    Pooling = true,
+                    MinPoolSize = 1,
+                    MaxPoolSize = 100,
+                    KeepAlive = 30
+                }.ConnectionString;
+            }
+
             return ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
+        }
+
+        private static string GetEnvironmentValue(string variableName)
+        {
+            string value = Environment.GetEnvironmentVariable(variableName);
+
+            if (string.IsNullOrWhiteSpace(value))
+                value = Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User);
+
+            return value;
         }
     }
 }
