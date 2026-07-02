@@ -10,12 +10,13 @@ namespace ONYX_DDAC.auth_page
     public partial class onyx_login : Page
     {
         private readonly AuthService authService = new AuthService();
+        private readonly OAuthService oauthService = new OAuthService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["UserId"] != null)
             {
-                Response.Redirect("~/customer_page/onyx_catalog.aspx");
+                Response.Redirect("~/customer_page/onyx_home.aspx");
                 return;
             }
 
@@ -23,6 +24,8 @@ namespace ONYX_DDAC.auth_page
             {
                 ShowMessage("Registration successful. You can now sign in.", true);
             }
+
+            ShowOAuthMessage();
         }
 
         protected void LoginButton_Click(object sender, EventArgs e)
@@ -84,6 +87,96 @@ namespace ONYX_DDAC.auth_page
         {
             MessagePanel.Visible = true;
             MessageLiteral.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#c0c0c0" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
+        }
+
+        protected void GoogleLoginButton_Click(object sender, EventArgs e)
+        {
+            StartOAuth("google");
+        }
+
+        protected void DiscordLoginButton_Click(object sender, EventArgs e)
+        {
+            StartOAuth("discord");
+        }
+
+        protected void XLoginButton_Click(object sender, EventArgs e)
+        {
+            StartOAuth("x");
+        }
+
+        private void StartOAuth(string provider)
+        {
+            try
+            {
+                provider = OAuthProviderRegistry.NormalizeProvider(provider);
+                OAuthProviderOptions options = OAuthProviderRegistry.GetRequired(provider);
+                string state = OAuthService.CreateStateToken();
+                string codeChallenge = null;
+
+                Session[OAuthProviderRegistry.GetStateSessionKey(provider)] = state;
+                Session[OAuthProviderRegistry.GetStateProviderSessionKey(state)] = provider;
+                if (provider == "google")
+                    Session["GoogleOAuthState"] = state;
+
+                if (options.RequiresPkce)
+                {
+                    string codeVerifier = OAuthPkceHelper.CreateVerifier();
+                    Session[OAuthProviderRegistry.GetCodeVerifierSessionKey(provider, state)] = codeVerifier;
+                    codeChallenge = OAuthPkceHelper.CreateChallenge(codeVerifier);
+                }
+
+                string url = oauthService.BuildAuthorizationUrl(
+                    provider,
+                    BuildOAuthRedirectUri(provider),
+                    state,
+                    codeChallenge);
+
+                Response.Redirect(url, false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("OAuth start failed: " + ex);
+                ShowMessage("This sign-in provider is not configured yet.", false);
+            }
+        }
+
+        private string BuildOAuthRedirectUri(string provider)
+        {
+            string callbackPath = provider == "google"
+                ? "~/auth_page/google_callback.aspx"
+                : "~/auth_page/oauth_callback.aspx";
+
+            return Request.Url.GetLeftPart(UriPartial.Authority) +
+                   ResolveUrl(callbackPath);
+        }
+
+        private void ShowOAuthMessage()
+        {
+            string reason = Request.QueryString["oauth"];
+            if (string.IsNullOrWhiteSpace(reason))
+                return;
+
+            if (reason.EndsWith("_database", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowMessage("OAuth reached ONYX, but the database could not create or link the account.", false);
+                return;
+            }
+
+            if (reason.EndsWith("_config", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowMessage("This OAuth provider is not configured yet.", false);
+                return;
+            }
+
+            if (reason.EndsWith("_state", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(reason, "oauth_state", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowMessage("OAuth session expired. Please try again.", false);
+                return;
+            }
+
+            ShowMessage("OAuth sign-in could not be completed. Please try again.", false);
         }
 
         private void RedirectAfterLogin(string url)

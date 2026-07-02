@@ -133,6 +133,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -182,10 +183,14 @@
     <Content Include="admin_page\onyx_admin_products.aspx" />
     <Content Include="admin_page\onyx_admin_product_detail.aspx" />
     <Content Include="App_Data\onyx_schema.sql" />
+    <Content Include="App_Data\20260702_google_oauth.sql" />
+    <Content Include="App_Data\20260702_multi_provider_oauth.sql" />
     <Content Include="App_Data\stripe_checkout_migration.sql" />
+    <Content Include="auth_page\google_callback.aspx" />
     <Content Include="auth_page\onyx_forgotpassword.aspx" />
     <Content Include="auth_page\onyx_login.aspx" />
     <Content Include="auth_page\onyx_register.aspx" />
+    <Content Include="auth_page\oauth_callback.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
@@ -402,6 +407,20 @@
     <Compile Include="auth_page\onyx_register.aspx.designer.cs">
       <DependentUpon>onyx_register.aspx</DependentUpon>
     </Compile>
+    <Compile Include="auth_page\google_callback.aspx.cs">
+      <DependentUpon>google_callback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="auth_page\google_callback.aspx.designer.cs">
+      <DependentUpon>google_callback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="auth_page\oauth_callback.aspx.cs">
+      <DependentUpon>oauth_callback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="auth_page\oauth_callback.aspx.designer.cs">
+      <DependentUpon>oauth_callback.aspx</DependentUpon>
+    </Compile>
     <Compile Include="customer_page\onyx_checkout.aspx.cs">
       <DependentUpon>onyx_checkout.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -477,11 +496,16 @@
     <Compile Include="DAL\WishlistRepository.cs" />
     <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Helpers\CurrencyHelper.cs" />
+    <Compile Include="Helpers\GoogleOAuthAccountHelper.cs" />
+    <Compile Include="Helpers\GoogleOAuthRedirectHelper.cs" />
+    <Compile Include="Helpers\OAuthPkceHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\CatalogQuery.cs" />
     <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\DashboardMetrics.cs" />
+    <Compile Include="Models\GoogleOAuthProfile.cs" />
+    <Compile Include="Models\OAuthProfile.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderItem.cs" />
     <Compile Include="Models\OrderStatuses.cs" />
@@ -559,7 +583,12 @@
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\CartService.cs" />
     <Compile Include="Services\CheckoutService.cs" />
+    <Compile Include="Services\EmailService.cs" />
+    <Compile Include="Services\GoogleOAuthService.cs" />
     <Compile Include="Services\LambdaService.cs" />
+    <Compile Include="Services\OAuthProviderOptions.cs" />
+    <Compile Include="Services\OAuthProviderRegistry.cs" />
+    <Compile Include="Services\OAuthService.cs" />
     <Compile Include="Services\OrderService.cs" />
     <Compile Include="Services\PaymentCancellationTokenService.cs" />
     <Compile Include="Services\ProductService.cs" />

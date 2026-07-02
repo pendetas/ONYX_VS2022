@@ -358,6 +358,192 @@ namespace ONYX_DDAC.DAL
             }
         }
 
+        public User CreateOAuthUser(OAuthProfile profile, string username)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    const string sql = @"
+                        INSERT INTO users (
+                            fullname,
+                            username,
+                            email,
+                            password_hash,
+                            role,
+                            created_at,
+                            auth_provider,
+                            google_sub,
+                            google_email_verified,
+                            avatar_url,
+                            last_login_at)
+                        VALUES (
+                            @FullName,
+                            @Username,
+                            @Email,
+                            NULL,
+                            'customer',
+                            @CreatedAt,
+                            @Provider,
+                            @GoogleSub,
+                            @EmailVerified,
+                            @AvatarUrl,
+                            @CreatedAt)
+                        RETURNING id, username, email, password_hash, role, fullname";
+
+                    User user;
+                    using (var cmd = new NpgsqlCommand(sql, conn, tx))
+                    {
+                        DateTime now = DateTime.UtcNow;
+                        string provider = NormalizeOAuthProvider(profile.Provider);
+
+                        cmd.Parameters.AddWithValue("@FullName", profile.FullName);
+                        cmd.Parameters.AddWithValue("@Username", username);
+                        cmd.Parameters.AddWithValue("@Email", profile.Email);
+                        cmd.Parameters.AddWithValue("@CreatedAt", now);
+                        cmd.Parameters.AddWithValue("@Provider", provider);
+                        cmd.Parameters.AddWithValue(
+                            "@GoogleSub",
+                            provider == "google" ? (object)profile.Subject : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@EmailVerified", profile.EmailVerified);
+                        cmd.Parameters.AddWithValue("@AvatarUrl", (object)profile.AvatarUrl ?? DBNull.Value);
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            user = reader.Read() ? ReadAuthUser(reader) : null;
+                        }
+                    }
+
+                    if (user != null)
+                        UpsertOAuthAccount(conn, tx, user.Id, profile);
+
+                    tx.Commit();
+                    return user;
+                }
+            }
+        }
+
+        public User GetUserByOAuthAccount(string provider, string providerUserId)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                const string sql = @"
+                    SELECT u.id, u.username, u.email, u.password_hash, u.role, u.fullname
+                    FROM user_oauth_accounts a
+                    INNER JOIN users u ON u.id = a.user_id
+                    WHERE LOWER(a.provider) = @Provider
+                      AND a.provider_user_id = @ProviderUserId
+                    LIMIT 1";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Provider", NormalizeOAuthProvider(provider));
+                    cmd.Parameters.AddWithValue("@ProviderUserId", providerUserId);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        return reader.Read() ? ReadAuthUser(reader) : null;
+                    }
+                }
+            }
+        }
+
+        public User GetUserByGoogleSub(string googleSub)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                const string sql = @"
+                    SELECT id, username, email, password_hash, role, fullname
+                    FROM users
+                    WHERE google_sub = @GoogleSub
+                    LIMIT 1";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@GoogleSub", googleSub);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        return reader.Read() ? ReadAuthUser(reader) : null;
+                    }
+                }
+            }
+        }
+
+        public void LinkOAuthAccount(long userId, OAuthProfile profile)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    string provider = NormalizeOAuthProvider(profile.Provider);
+                    const string sql = @"
+                        UPDATE users
+                        SET auth_provider = CASE
+                                WHEN auth_provider = 'local' THEN 'local_oauth'
+                                WHEN auth_provider IS NULL THEN @Provider
+                                ELSE auth_provider
+                            END,
+                            google_sub = CASE
+                                WHEN @Provider = 'google' THEN @ProviderUserId
+                                ELSE google_sub
+                            END,
+                            google_email_verified = CASE
+                                WHEN @Provider = 'google' THEN @EmailVerified
+                                ELSE google_email_verified
+                            END,
+                            avatar_url = COALESCE(@AvatarUrl, avatar_url),
+                            last_login_at = @LastLoginAt
+                        WHERE id = @Id";
+
+                    using (var cmd = new NpgsqlCommand(sql, conn, tx))
+                    {
+                        cmd.Parameters.AddWithValue("@Provider", provider);
+                        cmd.Parameters.AddWithValue("@ProviderUserId", profile.Subject);
+                        cmd.Parameters.AddWithValue("@EmailVerified", profile.EmailVerified);
+                        cmd.Parameters.AddWithValue("@AvatarUrl", (object)profile.AvatarUrl ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@LastLoginAt", DateTime.UtcNow);
+                        cmd.Parameters.AddWithValue("@Id", userId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    UpsertOAuthAccount(conn, tx, userId, profile);
+                    tx.Commit();
+                }
+            }
+        }
+
+        public void TouchLastLogin(long userId)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(
+                    "UPDATE users SET last_login_at = @LastLoginAt WHERE id = @Id", conn))
+                {
+                    cmd.Parameters.AddWithValue("@LastLoginAt", DateTime.UtcNow);
+                    cmd.Parameters.AddWithValue("@Id", userId);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public bool UsernameExists(string username)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                const string sql = "SELECT COUNT(*) FROM users WHERE LOWER(username) = @Username";
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Username", (username ?? string.Empty).Trim().ToLowerInvariant());
+                    return (long)cmd.ExecuteScalar() > 0;
+                }
+            }
+        }
+
         public string CheckDuplicate(string username, string email)
         {
             using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
@@ -391,7 +577,7 @@ namespace ONYX_DDAC.DAL
             using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
             {
                 conn.Open();
-                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE email = @Email";
+                string sql = "SELECT id, username, email, password_hash, role, fullname FROM users WHERE LOWER(email) = LOWER(@Email)";
 
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
@@ -406,8 +592,9 @@ namespace ONYX_DDAC.DAL
                                 Id           = reader.GetInt64(0),
                                 Username     = reader.GetString(1),
                                 Email        = reader.GetString(2),
-                                PasswordHash = reader.GetString(3),
-                                Role         = reader.GetString(4)
+                                PasswordHash = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                Role         = reader.GetString(4),
+                                FullName     = reader.IsDBNull(5) ? null : reader.GetString(5)
                             };
                         }
                     }
@@ -484,7 +671,7 @@ namespace ONYX_DDAC.DAL
                                 Id = reader.GetInt64(0),
                                 Username = reader.GetString(1),
                                 Email = reader.GetString(2),
-                                PasswordHash = reader.GetString(3),
+                                PasswordHash = reader.IsDBNull(3) ? null : reader.GetString(3),
                                 Role = reader.GetString(4)
                             };
                         }
@@ -566,6 +753,78 @@ namespace ONYX_DDAC.DAL
             string[] parts = fullName.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length == 1) return parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper();
             return (parts[0][0].ToString() + parts[parts.Length - 1][0].ToString()).ToUpper();
+        }
+
+        private static void UpsertOAuthAccount(
+            NpgsqlConnection conn,
+            NpgsqlTransaction tx,
+            long userId,
+            OAuthProfile profile)
+        {
+            string provider = NormalizeOAuthProvider(profile.Provider);
+            const string sql = @"
+                INSERT INTO user_oauth_accounts (
+                    user_id,
+                    provider,
+                    provider_user_id,
+                    email,
+                    email_verified,
+                    display_name,
+                    avatar_url,
+                    created_at,
+                    last_login_at)
+                VALUES (
+                    @UserId,
+                    @Provider,
+                    @ProviderUserId,
+                    @Email,
+                    @EmailVerified,
+                    @DisplayName,
+                    @AvatarUrl,
+                    @Now,
+                    @Now)
+                ON CONFLICT (provider, provider_user_id)
+                DO UPDATE SET
+                    user_id = EXCLUDED.user_id,
+                    email = EXCLUDED.email,
+                    email_verified = EXCLUDED.email_verified,
+                    display_name = EXCLUDED.display_name,
+                    avatar_url = COALESCE(EXCLUDED.avatar_url, user_oauth_accounts.avatar_url),
+                    last_login_at = EXCLUDED.last_login_at";
+
+            using (var cmd = new NpgsqlCommand(sql, conn, tx))
+            {
+                cmd.Parameters.AddWithValue("@UserId", userId);
+                cmd.Parameters.AddWithValue("@Provider", provider);
+                cmd.Parameters.AddWithValue("@ProviderUserId", profile.Subject);
+                cmd.Parameters.AddWithValue("@Email", (object)profile.Email ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@EmailVerified", profile.EmailVerified);
+                cmd.Parameters.AddWithValue("@DisplayName", (object)profile.FullName ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@AvatarUrl", (object)profile.AvatarUrl ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Now", DateTime.UtcNow);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static User ReadAuthUser(IDataRecord reader)
+        {
+            return new User
+            {
+                Id = reader.GetInt64(0),
+                Username = reader.GetString(1),
+                Email = reader.GetString(2),
+                PasswordHash = reader.IsDBNull(3) ? null : reader.GetString(3),
+                Role = reader.GetString(4),
+                FullName = reader.FieldCount > 5 && !reader.IsDBNull(5) ? reader.GetString(5) : null
+            };
+        }
+
+        private static string NormalizeOAuthProvider(string provider)
+        {
+            if (string.IsNullOrWhiteSpace(provider))
+                throw new InvalidOperationException("OAuth provider is required.");
+
+            return provider.Trim().ToLowerInvariant();
         }
 
         private string GetConnectionString(string connectionName = "DefaultConnection")

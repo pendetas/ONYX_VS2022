@@ -24,6 +24,21 @@ namespace ONYX_DDAC.auth_page
         protected global::System.Web.UI.WebControls.Label lblMessage;
 
         /// <summary>
+        /// GoogleRegisterButton control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton GoogleRegisterButton;
+
+        /// <summary>
+        /// DiscordRegisterButton control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton DiscordRegisterButton;
+
+        /// <summary>
+        /// XRegisterButton control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton XRegisterButton;
+
+        /// <summary>
         /// txtFullName control.
         /// </summary>
         /// <remarks>

@@ -1,5 +1,6 @@
 using System;
 using System.Web.UI;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.auth_page
@@ -7,12 +8,13 @@ namespace ONYX_DDAC.auth_page
     public partial class onyx_register : System.Web.UI.Page
     {
         private readonly AuthService _authService = new AuthService();
+        private readonly OAuthService _oauthService = new OAuthService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["UserId"] != null)
             {
-                Response.Redirect("~/customer_page/onyx_catalog.aspx");
+                Response.Redirect("~/customer_page/onyx_home.aspx");
             }
         }
 
@@ -65,6 +67,68 @@ namespace ONYX_DDAC.auth_page
         {
             lblMessage.Text = $"<span class=\"auth-alert\" style=\"color: {(isSuccess ? "#c0c0c0" : "#ff4444")};\">{Server.HtmlEncode(message)}</span>";
             lblMessage.Visible = true;
+        }
+
+        protected void GoogleRegisterButton_Click(object sender, EventArgs e)
+        {
+            StartOAuth("google");
+        }
+
+        protected void DiscordRegisterButton_Click(object sender, EventArgs e)
+        {
+            StartOAuth("discord");
+        }
+
+        protected void XRegisterButton_Click(object sender, EventArgs e)
+        {
+            StartOAuth("x");
+        }
+
+        private void StartOAuth(string provider)
+        {
+            try
+            {
+                provider = OAuthProviderRegistry.NormalizeProvider(provider);
+                OAuthProviderOptions options = OAuthProviderRegistry.GetRequired(provider);
+                string state = OAuthService.CreateStateToken();
+                string codeChallenge = null;
+
+                Session[OAuthProviderRegistry.GetStateSessionKey(provider)] = state;
+                Session[OAuthProviderRegistry.GetStateProviderSessionKey(state)] = provider;
+                if (provider == "google")
+                    Session["GoogleOAuthState"] = state;
+
+                if (options.RequiresPkce)
+                {
+                    string codeVerifier = OAuthPkceHelper.CreateVerifier();
+                    Session[OAuthProviderRegistry.GetCodeVerifierSessionKey(provider, state)] = codeVerifier;
+                    codeChallenge = OAuthPkceHelper.CreateChallenge(codeVerifier);
+                }
+
+                string url = _oauthService.BuildAuthorizationUrl(
+                    provider,
+                    BuildOAuthRedirectUri(provider),
+                    state,
+                    codeChallenge);
+
+                Response.Redirect(url, false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("OAuth signup start failed: " + ex);
+                ShowMessage("This sign-up provider is not configured yet.", false);
+            }
+        }
+
+        private string BuildOAuthRedirectUri(string provider)
+        {
+            string callbackPath = provider == "google"
+                ? "~/auth_page/google_callback.aspx"
+                : "~/auth_page/oauth_callback.aspx";
+
+            return Request.Url.GetLeftPart(UriPartial.Authority) +
+                   ResolveUrl(callbackPath);
         }
     }
 }

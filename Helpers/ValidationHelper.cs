@@ -12,6 +12,13 @@ namespace ONYX_DDAC.Helpers
             return !string.IsNullOrWhiteSpace(email) && EmailPattern.IsMatch(email);
         }
 
+        public static string NormalizeIdentifier(string value)
+        {
+            return string.IsNullOrWhiteSpace(value)
+                ? null
+                : value.Trim().ToLowerInvariant();
+        }
+
         public static bool IsValidPositiveQuantity(int quantity)
         {
             return quantity > 0 && quantity <= 99;

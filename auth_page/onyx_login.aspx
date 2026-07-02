@@ -1,4 +1,4 @@
-<%@ Page Title="Login" Language="C#" MasterPageFile="~/customer_page/onyx_layout.Master" AutoEventWireup="true" CodeBehind="onyx_login.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_login" %>
+<%@ Page Title="Login" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_login.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_login" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -262,6 +262,83 @@
             margin-bottom: 20px;
             display: block;
         }
+
+        .oauth-entry {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: -20px;
+            margin-bottom: 34px;
+        }
+
+        .social-row {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .social-button {
+            width: 60px;
+            height: 48px;
+            border: 1px solid #2f2f2f;
+            background: linear-gradient(180deg, #0f0f0f 0%, #050505 100%);
+            color: #f5f5f5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 18px 36px rgba(0,0,0,0.26);
+            transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .social-button:hover {
+            background: #ffffff;
+            color: #111;
+            transform: translateY(-2px);
+            border-color: #ffffff;
+            box-shadow: 0 20px 44px rgba(255,255,255,0.12);
+        }
+
+        .social-button.discord:hover {
+            background: #5865f2;
+            border-color: #5865f2;
+            color: #fff;
+        }
+
+        .social-icon {
+            width: 22px;
+            height: 22px;
+            flex: 0 0 22px;
+            display: block;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .oauth-divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .oauth-divider::before,
+        .oauth-divider::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: #2a2a2a;
+        }
     </style>
 
     <div class="auth-takeover">
@@ -289,6 +366,33 @@
                     <asp:Panel ID="MessagePanel" runat="server" Visible="false">
                         <asp:Literal ID="MessageLiteral" runat="server" />
                     </asp:Panel>
+
+                    <div class="oauth-entry">
+                        <div class="social-row">
+                            <asp:LinkButton ID="GoogleLoginButton" runat="server" CssClass="social-button google" CausesValidation="false" ToolTip="Continue with Google" OnClick="GoogleLoginButton_Click">
+                                <svg class="social-icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/>
+                                    <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/>
+                                    <path fill="#FBBC05" d="M3.97 10.72A5.41 5.41 0 0 1 3.69 9c0-.6.1-1.18.28-1.72V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.05l3.01-2.33z"/>
+                                    <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.43 1.35l2.59-2.59A8.65 8.65 0 0 0 9 0 9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/>
+                                </svg>
+                                <span class="sr-only">Continue with Google</span>
+                            </asp:LinkButton>
+                            <asp:LinkButton ID="DiscordLoginButton" runat="server" CssClass="social-button discord" CausesValidation="false" ToolTip="Continue with Discord" OnClick="DiscordLoginButton_Click">
+                                <svg class="social-icon" viewBox="0 0 127.14 96.36" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2.03a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2.03a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69c-6.26 0-11.4-5.75-11.4-12.81s5.04-12.82 11.4-12.82c6.4 0 11.51 5.8 11.4 12.82 0 7.06-5.04 12.81-11.4 12.81Zm42.24 0c-6.26 0-11.4-5.75-11.4-12.81s5.04-12.82 11.4-12.82c6.4 0 11.51 5.8 11.4 12.82 0 7.06-5.01 12.81-11.4 12.81Z"/>
+                                </svg>
+                                <span class="sr-only">Continue with Discord</span>
+                            </asp:LinkButton>
+                            <asp:LinkButton ID="XLoginButton" runat="server" CssClass="social-button x" CausesValidation="false" ToolTip="Continue with X" OnClick="XLoginButton_Click">
+                                <svg class="social-icon" viewBox="0 0 1200 1227" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="currentColor" d="M714.16 519.28 1160.89 0h-105.86L667.14 450.89 357.33 0H0l468.49 681.82L0 1226.37h105.87l409.63-476.15 327.18 476.15H1200L714.13 519.28h.03ZM569.16 687.82l-47.48-67.89L144.01 79.7h162.6l304.87 436.01 47.47 67.89 396.12 566.99H892.48L569.16 687.85v-.03Z"/>
+                                </svg>
+                                <span class="sr-only">Continue with X</span>
+                            </asp:LinkButton>
+                        </div>
+                        <div class="oauth-divider">or sign in manually</div>
+                    </div>
 
                     <div class="auth-form-grid">
                         <div class="auth-field">

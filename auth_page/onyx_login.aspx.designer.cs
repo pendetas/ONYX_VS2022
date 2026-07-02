@@ -33,6 +33,21 @@ namespace ONYX_DDAC.auth_page
         protected global::System.Web.UI.WebControls.Literal MessageLiteral;
 
         /// <summary>
+        /// GoogleLoginButton control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton GoogleLoginButton;
+
+        /// <summary>
+        /// DiscordLoginButton control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton DiscordLoginButton;
+
+        /// <summary>
+        /// XLoginButton control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton XLoginButton;
+
+        /// <summary>
         /// EmailTextBox control.
         /// </summary>
         /// <remarks>
