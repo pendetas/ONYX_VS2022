@@ -30,15 +30,18 @@ namespace ONYX_DDAC.auth_page
         {
             string actualState = Request.QueryString["state"];
             string provider = GetProviderFromState(actualState);
+            string mode = GetModeFromState(actualState);
 
             if (!string.IsNullOrWhiteSpace(Request.QueryString["error"]))
             {
+                RemoveModeFromState(actualState);
                 RedirectToLogin(BuildReason(provider, "error"));
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(provider) || !IsExpectedState(provider, actualState))
             {
+                RemoveModeFromState(actualState);
                 RedirectToLogin("oauth_state");
                 return;
             }
@@ -46,6 +49,7 @@ namespace ONYX_DDAC.auth_page
             try
             {
                 string codeVerifier = GetCodeVerifier(provider, actualState);
+                RemoveModeFromState(actualState);
                 OAuthProfile profile = await _oauthService.ExchangeCodeForProfileAsync(
                     provider,
                     Request.QueryString["code"],
@@ -53,7 +57,22 @@ namespace ONYX_DDAC.auth_page
                     codeVerifier);
 
                 bool created;
-                User user = _authService.LoginOrCreateOAuthUser(profile, out created);
+                User user;
+                if (string.Equals(mode, "register", StringComparison.OrdinalIgnoreCase))
+                {
+                    user = _authService.LoginOrCreateOAuthUser(profile, out created);
+                }
+                else
+                {
+                    created = false;
+                    user = _authService.LoginExistingOAuthUser(profile);
+                    if (user == null)
+                    {
+                        RedirectToLogin(BuildReason(provider, "not_registered"));
+                        return;
+                    }
+                }
+
                 if (created)
                 {
                     OAuthProviderOptions options = OAuthProviderRegistry.GetRequired(profile.Provider);
@@ -82,6 +101,20 @@ namespace ONYX_DDAC.auth_page
                 return null;
 
             return Session[OAuthProviderRegistry.GetStateProviderSessionKey(state)] as string;
+        }
+
+        private string GetModeFromState(string state)
+        {
+            if (string.IsNullOrWhiteSpace(state))
+                return null;
+
+            return Session[OAuthProviderRegistry.GetStateModeSessionKey(state)] as string;
+        }
+
+        private void RemoveModeFromState(string state)
+        {
+            if (!string.IsNullOrWhiteSpace(state))
+                Session.Remove(OAuthProviderRegistry.GetStateModeSessionKey(state));
         }
 
         private bool IsExpectedState(string provider, string actualState)
@@ -151,6 +184,7 @@ namespace ONYX_DDAC.auth_page
                 message.IndexOf("OAuth", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 message.IndexOf("Google", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 message.IndexOf("Discord", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                message.IndexOf("Facebook", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 message.IndexOf("X", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 message.IndexOf("PKCE", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 message.IndexOf("audience", StringComparison.OrdinalIgnoreCase) >= 0 ||

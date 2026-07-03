@@ -41,7 +41,10 @@ namespace ONYX_DDAC.auth_page
 
             string expectedState = Session[StateSessionKey] as string;
             string actualState = Request.QueryString["state"];
+            string mode = Session[OAuthProviderRegistry.GetStateModeSessionKey(actualState)] as string;
             Session.Remove(StateSessionKey);
+            if (!string.IsNullOrWhiteSpace(actualState))
+                Session.Remove(OAuthProviderRegistry.GetStateModeSessionKey(actualState));
 
             if (string.IsNullOrWhiteSpace(expectedState) ||
                 !string.Equals(expectedState, actualState, StringComparison.Ordinal))
@@ -60,7 +63,23 @@ namespace ONYX_DDAC.auth_page
 
                 WriteOAuthFlowLog("profile_received email=" + profile.Email);
                 bool created;
-                User user = _authService.LoginOrCreateOAuthUser(profile, out created);
+                User user;
+                if (string.Equals(mode, "register", StringComparison.OrdinalIgnoreCase))
+                {
+                    user = _authService.LoginOrCreateOAuthUser(profile, out created);
+                }
+                else
+                {
+                    created = false;
+                    user = _authService.LoginExistingOAuthUser(profile);
+                    if (user == null)
+                    {
+                        WriteOAuthFlowLog("login_rejected_no_account email=" + profile.Email);
+                        RedirectToLogin("google_not_registered");
+                        return;
+                    }
+                }
+
                 WriteOAuthFlowLog(
                     "account_ready userId=" + user.Id +
                     " created=" + created +

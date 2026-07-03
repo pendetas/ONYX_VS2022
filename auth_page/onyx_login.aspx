@@ -1,4 +1,4 @@
-<%@ Page Title="Login" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_login.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_login" %>
+<%@ Page Title="Login" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" Async="true" CodeBehind="onyx_login.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_login" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -315,7 +315,7 @@
 
         .social-button.google { animation-delay: 0.16s; }
         .social-button.discord { animation-delay: 0.24s; }
-        .social-button.x { animation-delay: 0.32s; }
+        .social-button.facebook { animation-delay: 0.32s; }
 
         .social-button:hover {
             background: #ffffff;
@@ -365,6 +365,18 @@
             height: 1px;
             flex: 1;
             background: rgba(255,255,255,0.12);
+        }
+
+        .captcha-wrapper {
+            margin-top: 28px;
+            min-height: 65px;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .cta.captcha-pending {
+            opacity: 0.45;
+            cursor: not-allowed;
         }
 
         @keyframes oauthEnter {
@@ -491,11 +503,11 @@
                                 </svg>
                                 <span class="sr-only">Continue with Discord</span>
                             </asp:LinkButton>
-                            <asp:LinkButton ID="XLoginButton" runat="server" CssClass="social-button x" CausesValidation="false" ToolTip="Continue with X" OnClick="XLoginButton_Click">
-                                <svg class="social-icon" viewBox="0 0 1200 1227" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill="currentColor" d="M714.16 519.28 1160.89 0h-105.86L667.14 450.89 357.33 0H0l468.49 681.82L0 1226.37h105.87l409.63-476.15 327.18 476.15H1200L714.13 519.28h.03ZM569.16 687.82l-47.48-67.89L144.01 79.7h162.6l304.87 436.01 47.47 67.89 396.12 566.99H892.48L569.16 687.85v-.03Z"/>
+                            <asp:LinkButton ID="FacebookLoginButton" runat="server" CssClass="social-button facebook" CausesValidation="false" ToolTip="Continue with Facebook" OnClick="FacebookLoginButton_Click">
+                                <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="currentColor" d="M14.2 8.4H16V5.1c-.3 0-1.5-.1-2.8-.1-2.8 0-4.7 1.7-4.7 4.9V12H5.4v3.7h3.1V24h3.8v-8.3h3.1l.5-3.7h-3.6V10.2c0-1.1.3-1.8 1.9-1.8Z"/>
                                 </svg>
-                                <span class="sr-only">Continue with X</span>
+                                <span class="sr-only">Continue with Facebook</span>
                             </asp:LinkButton>
                         </div>
                         <div class="oauth-divider">or sign in manually</div>
@@ -513,8 +525,17 @@
                         </div>
                     </div>
 
+                    <div class="captcha-wrapper">
+                        <div class="cf-turnstile"
+                             data-sitekey="<%= Server.HtmlEncode(TurnstileSiteKey) %>"
+                             data-theme="dark"
+                             data-callback="onTurnstileSuccess"
+                             data-expired-callback="onTurnstileExpired"
+                             data-error-callback="onTurnstileExpired"></div>
+                    </div>
+
                     <!-- Uiverse "empty-moose-12" LinkButton -->
-                    <asp:LinkButton ID="LoginButton" runat="server" CssClass="cta" OnClick="LoginButton_Click">
+                    <asp:LinkButton ID="LoginButton" runat="server" CssClass="cta captcha-pending" OnClientClick="return ensureCaptchaCompleted();" OnClick="LoginButton_Click">
                         <span class="hover-underline-animation">LOG IN</span>
                         <svg viewBox="0 0 46 16" height="10" width="30" xmlns="http://www.w3.org/2000/svg" id="arrow-horizontal">
                             <path transform="translate(30)" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z" data-name="Path 10" id="Path_10"></path>
@@ -527,8 +548,27 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <script>
+        let captchaCompleted = false;
+
+        function onTurnstileSuccess() {
+            captchaCompleted = true;
+            const button = document.getElementById('<%= LoginButton.ClientID %>');
+            if (button) button.classList.remove('captcha-pending');
+        }
+
+        function onTurnstileExpired() {
+            captchaCompleted = false;
+            const button = document.getElementById('<%= LoginButton.ClientID %>');
+            if (button) button.classList.add('captcha-pending');
+        }
+
+        function ensureCaptchaCompleted() {
+            return captchaCompleted;
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
 
             // 1. Lenis Smooth Scroll Initialization on Right Panel

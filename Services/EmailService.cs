@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 
 namespace ONYX_DDAC.Services
 {
@@ -184,7 +185,7 @@ namespace ONYX_DDAC.Services
             try
             {
                 string basePath = HttpContext.Current == null
-                    ? AppDomain.CurrentDomain.BaseDirectory
+                    ? HostingEnvironment.MapPath("~/App_Data") ?? AppDomain.CurrentDomain.BaseDirectory
                     : HttpContext.Current.Server.MapPath("~/App_Data");
                 Directory.CreateDirectory(basePath);
                 string path = Path.Combine(basePath, "email_debug.log");

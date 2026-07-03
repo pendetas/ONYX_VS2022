@@ -63,6 +63,9 @@ namespace ONYX_DDAC.Services
             if (string.Equals(options.Provider, "discord", StringComparison.OrdinalIgnoreCase))
                 return await ExchangeDiscordCodeAsync(options, code, redirectUri);
 
+            if (string.Equals(options.Provider, "facebook", StringComparison.OrdinalIgnoreCase))
+                return await ExchangeFacebookCodeAsync(options, code, redirectUri);
+
             if (string.Equals(options.Provider, "x", StringComparison.OrdinalIgnoreCase))
                 return await ExchangeXCodeAsync(options, code, redirectUri, codeVerifier);
 
@@ -180,6 +183,68 @@ namespace ONYX_DDAC.Services
                         EmailVerified = verified,
                         FullName = fullName,
                         AvatarUrl = BuildDiscordAvatarUrl(profile)
+                    };
+                }
+            }
+        }
+
+        private static async Task<OAuthProfile> ExchangeFacebookCodeAsync(
+            OAuthProviderOptions options,
+            string code,
+            string redirectUri)
+        {
+            string clientId = GetRequiredSetting(options.ClientIdSettingKey, options.ClientIdEnvironmentKey);
+            string clientSecret = GetRequiredSetting(options.ClientSecretSettingKey, options.ClientSecretEnvironmentKey);
+
+            string tokenUrl = options.TokenEndpoint +
+                "?client_id=" + Uri.EscapeDataString(clientId) +
+                "&redirect_uri=" + Uri.EscapeDataString(redirectUri) +
+                "&client_secret=" + Uri.EscapeDataString(clientSecret) +
+                "&code=" + Uri.EscapeDataString(code);
+
+            string accessToken;
+            using (HttpResponseMessage response = await Http.GetAsync(tokenUrl))
+            {
+                string body = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                    throw new InvalidOperationException("Facebook token exchange failed.");
+
+                JObject tokenJson = JObject.Parse(body);
+                accessToken = (string)tokenJson["access_token"];
+                if (string.IsNullOrWhiteSpace(accessToken))
+                    throw new InvalidOperationException("Facebook did not return an access token.");
+            }
+
+            using (var request = new HttpRequestMessage(HttpMethod.Get, options.UserInfoEndpoint))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                request.Headers.UserAgent.ParseAdd("ONYX-DDAC/1.0");
+
+                using (HttpResponseMessage response = await Http.SendAsync(request))
+                {
+                    string body = await response.Content.ReadAsStringAsync();
+                    if (!response.IsSuccessStatusCode)
+                        throw new InvalidOperationException("Facebook profile request failed.");
+
+                    JObject profile = JObject.Parse(body);
+                    string subject = (string)profile["id"];
+                    string email = (string)profile["email"];
+                    string fullName = (string)profile["name"];
+
+                    if (string.IsNullOrWhiteSpace(subject))
+                        throw new InvalidOperationException("Facebook profile did not include a user id.");
+
+                    if (string.IsNullOrWhiteSpace(email))
+                        throw new InvalidOperationException("Facebook account email is not available.");
+
+                    return new OAuthProfile
+                    {
+                        Provider = options.Provider,
+                        Subject = subject,
+                        Email = email,
+                        EmailVerified = true,
+                        FullName = string.IsNullOrWhiteSpace(fullName) ? email : fullName,
+                        AvatarUrl = (string)profile["picture"]?["data"]?["url"]
                     };
                 }
             }

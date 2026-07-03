@@ -2,6 +2,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Web.UI;
+using Npgsql;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
@@ -64,7 +65,15 @@ namespace ONYX_DDAC.Helpers
             page.Session["Role"] = user.Role;
             FormsAuthentication.SetAuthCookie(user.Email, false);
 
-            new CartService().MergeSessionCartForUser(user.Id, savedCart);
+            try
+            {
+                new CartService().MergeSessionCartForUser(user.Id, savedCart);
+            }
+            catch (PostgresException exception) when (exception.SqlState == PostgresErrorCodes.UndefinedTable)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Authenticated session created, but cart merge was skipped because the cart table is missing.");
+            }
         }
     }
 }

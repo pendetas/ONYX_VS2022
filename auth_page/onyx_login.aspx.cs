@@ -1,5 +1,4 @@
 using System;
-using System.Web.Security;
 using System.Web.UI;
 using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
@@ -11,9 +10,14 @@ namespace ONYX_DDAC.auth_page
     {
         private readonly AuthService authService = new AuthService();
         private readonly OAuthService oauthService = new OAuthService();
+        private readonly CaptchaService captchaService = new CaptchaService();
+
+        protected string TurnstileSiteKey { get; private set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            TurnstileSiteKey = CaptchaService.GetSiteKey();
+
             if (Session["UserId"] != null)
             {
                 Response.Redirect("~/customer_page/onyx_home.aspx");
@@ -28,7 +32,7 @@ namespace ONYX_DDAC.auth_page
             ShowOAuthMessage();
         }
 
-        protected void LoginButton_Click(object sender, EventArgs e)
+        protected async void LoginButton_Click(object sender, EventArgs e)
         {
             string emailOrUser = EmailTextBox.Text.Trim();
             string password = PasswordTextBox.Text;
@@ -36,6 +40,17 @@ namespace ONYX_DDAC.auth_page
             if (string.IsNullOrEmpty(emailOrUser) || string.IsNullOrEmpty(password))
             {
                 ShowMessage("Please enter both email and password.", false);
+                return;
+            }
+
+            string captchaToken = Request.Form["cf-turnstile-response"];
+            bool captchaValid = await captchaService.VerifyCaptchaAsync(
+                captchaToken,
+                Request.UserHostAddress);
+
+            if (!captchaValid)
+            {
+                ShowMessage("Please complete the Cloudflare verification before signing in.", false);
                 return;
             }
 
@@ -50,15 +65,7 @@ namespace ONYX_DDAC.auth_page
                     return;
                 }
 
-                var savedCart = Session["Cart"] as System.Collections.Generic.List<CartItem>;
-
-                
-                Session["UserId"] = user.Id;
-                Session["Username"] = user.Username;
-                Session["Role"] = user.Role;
-                FormsAuthentication.SetAuthCookie(user.Email, false);
-
-                new CartService().MergeSessionCartForUser(user.Id, savedCart);
+                AuthHelper.EstablishAuthenticatedSession(this, user);
 
                 // Auto-detect role and route
                 if (string.Equals(user.Role, "admin", StringComparison.OrdinalIgnoreCase))
@@ -99,9 +106,9 @@ namespace ONYX_DDAC.auth_page
             StartOAuth("discord");
         }
 
-        protected void XLoginButton_Click(object sender, EventArgs e)
+        protected void FacebookLoginButton_Click(object sender, EventArgs e)
         {
-            StartOAuth("x");
+            StartOAuth("facebook");
         }
 
         private void StartOAuth(string provider)
@@ -115,6 +122,7 @@ namespace ONYX_DDAC.auth_page
 
                 Session[OAuthProviderRegistry.GetStateSessionKey(provider)] = state;
                 Session[OAuthProviderRegistry.GetStateProviderSessionKey(state)] = provider;
+                Session[OAuthProviderRegistry.GetStateModeSessionKey(state)] = "login";
                 if (provider == "google")
                     Session["GoogleOAuthState"] = state;
 
@@ -160,6 +168,12 @@ namespace ONYX_DDAC.auth_page
             if (reason.EndsWith("_database", StringComparison.OrdinalIgnoreCase))
             {
                 ShowMessage("OAuth reached ONYX, but the database could not create or link the account.", false);
+                return;
+            }
+
+            if (reason.EndsWith("_not_registered", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowMessage("No account uses this email yet. Please register first, then sign in.", false);
                 return;
             }
 

@@ -9,16 +9,21 @@ namespace ONYX_DDAC.auth_page
     {
         private readonly AuthService _authService = new AuthService();
         private readonly OAuthService _oauthService = new OAuthService();
+        private readonly CaptchaService _captchaService = new CaptchaService();
+
+        protected string TurnstileSiteKey { get; private set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            TurnstileSiteKey = CaptchaService.GetSiteKey();
+
             if (Session["UserId"] != null)
             {
                 Response.Redirect("~/customer_page/onyx_home.aspx");
             }
         }
 
-        protected void btnRegister_Click(object sender, EventArgs e)
+        protected async void btnRegister_Click(object sender, EventArgs e)
         {
             string fullName = txtFullName.Text.Trim();
             string username = txtUsername.Text.Trim();
@@ -47,6 +52,17 @@ namespace ONYX_DDAC.auth_page
             if (!DateTime.TryParse(dobString, out dob))
             {
                 ShowMessage("Invalid Date of Birth format.", false);
+                return;
+            }
+
+            string captchaToken = Request.Form["cf-turnstile-response"];
+            bool captchaValid = await _captchaService.VerifyCaptchaAsync(
+                captchaToken,
+                Request.UserHostAddress);
+
+            if (!captchaValid)
+            {
+                ShowMessage("Please complete the Cloudflare verification before registering.", false);
                 return;
             }
 
@@ -79,9 +95,9 @@ namespace ONYX_DDAC.auth_page
             StartOAuth("discord");
         }
 
-        protected void XRegisterButton_Click(object sender, EventArgs e)
+        protected void FacebookRegisterButton_Click(object sender, EventArgs e)
         {
-            StartOAuth("x");
+            StartOAuth("facebook");
         }
 
         private void StartOAuth(string provider)
@@ -95,6 +111,7 @@ namespace ONYX_DDAC.auth_page
 
                 Session[OAuthProviderRegistry.GetStateSessionKey(provider)] = state;
                 Session[OAuthProviderRegistry.GetStateProviderSessionKey(state)] = provider;
+                Session[OAuthProviderRegistry.GetStateModeSessionKey(state)] = "register";
                 if (provider == "google")
                     Session["GoogleOAuthState"] = state;
 

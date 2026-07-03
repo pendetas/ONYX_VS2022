@@ -34,9 +34,9 @@ namespace ONYX_DDAC.auth_page
         protected global::System.Web.UI.WebControls.LinkButton DiscordRegisterButton;
 
         /// <summary>
-        /// XRegisterButton control.
+        /// FacebookRegisterButton control.
         /// </summary>
-        protected global::System.Web.UI.WebControls.LinkButton XRegisterButton;
+        protected global::System.Web.UI.WebControls.LinkButton FacebookRegisterButton;
 
         /// <summary>
         /// txtFullName control.

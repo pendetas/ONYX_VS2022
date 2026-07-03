@@ -43,9 +43,9 @@ namespace ONYX_DDAC.auth_page
         protected global::System.Web.UI.WebControls.LinkButton DiscordLoginButton;
 
         /// <summary>
-        /// XLoginButton control.
+        /// FacebookLoginButton control.
         /// </summary>
-        protected global::System.Web.UI.WebControls.LinkButton XLoginButton;
+        protected global::System.Web.UI.WebControls.LinkButton FacebookLoginButton;
 
         /// <summary>
         /// EmailTextBox control.

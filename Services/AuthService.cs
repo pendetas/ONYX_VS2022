@@ -3,6 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 using BCrypt.Net;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Helpers;
@@ -127,6 +128,31 @@ namespace ONYX_DDAC.Services
 
         public User LoginOrCreateOAuthUser(OAuthProfile profile, out bool created)
         {
+            NormalizeAndValidateOAuthProfile(profile);
+            created = false;
+
+            User user = FindAndLinkExistingOAuthUser(profile);
+            if (user != null)
+                return user;
+
+            string username = BuildUniqueOAuthUsername(profile);
+            user = _userRepository.CreateOAuthUser(profile, username);
+            if (user == null)
+                throw new InvalidOperationException("OAuth account creation failed.");
+
+            created = true;
+            _userRepository.TouchLastLogin(user.Id);
+            return user;
+        }
+
+        public User LoginExistingOAuthUser(OAuthProfile profile)
+        {
+            NormalizeAndValidateOAuthProfile(profile);
+            return FindAndLinkExistingOAuthUser(profile);
+        }
+
+        private void NormalizeAndValidateOAuthProfile(OAuthProfile profile)
+        {
             if (profile == null ||
                 string.IsNullOrWhiteSpace(profile.Provider) ||
                 string.IsNullOrWhiteSpace(profile.Subject) ||
@@ -137,12 +163,14 @@ namespace ONYX_DDAC.Services
             }
 
             profile.Provider = OAuthProviderRegistry.NormalizeProvider(profile.Provider);
-            created = false;
             profile.Email = ValidationHelper.NormalizeIdentifier(profile.Email);
             profile.FullName = string.IsNullOrWhiteSpace(profile.FullName)
                 ? profile.Email
                 : profile.FullName.Trim();
+        }
 
+        private User FindAndLinkExistingOAuthUser(OAuthProfile profile)
+        {
             User user = _userRepository.GetUserByOAuthAccount(profile.Provider, profile.Subject);
             if (user != null)
             {
@@ -169,14 +197,7 @@ namespace ONYX_DDAC.Services
                 return _userRepository.GetUserByOAuthAccount(profile.Provider, profile.Subject) ?? user;
             }
 
-            string username = BuildUniqueOAuthUsername(profile);
-            user = _userRepository.CreateOAuthUser(profile, username);
-            if (user == null)
-                throw new InvalidOperationException("OAuth account creation failed.");
-
-            created = true;
-            _userRepository.TouchLastLogin(user.Id);
-            return user;
+            return null;
         }
 
         public void QueueAccountCreatedNotice(
@@ -192,10 +213,20 @@ namespace ONYX_DDAC.Services
 
             try
             {
-                Task.Run(async () =>
+                HostingEnvironment.QueueBackgroundWorkItem(async cancellationToken =>
                 {
                     try
                     {
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            WriteEmailDebugLog(
+                                "account_created_notice_cancelled",
+                                email,
+                                signInMethod,
+                                null);
+                            return;
+                        }
+
                         await SendAccountCreatedNoticeAsync(email, displayName, signInMethod);
                     }
                     catch (Exception exception)
@@ -320,7 +351,7 @@ namespace ONYX_DDAC.Services
             try
             {
                 string basePath = HttpContext.Current == null
-                    ? AppDomain.CurrentDomain.BaseDirectory
+                    ? HostingEnvironment.MapPath("~/App_Data") ?? AppDomain.CurrentDomain.BaseDirectory
                     : HttpContext.Current.Server.MapPath("~/App_Data");
                 Directory.CreateDirectory(basePath);
                 string path = Path.Combine(basePath, "email_debug.log");
