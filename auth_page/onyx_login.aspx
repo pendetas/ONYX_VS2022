@@ -404,44 +404,47 @@
         .auth-takeover input.auth-input,
         .auth-takeover textarea.auth-input,
         .auth-takeover select.auth-input {
-            background-color: #050505 !important;
+            background: transparent !important;
+            background-color: transparent !important;
             background-image: none !important;
-            border: 1px solid #2a2a2a !important;
-            border-radius: 7px !important;
+            border: 0 !important;
+            border-bottom: 1px solid rgba(255,255,255,0.22) !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
             color: #f2f2f2 !important;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.025) !important;
+            outline: 0 !important;
+            padding: 8px 0 12px !important;
             -webkit-appearance: none !important;
             appearance: none !important;
         }
 
         .auth-takeover input.auth-input::placeholder,
         .auth-takeover textarea.auth-input::placeholder {
-            color: #8d8d8d !important;
+            color: rgba(255,255,255,0.42) !important;
             opacity: 1 !important;
         }
 
         .auth-takeover input.auth-input:hover,
         .auth-takeover textarea.auth-input:hover,
         .auth-takeover select.auth-input:hover {
-            background-color: #070707 !important;
-            border-color: #3a3a3a !important;
+            border-bottom-color: rgba(255,255,255,0.34) !important;
         }
 
         .auth-takeover input.auth-input:focus,
         .auth-takeover textarea.auth-input:focus,
         .auth-takeover select.auth-input:focus {
-            background-color: #080808 !important;
-            border-color: #9a9a9a !important;
-            box-shadow: 0 0 0 1px rgba(255,255,255,0.18) !important;
+            border-bottom-color: rgba(255,255,255,0.82) !important;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.82) !important;
         }
 
         .auth-takeover input.auth-input:-webkit-autofill,
         .auth-takeover input.auth-input:-webkit-autofill:hover,
         .auth-takeover input.auth-input:-webkit-autofill:focus {
             -webkit-text-fill-color: #f2f2f2 !important;
-            -webkit-box-shadow: 0 0 0 1000px #050505 inset !important;
+            -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
+            border: 0 !important;
+            border-bottom: 1px solid rgba(255,255,255,0.22) !important;
             caret-color: #ffffff !important;
-            border-color: #2a2a2a !important;
         }
     </style>
 
