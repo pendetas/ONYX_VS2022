@@ -400,6 +400,49 @@
                 max-width: none;
             }
         }
+
+        .auth-takeover input.auth-input,
+        .auth-takeover textarea.auth-input,
+        .auth-takeover select.auth-input {
+            background-color: #050505 !important;
+            background-image: none !important;
+            border: 1px solid #2a2a2a !important;
+            border-radius: 7px !important;
+            color: #f2f2f2 !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.025) !important;
+            -webkit-appearance: none !important;
+            appearance: none !important;
+        }
+
+        .auth-takeover input.auth-input::placeholder,
+        .auth-takeover textarea.auth-input::placeholder {
+            color: #8d8d8d !important;
+            opacity: 1 !important;
+        }
+
+        .auth-takeover input.auth-input:hover,
+        .auth-takeover textarea.auth-input:hover,
+        .auth-takeover select.auth-input:hover {
+            background-color: #070707 !important;
+            border-color: #3a3a3a !important;
+        }
+
+        .auth-takeover input.auth-input:focus,
+        .auth-takeover textarea.auth-input:focus,
+        .auth-takeover select.auth-input:focus {
+            background-color: #080808 !important;
+            border-color: #9a9a9a !important;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.18) !important;
+        }
+
+        .auth-takeover input.auth-input:-webkit-autofill,
+        .auth-takeover input.auth-input:-webkit-autofill:hover,
+        .auth-takeover input.auth-input:-webkit-autofill:focus {
+            -webkit-text-fill-color: #f2f2f2 !important;
+            -webkit-box-shadow: 0 0 0 1000px #050505 inset !important;
+            caret-color: #ffffff !important;
+            border-color: #2a2a2a !important;
+        }
     </style>
 
     <div class="auth-takeover">
