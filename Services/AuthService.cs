@@ -1,10 +1,8 @@
 using System;
 using System.Configuration;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Hosting;
 using BCrypt.Net;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Helpers;
@@ -194,12 +192,21 @@ namespace ONYX_DDAC.Services
 
             try
             {
-                HostingEnvironment.QueueBackgroundWorkItem(
-                    cancellationToken => SendAccountCreatedNoticeInBackgroundAsync(
-                        email,
-                        displayName,
-                        signInMethod,
-                        cancellationToken));
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        await SendAccountCreatedNoticeAsync(email, displayName, signInMethod);
+                    }
+                    catch (Exception exception)
+                    {
+                        WriteEmailDebugLog(
+                            "account_created_notice_task_failed",
+                            email,
+                            signInMethod,
+                            exception);
+                    }
+                });
             }
             catch (Exception exception)
             {
@@ -258,25 +265,6 @@ namespace ONYX_DDAC.Services
                 System.Diagnostics.Trace.TraceWarning(
                     "Account-created email failed: " + exception.GetType().Name);
             }
-        }
-
-        private async Task SendAccountCreatedNoticeInBackgroundAsync(
-            string email,
-            string displayName,
-            string signInMethod,
-            CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                WriteEmailDebugLog(
-                    "account_created_notice_canceled",
-                    email,
-                    signInMethod,
-                    null);
-                return;
-            }
-
-            await SendAccountCreatedNoticeAsync(email, displayName, signInMethod);
         }
 
         private static bool VerifyPassword(string rawPassword, string passwordHash)
