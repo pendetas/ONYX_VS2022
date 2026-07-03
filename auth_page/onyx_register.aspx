@@ -18,9 +18,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
-            background:
-                radial-gradient(circle at 72% 18%, rgba(255,255,255,0.045), transparent 28%),
-                #000000;
+            background: #000000 !important;
             z-index: 9999;
             display: flex;
             align-items: center;
@@ -35,12 +33,12 @@
             max-width: 1480px;
             height: min(90vh, 820px);
             min-height: 650px;
-            background-color: #020202;
+            background-color: #000000;
             border-radius: 18px;
             display: flex;
             overflow: hidden;
             box-shadow: 0 34px 90px rgba(0,0,0,0.82);
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.075);
         }
 
         .auth-left {
@@ -97,7 +95,7 @@
         .auth-right {
             flex: 1.2;
             position: relative;
-            background: #030303;
+            background: #000000 !important;
             overflow-y: auto !important;
         }
 
@@ -187,21 +185,22 @@
         }
 
         .auth-input {
-            background: rgba(255,255,255,0.018);
-            border: 1px solid rgba(255,255,255,0.09);
+            background: transparent !important;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.18);
             border-radius: 0;
             color: #fff;
             font-size: 15px;
-            padding: 12px 14px;
+            padding: 9px 0 12px;
             outline: none;
             min-height: 46px;
             transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
         }
 
         .auth-input:focus {
-            background: rgba(255,255,255,0.04);
-            border-color: rgba(255,255,255,0.78);
-            box-shadow: 0 0 0 1px rgba(255,255,255,0.42);
+            background: transparent !important;
+            border-bottom-color: rgba(255,255,255,0.86);
+            box-shadow: 0 1px 0 rgba(255,255,255,0.86);
         }
 
         .cta {
@@ -265,8 +264,8 @@
         .social-button {
             width: 64px;
             height: 50px;
-            border: 1px solid rgba(255,255,255,0.12);
-            background: linear-gradient(180deg, #0f0f0f 0%, #050505 100%);
+            border: 1px solid rgba(255,255,255,0.14);
+            background: linear-gradient(180deg, #111111 0%, #030303 100%);
             color: #f5f5f5;
             display: inline-flex;
             align-items: center;
@@ -292,9 +291,9 @@
         }
 
         .social-button.discord:hover {
-            background: #5865f2;
-            border-color: #5865f2;
-            color: #fff;
+            background: #ffffff;
+            border-color: #ffffff;
+            color: #111;
         }
 
         .social-icon {
@@ -339,20 +338,21 @@
         .date-seg-wrapper {
             display: flex;
             align-items: center;
-            border: 1px solid rgba(255,255,255,0.09);
-            padding: 12px 14px;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.18);
+            padding: 9px 0 12px;
             gap: 0;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .date-seg-wrapper:focus-within {
-            border-color: rgba(255,255,255,0.78);
-            box-shadow: 0 0 0 1px rgba(255,255,255,0.42);
+            border-bottom-color: rgba(255,255,255,0.86);
+            box-shadow: 0 1px 0 rgba(255,255,255,0.86);
         }
 
         .date-seg-wrapper.has-error {
-            border-color: #ff4444;
-            box-shadow: 0 0 0 1px #ff4444;
+            border-bottom-color: #ff4444;
+            box-shadow: 0 1px 0 #ff4444;
         }
 
         .date-seg {
