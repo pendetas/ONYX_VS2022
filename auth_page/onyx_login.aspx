@@ -211,6 +211,26 @@
             box-shadow: 0 1px 0 rgba(255,255,255,0.86);
         }
 
+        .forgot-password-link {
+            align-self: flex-start;
+            margin-top: 10px;
+            color: rgba(255,255,255,0.42);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: color 0.25s ease, border-color 0.25s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .forgot-password-link:hover,
+        .forgot-password-link:focus {
+            color: rgba(255,255,255,0.82);
+            border-bottom-color: rgba(255,255,255,0.46);
+            outline: none;
+        }
+
         /* UIverse Button "empty-moose-12" */
         .cta {
             border: none;
@@ -522,6 +542,7 @@
                         <div class="auth-field">
                             <label>Password</label>
                             <asp:TextBox ID="PasswordTextBox" runat="server" CssClass="auth-input" TextMode="Password" placeholder="Enter password" />
+                            <a class="forgot-password-link" href="onyx_forgotpassword.aspx">Forgot Password?</a>
                         </div>
                     </div>
 
