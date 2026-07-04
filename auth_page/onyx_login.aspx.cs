@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Web.UI;
 using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
@@ -32,7 +33,12 @@ namespace ONYX_DDAC.auth_page
             ShowOAuthMessage();
         }
 
-        protected async void LoginButton_Click(object sender, EventArgs e)
+        protected void LoginButton_Click(object sender, EventArgs e)
+        {
+            RegisterAsyncTask(new PageAsyncTask(LoginAsync));
+        }
+
+        private async Task LoginAsync()
         {
             string emailOrUser = EmailTextBox.Text.Trim();
             string password = PasswordTextBox.Text;

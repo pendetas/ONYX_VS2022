@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Web.UI;
 using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Services;
@@ -23,7 +24,12 @@ namespace ONYX_DDAC.auth_page
             }
         }
 
-        protected async void btnRegister_Click(object sender, EventArgs e)
+        protected void btnRegister_Click(object sender, EventArgs e)
+        {
+            RegisterAsyncTask(new PageAsyncTask(RegisterAsync));
+        }
+
+        private async Task RegisterAsync()
         {
             string fullName = txtFullName.Text.Trim();
             string username = txtUsername.Text.Trim();
