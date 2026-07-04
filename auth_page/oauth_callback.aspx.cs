@@ -35,6 +35,7 @@ namespace ONYX_DDAC.auth_page
             if (!string.IsNullOrWhiteSpace(Request.QueryString["error"]))
             {
                 RemoveModeFromState(actualState);
+                RemoveCodeVerifier(provider, actualState);
                 RedirectToLogin(BuildReason(provider, "error"));
                 return;
             }
@@ -42,6 +43,7 @@ namespace ONYX_DDAC.auth_page
             if (string.IsNullOrWhiteSpace(provider) || !IsExpectedState(provider, actualState))
             {
                 RemoveModeFromState(actualState);
+                RemoveCodeVerifier(provider, actualState);
                 RedirectToLogin("oauth_state");
                 return;
             }
@@ -49,6 +51,7 @@ namespace ONYX_DDAC.auth_page
             try
             {
                 string codeVerifier = GetCodeVerifier(provider, actualState);
+                RemoveCodeVerifier(provider, actualState);
                 RemoveModeFromState(actualState);
                 OAuthProfile profile = await _oauthService.ExchangeCodeForProfileAsync(
                     provider,
@@ -124,7 +127,6 @@ namespace ONYX_DDAC.auth_page
             if (!string.IsNullOrWhiteSpace(actualState))
             {
                 Session.Remove(OAuthProviderRegistry.GetStateProviderSessionKey(actualState));
-                Session.Remove(OAuthProviderRegistry.GetCodeVerifierSessionKey(provider, actualState));
             }
 
             return !string.IsNullOrWhiteSpace(expectedState) &&
@@ -137,6 +139,14 @@ namespace ONYX_DDAC.auth_page
                 return null;
 
             return Session[OAuthProviderRegistry.GetCodeVerifierSessionKey(provider, state)] as string;
+        }
+
+        private void RemoveCodeVerifier(string provider, string state)
+        {
+            if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(state))
+                return;
+
+            Session.Remove(OAuthProviderRegistry.GetCodeVerifierSessionKey(provider, state));
         }
 
         private string BuildRedirectUri()
