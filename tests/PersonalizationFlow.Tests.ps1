@@ -61,7 +61,7 @@ $checks = [ordered]@{
 
     'Service uses stable ranking tie-breakers' =
         $serviceText -match 'ThenBy\s*\(\s*item\s*=>\s*item\.Product\.Price\s*\)' -and
-        $serviceText -match 'ThenBy\s*\(\s*item\s*=>\s*item\.Product\.Name\s*\)' -and
+        $serviceText -match 'ThenBy\s*\(\s*item\s*=>\s*item\.Product\.Name\s*,\s*StringComparer\.Ordinal\s*\)' -and
         $serviceText -match 'ThenBy\s*\(\s*item\s*=>\s*item\.Product\.Id\s*\)'
 
     'Service explains non-category recommendation signals' =

@@ -91,7 +91,7 @@ namespace ONYX_DDAC.Services
                 .Select(product => BuildRecommendation(profile, product, wishlistCategories, purchasedCategories))
                 .OrderByDescending(item => item.Score)
                 .ThenBy(item => item.Product.Price)
-                .ThenBy(item => item.Product.Name)
+                .ThenBy(item => item.Product.Name, StringComparer.Ordinal)
                 .ThenBy(item => item.Product.Id)
                 .Take(count < 1 ? 4 : count)
                 .ToList();
@@ -121,14 +121,15 @@ namespace ONYX_DDAC.Services
         {
             string category = Normalize(product.Category);
             string searchable = Normalize(product.Name + " " + product.Description + " " + product.Brand);
-            string matchedPriority = profile.Priorities
+            IList<string> matchedPriorities = profile.Priorities
                 .Select(Normalize)
-                .FirstOrDefault(priority => MatchesPriority(priority, searchable));
+                .Where(priority => MatchesPriority(priority, searchable))
+                .ToList();
 
             return new RecommendationSignals
             {
                 MatchesPreferredCategory = profile.PreferredCategories.Select(Normalize).Contains(category),
-                MatchedPriority = matchedPriority,
+                MatchedPriorities = matchedPriorities,
                 FitsBudget = PriceFitsBudget(product.Price, profile.BudgetRange),
                 MatchesWishlistCategory = (wishlistCategories ?? new List<string>()).Select(Normalize).Contains(category),
                 MatchesPurchasedCategory = (purchasedCategories ?? new List<string>()).Select(Normalize).Contains(category),
@@ -145,9 +146,9 @@ namespace ONYX_DDAC.Services
                 score += 50;
             }
 
-            if (!string.IsNullOrEmpty(signals.MatchedPriority))
+            if (signals.MatchedPriorities != null)
             {
-                score += 25;
+                score += signals.MatchedPriorities.Count * 25;
             }
 
             if (signals.FitsBudget)
@@ -180,9 +181,9 @@ namespace ONYX_DDAC.Services
                 return "Matched to your selected gear focus";
             }
 
-            if (!string.IsNullOrEmpty(signals.MatchedPriority))
+            if (signals.MatchedPriorities != null && signals.MatchedPriorities.Count > 0)
             {
-                return "Supports your " + GetPriorityLabel(signals.MatchedPriority) + " priority";
+                return "Supports your " + GetPriorityLabel(signals.MatchedPriorities[0]) + " priority";
             }
 
             if (signals.FitsBudget)
@@ -344,7 +345,7 @@ namespace ONYX_DDAC.Services
         private class RecommendationSignals
         {
             public bool MatchesPreferredCategory { get; set; }
-            public string MatchedPriority { get; set; }
+            public IList<string> MatchedPriorities { get; set; }
             public bool FitsBudget { get; set; }
             public bool MatchesWishlistCategory { get; set; }
             public bool MatchesPurchasedCategory { get; set; }
