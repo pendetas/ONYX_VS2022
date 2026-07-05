@@ -8,6 +8,7 @@
     --onyx-silver: #d8dde3;
 }
 
+html.onyx-personalization-shell-page,
 body.onyx-personalization-shell-page {
     background: linear-gradient(180deg, #000 0%, #0b0b0c 42%, #141414 100%) !important;
     color: var(--onyx-text);

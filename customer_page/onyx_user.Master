@@ -1,7 +1,7 @@
 <%@ Master Language="C#" AutoEventWireup="true" CodeBehind="onyx_user.Master.cs" Inherits="ONYX_DDAC.customer_page.onyx_user" %>
 
 <!DOCTYPE html>
-<html lang="en">
+<html class="<%= HtmlCssClass %>" lang="en">
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

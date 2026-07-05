@@ -48,6 +48,11 @@ namespace ONYX_DDAC.customer_page
             get { return IsPersonalizationPage ? "onyx-personalization-shell-page" : string.Empty; }
         }
 
+        protected string HtmlCssClass
+        {
+            get { return IsPersonalizationPage ? "onyx-personalization-shell-page" : string.Empty; }
+        }
+
         protected string ShellCssClass
         {
             get

@@ -161,12 +161,14 @@ $checks = [ordered]@{
 
     'Personalization page marks the master shell for page-scoped monochrome overrides' =
         $masterMarkupText -match 'BodyCssClass' -and
+        $masterMarkupText -match 'HtmlCssClass' -and
         $masterMarkupText -match 'ShellCssClass'
 
     'Personalization CSS is monochrome ONYX theme' =
         $cssText -match '#000' -and
         $cssText -match '#0b0b0c' -and
         $cssText -match '#d8dde3' -and
+        $cssText -match 'html\.onyx-personalization-shell-page' -and
         $cssText -match 'body\.onyx-personalization-shell-page' -and
         $cssText -match '\.onyx-personalization-shell-page\s+\.onyx-ddac-nav' -and
         $cssText -match '\.onyx-personalization-shell-page\s+\.onyx-master-footer' -and

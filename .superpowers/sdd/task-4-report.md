@@ -112,3 +112,31 @@ Command:
 Result:
 
 - Build succeeded with `0 Warning(s)` and `0 Error(s)`.
+
+## Review Fix Verification Round 3
+
+- Added `HtmlCssClass` to the customer master so the personalization route now marks both `html` and `body` with `onyx-personalization-shell-page`.
+- Updated `Content/onyx-personalization.css` so `html.onyx-personalization-shell-page` gets the same monochrome background override as `body`, neutralizing the root-level navy surface while leaving other pages untouched.
+- Extended `tests/PersonalizationFlow.Tests.ps1` to assert the new `HtmlCssClass` hook and the `html.onyx-personalization-shell-page` CSS selector.
+
+### Review Fix Round 3 Test Results
+
+Command:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tests\PersonalizationFlow.Tests.ps1
+```
+
+Result:
+
+- Passed with `Personalization schema/model source contract passes.`
+
+Command:
+
+```powershell
+& 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe' .\ONYX_DDAC.sln /p:Configuration=Debug /p:Platform="Any CPU" /m
+```
+
+Result:
+
+- Build succeeded with `0 Warning(s)` and `0 Error(s)`.
