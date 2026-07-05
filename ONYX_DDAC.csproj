@@ -216,6 +216,7 @@
     <Content Include="customer_page\onyx_order_history.aspx" />
     <Content Include="customer_page\onyx_payment_cancel.aspx" />
     <Content Include="customer_page\onyx_payment_confirmation.aspx" />
+    <Content Include="customer_page\onyx_personalization.aspx" />
     <Content Include="customer_page\onyx_product_details.aspx" />
     <Content Include="customer_page\onyx_profile.aspx" />
     <Content Include="customer_page\onyx_reviews.aspx" />
@@ -247,6 +248,7 @@
     <Content Include="Content\onyx-content.css" />
     <Content Include="Content\onyx-design-system.css" />
     <Content Include="Content\onyx-home.css" />
+    <Content Include="Content\onyx-personalization.css" />
     <Content Include="Content\onyx-user-master.css" />
     <Content Include="Content\onyx.css" />
     <Content Include="Content\Site.css" />
@@ -465,6 +467,13 @@
     </Compile>
     <Compile Include="customer_page\onyx_payment_confirmation.aspx.designer.cs">
       <DependentUpon>onyx_payment_confirmation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="customer_page\onyx_personalization.aspx.cs">
+      <DependentUpon>onyx_personalization.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="customer_page\onyx_personalization.aspx.designer.cs">
+      <DependentUpon>onyx_personalization.aspx</DependentUpon>
     </Compile>
     <Compile Include="customer_page\onyx_product_details.aspx.cs">
       <DependentUpon>onyx_product_details.aspx</DependentUpon>

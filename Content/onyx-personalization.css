@@ -1,0 +1,234 @@
+:root {
+    --onyx-black: #000;
+    --onyx-panel: #0b0b0c;
+    --onyx-graphite: #141414;
+    --onyx-line: #333;
+    --onyx-muted: #8f8f8f;
+    --onyx-text: #f5f5f5;
+    --onyx-silver: #d8dde3;
+}
+
+.onyx-personalization-page {
+    background:
+        radial-gradient(circle at top, rgba(216, 221, 227, 0.08), transparent 28%),
+        linear-gradient(180deg, #000 0%, #0b0b0c 38%, #141414 100%);
+    color: var(--onyx-text);
+    min-height: calc(100vh - 72px);
+    padding: 48px 24px 80px;
+}
+
+.onyx-personalization-shell {
+    margin: 0 auto;
+    max-width: 1240px;
+}
+
+.onyx-personalization-hero {
+    border-bottom: 1px solid rgba(216, 221, 227, 0.14);
+    display: grid;
+    gap: 18px;
+    padding-bottom: 28px;
+}
+
+.onyx-personalization-kicker,
+.onyx-personalization-group-head p,
+.onyx-personalization-summary-block span {
+    color: var(--onyx-silver);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 1.2px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.onyx-personalization-hero h1 {
+    color: var(--onyx-text);
+    font-family: Inter, system-ui, sans-serif;
+    font-size: clamp(44px, 6vw, 82px);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 0.98;
+    margin: 0;
+    max-width: 760px;
+}
+
+.onyx-personalization-lede {
+    color: #b6b7bb;
+    font-size: 18px;
+    line-height: 1.7;
+    margin: 0;
+    max-width: 720px;
+}
+
+.onyx-personalization-layout {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: minmax(280px, 0.42fr) minmax(0, 1fr);
+    padding-top: 28px;
+}
+
+.onyx-personalization-summary,
+.onyx-personalization-main {
+    background: rgba(11, 11, 12, 0.88);
+    border: 1px solid rgba(216, 221, 227, 0.12);
+    border-radius: 8px;
+}
+
+.onyx-personalization-summary {
+    display: grid;
+    align-content: start;
+    gap: 18px;
+    padding: 24px;
+}
+
+.onyx-personalization-summary-block {
+    border-top: 1px solid rgba(216, 221, 227, 0.1);
+    display: grid;
+    gap: 12px;
+    padding-top: 18px;
+}
+
+.onyx-personalization-summary-block:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.onyx-personalization-summary-block h2,
+.onyx-personalization-group-head h2 {
+    color: var(--onyx-text);
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.15;
+    margin: 0;
+}
+
+.onyx-personalization-summary-block p {
+    color: var(--onyx-muted);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.onyx-personalization-main {
+    display: grid;
+    gap: 0;
+    overflow: hidden;
+}
+
+.onyx-personalization-group {
+    border-top: 1px solid rgba(216, 221, 227, 0.12);
+    display: grid;
+    gap: 18px;
+    padding: 24px 28px;
+}
+
+.onyx-personalization-group:first-of-type {
+    border-top: 0;
+}
+
+.onyx-personalization-group-head {
+    display: grid;
+    gap: 8px;
+}
+
+.onyx-personalization-choices {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.onyx-choice {
+    appearance: none;
+    background: transparent;
+    border: 1px solid transparent;
+    border-bottom-color: rgba(216, 221, 227, 0.24);
+    border-radius: 0;
+    color: var(--onyx-text);
+    cursor: pointer;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0;
+    min-height: 54px;
+    padding: 16px 18px;
+    text-align: left;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+.onyx-choice:hover,
+.onyx-choice:focus-visible {
+    background: var(--onyx-silver);
+    border-color: var(--onyx-silver);
+    color: var(--onyx-black);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.onyx-choice.is-selected {
+    background: rgba(216, 221, 227, 0.12);
+    border-color: rgba(216, 221, 227, 0.75);
+    color: var(--onyx-silver);
+}
+
+.onyx-personalization-actions {
+    border-top: 1px solid rgba(216, 221, 227, 0.12);
+    display: grid;
+    gap: 14px;
+    padding: 24px 28px 28px;
+}
+
+.onyx-personalization-submit {
+    align-items: center;
+    appearance: none;
+    background: var(--onyx-silver);
+    border: 1px solid var(--onyx-silver);
+    border-radius: 999px;
+    color: var(--onyx-black);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    justify-content: center;
+    letter-spacing: 1px;
+    min-height: 48px;
+    padding: 0 24px;
+    text-transform: uppercase;
+    transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.onyx-personalization-submit:hover,
+.onyx-personalization-submit:focus-visible {
+    background: transparent;
+    border-color: var(--onyx-silver);
+    color: var(--onyx-silver);
+    outline: none;
+}
+
+.onyx-personalization-feedback {
+    color: #f0d6d6;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+@media (max-width: 980px) {
+    .onyx-personalization-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .onyx-personalization-page {
+        padding: 32px 16px 56px;
+    }
+
+    .onyx-personalization-group,
+    .onyx-personalization-actions {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .onyx-personalization-choices {
+        grid-template-columns: 1fr;
+    }
+}

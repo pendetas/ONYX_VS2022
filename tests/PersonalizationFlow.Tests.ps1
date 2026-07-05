@@ -15,6 +15,12 @@ $loginText = Get-Content "$root\auth_page\onyx_login.aspx.cs" -Raw
 $registerText = Get-Content "$root\auth_page\onyx_register.aspx.cs" -Raw
 $googleCallbackText = Get-Content "$root\auth_page\google_callback.aspx.cs" -Raw
 $oauthCallbackText = Get-Content "$root\auth_page\oauth_callback.aspx.cs" -Raw
+$personalizationPage = "$root\customer_page\onyx_personalization.aspx"
+$personalizationCode = "$root\customer_page\onyx_personalization.aspx.cs"
+$personalizationCss = "$root\Content\onyx-personalization.css"
+$pageText = if (Test-Path $personalizationPage) { Get-Content $personalizationPage -Raw } else { '' }
+$codeText = if (Test-Path $personalizationCode) { Get-Content $personalizationCode -Raw } else { '' }
+$cssText = if (Test-Path $personalizationCss) { Get-Content $personalizationCss -Raw } else { '' }
 
 $checks = [ordered]@{
     'Personalization schema creates profile table' =
@@ -109,6 +115,33 @@ $checks = [ordered]@{
         $registerText -match 'PostAuthRedirectHelper.Redirect' -and
         $googleCallbackText -match 'PostAuthRedirectHelper.Redirect' -and
         $oauthCallbackText -match 'PostAuthRedirectHelper.Redirect'
+
+    'Personalization page defines required questions and submit action' =
+        $pageText -match 'Build Your ONYX Setup' -and
+        $pageText -match 'gaming_style' -and
+        $pageText -match 'preferred_categories' -and
+        $pageText -match 'priorities' -and
+        $pageText -match 'budget_range' -and
+        $pageText -match 'setup_goal' -and
+        $pageText -match 'Build My Setup'
+
+    'Personalization code requires login and saves profile' =
+        $codeText -match 'AuthHelper.RequireLogin' -and
+        $codeText -match 'PersonalizationService' -and
+        $codeText -match 'SaveProfile' -and
+        $codeText -match 'onyx_home.aspx'
+
+    'Personalization CSS is monochrome ONYX theme' =
+        $cssText -match '#000' -and
+        $cssText -match '#0b0b0c' -and
+        $cssText -match '#d8dde3' -and
+        $cssText -notmatch '#0b1220|#0f172a|navy|blue'
+
+    'Project includes personalization page files' =
+        $project -match 'customer_page\\onyx_personalization.aspx' -and
+        $project -match 'customer_page\\onyx_personalization.aspx.cs' -and
+        $project -match 'customer_page\\onyx_personalization.aspx.designer.cs' -and
+        $project -match 'Content\\onyx-personalization.css'
 }
 
 $failures = @($checks.GetEnumerator() | Where-Object { -not $_.Value })
