@@ -185,11 +185,13 @@
     <Content Include="App_Data\onyx_schema.sql" />
     <Content Include="App_Data\20260702_google_oauth.sql" />
     <Content Include="App_Data\20260702_multi_provider_oauth.sql" />
+    <Content Include="App_Data\20260704_password_reset_tokens.sql" />
     <Content Include="App_Data\stripe_checkout_migration.sql" />
     <Content Include="auth_page\google_callback.aspx" />
     <Content Include="auth_page\onyx_forgotpassword.aspx" />
     <Content Include="auth_page\onyx_login.aspx" />
     <Content Include="auth_page\onyx_register.aspx" />
+    <Content Include="auth_page\onyx_resetpassword.aspx" />
     <Content Include="auth_page\oauth_callback.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
@@ -406,6 +408,13 @@
     </Compile>
     <Compile Include="auth_page\onyx_register.aspx.designer.cs">
       <DependentUpon>onyx_register.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="auth_page\onyx_resetpassword.aspx.cs">
+      <DependentUpon>onyx_resetpassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="auth_page\onyx_resetpassword.aspx.designer.cs">
+      <DependentUpon>onyx_resetpassword.aspx</DependentUpon>
     </Compile>
     <Compile Include="auth_page\google_callback.aspx.cs">
       <DependentUpon>google_callback.aspx</DependentUpon>

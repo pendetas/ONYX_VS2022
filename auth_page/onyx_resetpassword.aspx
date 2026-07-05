@@ -1,4 +1,4 @@
-<%@ Page Title="Forgot Password - ONYX" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" Async="true" CodeBehind="onyx_forgotpassword.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_forgotpassword" %>
+<%@ Page Title="Reset Password - ONYX" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_resetpassword.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_resetpassword" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -12,8 +12,6 @@
             justify-content: center;
             left: 0;
             overflow: hidden;
-            overscroll-behavior: none;
-            pointer-events: auto;
             position: fixed;
             top: 0;
             width: 100vw;
@@ -50,7 +48,6 @@
 
         .auth-brand {
             color: #ffffff;
-            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-size: 28px;
             font-weight: 400;
             left: 40px;
@@ -94,7 +91,6 @@
             flex-direction: column;
             overflow: hidden;
             padding: 50px 60px;
-            pointer-events: auto;
             position: relative;
             z-index: 2;
         }
@@ -106,8 +102,8 @@
             z-index: 10;
         }
 
-        .auth-top-nav a {
-            align-items: center;
+        .auth-top-nav a,
+        .auth-secondary-link {
             color: #8a8f98;
             display: inline-flex;
             font-size: 11px;
@@ -119,31 +115,15 @@
             transition: color 0.2s ease;
         }
 
-        .auth-top-nav a::after {
-            background-color: #8a8f98;
-            content: "";
-            display: block;
-            height: 1px;
-            transition: width 0.2s ease, background-color 0.2s ease;
-            width: 30px;
-        }
-
-        .auth-top-nav a:hover {
+        .auth-top-nav a:hover,
+        .auth-secondary-link:hover {
             color: #ffffff;
-        }
-
-        .auth-top-nav a:hover::after {
-            background-color: #ffffff;
-            width: 50px;
         }
 
         .auth-form-wrapper {
             margin: auto 0;
             max-width: 560px;
-            pointer-events: auto;
-            position: relative;
             width: 100%;
-            z-index: 20;
         }
 
         .auth-kicker {
@@ -176,9 +156,6 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 30px;
-            pointer-events: auto;
-            position: relative;
-            z-index: 21;
         }
 
         .auth-field label {
@@ -198,10 +175,7 @@
             font-size: 17px;
             outline: none;
             padding: 10px 0;
-            pointer-events: auto;
-            position: relative;
             transition: border-color 0.2s ease;
-            z-index: 22;
         }
 
         .auth-input:focus {
@@ -239,19 +213,6 @@
             background-color: #d8dde3;
             box-shadow: 0 16px 40px rgba(216, 221, 227, 0.18);
             transform: translateY(-2px);
-        }
-
-        .auth-secondary-link {
-            color: #9ca3af;
-            font-size: 12px;
-            letter-spacing: 1.2px;
-            text-decoration: none;
-            text-transform: uppercase;
-            transition: color 0.2s ease;
-        }
-
-        .auth-secondary-link:hover {
-            color: #ffffff;
         }
 
         .auth-alert {
@@ -299,24 +260,31 @@
 
                 <div class="auth-form-wrapper">
                     <span class="auth-kicker">Account Recovery</span>
-                    <h1 class="auth-title">Reset access.</h1>
+                    <h1 class="auth-title">Set new password.</h1>
                     <p class="auth-copy">
-                        Enter the email connected to your ONYX account. If it matches an account, we will prepare reset instructions for your next sign-in.
+                        Choose a new password for your ONYX account. The reset link can only be used once.
                     </p>
 
                     <asp:Panel ID="MessagePanel" runat="server" Visible="false">
                         <asp:Literal ID="MessageLiteral" runat="server" />
                     </asp:Panel>
 
-                    <div class="auth-field">
-                        <label>Email Address</label>
-                        <asp:TextBox ID="EmailTextBox" runat="server" TextMode="Email" CssClass="auth-input" placeholder="name@example.com" />
-                    </div>
+                    <asp:Panel ID="ResetFormPanel" runat="server">
+                        <div class="auth-field">
+                            <label>New Password</label>
+                            <asp:TextBox ID="NewPasswordTextBox" runat="server" TextMode="Password" CssClass="auth-input" />
+                        </div>
 
-                    <div class="auth-action-row">
-                        <a href="onyx_login.aspx" class="auth-secondary-link">I remember it</a>
-                        <asp:Button ID="ResetButton" runat="server" CssClass="auth-submit-btn" Text="REQUEST RESET" OnClick="ResetButton_Click" />
-                    </div>
+                        <div class="auth-field">
+                            <label>Confirm New Password</label>
+                            <asp:TextBox ID="ConfirmPasswordTextBox" runat="server" TextMode="Password" CssClass="auth-input" />
+                        </div>
+
+                        <div class="auth-action-row">
+                            <a href="onyx_login.aspx" class="auth-secondary-link">Back to login</a>
+                            <asp:Button ID="ResetPasswordButton" runat="server" CssClass="auth-submit-btn" Text="UPDATE PASSWORD" OnClick="ResetPasswordButton_Click" />
+                        </div>
+                    </asp:Panel>
                 </div>
             </div>
         </div>

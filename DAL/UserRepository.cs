@@ -648,6 +648,122 @@ namespace ONYX_DDAC.DAL
             }
         }
 
+        public void CreatePasswordResetToken(
+            long userId,
+            string tokenHash,
+            int expiryMinutes)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    using (var expireCmd = new NpgsqlCommand(
+                        @"UPDATE password_reset_tokens
+                          SET used_at = NOW()
+                          WHERE user_id = @UserId
+                            AND used_at IS NULL", conn, tx))
+                    {
+                        expireCmd.Parameters.AddWithValue("@UserId", userId);
+                        expireCmd.ExecuteNonQuery();
+                    }
+
+                    using (var insertCmd = new NpgsqlCommand(
+                        @"INSERT INTO password_reset_tokens
+                            (user_id, token_hash, expires_at, created_at)
+                          VALUES
+                            (@UserId, @TokenHash, NOW() + (@ExpiryMinutes * INTERVAL '1 minute'), NOW())", conn, tx))
+                    {
+                        insertCmd.Parameters.AddWithValue("@UserId", userId);
+                        insertCmd.Parameters.AddWithValue("@TokenHash", tokenHash);
+                        insertCmd.Parameters.AddWithValue("@ExpiryMinutes", expiryMinutes);
+                        insertCmd.ExecuteNonQuery();
+                    }
+
+                    tx.Commit();
+                }
+            }
+        }
+
+        public long? GetValidPasswordResetUserId(string tokenHash)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(
+                        @"SELECT user_id
+                      FROM password_reset_tokens
+                      WHERE token_hash = @TokenHash
+                        AND used_at IS NULL
+                        AND expires_at > NOW()
+                      LIMIT 1", conn))
+                {
+                    cmd.Parameters.AddWithValue("@TokenHash", tokenHash);
+                    object result = cmd.ExecuteScalar();
+                    if (result == null || result == DBNull.Value)
+                        return null;
+
+                    return Convert.ToInt64(result);
+                }
+            }
+        }
+
+        public bool ResetPasswordWithToken(string tokenHash, string newPasswordHash)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    long resetTokenId;
+                    long userId;
+
+                    using (var selectCmd = new NpgsqlCommand(
+                        @"SELECT id, user_id
+                          FROM password_reset_tokens
+                          WHERE token_hash = @TokenHash
+                            AND used_at IS NULL
+                            AND expires_at > NOW()
+                          FOR UPDATE", conn, tx))
+                    {
+                        selectCmd.Parameters.AddWithValue("@TokenHash", tokenHash);
+
+                        using (var reader = selectCmd.ExecuteReader())
+                        {
+                            if (!reader.Read())
+                                return false;
+
+                            resetTokenId = reader.GetInt64(0);
+                            userId = reader.GetInt64(1);
+                        }
+                    }
+
+                    using (var updateUserCmd = new NpgsqlCommand(
+                        @"UPDATE users
+                          SET password_hash = @PasswordHash
+                          WHERE id = @UserId", conn, tx))
+                    {
+                        updateUserCmd.Parameters.AddWithValue("@PasswordHash", newPasswordHash);
+                        updateUserCmd.Parameters.AddWithValue("@UserId", userId);
+                        if (updateUserCmd.ExecuteNonQuery() == 0)
+                            return false;
+                    }
+
+                    using (var useTokenCmd = new NpgsqlCommand(
+                        @"UPDATE password_reset_tokens
+                          SET used_at = NOW()
+                          WHERE id = @Id", conn, tx))
+                    {
+                        useTokenCmd.Parameters.AddWithValue("@Id", resetTokenId);
+                        useTokenCmd.ExecuteNonQuery();
+                    }
+
+                    tx.Commit();
+                    return true;
+                }
+            }
+        }
+
         public User GetUserByEmailOrUsername(string emailOrUsername)
         {
             using (DbConnection conn = DbConnectionFactory.CreateReadConnection())

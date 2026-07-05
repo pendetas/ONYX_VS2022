@@ -34,6 +34,20 @@ namespace ONYX_DDAC.Services
                 BuildAccountCreatedBody(displayName, signInMethod));
         }
 
+        public async Task SendPasswordResetAsync(
+            string recipientEmail,
+            string displayName,
+            string resetUrl,
+            int expiryMinutes)
+        {
+            await SendAsync(
+                recipientEmail,
+                "Reset your ONYX password",
+                BuildPasswordResetHtmlBody(displayName, resetUrl, expiryMinutes),
+                true,
+                BuildPasswordResetBody(displayName, resetUrl, expiryMinutes));
+        }
+
         public static string BuildAccountCreatedBody(string displayName, string signInMethod)
         {
             string name = string.IsNullOrWhiteSpace(displayName)
@@ -102,6 +116,54 @@ namespace ONYX_DDAC.Services
                 "<p style=\"font-size:14px;line-height:1.7;color:#cfcfcf;margin:0 0 24px;\">Follow us for new drops, gaming gear updates, and exclusive offers.</p>" +
                 "<p style=\"font-size:12px;line-height:1.7;color:#8f8f8f;margin:0 0 22px;\">You received this email because you registered an account with ONYX Gaming. If this was not you, please contact our support team immediately.</p>" +
                 "<p style=\"font-size:13px;line-height:1.7;color:#ffffff;margin:0;\"><strong>ONYX Gaming</strong><br>Performance Gear for Serious Players</p>" +
+                "</div></div></body></html>";
+        }
+
+        public static string BuildPasswordResetBody(
+            string displayName,
+            string resetUrl,
+            int expiryMinutes)
+        {
+            string name = string.IsNullOrWhiteSpace(displayName)
+                ? "there"
+                : displayName.Trim();
+
+            return
+                "Hi " + name + "," + Environment.NewLine +
+                Environment.NewLine +
+                "We received a request to reset your ONYX password." + Environment.NewLine +
+                "Open this secure link to choose a new password:" + Environment.NewLine +
+                resetUrl + Environment.NewLine +
+                Environment.NewLine +
+                "This link expires in " + expiryMinutes + " minutes and can only be used once." + Environment.NewLine +
+                "If you did not request a password reset, you can ignore this email." + Environment.NewLine +
+                Environment.NewLine +
+                "The ONYX Gaming Team";
+        }
+
+        public static string BuildPasswordResetHtmlBody(
+            string displayName,
+            string resetUrl,
+            int expiryMinutes)
+        {
+            string name = string.IsNullOrWhiteSpace(displayName)
+                ? "there"
+                : displayName.Trim();
+            string encodedName = WebUtility.HtmlEncode(name);
+            string encodedUrl = WebUtility.HtmlEncode(resetUrl ?? string.Empty);
+
+            return
+                "<!doctype html>" +
+                "<html><body style=\"margin:0;padding:0;background:#050505;color:#f5f5f5;font-family:Arial,Helvetica,sans-serif;\">" +
+                "<div style=\"max-width:640px;margin:0 auto;padding:36px 24px;\">" +
+                "<div style=\"border:1px solid #242424;background:#0b0b0b;padding:32px;\">" +
+                "<div style=\"font-size:22px;font-weight:700;letter-spacing:1px;margin-bottom:28px;\">ONYX Gaming</div>" +
+                "<p style=\"font-size:16px;line-height:1.7;margin:0 0 18px;\">Hi " + encodedName + ",</p>" +
+                "<p style=\"font-size:16px;line-height:1.7;margin:0 0 18px;\">We received a request to reset your ONYX password.</p>" +
+                "<p style=\"font-size:15px;line-height:1.7;color:#d7d7d7;margin:0 0 26px;\">Use the secure link below to choose a new password. The link expires in " + expiryMinutes + " minutes and can only be used once.</p>" +
+                "<p style=\"margin:0 0 28px;\"><a href=\"" + encodedUrl + "\" style=\"display:inline-block;background:#ffffff;color:#050505;text-decoration:none;padding:14px 22px;border-radius:999px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;\">Reset Password</a></p>" +
+                "<p style=\"font-size:13px;line-height:1.7;color:#9ca3af;margin:0 0 22px;word-break:break-all;\">If the button does not work, copy and paste this link into your browser:<br>" + encodedUrl + "</p>" +
+                "<p style=\"font-size:12px;line-height:1.7;color:#8f8f8f;margin:0;\">If you did not request this, you can ignore this email.</p>" +
                 "</div></div></body></html>";
         }
 

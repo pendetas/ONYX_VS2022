@@ -1,6 +1,8 @@
 using System;
 using System.Configuration;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
@@ -92,6 +94,101 @@ namespace ONYX_DDAC.Services
             string newHash = BCrypt.Net.BCrypt.EnhancedHashPassword(newRaw, 12);
             _userRepository.UpdatePasswordHash(user.Id, newHash);
             return null;
+        }
+
+        public async Task RequestPasswordResetAsync(
+            string email,
+            Func<string, string> buildResetUrl)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return;
+
+            User user = _userRepository.GetUserByEmail(email.Trim());
+            if (user == null || string.IsNullOrWhiteSpace(user.PasswordHash))
+            {
+                WriteEmailDebugLog(
+                    "password_reset_skipped",
+                    email,
+                    "no manual account",
+                    null);
+                return;
+            }
+
+            string rawToken = CreatePasswordResetToken();
+            string tokenHash = HashPasswordResetToken(rawToken);
+            int expiryMinutes = GetPasswordResetExpiryMinutes();
+
+            _userRepository.CreatePasswordResetToken(
+                user.Id,
+                tokenHash,
+                expiryMinutes);
+
+            string resetUrl = buildResetUrl == null
+                ? rawToken
+                : buildResetUrl(rawToken);
+
+            try
+            {
+                await _emailService.SendPasswordResetAsync(
+                    user.Email,
+                    user.FullName,
+                    resetUrl,
+                    expiryMinutes);
+
+                WriteEmailDebugLog(
+                    "password_reset_sent",
+                    user.Email,
+                    "manual account",
+                    null);
+            }
+            catch (Exception exception)
+            {
+                WriteEmailDebugLog(
+                    "password_reset_failed",
+                    user.Email,
+                    "manual account",
+                    exception);
+                throw;
+            }
+        }
+
+        public bool IsPasswordResetTokenValid(string rawToken)
+        {
+            if (string.IsNullOrWhiteSpace(rawToken))
+                return false;
+
+            return _userRepository.GetValidPasswordResetUserId(
+                HashPasswordResetToken(rawToken)).HasValue;
+        }
+
+        public string ResetPassword(
+            string rawToken,
+            string newRaw,
+            string confirmRaw)
+        {
+            if (string.IsNullOrWhiteSpace(rawToken) ||
+                !_userRepository.GetValidPasswordResetUserId(HashPasswordResetToken(rawToken)).HasValue)
+            {
+                return "This reset link is invalid or has expired.";
+            }
+
+            if (string.IsNullOrWhiteSpace(newRaw) || string.IsNullOrWhiteSpace(confirmRaw))
+                return "Enter and confirm your new password.";
+
+            if (newRaw != confirmRaw)
+                return "New password and confirmation do not match.";
+
+            if (newRaw.Length < 8)
+                return "New password must be at least 8 characters.";
+
+            string newHash = BCrypt.Net.BCrypt.EnhancedHashPassword(newRaw, 12);
+            bool updated = _userRepository.ResetPasswordWithToken(
+                HashPasswordResetToken(rawToken),
+                newHash);
+
+            return updated
+                ? null
+                : "This reset link is invalid or has expired.";
         }
 
         // Handles the business logic for logging in
@@ -324,6 +421,46 @@ namespace ONYX_DDAC.Services
                 System.Diagnostics.Debug.WriteLine("Password verification skipped: " + ex.Message);
                 return false;
             }
+        }
+
+        private static string CreatePasswordResetToken()
+        {
+            byte[] bytes = new byte[32];
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(bytes);
+            }
+
+            return Convert.ToBase64String(bytes)
+                .TrimEnd('=')
+                .Replace('+', '-')
+                .Replace('/', '_');
+        }
+
+        private static string HashPasswordResetToken(string rawToken)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawToken ?? string.Empty));
+                StringBuilder builder = new StringBuilder(hash.Length * 2);
+                for (int i = 0; i < hash.Length; i++)
+                    builder.Append(hash[i].ToString("x2"));
+
+                return builder.ToString();
+            }
+        }
+
+        private static int GetPasswordResetExpiryMinutes()
+        {
+            int minutes;
+            if (!int.TryParse(ConfigurationManager.AppSettings["PasswordResetExpiryMinutes"], out minutes) ||
+                minutes < 5 ||
+                minutes > 1440)
+            {
+                return 30;
+            }
+
+            return minutes;
         }
 
         private string BuildUniqueOAuthUsername(OAuthProfile profile)
