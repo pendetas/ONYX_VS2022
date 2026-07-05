@@ -108,3 +108,18 @@ Result:
 One compile issue surfaced during build because `Page.Context` was not accessible from the new helper in this project context. I corrected the helper to call `HttpContext.Current.ApplicationInstance.CompleteRequest()` instead, preserving the intended redirect behavior and keeping the contract requirement for `CompleteRequest`.
 
 No other concerns found within Task 3 scope.
+
+## Review Fix Verification
+
+Addressed the follow-up review findings for Task 3:
+
+1. `AuthService.RegisterCustomer(...)` now reloads the newly created user through `UserRepository.GetUserByEmailForWrite(...)` so the post-insert auto-login path does not depend on the read connection.
+2. `PostAuthRedirectHelper` now routes `admin`, `owner`, and `staff` to `~/admin_page/onyx_admin_dashboard.aspx`, while preserving customer personalization behavior.
+3. `tests/PersonalizationFlow.Tests.ps1` now asserts both the write-side reload contract and the privileged-role routing contract.
+
+Verification rerun after the fixes:
+
+- `powershell -ExecutionPolicy Bypass -File .\tests\PersonalizationFlow.Tests.ps1`
+  - Pass: `Personalization schema/model source contract passes.`
+- `& 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe' .\ONYX_DDAC.sln /p:Configuration=Debug /p:Platform="Any CPU" /m`
+  - Pass: `Build succeeded. 0 Warning(s), 0 Error(s).`

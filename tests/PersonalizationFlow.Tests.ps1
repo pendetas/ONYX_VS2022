@@ -6,6 +6,7 @@ $repositoryPath = "$root\DAL\PersonalizationRepository.cs"
 $servicePath = "$root\Services\PersonalizationService.cs"
 $project = Get-Content "$root\ONYX_DDAC.csproj" -Raw
 $repositoryText = if (Test-Path $repositoryPath) { Get-Content $repositoryPath -Raw } else { '' }
+$userRepositoryText = Get-Content "$root\DAL\UserRepository.cs" -Raw
 $serviceText = if (Test-Path $servicePath) { Get-Content $servicePath -Raw } else { '' }
 $redirectHelperPath = "$root\Helpers\PostAuthRedirectHelper.cs"
 $redirectHelperText = if (Test-Path $redirectHelperPath) { Get-Content $redirectHelperPath -Raw } else { '' }
@@ -93,7 +94,15 @@ $checks = [ordered]@{
 
     'Manual registration returns created user for auto-login' =
         $authServiceText -match 'User\s+RegisterCustomer\s*\(' -and
-        $authServiceText -match 'GetUserByEmail\s*\('
+        $authServiceText -match 'GetUserByEmailForWrite\s*\(' -and
+        $userRepositoryText -match 'User\s+GetUserByEmailForWrite\s*\('
+
+    'Privileged roles bypass customer personalization routing' =
+        $redirectHelperText -match 'user\.Role' -and
+        $redirectHelperText -match '"admin"' -and
+        $redirectHelperText -match '"owner"' -and
+        $redirectHelperText -match '"staff"' -and
+        $redirectHelperText -match 'onyx_admin_dashboard\.aspx'
 
     'Auth pages use shared post-auth redirect' =
         $loginText -match 'PostAuthRedirectHelper.Redirect' -and

@@ -13,7 +13,7 @@ namespace ONYX_DDAC.Helpers
             if (user == null)
                 return "~/auth_page/onyx_login.aspx";
 
-            if (string.Equals(user.Role, "admin", StringComparison.OrdinalIgnoreCase))
+            if (RoutesToAdminDashboard(user.Role))
                 return "~/admin_page/onyx_admin_dashboard.aspx";
 
             if (new PersonalizationService().UserRequiresPersonalization(user))
@@ -31,6 +31,13 @@ namespace ONYX_DDAC.Helpers
             HttpContext currentContext = HttpContext.Current;
             if (currentContext != null && currentContext.ApplicationInstance != null)
                 currentContext.ApplicationInstance.CompleteRequest();
+        }
+
+        private static bool RoutesToAdminDashboard(string role)
+        {
+            return string.Equals(role, "admin", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(role, "owner", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(role, "staff", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

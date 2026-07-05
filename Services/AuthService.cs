@@ -83,7 +83,7 @@ namespace ONYX_DDAC.Services
             if (error != null)
                 throw new InvalidOperationException(error);
 
-            User createdUser = _userRepository.GetUserByEmail(email);
+            User createdUser = _userRepository.GetUserByEmailForWrite(email);
             if (createdUser == null)
             {
                 throw new InvalidOperationException(

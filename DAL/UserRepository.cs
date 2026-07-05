@@ -574,33 +574,12 @@ namespace ONYX_DDAC.DAL
 
         public User GetUserByEmail(string email)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
-            {
-                conn.Open();
-                string sql = "SELECT id, username, email, password_hash, role, fullname FROM users WHERE LOWER(email) = LOWER(@Email)";
+            return GetUserByEmailInternal(email, "ReadConnection");
+        }
 
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Email", email);
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            return new User
-                            {
-                                Id           = reader.GetInt64(0),
-                                Username     = reader.GetString(1),
-                                Email        = reader.GetString(2),
-                                PasswordHash = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                Role         = reader.GetString(4),
-                                FullName     = reader.IsDBNull(5) ? null : reader.GetString(5)
-                            };
-                        }
-                    }
-                }
-            }
-            return null;
+        public User GetUserByEmailForWrite(string email)
+        {
+            return GetUserByEmailInternal(email, "DefaultConnection");
         }
 
         public User GetUserByUsername(string username)
@@ -869,6 +848,26 @@ namespace ONYX_DDAC.DAL
             string[] parts = fullName.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length == 1) return parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper();
             return (parts[0][0].ToString() + parts[parts.Length - 1][0].ToString()).ToUpper();
+        }
+
+        private User GetUserByEmailInternal(string email, string connectionName)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString(connectionName)))
+            {
+                conn.Open();
+                const string sql =
+                    "SELECT id, username, email, password_hash, role, fullname FROM users WHERE LOWER(email) = LOWER(@Email)";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Email", email);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        return reader.Read() ? ReadAuthUser(reader) : null;
+                    }
+                }
+            }
         }
 
         private static void UpsertOAuthAccount(
