@@ -55,3 +55,31 @@ Result:
 ## Concerns
 
 - None.
+
+## Review Fix Verification
+
+- Tightened `customer_page/onyx_personalization.aspx.cs` so only known personalization validation messages are shown, while unexpected/database/provider failures are traced and replaced with `Personalization is temporarily unavailable. Please try again.`
+- Added customer-role enforcement on both page load and submit; non-customer roles are redirected to `~/admin_page/onyx_admin_dashboard.aspx` before they can submit personalization data.
+- Replaced the feedback accent in `Content/onyx-personalization.css` with the existing ONYX soft silver token and extended the source-contract checks so the exception-handling, customer scoping, and monochrome constraint stay visible.
+
+### Review Fix Test Results
+
+Command:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tests\PersonalizationFlow.Tests.ps1
+```
+
+Result:
+
+- Passed with `Personalization schema/model source contract passes.`
+
+Command:
+
+```powershell
+& 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe' .\ONYX_DDAC.sln /p:Configuration=Debug /p:Platform="Any CPU" /m
+```
+
+Result:
+
+- Build succeeded with `0 Warning(s)` and `0 Error(s)`.

@@ -206,7 +206,7 @@
 }
 
 .onyx-personalization-feedback {
-    color: #f0d6d6;
+    color: var(--onyx-silver);
     font-size: 14px;
     line-height: 1.6;
 }

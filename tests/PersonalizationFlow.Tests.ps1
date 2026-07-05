@@ -131,11 +131,24 @@ $checks = [ordered]@{
         $codeText -match 'SaveProfile' -and
         $codeText -match 'onyx_home.aspx'
 
+    'Personalization code keeps validation messages but hides unexpected failures' =
+        $codeText -match 'catch\s*\(\s*ArgumentException' -and
+        $codeText -match 'Personalization is temporarily unavailable\. Please try again\.' -and
+        $codeText -notmatch 'exception\.Message'
+
+    'Personalization page is customer-scoped and routes privileged roles away' =
+        $codeText -match 'Session\["Role"\]' -and
+        $codeText -match '"customer"' -and
+        $codeText -match '"admin"' -and
+        $codeText -match '"owner"' -and
+        $codeText -match '"staff"' -and
+        $codeText -match 'onyx_admin_dashboard\.aspx'
+
     'Personalization CSS is monochrome ONYX theme' =
         $cssText -match '#000' -and
         $cssText -match '#0b0b0c' -and
         $cssText -match '#d8dde3' -and
-        $cssText -notmatch '#0b1220|#0f172a|navy|blue'
+        $cssText -notmatch '#0b1220|#0f172a|#f0d6d6|#ff|navy|blue|pink|red'
 
     'Project includes personalization page files' =
         $project -match 'customer_page\\onyx_personalization.aspx' -and
