@@ -200,6 +200,21 @@ $checks = [ordered]@{
     'Product service handles recommended sort through personalization' =
         $productServiceText -match 'recommended' -and
         $productServiceText -match 'PersonalizationService'
+
+    'Recommended catalog search preserves normal searchable fields' =
+        $productServiceText -match 'product\.Name' -and
+        $productServiceText -match 'product\.Brand' -and
+        $productServiceText -match 'product\.Category' -and
+        $productServiceText -match 'product\.Description'
+
+    'Recommended catalog path clamps page to the last valid result page' =
+        $productServiceText -match 'totalPages' -and
+        $productServiceText -match 'Math\.Min\s*\(\s*normalizedQuery\.Page\s*,\s*totalPages\s*\)'
+
+    'Recommended catalog path falls back to repository results when personalization is unavailable' =
+        $productServiceText -match 'HasCompletedProfile' -and
+        $productServiceText -match 'GetRepositoryCatalogProducts' -and
+        $productServiceText -match 'GetRecommendedProducts'
 }
 
 $failures = @($checks.GetEnumerator() | Where-Object { -not $_.Value })
