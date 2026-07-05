@@ -186,6 +186,7 @@
     <Content Include="App_Data\20260702_google_oauth.sql" />
     <Content Include="App_Data\20260702_multi_provider_oauth.sql" />
     <Content Include="App_Data\20260704_password_reset_tokens.sql" />
+    <Content Include="App_Data\20260705_user_personalization_profiles.sql" />
     <Content Include="App_Data\stripe_checkout_migration.sql" />
     <Content Include="auth_page\google_callback.aspx" />
     <Content Include="auth_page\onyx_forgotpassword.aspx" />
@@ -521,6 +522,7 @@
     <Compile Include="Models\PaymentReconciliationResult.cs" />
     <Compile Include="Models\PagedResult.cs" />
     <Compile Include="Models\ProfileUpdateResult.cs" />
+    <Compile Include="Models\PersonalizedProduct.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductVariant.cs" />
     <Compile Include="Models\LowStockProduct.cs" />
@@ -530,6 +532,7 @@
     <Compile Include="Models\OrderSummary.cs" />
     <Compile Include="Models\RecentActivity.cs" />
     <Compile Include="Models\UserDetail.cs" />
+    <Compile Include="Models\UserPersonalizationProfile.cs" />
     <Compile Include="Models\UserOrderSummary.cs" />
     <Compile Include="Models\UserStats.cs" />
     <Compile Include="Models\UserSummary.cs" />
