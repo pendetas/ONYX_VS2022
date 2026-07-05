@@ -500,6 +500,7 @@
     <Compile Include="DAL\DbConnectionFactory.cs" />
     <Compile Include="DAL\OrderRepository.cs" />
     <Compile Include="DAL\PaymentRepository.cs" />
+    <Compile Include="DAL\PersonalizationRepository.cs" />
     <Compile Include="DAL\ProductRepository.cs" />
     <Compile Include="DAL\ReviewRepository.cs" />
     <Compile Include="DAL\UserRepository.cs" />
@@ -605,6 +606,7 @@
     <Compile Include="Services\OrderService.cs" />
     <Compile Include="Services\PaymentCancellationTokenService.cs" />
     <Compile Include="Services\ProductService.cs" />
+    <Compile Include="Services\PersonalizationService.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\ReceiptService.cs" />
     <Compile Include="Services\ReviewService.cs" />

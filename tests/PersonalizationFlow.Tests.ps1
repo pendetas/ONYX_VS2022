@@ -2,7 +2,11 @@ $root = Split-Path $PSScriptRoot -Parent
 $schemaPath = "$root\App_Data\20260705_user_personalization_profiles.sql"
 $profileModel = "$root\Models\UserPersonalizationProfile.cs"
 $productModel = "$root\Models\PersonalizedProduct.cs"
+$repositoryPath = "$root\DAL\PersonalizationRepository.cs"
+$servicePath = "$root\Services\PersonalizationService.cs"
 $project = Get-Content "$root\ONYX_DDAC.csproj" -Raw
+$repositoryText = if (Test-Path $repositoryPath) { Get-Content $repositoryPath -Raw } else { '' }
+$serviceText = if (Test-Path $servicePath) { Get-Content $servicePath -Raw } else { '' }
 
 $checks = [ordered]@{
     'Personalization schema creates profile table' =
@@ -35,6 +39,29 @@ $checks = [ordered]@{
         $project -match 'App_Data\\20260705_user_personalization_profiles.sql' -and
         $project -match 'Models\\UserPersonalizationProfile.cs' -and
         $project -match 'Models\\PersonalizedProduct.cs'
+
+    'Repository exposes profile completion check' =
+        $repositoryText -match 'class PersonalizationRepository' -and
+        $repositoryText -match 'bool\s+HasCompletedProfile\s*\(\s*long\s+userId\s*\)' -and
+        $repositoryText -match 'UserPersonalizationProfile\s+GetProfile\s*\(\s*long\s+userId\s*\)' -and
+        $repositoryText -match 'void\s+SaveProfile\s*\(\s*UserPersonalizationProfile\s+profile\s*\)'
+
+    'Repository reads wishlist and purchased category signals' =
+        $repositoryText -match 'IList<string>\s+GetWishlistCategories\s*\(\s*long\s+userId\s*\)' -and
+        $repositoryText -match 'IList<string>\s+GetPurchasedCategories\s*\(\s*long\s+userId\s*\)' -and
+        $repositoryText -match 'wishlist' -and
+        $repositoryText -match 'order_items'
+
+    'Service exposes deterministic recommendation scoring' =
+        $serviceText -match 'class PersonalizationService' -and
+        $serviceText -match 'bool\s+UserRequiresPersonalization\s*\(\s*User\s+user\s*\)' -and
+        $serviceText -match 'IList<PersonalizedProduct>\s+GetRecommendedProducts\s*\(\s*long\s+userId,\s*int\s+count\s*\)' -and
+        $serviceText -match 'RankProductsForProfile' -and
+        $serviceText -match 'CalculateScore'
+
+    'Project includes personalization repository and service' =
+        $project -match 'DAL\\PersonalizationRepository.cs' -and
+        $project -match 'Services\\PersonalizationService.cs'
 }
 
 $failures = @($checks.GetEnumerator() | Where-Object { -not $_.Value })
