@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 
@@ -7,12 +8,19 @@ namespace ONYX_DDAC.Services
     public class ProductService
     {
         private readonly ProductRepository _repo;
+        private readonly PersonalizationService _personalizationService;
 
-        public ProductService() : this(new ProductRepository()) { }
+        public ProductService() : this(new ProductRepository(), new PersonalizationService()) { }
 
         public ProductService(ProductRepository repo)
+            : this(repo, new PersonalizationService())
+        {
+        }
+
+        public ProductService(ProductRepository repo, PersonalizationService personalizationService)
         {
             _repo = repo;
+            _personalizationService = personalizationService;
         }
 
         // ── Customer-facing ──────────────────────────────────────────────────
@@ -116,6 +124,33 @@ namespace ONYX_DDAC.Services
                 ? 8
                 : normalizedQuery.PageSize;
 
+            if (string.Equals(normalizedQuery.Sort, "recommended", System.StringComparison.OrdinalIgnoreCase) &&
+                normalizedQuery.UserId.HasValue)
+            {
+                IList<PersonalizedProduct> recommended =
+                    _personalizationService.GetRecommendedProducts(normalizedQuery.UserId.Value, 48);
+
+                IList<Product> filtered = recommended
+                    .Select(item => item.Product)
+                    .Where(product => string.IsNullOrWhiteSpace(normalizedQuery.Category) ||
+                        string.Equals(product.Category, normalizedQuery.Category, System.StringComparison.OrdinalIgnoreCase))
+                    .Where(product => string.IsNullOrWhiteSpace(normalizedQuery.SearchTerm) ||
+                        (product.Name ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (product.Description ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
+
+                int totalCount = filtered.Count;
+                int skip = (normalizedQuery.Page - 1) * normalizedQuery.PageSize;
+
+                return new PagedResult<Product>
+                {
+                    Items = filtered.Skip(skip).Take(normalizedQuery.PageSize).ToList(),
+                    Page = normalizedQuery.Page,
+                    PageSize = normalizedQuery.PageSize,
+                    TotalCount = totalCount
+                };
+            }
+
             return _repo.GetCatalogProducts(normalizedQuery);
         }
 
@@ -131,6 +166,7 @@ namespace ONYX_DDAC.Services
                 case "name":
                 case "price-asc":
                 case "price-desc":
+                case "recommended":
                     return sort.Trim().ToLowerInvariant();
                 default:
                     return "newest";

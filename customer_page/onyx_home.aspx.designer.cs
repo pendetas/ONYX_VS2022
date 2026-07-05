@@ -15,6 +15,24 @@ namespace ONYX_DDAC.customer_page
     {
 
         /// <summary>
+        /// PersonalizedProductsPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel PersonalizedProductsPanel;
+
+        /// <summary>
+        /// PersonalizedProductsRepeater control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater PersonalizedProductsRepeater;
+
+        /// <summary>
         /// FeaturedProductsRepeater control.
         /// </summary>
         /// <remarks>

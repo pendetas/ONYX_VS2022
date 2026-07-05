@@ -36,13 +36,17 @@ namespace ONYX_DDAC.customer_page
 
         private void BindCatalog()
         {
+            long userId;
+            long? recommendationUserId = TryGetCurrentUserId(out userId) ? (long?)userId : null;
+
             PagedResult<Product> result = productService.GetCatalogProducts(new CatalogQuery
             {
                 Category = SelectedCategory,
                 SearchTerm = SearchTerm,
                 Sort = SelectedSort,
                 Page = CurrentPage,
-                PageSize = 8
+                PageSize = 8,
+                UserId = recommendationUserId
             });
             CurrentPage = result.Page;
             LoadWishlistProductIds();
@@ -221,6 +225,7 @@ namespace ONYX_DDAC.customer_page
                 case "name":
                 case "price-asc":
                 case "price-desc":
+                case "recommended":
                     return value.Trim().ToLowerInvariant();
                 default:
                     return "newest";

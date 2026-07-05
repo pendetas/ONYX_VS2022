@@ -23,6 +23,12 @@ $personalizationCss = "$root\Content\onyx-personalization.css"
 $pageText = if (Test-Path $personalizationPage) { Get-Content $personalizationPage -Raw } else { '' }
 $codeText = if (Test-Path $personalizationCode) { Get-Content $personalizationCode -Raw } else { '' }
 $cssText = if (Test-Path $personalizationCss) { Get-Content $personalizationCss -Raw } else { '' }
+$homeMarkup = Get-Content "$root\customer_page\onyx_home.aspx" -Raw
+$homeCode = Get-Content "$root\customer_page\onyx_home.aspx.cs" -Raw
+$catalogMarkup = Get-Content "$root\customer_page\onyx_catalog.aspx" -Raw
+$catalogCode = Get-Content "$root\customer_page\onyx_catalog.aspx.cs" -Raw
+$productServiceText = Get-Content "$root\Services\ProductService.cs" -Raw
+$catalogQueryText = Get-Content "$root\Models\CatalogQuery.cs" -Raw
 
 $checks = [ordered]@{
     'Personalization schema creates profile table' =
@@ -179,6 +185,21 @@ $checks = [ordered]@{
         $project -match 'customer_page\\onyx_personalization.aspx.cs' -and
         $project -match 'customer_page\\onyx_personalization.aspx.designer.cs' -and
         $project -match 'Content\\onyx-personalization.css'
+
+    'Home page binds personalized recommendation strip' =
+        $homeMarkup -match 'PersonalizedProductsRepeater' -and
+        $homeMarkup -match 'For your setup' -and
+        $homeCode -match 'GetRecommendedProducts' -and
+        $homeCode -match 'PersonalizedProductsPanel'
+
+    'Catalog exposes recommended sort' =
+        $catalogMarkup -match 'value="recommended"' -and
+        $catalogCode -match 'recommended' -and
+        $catalogQueryText -match 'long\?\s+UserId'
+
+    'Product service handles recommended sort through personalization' =
+        $productServiceText -match 'recommended' -and
+        $productServiceText -match 'PersonalizationService'
 }
 
 $failures = @($checks.GetEnumerator() | Where-Object { -not $_.Value })

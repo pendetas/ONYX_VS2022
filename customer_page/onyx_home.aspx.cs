@@ -1,5 +1,7 @@
 using System;
 using System.Web.UI;
+using ONYX_DDAC.Helpers;
+using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.customer_page
@@ -7,6 +9,7 @@ namespace ONYX_DDAC.customer_page
     public partial class Home : Page
     {
         private readonly ProductService productService = new ProductService();
+        private readonly PersonalizationService personalizationService = new PersonalizationService();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -14,6 +17,7 @@ namespace ONYX_DDAC.customer_page
             {
                 FeaturedProductsRepeater.DataSource = productService.GetFeaturedProducts(4);
                 FeaturedProductsRepeater.DataBind();
+                BindPersonalizedProducts();
             }
         }
 
@@ -55,6 +59,71 @@ namespace ONYX_DDAC.customer_page
         protected string GetFeaturedProductAlt(object category, int itemIndex)
         {
             return GetFeaturedProductName(category, itemIndex) + " product render";
+        }
+
+        private void BindPersonalizedProducts()
+        {
+            if (!TryGetCurrentUserId(out long userId) || !personalizationService.HasCompletedProfile(userId))
+            {
+                PersonalizedProductsPanel.Visible = false;
+                return;
+            }
+
+            var recommendations = personalizationService.GetRecommendedProducts(userId, 4);
+            PersonalizedProductsPanel.Visible = recommendations.Count > 0;
+            PersonalizedProductsRepeater.DataSource = recommendations;
+            PersonalizedProductsRepeater.DataBind();
+        }
+
+        protected string GetPersonalizedProductReason(object dataItem)
+        {
+            PersonalizedProduct recommendation = dataItem as PersonalizedProduct;
+            return recommendation == null ? string.Empty : recommendation.Reason ?? string.Empty;
+        }
+
+        protected string GetPersonalizedProductName(object dataItem)
+        {
+            PersonalizedProduct recommendation = dataItem as PersonalizedProduct;
+            return recommendation == null || recommendation.Product == null
+                ? string.Empty
+                : recommendation.Product.Name ?? string.Empty;
+        }
+
+        protected string GetPersonalizedProductPrice(object dataItem)
+        {
+            PersonalizedProduct recommendation = dataItem as PersonalizedProduct;
+            return recommendation == null || recommendation.Product == null
+                ? string.Empty
+                : CurrencyHelper.FormatMyr(recommendation.Product.Price);
+        }
+
+        protected string GetPersonalizedProductUrl(object dataItem)
+        {
+            PersonalizedProduct recommendation = dataItem as PersonalizedProduct;
+            return recommendation == null || recommendation.Product == null
+                ? "onyx_product_details.aspx"
+                : "onyx_product_details.aspx?id=" + recommendation.Product.Id;
+        }
+
+        protected string GetPersonalizedProductImageUrl(object dataItem, int itemIndex)
+        {
+            PersonalizedProduct recommendation = dataItem as PersonalizedProduct;
+            return GetFeaturedProductImageUrl(
+                recommendation == null || recommendation.Product == null ? null : recommendation.Product.Category,
+                itemIndex);
+        }
+
+        protected string GetPersonalizedProductAlt(object dataItem)
+        {
+            string name = GetPersonalizedProductName(dataItem);
+            return string.IsNullOrWhiteSpace(name) ? "Recommended product render" : name + " product render";
+        }
+
+        private bool TryGetCurrentUserId(out long userId)
+        {
+            userId = 0;
+            object value = Session["UserId"];
+            return value != null && long.TryParse(value.ToString(), out userId);
         }
 
         private static string GetProductCategoryLabel(object category, int itemIndex)
