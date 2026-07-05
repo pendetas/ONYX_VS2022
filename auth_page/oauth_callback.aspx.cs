@@ -86,7 +86,7 @@ namespace ONYX_DDAC.auth_page
                 }
 
                 AuthHelper.EstablishAuthenticatedSession(this, user);
-                RedirectForRole(user.Role);
+                PostAuthRedirectHelper.Redirect(this, user);
             }
             catch (Exception exception)
             {
@@ -153,14 +153,6 @@ namespace ONYX_DDAC.auth_page
         {
             return Request.Url.GetLeftPart(UriPartial.Authority) +
                    ResolveUrl("~/auth_page/oauth_callback.aspx");
-        }
-
-        private void RedirectForRole(string role)
-        {
-            string target = GoogleOAuthRedirectHelper.GetSuccessTarget(role);
-
-            Response.Redirect(target, false);
-            Context.ApplicationInstance.CompleteRequest();
         }
 
         private void RedirectToLogin(string reason)

@@ -7,6 +7,13 @@ $servicePath = "$root\Services\PersonalizationService.cs"
 $project = Get-Content "$root\ONYX_DDAC.csproj" -Raw
 $repositoryText = if (Test-Path $repositoryPath) { Get-Content $repositoryPath -Raw } else { '' }
 $serviceText = if (Test-Path $servicePath) { Get-Content $servicePath -Raw } else { '' }
+$redirectHelperPath = "$root\Helpers\PostAuthRedirectHelper.cs"
+$redirectHelperText = if (Test-Path $redirectHelperPath) { Get-Content $redirectHelperPath -Raw } else { '' }
+$authServiceText = Get-Content "$root\Services\AuthService.cs" -Raw
+$loginText = Get-Content "$root\auth_page\onyx_login.aspx.cs" -Raw
+$registerText = Get-Content "$root\auth_page\onyx_register.aspx.cs" -Raw
+$googleCallbackText = Get-Content "$root\auth_page\google_callback.aspx.cs" -Raw
+$oauthCallbackText = Get-Content "$root\auth_page\oauth_callback.aspx.cs" -Raw
 
 $checks = [ordered]@{
     'Personalization schema creates profile table' =
@@ -77,6 +84,22 @@ $checks = [ordered]@{
     'Project includes personalization repository and service' =
         $project -match 'DAL\\PersonalizationRepository.cs' -and
         $project -match 'Services\\PersonalizationService.cs'
+
+    'Post-auth redirect helper routes incomplete customers to personalization' =
+        $redirectHelperText -match 'class PostAuthRedirectHelper' -and
+        $redirectHelperText -match 'onyx_personalization.aspx' -and
+        $redirectHelperText -match 'UserRequiresPersonalization' -and
+        $redirectHelperText -match 'CompleteRequest'
+
+    'Manual registration returns created user for auto-login' =
+        $authServiceText -match 'User\s+RegisterCustomer\s*\(' -and
+        $authServiceText -match 'GetUserByEmail\s*\('
+
+    'Auth pages use shared post-auth redirect' =
+        $loginText -match 'PostAuthRedirectHelper.Redirect' -and
+        $registerText -match 'PostAuthRedirectHelper.Redirect' -and
+        $googleCallbackText -match 'PostAuthRedirectHelper.Redirect' -and
+        $oauthCallbackText -match 'PostAuthRedirectHelper.Redirect'
 }
 
 $failures = @($checks.GetEnumerator() | Where-Object { -not $_.Value })

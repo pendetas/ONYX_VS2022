@@ -70,6 +70,29 @@ namespace ONYX_DDAC.Services
             }
         }
 
+        public User RegisterCustomer(
+            string fullName,
+            string username,
+            string email,
+            string rawPassword,
+            DateTime dob,
+            string address,
+            string phoneNumber)
+        {
+            string error = Register(fullName, username, email, rawPassword, dob, address, phoneNumber);
+            if (error != null)
+                throw new InvalidOperationException(error);
+
+            User createdUser = _userRepository.GetUserByEmail(email);
+            if (createdUser == null)
+            {
+                throw new InvalidOperationException(
+                    "Registration succeeded, but the customer account could not be loaded.");
+            }
+
+            return createdUser;
+        }
+
         // Returns null on success, or an error string on failure.
         // Verifies current password, then updates to new hash.
         public string ChangePassword(string username, string currentRaw, string newRaw, string confirmRaw)

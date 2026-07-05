@@ -510,6 +510,7 @@
     <Compile Include="Helpers\GoogleOAuthAccountHelper.cs" />
     <Compile Include="Helpers\GoogleOAuthRedirectHelper.cs" />
     <Compile Include="Helpers\OAuthPkceHelper.cs" />
+    <Compile Include="Helpers\PostAuthRedirectHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\CatalogQuery.cs" />

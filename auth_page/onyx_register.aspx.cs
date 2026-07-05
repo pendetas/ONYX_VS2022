@@ -72,16 +72,22 @@ namespace ONYX_DDAC.auth_page
                 return;
             }
 
-            // Defaults to "customer" role via PostgreSQL DB schema DEFAULT as per PRD
-            string error = _authService.Register(fullName, username, email, password, dob, address, phoneNumber);
-
-            if (error == null)
+            try
             {
-                Response.Redirect("onyx_login.aspx?registered=true");
+                var user = _authService.RegisterCustomer(
+                    fullName,
+                    username,
+                    email,
+                    password,
+                    dob,
+                    address,
+                    phoneNumber);
+                AuthHelper.EstablishAuthenticatedSession(this, user);
+                PostAuthRedirectHelper.Redirect(this, user);
             }
-            else
+            catch (InvalidOperationException exception)
             {
-                ShowMessage(error, false);
+                ShowMessage(exception.Message, false);
             }
         }
 

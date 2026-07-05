@@ -72,22 +72,12 @@ namespace ONYX_DDAC.auth_page
                 }
 
                 AuthHelper.EstablishAuthenticatedSession(this, user);
+                string destination = Request.QueryString["profile"] == "true"
+                    ? "~/customer_page/onyx_profile.aspx"
+                    : null;
 
-                // Auto-detect role and route
-                if (string.Equals(user.Role, "admin", StringComparison.OrdinalIgnoreCase))
-                {
-                    RedirectAfterLogin("~/admin_page/onyx_admin_dashboard.aspx");
-                    return;
-                }
-                else
-                {
-                    string destination = Request.QueryString["profile"] == "true"
-                        ? "~/customer_page/onyx_profile.aspx"
-                        : "~/customer_page/onyx_home.aspx";
-
-                    RedirectAfterLogin(destination);
-                    return;
-                }
+                PostAuthRedirectHelper.Redirect(this, user, destination);
+                return;
             }
             catch (Exception ex)
             {
@@ -199,10 +189,5 @@ namespace ONYX_DDAC.auth_page
             ShowMessage("OAuth sign-in could not be completed. Please try again.", false);
         }
 
-        private void RedirectAfterLogin(string url)
-        {
-            Response.Redirect(url, false);
-            Context.ApplicationInstance.CompleteRequest();
-        }
     }
 }
