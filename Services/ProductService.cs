@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
@@ -126,43 +128,59 @@ namespace ONYX_DDAC.Services
 
             if (string.Equals(normalizedQuery.Sort, "recommended", System.StringComparison.OrdinalIgnoreCase))
             {
-                if (!normalizedQuery.UserId.HasValue ||
-                    !_personalizationService.HasCompletedProfile(normalizedQuery.UserId.Value))
+                if (!normalizedQuery.UserId.HasValue)
                 {
                     return GetRepositoryCatalogProducts(normalizedQuery);
                 }
 
-                IList<PersonalizedProduct> recommended =
-                    _personalizationService.GetRecommendedProducts(normalizedQuery.UserId.Value, 48);
-
-                if (recommended.Count <= 0)
+                try
                 {
+                    if (!_personalizationService.HasCompletedProfile(normalizedQuery.UserId.Value))
+                    {
+                        return GetRepositoryCatalogProducts(normalizedQuery);
+                    }
+
+                    IList<PersonalizedProduct> recommended =
+                        _personalizationService.GetRecommendedProducts(normalizedQuery.UserId.Value, 48);
+
+                    if (recommended.Count <= 0)
+                    {
+                        return GetRepositoryCatalogProducts(normalizedQuery);
+                    }
+
+                    IList<Product> filtered = recommended
+                        .Select(item => item.Product)
+                        .Where(product => string.IsNullOrWhiteSpace(normalizedQuery.Category) ||
+                            string.Equals(product.Category, normalizedQuery.Category, System.StringComparison.OrdinalIgnoreCase))
+                        .Where(product => string.IsNullOrWhiteSpace(normalizedQuery.SearchTerm) ||
+                            (product.Name ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            (product.Brand ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            (product.Category ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            (product.Description ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                        .ToList();
+
+                    int totalCount = filtered.Count;
+                    int totalPages = System.Math.Max(1, (int)System.Math.Ceiling(totalCount / (double)normalizedQuery.PageSize));
+                    int page = System.Math.Min(normalizedQuery.Page, totalPages);
+                    int skip = (page - 1) * normalizedQuery.PageSize;
+
+                    return new PagedResult<Product>
+                    {
+                        Items = filtered.Skip(skip).Take(normalizedQuery.PageSize).ToList(),
+                        Page = page,
+                        PageSize = normalizedQuery.PageSize,
+                        TotalCount = totalCount
+                    };
+                }
+                catch (Exception exception)
+                {
+                    Trace.TraceWarning(
+                        "Recommended catalog personalization lookup failed for user {0}: {1}",
+                        normalizedQuery.UserId.Value,
+                        exception);
+
                     return GetRepositoryCatalogProducts(normalizedQuery);
                 }
-
-                IList<Product> filtered = recommended
-                    .Select(item => item.Product)
-                    .Where(product => string.IsNullOrWhiteSpace(normalizedQuery.Category) ||
-                        string.Equals(product.Category, normalizedQuery.Category, System.StringComparison.OrdinalIgnoreCase))
-                    .Where(product => string.IsNullOrWhiteSpace(normalizedQuery.SearchTerm) ||
-                        (product.Name ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        (product.Brand ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        (product.Category ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        (product.Description ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0)
-                    .ToList();
-
-                int totalCount = filtered.Count;
-                int totalPages = System.Math.Max(1, (int)System.Math.Ceiling(totalCount / (double)normalizedQuery.PageSize));
-                int page = System.Math.Min(normalizedQuery.Page, totalPages);
-                int skip = (page - 1) * normalizedQuery.PageSize;
-
-                return new PagedResult<Product>
-                {
-                    Items = filtered.Skip(skip).Take(normalizedQuery.PageSize).ToList(),
-                    Page = page,
-                    PageSize = normalizedQuery.PageSize,
-                    TotalCount = totalCount
-                };
             }
 
             return GetRepositoryCatalogProducts(normalizedQuery);

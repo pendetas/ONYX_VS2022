@@ -125,6 +125,34 @@ Result:
 - `0 Warning(s)`
 - `0 Error(s)`
 
+## Task 5 follow-up: personalization failure fallback
+
+Fixed the remaining Task 5 error-handling issue so personalization DB failures no longer bubble to the browser:
+
+- `Services/ProductService.cs` now catches personalization read failures on the `recommended` catalog path, logs a warning, and falls back to the standard repository catalog path.
+- `customer_page/onyx_home.aspx.cs` now catches personalization read failures while binding the recommendation strip, logs a warning, hides the strip, and keeps rendering the normal home page.
+- `tests/PersonalizationFlow.Tests.ps1` now checks for the fallback/error-handling source contract.
+
+Verification rerun for this follow-up:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tests\PersonalizationFlow.Tests.ps1
+```
+
+Result:
+
+- Passed with `Personalization schema/model source contract passes.`
+
+```powershell
+& 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe' .\ONYX_DDAC.sln /p:Configuration=Debug /p:Platform="Any CPU" /m
+```
+
+Result:
+
+- Build succeeded
+- `0 Warning(s)`
+- `0 Error(s)`
+
 ## Notes / concerns
 
 - The catalog `Recommended` sort option is visible in the UI regardless of sign-in state, but personalized ordering only activates when a user ID is available. In all other cases, the current normalization/pathing remains stable and the page still builds and functions.

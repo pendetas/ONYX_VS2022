@@ -190,7 +190,9 @@ $checks = [ordered]@{
         $homeMarkup -match 'PersonalizedProductsRepeater' -and
         $homeMarkup -match 'For your setup' -and
         $homeCode -match 'GetRecommendedProducts' -and
-        $homeCode -match 'PersonalizedProductsPanel'
+        $homeCode -match 'PersonalizedProductsPanel' -and
+        $homeCode -match 'catch\s*\(\s*Exception' -and
+        $homeCode -match 'PersonalizedProductsPanel\.Visible\s*=\s*false;'
 
     'Catalog exposes recommended sort' =
         $catalogMarkup -match 'value="recommended"' -and
@@ -199,7 +201,10 @@ $checks = [ordered]@{
 
     'Product service handles recommended sort through personalization' =
         $productServiceText -match 'recommended' -and
-        $productServiceText -match 'PersonalizationService'
+        $productServiceText -match 'PersonalizationService' -and
+        $productServiceText -match 'catch\s*\(\s*Exception' -and
+        $productServiceText -match 'Trace\.TraceWarning' -and
+        $productServiceText -match 'GetRepositoryCatalogProducts'
 
     'Recommended catalog search preserves normal searchable fields' =
         $productServiceText -match 'product\.Name' -and
@@ -214,7 +219,9 @@ $checks = [ordered]@{
     'Recommended catalog path falls back to repository results when personalization is unavailable' =
         $productServiceText -match 'HasCompletedProfile' -and
         $productServiceText -match 'GetRepositoryCatalogProducts' -and
-        $productServiceText -match 'GetRecommendedProducts'
+        $productServiceText -match 'GetRecommendedProducts' -and
+        $productServiceText -match 'catch\s*\(\s*Exception' -and
+        $productServiceText -match 'Trace\.TraceWarning'
 }
 
 $failures = @($checks.GetEnumerator() | Where-Object { -not $_.Value })

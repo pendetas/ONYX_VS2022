@@ -63,16 +63,27 @@ namespace ONYX_DDAC.customer_page
 
         private void BindPersonalizedProducts()
         {
-            if (!TryGetCurrentUserId(out long userId) || !personalizationService.HasCompletedProfile(userId))
+            try
             {
-                PersonalizedProductsPanel.Visible = false;
-                return;
-            }
+                if (!TryGetCurrentUserId(out long userId) || !personalizationService.HasCompletedProfile(userId))
+                {
+                    PersonalizedProductsPanel.Visible = false;
+                    return;
+                }
 
-            var recommendations = personalizationService.GetRecommendedProducts(userId, 4);
-            PersonalizedProductsPanel.Visible = recommendations.Count > 0;
-            PersonalizedProductsRepeater.DataSource = recommendations;
-            PersonalizedProductsRepeater.DataBind();
+                var recommendations = personalizationService.GetRecommendedProducts(userId, 4);
+                PersonalizedProductsPanel.Visible = recommendations.Count > 0;
+                PersonalizedProductsRepeater.DataSource = recommendations;
+                PersonalizedProductsRepeater.DataBind();
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Personalized home strip unavailable for user '{0}': {1}",
+                    Session["UserId"] ?? "(null)",
+                    exception);
+                PersonalizedProductsPanel.Visible = false;
+            }
         }
 
         protected string GetPersonalizedProductReason(object dataItem)
