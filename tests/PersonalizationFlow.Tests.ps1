@@ -59,6 +59,21 @@ $checks = [ordered]@{
         $serviceText -match 'RankProductsForProfile' -and
         $serviceText -match 'CalculateScore'
 
+    'Service uses stable ranking tie-breakers' =
+        $serviceText -match 'ThenBy\s*\(\s*item\s*=>\s*item\.Product\.Price\s*\)' -and
+        $serviceText -match 'ThenBy\s*\(\s*item\s*=>\s*item\.Product\.Name\s*\)' -and
+        $serviceText -match 'ThenBy\s*\(\s*item\s*=>\s*item\.Product\.Id\s*\)'
+
+    'Service explains non-category recommendation signals' =
+        $serviceText -match 'BuildReason' -and
+        $serviceText -match 'Supports your' -and
+        $serviceText -match 'Fits the budget range' -and
+        $serviceText -match 'wishlist' -and
+        $serviceText -match 'setup'
+
+    'Service normalizes list values case-insensitively' =
+        $serviceText -match 'Distinct\s*\(\s*StringComparer\.OrdinalIgnoreCase\s*\)'
+
     'Project includes personalization repository and service' =
         $project -match 'DAL\\PersonalizationRepository.cs' -and
         $project -match 'Services\\PersonalizationService.cs'

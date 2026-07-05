@@ -88,57 +88,84 @@ namespace ONYX_DDAC.Services
             }
 
             return products
-                .Select(product => new PersonalizedProduct
-                {
-                    Product = product,
-                    Score = CalculateScore(profile, product, wishlistCategories, purchasedCategories),
-                    Reason = BuildReason(profile, product)
-                })
+                .Select(product => BuildRecommendation(profile, product, wishlistCategories, purchasedCategories))
                 .OrderByDescending(item => item.Score)
                 .ThenBy(item => item.Product.Price)
+                .ThenBy(item => item.Product.Name)
+                .ThenBy(item => item.Product.Id)
                 .Take(count < 1 ? 4 : count)
                 .ToList();
         }
 
-        private static int CalculateScore(
+        private static PersonalizedProduct BuildRecommendation(
             UserPersonalizationProfile profile,
             Product product,
             IList<string> wishlistCategories,
             IList<string> purchasedCategories)
         {
-            int score = 0;
+            RecommendationSignals signals = GetRecommendationSignals(profile, product, wishlistCategories, purchasedCategories);
+
+            return new PersonalizedProduct
+            {
+                Product = product,
+                Score = CalculateScore(signals),
+                Reason = BuildReason(signals)
+            };
+        }
+
+        private static RecommendationSignals GetRecommendationSignals(
+            UserPersonalizationProfile profile,
+            Product product,
+            IList<string> wishlistCategories,
+            IList<string> purchasedCategories)
+        {
             string category = Normalize(product.Category);
             string searchable = Normalize(product.Name + " " + product.Description + " " + product.Brand);
+            string matchedPriority = profile.Priorities
+                .Select(Normalize)
+                .FirstOrDefault(priority => MatchesPriority(priority, searchable));
 
-            if (profile.PreferredCategories.Select(Normalize).Contains(category))
+            return new RecommendationSignals
+            {
+                MatchesPreferredCategory = profile.PreferredCategories.Select(Normalize).Contains(category),
+                MatchedPriority = matchedPriority,
+                FitsBudget = PriceFitsBudget(product.Price, profile.BudgetRange),
+                MatchesWishlistCategory = (wishlistCategories ?? new List<string>()).Select(Normalize).Contains(category),
+                MatchesPurchasedCategory = (purchasedCategories ?? new List<string>()).Select(Normalize).Contains(category),
+                MatchesSetupGoal = SetupGoalMatches(profile.SetupGoal, category, searchable)
+            };
+        }
+
+        private static int CalculateScore(RecommendationSignals signals)
+        {
+            int score = 0;
+
+            if (signals.MatchesPreferredCategory)
             {
                 score += 50;
             }
 
-            foreach (string priority in profile.Priorities.Select(Normalize))
+            if (!string.IsNullOrEmpty(signals.MatchedPriority))
             {
-                if (MatchesPriority(priority, searchable))
-                {
-                    score += 25;
-                }
+                score += 25;
             }
 
-            if (PriceFitsBudget(product.Price, profile.BudgetRange))
+            if (signals.FitsBudget)
             {
                 score += 20;
             }
 
-            if ((wishlistCategories ?? new List<string>()).Select(Normalize).Contains(category))
+            if (signals.MatchesWishlistCategory)
             {
                 score += 15;
             }
 
-            if ((purchasedCategories ?? new List<string>()).Select(Normalize).Contains(category))
+            if (signals.MatchesPurchasedCategory)
             {
                 score += 20;
             }
 
-            if (SetupGoalMatches(profile.SetupGoal, category, searchable))
+            if (signals.MatchesSetupGoal)
             {
                 score += 10;
             }
@@ -146,19 +173,51 @@ namespace ONYX_DDAC.Services
             return score;
         }
 
-        private static string BuildReason(UserPersonalizationProfile profile, Product product)
+        private static string BuildReason(RecommendationSignals signals)
         {
-            if (profile.PreferredCategories.Select(Normalize).Contains(Normalize(product.Category)))
+            if (signals.MatchesPreferredCategory)
             {
                 return "Matched to your selected gear focus";
             }
 
-            if (SetupGoalMatches(profile.SetupGoal, Normalize(product.Category), Normalize(product.Name + " " + product.Description)))
+            if (!string.IsNullOrEmpty(signals.MatchedPriority))
+            {
+                return "Supports your " + GetPriorityLabel(signals.MatchedPriority) + " priority";
+            }
+
+            if (signals.FitsBudget)
+            {
+                return "Fits the budget range in your ONYX profile";
+            }
+
+            if (signals.MatchesPurchasedCategory)
+            {
+                return "Complements categories already in your setup";
+            }
+
+            if (signals.MatchesWishlistCategory)
+            {
+                return "Lines up with the gear you save to your wishlist";
+            }
+
+            if (signals.MatchesSetupGoal)
             {
                 return "Aligned with your setup goal";
             }
 
             return "Recommended from your ONYX setup profile";
+        }
+
+        private static string GetPriorityLabel(string priority)
+        {
+            switch (Normalize(priority))
+            {
+                case "premium build":
+                case "premium-build":
+                    return "premium build";
+                default:
+                    return Normalize(priority);
+            }
         }
 
         private static bool MatchesPriority(string priority, string searchable)
@@ -268,7 +327,7 @@ namespace ONYX_DDAC.Services
             return (values ?? new List<string>())
                 .Where(value => !string.IsNullOrWhiteSpace(value))
                 .Select(NormalizeChoice)
-                .Distinct()
+                .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
         }
 
@@ -280,6 +339,16 @@ namespace ONYX_DDAC.Services
         private static string Normalize(string value)
         {
             return (value ?? string.Empty).Trim().ToLowerInvariant();
+        }
+
+        private class RecommendationSignals
+        {
+            public bool MatchesPreferredCategory { get; set; }
+            public string MatchedPriority { get; set; }
+            public bool FitsBudget { get; set; }
+            public bool MatchesWishlistCategory { get; set; }
+            public bool MatchesPurchasedCategory { get; set; }
+            public bool MatchesSetupGoal { get; set; }
         }
     }
 }
