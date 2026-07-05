@@ -83,3 +83,32 @@ Command:
 Result:
 
 - Build succeeded with `0 Warning(s)` and `0 Error(s)`.
+
+## Review Fix Verification Round 2
+
+- Updated `auth_page/onyx_login.aspx.cs` so already-authenticated sessions use `PostAuthRedirectHelper.GetTarget(...)` instead of always bypassing to `~/customer_page/onyx_home.aspx`, which keeps incomplete customer sessions on the mandatory personalization path while preserving admin/owner/staff routing.
+- Added a durable customer-page guard in `customer_page/onyx_user.Master.cs` that redirects logged-in customers with incomplete personalization to `~/customer_page/onyx_personalization.aspx`, while exempting the personalization page itself and leaving non-customer roles untouched.
+- Added page-scoped shell classes in `customer_page/onyx_user.Master` and expanded `Content/onyx-personalization.css` with monochrome overrides for the body, master shell, nav, menus, footer, and logout modal so the personalization page no longer inherits the navy glass theme.
+- Extended `tests/PersonalizationFlow.Tests.ps1` to make the login redirect, master-page guard, shell scoping, and monochrome shell overrides visible in the source contract.
+
+### Review Fix Round 2 Test Results
+
+Command:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tests\PersonalizationFlow.Tests.ps1
+```
+
+Result:
+
+- Passed with `Personalization schema/model source contract passes.`
+
+Command:
+
+```powershell
+& 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe' .\ONYX_DDAC.sln /p:Configuration=Debug /p:Platform="Any CPU" /m
+```
+
+Result:
+
+- Build succeeded with `0 Warning(s)` and `0 Error(s)`.

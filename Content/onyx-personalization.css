@@ -8,6 +8,85 @@
     --onyx-silver: #d8dde3;
 }
 
+body.onyx-personalization-shell-page {
+    background: linear-gradient(180deg, #000 0%, #0b0b0c 42%, #141414 100%) !important;
+    color: var(--onyx-text);
+}
+
+.onyx-personalization-shell-page .onyx-user-shell {
+    background: linear-gradient(180deg, #000 0%, #0b0b0c 42%, #141414 100%) !important;
+    color: var(--onyx-text);
+}
+
+.onyx-personalization-shell-page .onyx-ddac-nav,
+.onyx-personalization-shell-page .onyx-ddac-nav.is-scrolled {
+    background: rgba(0, 0, 0, 0.92) !important;
+    border-bottom: 1px solid rgba(216, 221, 227, 0.12) !important;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.48) !important;
+}
+
+.onyx-personalization-shell-page .onyx-nav-search,
+.onyx-personalization-shell-page .onyx-ddac-nav-register,
+.onyx-personalization-shell-page .onyx-ddac-account-trigger,
+.onyx-personalization-shell-page .onyx-ddac-nav-icon,
+.onyx-personalization-shell-page .onyx-mobile-menu-button {
+    background: rgba(11, 11, 12, 0.92) !important;
+    border-color: rgba(216, 221, 227, 0.18) !important;
+    color: var(--onyx-text) !important;
+}
+
+.onyx-personalization-shell-page .onyx-nav-search:focus-within {
+    border-color: rgba(216, 221, 227, 0.62) !important;
+    box-shadow: 0 0 0 3px rgba(216, 221, 227, 0.08) !important;
+}
+
+.onyx-personalization-shell-page .onyx-nav-search svg,
+.onyx-personalization-shell-page .onyx-nav-search input,
+.onyx-personalization-shell-page .onyx-nav-search input::placeholder,
+.onyx-personalization-shell-page .onyx-ddac-account-name,
+.onyx-personalization-shell-page .text-secondary {
+    color: var(--onyx-silver) !important;
+    stroke: var(--onyx-silver) !important;
+}
+
+.onyx-personalization-shell-page .onyx-ddac-nav-links > a:hover,
+.onyx-personalization-shell-page .onyx-ddac-nav-links > a.is-active,
+.onyx-personalization-shell-page .onyx-ddac-dropdown-trigger:hover,
+.onyx-personalization-shell-page .onyx-ddac-dropdown-trigger.is-active {
+    border-bottom-color: var(--onyx-silver) !important;
+    color: var(--onyx-text) !important;
+}
+
+.onyx-personalization-shell-page .onyx-ddac-nav-icon-count,
+.onyx-personalization-shell-page .onyx-ddac-account-avatar {
+    background: var(--onyx-silver) !important;
+    color: var(--onyx-black) !important;
+}
+
+.onyx-personalization-shell-page .onyx-ddac-megapanel,
+.onyx-personalization-shell-page .onyx-ddac-account-menu,
+.onyx-personalization-shell-page .onyx-mobile-menu {
+    background: rgba(11, 11, 12, 0.98) !important;
+    border-color: rgba(216, 221, 227, 0.14) !important;
+}
+
+.onyx-personalization-shell-page .onyx-mobile-menu > a,
+.onyx-personalization-shell-page .onyx-master-footer-links a,
+.onyx-personalization-shell-page .onyx-master-footer-bottom,
+.onyx-personalization-shell-page .onyx-master-footer-bottom a {
+    color: rgba(216, 221, 227, 0.8) !important;
+}
+
+.onyx-personalization-shell-page .onyx-master-footer {
+    background: linear-gradient(180deg, rgba(11, 11, 12, 0.96), rgba(0, 0, 0, 0.98)) !important;
+    border-top: 1px solid rgba(216, 221, 227, 0.14) !important;
+}
+
+.onyx-personalization-shell-page .onyx-logout-card {
+    background: linear-gradient(180deg, rgba(20, 20, 20, 0.98), rgba(0, 0, 0, 0.98)) !important;
+    border-color: rgba(216, 221, 227, 0.18) !important;
+}
+
 .onyx-personalization-page {
     background:
         radial-gradient(circle at top, rgba(216, 221, 227, 0.08), transparent 28%),

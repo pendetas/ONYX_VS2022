@@ -19,9 +19,14 @@ namespace ONYX_DDAC.auth_page
         {
             TurnstileSiteKey = CaptchaService.GetSiteKey();
 
-            if (Session["UserId"] != null)
+            if (TryGetAuthenticatedUser(out User currentUser))
             {
-                Response.Redirect("~/customer_page/onyx_home.aspx");
+                string requestedTarget = Request.QueryString["profile"] == "true"
+                    ? "~/customer_page/onyx_profile.aspx"
+                    : null;
+                string target = PostAuthRedirectHelper.GetTarget(this, currentUser, requestedTarget);
+                Response.Redirect(target, false);
+                Context.ApplicationInstance.CompleteRequest();
                 return;
             }
 
@@ -187,6 +192,35 @@ namespace ONYX_DDAC.auth_page
             }
 
             ShowMessage("OAuth sign-in could not be completed. Please try again.", false);
+        }
+
+        private bool TryGetAuthenticatedUser(out User user)
+        {
+            user = null;
+
+            object sessionUserId = Session["UserId"];
+            if (sessionUserId == null)
+            {
+                return false;
+            }
+
+            long userId;
+            if (sessionUserId is long longValue)
+            {
+                userId = longValue;
+            }
+            else if (!long.TryParse(sessionUserId.ToString(), out userId))
+            {
+                return false;
+            }
+
+            user = new User
+            {
+                Id = userId,
+                Role = Convert.ToString(Session["Role"])
+            };
+
+            return true;
         }
 
     }

@@ -17,8 +17,8 @@
     <link href="<%= ResolveUrl("~/Content/onyx-user-master.css") %>" rel="stylesheet" />
     <script src="<%= ResolveUrl("~/Scripts/onyx-user-master.js") %>"></script>
 </head>
-<body data-catalog-url="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>">
-    <form id="form1" runat="server" class="onyx-user-shell antialiased selection:bg-accent selection:text-black">
+<body class="<%= BodyCssClass %>" data-catalog-url="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>">
+    <form id="form1" runat="server" class="<%= ShellCssClass %>">
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
 
         <nav id="onyx-main-nav" class="onyx-ddac-nav" aria-label="ONYX primary navigation">

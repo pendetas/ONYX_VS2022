@@ -15,6 +15,8 @@ $loginText = Get-Content "$root\auth_page\onyx_login.aspx.cs" -Raw
 $registerText = Get-Content "$root\auth_page\onyx_register.aspx.cs" -Raw
 $googleCallbackText = Get-Content "$root\auth_page\google_callback.aspx.cs" -Raw
 $oauthCallbackText = Get-Content "$root\auth_page\oauth_callback.aspx.cs" -Raw
+$masterCodeText = Get-Content "$root\customer_page\onyx_user.Master.cs" -Raw
+$masterMarkupText = Get-Content "$root\customer_page\onyx_user.Master" -Raw
 $personalizationPage = "$root\customer_page\onyx_personalization.aspx"
 $personalizationCode = "$root\customer_page\onyx_personalization.aspx.cs"
 $personalizationCss = "$root\Content\onyx-personalization.css"
@@ -116,6 +118,19 @@ $checks = [ordered]@{
         $googleCallbackText -match 'PostAuthRedirectHelper.Redirect' -and
         $oauthCallbackText -match 'PostAuthRedirectHelper.Redirect'
 
+    'Authenticated login page no longer bypasses incomplete customers to home' =
+        $loginText -match 'PostAuthRedirectHelper.GetTarget' -and
+        $loginText -notmatch 'Session\["UserId"\]\s*!=\s*null[\s\S]*?onyx_home\.aspx'
+
+    'Customer master guard routes incomplete customer sessions to personalization without loops' =
+        $masterCodeText -match 'PersonalizationService' -and
+        $masterCodeText -match 'HasCompletedProfile' -and
+        $masterCodeText -match 'IsPersonalizationPage' -and
+        $masterCodeText -match 'EnsureCustomerPersonalizationCompleted' -and
+        $masterCodeText -match 'IsPersonalizationPage\s*\|\|\s*!IsCustomerPage\(\)' -and
+        $masterCodeText -match 'onyx_personalization\.aspx' -and
+        $masterCodeText -match '"customer"'
+
     'Personalization page defines required questions and submit action' =
         $pageText -match 'Build Your ONYX Setup' -and
         $pageText -match 'gaming_style' -and
@@ -144,11 +159,18 @@ $checks = [ordered]@{
         $codeText -match '"staff"' -and
         $codeText -match 'onyx_admin_dashboard\.aspx'
 
+    'Personalization page marks the master shell for page-scoped monochrome overrides' =
+        $masterMarkupText -match 'BodyCssClass' -and
+        $masterMarkupText -match 'ShellCssClass'
+
     'Personalization CSS is monochrome ONYX theme' =
         $cssText -match '#000' -and
         $cssText -match '#0b0b0c' -and
         $cssText -match '#d8dde3' -and
-        $cssText -notmatch '#0b1220|#0f172a|#f0d6d6|#ff|navy|blue|pink|red'
+        $cssText -match 'body\.onyx-personalization-shell-page' -and
+        $cssText -match '\.onyx-personalization-shell-page\s+\.onyx-ddac-nav' -and
+        $cssText -match '\.onyx-personalization-shell-page\s+\.onyx-master-footer' -and
+        $cssText -notmatch '#0b1220|#0f172a|#f0d6d6|navy|blue|pink|red'
 
     'Project includes personalization page files' =
         $project -match 'customer_page\\onyx_personalization.aspx' -and
