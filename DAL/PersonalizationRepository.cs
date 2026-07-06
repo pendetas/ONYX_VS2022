@@ -35,7 +35,8 @@ namespace ONYX_DDAC.DAL
                 {
                     cmd.CommandText = @"
                         SELECT user_id, gaming_style, preferred_categories, priorities,
-                               budget_range, setup_goal, completed_at, updated_at
+                               budget_range, setup_goal, completed_at, updated_at,
+                               comfort_preferences, performance_preferences, setup_constraints
                         FROM user_personalization_profiles
                         WHERE user_id = @UserId";
                     AddParameter(cmd, "@UserId", userId);
@@ -58,16 +59,21 @@ namespace ONYX_DDAC.DAL
                     cmd.CommandText = @"
                         INSERT INTO user_personalization_profiles
                             (user_id, gaming_style, preferred_categories, priorities,
-                             budget_range, setup_goal, completed_at, updated_at)
+                             budget_range, setup_goal, comfort_preferences, performance_preferences,
+                             setup_constraints, completed_at, updated_at)
                         VALUES
                             (@UserId, @GamingStyle, @PreferredCategories, @Priorities,
-                             @BudgetRange, @SetupGoal, NOW(), NOW())
+                             @BudgetRange, @SetupGoal, @ComfortPreferences, @PerformancePreferences,
+                             @SetupConstraints, NOW(), NOW())
                         ON CONFLICT (user_id) DO UPDATE SET
                             gaming_style = EXCLUDED.gaming_style,
                             preferred_categories = EXCLUDED.preferred_categories,
                             priorities = EXCLUDED.priorities,
                             budget_range = EXCLUDED.budget_range,
                             setup_goal = EXCLUDED.setup_goal,
+                            comfort_preferences = EXCLUDED.comfort_preferences,
+                            performance_preferences = EXCLUDED.performance_preferences,
+                            setup_constraints = EXCLUDED.setup_constraints,
                             completed_at = COALESCE(user_personalization_profiles.completed_at, NOW()),
                             updated_at = NOW()";
                     AddParameter(cmd, "@UserId", profile.UserId);
@@ -76,6 +82,9 @@ namespace ONYX_DDAC.DAL
                     AddParameter(cmd, "@Priorities", JoinValues(profile.Priorities));
                     AddParameter(cmd, "@BudgetRange", profile.BudgetRange);
                     AddParameter(cmd, "@SetupGoal", profile.SetupGoal);
+                    AddParameter(cmd, "@ComfortPreferences", JoinValues(profile.ComfortPreferences));
+                    AddParameter(cmd, "@PerformancePreferences", JoinValues(profile.PerformancePreferences));
+                    AddParameter(cmd, "@SetupConstraints", JoinValues(profile.SetupConstraints));
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -137,7 +146,10 @@ namespace ONYX_DDAC.DAL
                 BudgetRange = reader.GetString(4),
                 SetupGoal = reader.GetString(5),
                 CompletedAt = reader.IsDBNull(6) ? (DateTime?)null : reader.GetDateTime(6),
-                UpdatedAt = reader.IsDBNull(7) ? (DateTime?)null : reader.GetDateTime(7)
+                UpdatedAt = reader.IsDBNull(7) ? (DateTime?)null : reader.GetDateTime(7),
+                ComfortPreferences = reader.FieldCount > 8 && !reader.IsDBNull(8) ? SplitValues(reader.GetString(8)) : new List<string>(),
+                PerformancePreferences = reader.FieldCount > 9 && !reader.IsDBNull(9) ? SplitValues(reader.GetString(9)) : new List<string>(),
+                SetupConstraints = reader.FieldCount > 10 && !reader.IsDBNull(10) ? SplitValues(reader.GetString(10)) : new List<string>()
             };
         }
 
