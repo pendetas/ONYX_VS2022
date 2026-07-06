@@ -1,5 +1,6 @@
 $root = Split-Path $PSScriptRoot -Parent
 $schemaPath = "$root\App_Data\20260705_user_personalization_profiles.sql"
+$schemaText = if (Test-Path $schemaPath) { Get-Content $schemaPath -Raw } else { '' }
 $catalogSearchSchemaPath = "$root\App_Data\20260706_catalog_search_events.sql"
 $profileModel = "$root\Models\UserPersonalizationProfile.cs"
 $profileModelText = if (Test-Path $profileModel) { Get-Content $profileModel -Raw } else { '' }
@@ -47,9 +48,9 @@ $checks = [ordered]@{
         ((Get-Content $schemaPath -Raw) -match 'completed_at')
 
     'Personalization schema stores expanded questionnaire answers' =
-        ((Get-Content $schemaPath -Raw) -match 'comfort_preferences') -and
-        ((Get-Content $schemaPath -Raw) -match 'performance_preferences') -and
-        ((Get-Content $schemaPath -Raw) -match 'setup_constraints')
+        $schemaText -match 'comfort_preferences' -and
+        $schemaText -match 'performance_preferences' -and
+        $schemaText -match 'setup_constraints'
 
     'User personalization profile model exists' =
         (Test-Path $profileModel) -and
@@ -144,8 +145,13 @@ $checks = [ordered]@{
         $serviceText -match 'MatchedComfortPreferences' -and
         $serviceText -match 'MatchedPerformancePreferences' -and
         $serviceText -match 'MatchedSetupConstraints' -and
+        $serviceText -match 'BudgetRange' -and
+        $serviceText -match 'Premium Build' -and
+        $serviceText -match 'Entry' -and
         $serviceText -match 'GetPriceIntent' -and
-        $serviceText -match 'ThenByPriceIntent'
+        $serviceText -match 'ThenByPriceIntent' -and
+        $serviceText -match 'ThenBy\s*\(\s*item\s*=>\s*item\.Product\.Price\s*\)' -and
+        $serviceText -match 'ThenByDescending\s*\(\s*item\s*=>\s*item\.Product\.Price\s*\)'
 
     'Service normalizes list values case-insensitively' =
         $serviceText -match 'Distinct\s*\(\s*StringComparer\.OrdinalIgnoreCase\s*\)'
@@ -205,7 +211,8 @@ $checks = [ordered]@{
         $pageText -match 'onyx-personalization-step' -and
         $pageText -match 'data-step-index="0"' -and
         $pageText -match 'data-step-index="1"[\s\S]*?hidden' -and
-        $pageText -match 'STEP 1 OF 5' -and
+        $pageText -match 'data-step-count="8"' -and
+        $pageText -match 'STEP 1 OF 8' -and
         $pageText -match 'onyxPersonalizationNext' -and
         $pageText -match 'onyxPersonalizationBack' -and
         $pageText -match 'onyx-personalization\.css\?v='
@@ -257,9 +264,19 @@ $checks = [ordered]@{
         $codeText -match 'onyx_home.aspx'
 
     'Personalization save maps expanded questionnaire answers' =
+        $codeText -match 'GamingStyleField\.Value' -and
+        $codeText -match 'PreferredCategoriesField\.Value' -and
+        $codeText -match 'PrioritiesField\.Value' -and
+        $codeText -match 'BudgetRangeField\.Value' -and
+        $codeText -match 'SetupGoalField\.Value' -and
         $codeText -match 'ComfortPreferencesField\.Value' -and
         $codeText -match 'PerformancePreferencesField\.Value' -and
         $codeText -match 'SetupConstraintsField\.Value' -and
+        $codeText -match 'GamingStyle\s*=\s*GamingStyleField\.Value' -and
+        $codeText -match 'PreferredCategories\s*=\s*SplitValues' -and
+        $codeText -match 'Priorities\s*=\s*SplitValues' -and
+        $codeText -match 'BudgetRange\s*=\s*BudgetRangeField\.Value' -and
+        $codeText -match 'SetupGoal\s*=\s*SetupGoalField\.Value' -and
         $codeText -match 'ComfortPreferences\s*=\s*SplitValues' -and
         $codeText -match 'PerformancePreferences\s*=\s*SplitValues' -and
         $codeText -match 'SetupConstraints\s*=\s*SplitValues'
