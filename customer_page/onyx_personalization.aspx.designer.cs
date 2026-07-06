@@ -21,6 +21,12 @@ namespace ONYX_DDAC.customer_page
 
         protected global::System.Web.UI.WebControls.HiddenField SetupGoalField;
 
+        protected global::System.Web.UI.WebControls.HiddenField ComfortPreferencesField;
+
+        protected global::System.Web.UI.WebControls.HiddenField PerformancePreferencesField;
+
+        protected global::System.Web.UI.WebControls.HiddenField SetupConstraintsField;
+
         protected global::System.Web.UI.WebControls.Button BuildSetupButton;
 
         protected global::System.Web.UI.WebControls.Label FeedbackLabel;

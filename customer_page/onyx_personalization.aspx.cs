@@ -49,7 +49,10 @@ namespace ONYX_DDAC.customer_page
                     PreferredCategories = SplitValues(PreferredCategoriesField.Value),
                     Priorities = SplitValues(PrioritiesField.Value),
                     BudgetRange = BudgetRangeField.Value,
-                    SetupGoal = SetupGoalField.Value
+                    SetupGoal = SetupGoalField.Value,
+                    ComfortPreferences = SplitValues(ComfortPreferencesField.Value),
+                    PerformancePreferences = SplitValues(PerformancePreferencesField.Value),
+                    SetupConstraints = SplitValues(SetupConstraintsField.Value)
                 });
 
                 Response.Redirect("~/customer_page/onyx_home.aspx", false);
@@ -136,7 +139,10 @@ namespace ONYX_DDAC.customer_page
                    string.Equals(message, "Choose at least one gear interest.", StringComparison.Ordinal) ||
                    string.Equals(message, "Choose at least one purchase priority.", StringComparison.Ordinal) ||
                    string.Equals(message, "Choose your budget range.", StringComparison.Ordinal) ||
-                   string.Equals(message, "Choose your setup goal.", StringComparison.Ordinal);
+                   string.Equals(message, "Choose your setup goal.", StringComparison.Ordinal) ||
+                   string.Equals(message, "Choose at least one comfort preference.", StringComparison.Ordinal) ||
+                   string.Equals(message, "Choose at least one performance preference.", StringComparison.Ordinal) ||
+                   string.Equals(message, "Choose at least one setup constraint.", StringComparison.Ordinal);
         }
 
         private bool HasCompletedProfileSafely(long userId)
