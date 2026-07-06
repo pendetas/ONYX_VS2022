@@ -339,6 +339,18 @@ $checks = [ordered]@{
         $catalogCode -match 'TryGetCurrentUserId' -and
         $catalogCode -match 'return\s+"recommended";'
 
+    'Catalog explicit sort query overrides personalized recommended default' =
+        $catalogCode -match 'ResolveCatalogSort' -and
+        $catalogCode -match 'string\s+explicitSort\s*=\s*Request\.QueryString\["sort"\];' -and
+        $catalogCode -match 'if\s*\(\s*!string\.IsNullOrWhiteSpace\(explicitSort\)\s*\)\s*\{\s*return\s+NormalizeSort\(explicitSort\);\s*\}' -and
+        $catalogCode -match 'if\s*\(\s*TryGetCurrentUserId\(out\s*_\)\s*\)\s*\{\s*return\s+"recommended";\s*\}'
+
+    'Catalog recognizes supported explicit sort options' =
+        $catalogCode -match 'case\s+"name":' -and
+        $catalogCode -match 'case\s+"price-asc":' -and
+        $catalogCode -match 'case\s+"price-desc":' -and
+        $catalogCode -match 'case\s+"recommended":'
+
     'Catalog records logged-in non-empty searches for personalization' =
         $catalogCode -match 'RecordCatalogSearch' -and
         $catalogCode -match '!string\.IsNullOrWhiteSpace\(SearchTerm\)' -and
