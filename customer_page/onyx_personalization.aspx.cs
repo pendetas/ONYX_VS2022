@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Web.UI;
 using ONYX_DDAC.Helpers;
@@ -22,7 +21,7 @@ namespace ONYX_DDAC.customer_page
                 return;
             }
 
-            if (!IsPostBack && TryGetUserId(out long userId) && personalizationService.HasCompletedProfile(userId))
+            if (!IsPostBack && TryGetUserId(out long userId) && HasCompletedProfileSafely(userId))
             {
                 Response.Redirect("~/customer_page/onyx_home.aspx", true);
             }
@@ -138,6 +137,26 @@ namespace ONYX_DDAC.customer_page
                    string.Equals(message, "Choose at least one purchase priority.", StringComparison.Ordinal) ||
                    string.Equals(message, "Choose your budget range.", StringComparison.Ordinal) ||
                    string.Equals(message, "Choose your setup goal.", StringComparison.Ordinal);
+        }
+
+        private bool HasCompletedProfileSafely(long userId)
+        {
+            try
+            {
+                return personalizationService.HasCompletedProfile(userId);
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Personalization page completion lookup failed for user {0}: {1}",
+                    userId,
+                    exception);
+
+                FeedbackLabel.Text = GenericFailureMessage;
+                FeedbackLabel.Visible = true;
+                BuildSetupButton.Enabled = false;
+                return false;
+            }
         }
     }
 }

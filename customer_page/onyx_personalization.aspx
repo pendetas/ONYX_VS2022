@@ -44,8 +44,10 @@
                         <div class="onyx-personalization-choices">
                             <button type="button" class="onyx-choice" data-target="gaming_style" data-value="FPS">FPS</button>
                             <button type="button" class="onyx-choice" data-target="gaming_style" data-value="MOBA">MOBA</button>
-                            <button type="button" class="onyx-choice" data-target="gaming_style" data-value="Battle Royale">Battle Royale</button>
-                            <button type="button" class="onyx-choice" data-target="gaming_style" data-value="Single Player">Single Player</button>
+                            <button type="button" class="onyx-choice" data-target="gaming_style" data-value="RPG">RPG</button>
+                            <button type="button" class="onyx-choice" data-target="gaming_style" data-value="Racing">Racing</button>
+                            <button type="button" class="onyx-choice" data-target="gaming_style" data-value="Casual">Casual</button>
+                            <button type="button" class="onyx-choice" data-target="gaming_style" data-value="Creator">Creator</button>
                         </div>
                     </section>
 
@@ -71,6 +73,8 @@
                             <button type="button" class="onyx-choice" data-target="priorities" data-multi="true" data-value="Speed">Speed</button>
                             <button type="button" class="onyx-choice" data-target="priorities" data-multi="true" data-value="Comfort">Comfort</button>
                             <button type="button" class="onyx-choice" data-target="priorities" data-multi="true" data-value="Wireless">Wireless</button>
+                            <button type="button" class="onyx-choice" data-target="priorities" data-multi="true" data-value="Budget">Budget</button>
+                            <button type="button" class="onyx-choice" data-target="priorities" data-multi="true" data-value="RGB">RGB</button>
                             <button type="button" class="onyx-choice" data-target="priorities" data-multi="true" data-value="Premium Build">Premium Build</button>
                         </div>
                     </section>

@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Web.UI;
 using ONYX_DDAC.Helpers;
+using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.auth_page
@@ -20,7 +21,14 @@ namespace ONYX_DDAC.auth_page
 
             if (Session["UserId"] != null)
             {
-                Response.Redirect("~/customer_page/onyx_home.aspx");
+                if (TryBuildSessionUser(out User sessionUser))
+                {
+                    PostAuthRedirectHelper.Redirect(this, sessionUser);
+                    return;
+                }
+
+                Response.Redirect("~/auth_page/onyx_login.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
             }
         }
 
@@ -158,6 +166,32 @@ namespace ONYX_DDAC.auth_page
 
             return Request.Url.GetLeftPart(UriPartial.Authority) +
                    ResolveUrl(callbackPath);
+        }
+
+        private bool TryBuildSessionUser(out User user)
+        {
+            user = null;
+
+            object sessionUserId = Session["UserId"];
+            if (sessionUserId == null || !long.TryParse(sessionUserId.ToString(), out long userId))
+            {
+                return false;
+            }
+
+            string role = Convert.ToString(Session["Role"]);
+            if (string.IsNullOrWhiteSpace(role))
+            {
+                role = "customer";
+            }
+
+            user = new User
+            {
+                Id = userId,
+                Username = Convert.ToString(Session["Username"]),
+                Role = role
+            };
+
+            return true;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Web;
 using System.Web.UI;
 using ONYX_DDAC.Models;
@@ -16,7 +17,7 @@ namespace ONYX_DDAC.Helpers
             if (RoutesToAdminDashboard(user.Role))
                 return "~/admin_page/onyx_admin_dashboard.aspx";
 
-            if (new PersonalizationService().UserRequiresPersonalization(user))
+            if (CustomerRequiresPersonalization(user))
                 return "~/customer_page/onyx_personalization.aspx";
 
             if (!string.IsNullOrWhiteSpace(requestedCustomerTarget))
@@ -38,6 +39,26 @@ namespace ONYX_DDAC.Helpers
             return string.Equals(role, "admin", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(role, "owner", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(role, "staff", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool CustomerRequiresPersonalization(User user)
+        {
+            if (!string.Equals(user.Role, "customer", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            try
+            {
+                return new PersonalizationService().UserRequiresPersonalization(user);
+            }
+            catch (Exception exception)
+            {
+                Trace.TraceWarning(
+                    "Personalization lookup failed during post-auth redirect for user {0}: {1}",
+                    user.Id,
+                    exception);
+
+                return true;
+            }
         }
     }
 }

@@ -146,6 +146,20 @@ $checks = [ordered]@{
         $pageText -match 'setup_goal' -and
         $pageText -match 'Build My Setup'
 
+    'Personalization page exposes the approved onboarding choices' =
+        $pageText -match 'data-target="gaming_style"\s+data-value="FPS"' -and
+        $pageText -match 'data-target="gaming_style"\s+data-value="MOBA"' -and
+        $pageText -match 'data-target="gaming_style"\s+data-value="RPG"' -and
+        $pageText -match 'data-target="gaming_style"\s+data-value="Racing"' -and
+        $pageText -match 'data-target="gaming_style"\s+data-value="Casual"' -and
+        $pageText -match 'data-target="gaming_style"\s+data-value="Creator"' -and
+        $pageText -match 'data-target="priorities"\s+data-multi="true"\s+data-value="Speed"' -and
+        $pageText -match 'data-target="priorities"\s+data-multi="true"\s+data-value="Comfort"' -and
+        $pageText -match 'data-target="priorities"\s+data-multi="true"\s+data-value="Wireless"' -and
+        $pageText -match 'data-target="priorities"\s+data-multi="true"\s+data-value="Budget"' -and
+        $pageText -match 'data-target="priorities"\s+data-multi="true"\s+data-value="RGB"' -and
+        $pageText -match 'data-target="priorities"\s+data-multi="true"\s+data-value="Premium Build"'
+
     'Personalization code requires login and saves profile' =
         $codeText -match 'AuthHelper.RequireLogin' -and
         $codeText -match 'PersonalizationService' -and
@@ -202,6 +216,7 @@ $checks = [ordered]@{
     'Product service handles recommended sort through personalization' =
         $productServiceText -match 'recommended' -and
         $productServiceText -match 'PersonalizationService' -and
+        $productServiceText -match 'filteredCandidates' -and
         $productServiceText -match 'catch\s*\(\s*Exception' -and
         $productServiceText -match 'Trace\.TraceWarning' -and
         $productServiceText -match 'GetRepositoryCatalogProducts'

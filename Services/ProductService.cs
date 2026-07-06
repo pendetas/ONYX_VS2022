@@ -140,37 +140,30 @@ namespace ONYX_DDAC.Services
                         return GetRepositoryCatalogProducts(normalizedQuery);
                     }
 
-                    IList<PersonalizedProduct> recommended =
-                        _personalizationService.GetRecommendedProducts(normalizedQuery.UserId.Value, 48);
+                    IList<Product> filteredCandidates = _repo.GetAllProducts()
+                        .Where(product => MatchesCategory(product, normalizedQuery.Category))
+                        .Where(product => MatchesSearchTerm(product, normalizedQuery.SearchTerm))
+                        .ToList();
 
-                    if (recommended.Count <= 0)
+                    if (filteredCandidates.Count <= 0)
+                    {
+                        return BuildPagedCatalogResult(new List<Product>(), normalizedQuery);
+                    }
+
+                    IList<Product> filtered = _personalizationService
+                        .GetRecommendedProducts(
+                            normalizedQuery.UserId.Value,
+                            filteredCandidates,
+                            filteredCandidates.Count)
+                        .Select(item => item.Product)
+                        .ToList();
+
+                    if (filtered.Count <= 0)
                     {
                         return GetRepositoryCatalogProducts(normalizedQuery);
                     }
 
-                    IList<Product> filtered = recommended
-                        .Select(item => item.Product)
-                        .Where(product => string.IsNullOrWhiteSpace(normalizedQuery.Category) ||
-                            string.Equals(product.Category, normalizedQuery.Category, System.StringComparison.OrdinalIgnoreCase))
-                        .Where(product => string.IsNullOrWhiteSpace(normalizedQuery.SearchTerm) ||
-                            (product.Name ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            (product.Brand ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            (product.Category ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            (product.Description ?? string.Empty).IndexOf(normalizedQuery.SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0)
-                        .ToList();
-
-                    int totalCount = filtered.Count;
-                    int totalPages = System.Math.Max(1, (int)System.Math.Ceiling(totalCount / (double)normalizedQuery.PageSize));
-                    int page = System.Math.Min(normalizedQuery.Page, totalPages);
-                    int skip = (page - 1) * normalizedQuery.PageSize;
-
-                    return new PagedResult<Product>
-                    {
-                        Items = filtered.Skip(skip).Take(normalizedQuery.PageSize).ToList(),
-                        Page = page,
-                        PageSize = normalizedQuery.PageSize,
-                        TotalCount = totalCount
-                    };
+                    return BuildPagedCatalogResult(filtered, normalizedQuery);
                 }
                 catch (Exception exception)
                 {
@@ -189,6 +182,37 @@ namespace ONYX_DDAC.Services
         public IList<ProductVariant> GetProductVariants(long productId)
         {
             return _repo.GetProductVariants(productId);
+        }
+
+        private static PagedResult<Product> BuildPagedCatalogResult(IList<Product> filtered, CatalogQuery normalizedQuery)
+        {
+            int totalCount = filtered.Count;
+            int totalPages = System.Math.Max(1, (int)System.Math.Ceiling(totalCount / (double)normalizedQuery.PageSize));
+            int page = System.Math.Min(normalizedQuery.Page, totalPages);
+            int skip = (page - 1) * normalizedQuery.PageSize;
+
+            return new PagedResult<Product>
+            {
+                Items = filtered.Skip(skip).Take(normalizedQuery.PageSize).ToList(),
+                Page = page,
+                PageSize = normalizedQuery.PageSize,
+                TotalCount = totalCount
+            };
+        }
+
+        private static bool MatchesCategory(Product product, string category)
+        {
+            return string.IsNullOrWhiteSpace(category) ||
+                string.Equals(product.Category, category, System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool MatchesSearchTerm(Product product, string searchTerm)
+        {
+            return string.IsNullOrWhiteSpace(searchTerm) ||
+                (product.Name ?? string.Empty).IndexOf(searchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (product.Brand ?? string.Empty).IndexOf(searchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (product.Category ?? string.Empty).IndexOf(searchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (product.Description ?? string.Empty).IndexOf(searchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private static string NormalizeSort(string sort)

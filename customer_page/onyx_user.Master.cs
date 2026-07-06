@@ -94,7 +94,7 @@ namespace ONYX_DDAC.customer_page
                 return;
             }
 
-            if (personalizationService.HasCompletedProfile(userId))
+            if (HasCompletedProfileSafely(userId))
             {
                 return;
             }
@@ -126,6 +126,23 @@ namespace ONYX_DDAC.customer_page
             }
 
             return sessionUserId != null && long.TryParse(sessionUserId.ToString(), out userId);
+        }
+
+        private bool HasCompletedProfileSafely(long userId)
+        {
+            try
+            {
+                return personalizationService.HasCompletedProfile(userId);
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Personalization guard lookup failed for user {0}: {1}",
+                    userId,
+                    exception);
+
+                return false;
+            }
         }
     }
 }

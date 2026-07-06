@@ -57,13 +57,18 @@ namespace ONYX_DDAC.Services
 
         public IList<PersonalizedProduct> GetRecommendedProducts(long userId, int count)
         {
+            IList<Product> products = _productRepository.GetAllProducts();
+            return GetRecommendedProducts(userId, products, count);
+        }
+
+        public IList<PersonalizedProduct> GetRecommendedProducts(long userId, IList<Product> products, int count)
+        {
             UserPersonalizationProfile profile = _personalizationRepository.GetProfile(userId);
             if (profile == null || !profile.CompletedAt.HasValue)
             {
                 return new List<PersonalizedProduct>();
             }
 
-            IList<Product> products = _productRepository.GetAllProducts();
             IList<string> wishlistCategories = _personalizationRepository.GetWishlistCategories(userId);
             IList<string> purchasedCategories = _personalizationRepository.GetPurchasedCategories(userId);
 
