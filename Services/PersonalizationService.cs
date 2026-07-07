@@ -51,8 +51,9 @@ namespace ONYX_DDAC.Services
 
         public void SaveProfile(UserPersonalizationProfile profile)
         {
-            ValidateProfile(profile);
-            _personalizationRepository.SaveProfile(NormalizeProfile(profile));
+            UserPersonalizationProfile normalizedProfile = profile == null ? null : NormalizeProfile(profile);
+            ValidateProfile(normalizedProfile);
+            _personalizationRepository.SaveProfile(normalizedProfile);
         }
 
         public void RecordCatalogSearch(long userId, string searchTerm)
@@ -232,14 +233,9 @@ namespace ONYX_DDAC.Services
                 score += 15;
             }
 
-            if (signals.MatchedPurchasedCategories != null && signals.MatchedPurchasedCategories.Count > 0)
+            if (signals.MatchesPurchasedCategory)
             {
-                score += Math.Min(signals.MatchedPurchasedCategories.Count, 5) * 18;
-            }
-
-            if (signals.MatchedSearchedCategories != null && signals.MatchedSearchedCategories.Count > 0)
-            {
-                score += Math.Min(signals.MatchedSearchedCategories.Count, 5) * 12;
+                score += 20;
             }
 
             if (signals.MatchesSetupGoal)
@@ -677,7 +673,9 @@ namespace ONYX_DDAC.Services
 
             // Flow checks look for Premium Build and Entry text alongside BudgetRange handling.
             if (string.Equals(Normalize(profile.BudgetRange), "premium", StringComparison.OrdinalIgnoreCase) ||
-                (profile.Priorities ?? new List<string>()).Select(Normalize).Contains("premium build"))
+                (profile.Priorities ?? new List<string>())
+                    .Select(Normalize)
+                    .Any(priority => priority == "premium build" || priority == "premium-build"))
             {
                 return "premium";
             }
