@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -76,7 +75,7 @@ namespace ONYX_DDAC.customer_page
                 long userId = Convert.ToInt64(Session["UserId"]);
                 string shippingAddress = txtShippingAddress.Text.Trim();
                 string deliveryMethod = ddlDeliveryMethod.SelectedValue;
-                string applicationBaseUrl = ConfigurationManager.AppSettings["StripeAppBaseUrl"];
+                string applicationBaseUrl = AppUrlHelper.GetBaseUrl(this);
 
                 var checkoutService = new CheckoutService();
                 var result = checkoutService.StartCheckout(

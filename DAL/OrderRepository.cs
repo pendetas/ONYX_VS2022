@@ -556,6 +556,49 @@ namespace ONYX_DDAC.DAL
             return invoice;
         }
 
+        public bool TryMarkCheckoutSuccessEmailSent(long orderId, long userId)
+        {
+            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+            {
+                conn.Open();
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        UPDATE orders
+                        SET checkout_success_email_sent_at = now()
+                        WHERE id = @OrderId
+                          AND user_id = @UserId
+                          AND status = @PaidStatus
+                          AND checkout_success_email_sent_at IS NULL";
+                    cmd.Parameters.Add(new NpgsqlParameter("@OrderId", orderId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@PaidStatus", OrderStatuses.Paid));
+                    return cmd.ExecuteNonQuery() == 1;
+                }
+            }
+        }
+
+        public void ClearCheckoutSuccessEmailSent(long orderId, long userId)
+        {
+            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+            {
+                conn.Open();
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        UPDATE orders
+                        SET checkout_success_email_sent_at = NULL
+                        WHERE id = @OrderId
+                          AND user_id = @UserId
+                          AND status = @PaidStatus";
+                    cmd.Parameters.Add(new NpgsqlParameter("@OrderId", orderId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+                    cmd.Parameters.Add(new NpgsqlParameter("@PaidStatus", OrderStatuses.Paid));
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         private static Invoice MapInvoiceHeader(DbDataReader reader)
         {
             return new Invoice

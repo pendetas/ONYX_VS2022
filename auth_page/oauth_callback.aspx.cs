@@ -86,6 +86,7 @@ namespace ONYX_DDAC.auth_page
                 }
 
                 AuthHelper.EstablishAuthenticatedSession(this, user);
+                _authService.QueueLoginDetectedNotice(user, Request.UserHostAddress, BuildForgotPasswordUrl());
                 PostAuthRedirectHelper.Redirect(this, user);
             }
             catch (Exception exception)
@@ -151,8 +152,12 @@ namespace ONYX_DDAC.auth_page
 
         private string BuildRedirectUri()
         {
-            return Request.Url.GetLeftPart(UriPartial.Authority) +
-                   ResolveUrl("~/auth_page/oauth_callback.aspx");
+            return AppUrlHelper.BuildAbsoluteUrl(this, "~/auth_page/oauth_callback.aspx");
+        }
+
+        private string BuildForgotPasswordUrl()
+        {
+            return AppUrlHelper.BuildAbsoluteUrl(this, "~/auth_page/onyx_forgotpassword.aspx");
         }
 
         private void RedirectToLogin(string reason)

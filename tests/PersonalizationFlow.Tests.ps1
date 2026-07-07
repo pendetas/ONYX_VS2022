@@ -255,7 +255,7 @@ $checks = [ordered]@{
         $cssText -match '\.onyx-personalization-intro-subtitle\.is-visible'
 
     'Personalization action buttons stay white in all states' =
-        $pageText -match 'onyx-personalization\.css\?v=20260706-question-stepper-4' -and
+        $pageText -match 'onyx-personalization\.css\?v=20260707-stepper-css-1' -and
         $pageText -match '\.onyx-personalization-page \.onyx-personalization-back,[\s\S]*?background:\s*#f8f8f8\s*!important' -and
         $pageText -match '\.onyx-personalization-page \.onyx-personalization-next,[\s\S]*?background:\s*#f8f8f8\s*!important' -and
         $pageText -match '\.onyx-personalization-page input\.onyx-personalization-submit,[\s\S]*?background:\s*#f8f8f8\s*!important'

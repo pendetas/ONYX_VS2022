@@ -54,6 +54,17 @@ namespace ONYX_DDAC.auth_page
                 return;
             }
 
+            if (!authService.IsAuthRequestAllowed(
+                "login",
+                AuthService.BuildRateLimitKey(emailOrUser, Request.UserHostAddress),
+                5,
+                TimeSpan.FromMinutes(15),
+                TimeSpan.FromMinutes(15)))
+            {
+                ShowMessage("Too many login attempts. Please wait 15 minutes and try again.", false);
+                return;
+            }
+
             string captchaToken = Request.Form["cf-turnstile-response"];
             bool captchaValid = await captchaService.VerifyCaptchaAsync(
                 captchaToken,
@@ -77,6 +88,7 @@ namespace ONYX_DDAC.auth_page
                 }
 
                 AuthHelper.EstablishAuthenticatedSession(this, user);
+                authService.QueueLoginDetectedNotice(user, Request.UserHostAddress, BuildForgotPasswordUrl());
                 string destination = Request.QueryString["profile"] == "true"
                     ? "~/customer_page/onyx_profile.aspx"
                     : null;
@@ -156,8 +168,12 @@ namespace ONYX_DDAC.auth_page
                 ? "~/auth_page/google_callback.aspx"
                 : "~/auth_page/oauth_callback.aspx";
 
-            return Request.Url.GetLeftPart(UriPartial.Authority) +
-                   ResolveUrl(callbackPath);
+            return AppUrlHelper.BuildAbsoluteUrl(this, callbackPath);
+        }
+
+        private string BuildForgotPasswordUrl()
+        {
+            return AppUrlHelper.BuildAbsoluteUrl(this, "~/auth_page/onyx_forgotpassword.aspx");
         }
 
         private void ShowOAuthMessage()

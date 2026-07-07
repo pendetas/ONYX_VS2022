@@ -31,7 +31,11 @@ Thumbs.db
 
 # Local agent/tooling state
 .agents/
+.codex/
 .impeccable/
+.superpowers/
+.magicpath-work/
+.playwright-mcp/
 
 # Local secrets
 .env

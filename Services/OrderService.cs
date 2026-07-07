@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Hosting;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 
@@ -9,6 +11,7 @@ namespace ONYX_DDAC.Services
     public class OrderService
     {
         private readonly OrderRepository _repo;
+        private readonly EmailService _emailService;
 
         public OrderService() : this(new OrderRepository())
         {
@@ -17,6 +20,7 @@ namespace ONYX_DDAC.Services
         public OrderService(OrderRepository repo)
         {
             _repo = repo;
+            _emailService = new EmailService();
         }
 
         public long CreateOrderFromCart(long userId, string shippingAddress, IList<CartItem> cartItems)
@@ -44,6 +48,59 @@ namespace ONYX_DDAC.Services
             }
 
             return invoice;
+        }
+
+        public void SendCheckoutSuccessEmailOnce(long orderId, long userId, string invoiceUrl)
+        {
+            Invoice invoice = GetInvoice(orderId, userId);
+            if (!_repo.TryMarkCheckoutSuccessEmailSent(orderId, userId))
+            {
+                return;
+            }
+
+            try
+            {
+                HostingEnvironment.QueueBackgroundWorkItem(async cancellationToken =>
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        _repo.ClearCheckoutSuccessEmailSent(orderId, userId);
+                        return;
+                    }
+
+                    await SendCheckoutSuccessEmailAsync(orderId, userId, invoice, invoiceUrl);
+                });
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Checkout success email queue failed for order {0}: {1}",
+                    orderId,
+                    exception.GetType().Name);
+
+                Task.Run(() => SendCheckoutSuccessEmailAsync(orderId, userId, invoice, invoiceUrl));
+            }
+        }
+
+        private async Task SendCheckoutSuccessEmailAsync(
+            long orderId,
+            long userId,
+            Invoice invoice,
+            string invoiceUrl)
+        {
+            try
+            {
+                await _emailService.SendCheckoutSuccessAsync(invoice, invoiceUrl);
+            }
+            catch (Exception exception)
+            {
+                // ponytail: claimed once before SMTP to prevent refresh duplicate emails.
+                _repo.ClearCheckoutSuccessEmailSent(orderId, userId);
+                System.Diagnostics.Trace.TraceWarning(
+                    "Checkout success email failed for order {0}: {1}",
+                    orderId,
+                    exception.GetType().Name);
+            }
         }
 
         public IList<Order> GetOrdersForUser(long userId, string status, int limit)

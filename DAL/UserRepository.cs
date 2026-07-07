@@ -372,23 +372,13 @@ namespace ONYX_DDAC.DAL
                             email,
                             password_hash,
                             role,
-                            created_at,
-                            auth_provider,
-                            google_sub,
-                            google_email_verified,
-                            avatar_url,
-                            last_login_at)
+                            created_at)
                         VALUES (
                             @FullName,
                             @Username,
                             @Email,
                             NULL,
                             'customer',
-                            @CreatedAt,
-                            @Provider,
-                            @GoogleSub,
-                            @EmailVerified,
-                            @AvatarUrl,
                             @CreatedAt)
                         RETURNING id, username, email, password_hash, role, fullname";
 
@@ -396,18 +386,10 @@ namespace ONYX_DDAC.DAL
                     using (var cmd = new NpgsqlCommand(sql, conn, tx))
                     {
                         DateTime now = DateTime.UtcNow;
-                        string provider = NormalizeOAuthProvider(profile.Provider);
-
                         cmd.Parameters.AddWithValue("@FullName", profile.FullName);
                         cmd.Parameters.AddWithValue("@Username", username);
                         cmd.Parameters.AddWithValue("@Email", profile.Email);
                         cmd.Parameters.AddWithValue("@CreatedAt", now);
-                        cmd.Parameters.AddWithValue("@Provider", provider);
-                        cmd.Parameters.AddWithValue(
-                            "@GoogleSub",
-                            provider == "google" ? (object)profile.Subject : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@EmailVerified", profile.EmailVerified);
-                        cmd.Parameters.AddWithValue("@AvatarUrl", (object)profile.AvatarUrl ?? DBNull.Value);
 
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -449,28 +431,6 @@ namespace ONYX_DDAC.DAL
             }
         }
 
-        public User GetUserByGoogleSub(string googleSub)
-        {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
-            {
-                conn.Open();
-                const string sql = @"
-                    SELECT id, username, email, password_hash, role, fullname
-                    FROM users
-                    WHERE google_sub = @GoogleSub
-                    LIMIT 1";
-
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@GoogleSub", googleSub);
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        return reader.Read() ? ReadAuthUser(reader) : null;
-                    }
-                }
-            }
-        }
-
         public void LinkOAuthAccount(long userId, OAuthProfile profile)
         {
             using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
@@ -478,54 +438,8 @@ namespace ONYX_DDAC.DAL
                 conn.Open();
                 using (var tx = conn.BeginTransaction())
                 {
-                    string provider = NormalizeOAuthProvider(profile.Provider);
-                    const string sql = @"
-                        UPDATE users
-                        SET auth_provider = CASE
-                                WHEN auth_provider = 'local' THEN 'local_oauth'
-                                WHEN auth_provider IS NULL THEN @Provider
-                                ELSE auth_provider
-                            END,
-                            google_sub = CASE
-                                WHEN @Provider = 'google' THEN @ProviderUserId
-                                ELSE google_sub
-                            END,
-                            google_email_verified = CASE
-                                WHEN @Provider = 'google' THEN @EmailVerified
-                                ELSE google_email_verified
-                            END,
-                            avatar_url = COALESCE(@AvatarUrl, avatar_url),
-                            last_login_at = @LastLoginAt
-                        WHERE id = @Id";
-
-                    using (var cmd = new NpgsqlCommand(sql, conn, tx))
-                    {
-                        cmd.Parameters.AddWithValue("@Provider", provider);
-                        cmd.Parameters.AddWithValue("@ProviderUserId", profile.Subject);
-                        cmd.Parameters.AddWithValue("@EmailVerified", profile.EmailVerified);
-                        cmd.Parameters.AddWithValue("@AvatarUrl", (object)profile.AvatarUrl ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@LastLoginAt", DateTime.UtcNow);
-                        cmd.Parameters.AddWithValue("@Id", userId);
-                        cmd.ExecuteNonQuery();
-                    }
-
                     UpsertOAuthAccount(conn, tx, userId, profile);
                     tx.Commit();
-                }
-            }
-        }
-
-        public void TouchLastLogin(long userId)
-        {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
-            {
-                conn.Open();
-                using (var cmd = new NpgsqlCommand(
-                    "UPDATE users SET last_login_at = @LastLoginAt WHERE id = @Id", conn))
-                {
-                    cmd.Parameters.AddWithValue("@LastLoginAt", DateTime.UtcNow);
-                    cmd.Parameters.AddWithValue("@Id", userId);
-                    cmd.ExecuteNonQuery();
                 }
             }
         }

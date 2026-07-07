@@ -1,5 +1,6 @@
 using System;
 using System.Configuration;
+using System.Data.Common;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using BCrypt.Net;
+using Npgsql;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
@@ -175,6 +177,93 @@ namespace ONYX_DDAC.Services
             }
         }
 
+        public bool IsAuthRequestAllowed(
+            string action,
+            string identityKey,
+            int maxAttempts,
+            TimeSpan window,
+            TimeSpan blockFor)
+        {
+            if (string.IsNullOrWhiteSpace(action))
+                throw new ArgumentException("Rate limit action is required.", nameof(action));
+
+            if (string.IsNullOrWhiteSpace(identityKey))
+                identityKey = "unknown";
+
+            try
+            {
+                DateTime now = DateTime.UtcNow;
+                using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+                {
+                    conn.Open();
+                    using (DbTransaction tx = conn.BeginTransaction())
+                    {
+                        using (DbCommand select = conn.CreateCommand())
+                        {
+                            select.Transaction = tx;
+                            select.CommandText = @"
+                                SELECT attempt_count, window_started_at, blocked_until
+                                FROM auth_rate_limits
+                                WHERE action = @Action AND identity_key = @IdentityKey
+                                FOR UPDATE";
+                            AddParameter(select, "@Action", action);
+                            AddParameter(select, "@IdentityKey", identityKey);
+
+                            using (DbDataReader reader = select.ExecuteReader())
+                            {
+                                if (!reader.Read())
+                                {
+                                    reader.Close();
+                                    UpsertRateLimit(conn, tx, action, identityKey, 1, now, null);
+                                    tx.Commit();
+                                    return true;
+                                }
+
+                                int attempts = reader.GetInt32(0);
+                                DateTime windowStartedAt = reader.GetDateTime(1);
+                                DateTime? blockedUntil = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2);
+                                reader.Close();
+
+                                if (blockedUntil.HasValue && blockedUntil.Value > now)
+                                {
+                                    UpsertRateLimit(conn, tx, action, identityKey, attempts, windowStartedAt, blockedUntil);
+                                    tx.Commit();
+                                    return false;
+                                }
+
+                                if (windowStartedAt.Add(window) <= now)
+                                {
+                                    UpsertRateLimit(conn, tx, action, identityKey, 1, now, null);
+                                    tx.Commit();
+                                    return true;
+                                }
+
+                                attempts++;
+                                blockedUntil = attempts > maxAttempts ? now.Add(blockFor) : (DateTime?)null;
+                                UpsertRateLimit(conn, tx, action, identityKey, attempts, windowStartedAt, blockedUntil);
+                                tx.Commit();
+                                return !blockedUntil.HasValue;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (PostgresException exception) when (exception.SqlState == PostgresErrorCodes.UndefinedTable)
+            {
+                // ponytail: fail open until the RDS auth_rate_limits migration is applied.
+                System.Diagnostics.Trace.TraceWarning(
+                    "Auth rate limit skipped because auth_rate_limits is missing: " + exception.MessageText);
+                return true;
+            }
+        }
+
+        public static string BuildRateLimitKey(string identity, string ipAddress)
+        {
+            string normalizedIdentity = ValidationHelper.NormalizeIdentifier(identity ?? string.Empty) ?? "unknown";
+            string key = normalizedIdentity + "|" + (ipAddress ?? "unknown");
+            return key.Length <= 320 ? key : key.Substring(0, 320);
+        }
+
         public bool IsPasswordResetTokenValid(string rawToken)
         {
             if (string.IsNullOrWhiteSpace(rawToken))
@@ -261,7 +350,6 @@ namespace ONYX_DDAC.Services
                 throw new InvalidOperationException("OAuth account creation failed.");
 
             created = true;
-            _userRepository.TouchLastLogin(user.Id);
             return user;
         }
 
@@ -294,26 +382,14 @@ namespace ONYX_DDAC.Services
             User user = _userRepository.GetUserByOAuthAccount(profile.Provider, profile.Subject);
             if (user != null)
             {
-                _userRepository.TouchLastLogin(user.Id);
-                return user;
-            }
-
-            if (profile.Provider == "google")
-            {
-                user = _userRepository.GetUserByGoogleSub(profile.Subject);
-                if (user != null)
-                {
-                    _userRepository.LinkOAuthAccount(user.Id, profile);
-                    _userRepository.TouchLastLogin(user.Id);
-                    return user;
-                }
+                _userRepository.LinkOAuthAccount(user.Id, profile);
+                return _userRepository.GetUserByOAuthAccount(profile.Provider, profile.Subject) ?? user;
             }
 
             user = _userRepository.GetUserByEmail(profile.Email);
             if (user != null)
             {
                 _userRepository.LinkOAuthAccount(user.Id, profile);
-                _userRepository.TouchLastLogin(user.Id);
                 return _userRepository.GetUserByOAuthAccount(profile.Provider, profile.Subject) ?? user;
             }
 
@@ -418,6 +494,103 @@ namespace ONYX_DDAC.Services
             }
         }
 
+        public void QueueLoginDetectedNotice(User user, string ipAddress, string resetPasswordUrl)
+        {
+            if (user == null ||
+                string.IsNullOrWhiteSpace(user.Email) ||
+                user.Email.EndsWith("@oauth.onyx.local", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            string location = BuildLoginLocation(ipAddress);
+            string malaysiaTime = GetMalaysiaTimeLabel();
+
+            WriteEmailDebugLog(
+                "login_detected_notice_queued",
+                user.Email,
+                location,
+                null);
+
+            try
+            {
+                HostingEnvironment.QueueBackgroundWorkItem(async cancellationToken =>
+                {
+                    try
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            WriteEmailDebugLog(
+                                "login_detected_notice_cancelled",
+                                user.Email,
+                                location,
+                                null);
+                            return;
+                        }
+
+                        await SendLoginDetectedNoticeAsync(user, malaysiaTime, location, resetPasswordUrl);
+                    }
+                    catch (Exception exception)
+                    {
+                        WriteEmailDebugLog(
+                            "login_detected_notice_task_failed",
+                            user.Email,
+                            location,
+                            exception);
+                    }
+                });
+            }
+            catch (Exception exception)
+            {
+                WriteEmailDebugLog(
+                    "login_detected_notice_queue_failed",
+                    user.Email,
+                    location,
+                    exception);
+
+                Task.Run(() => SendLoginDetectedNoticeAsync(user, malaysiaTime, location, resetPasswordUrl));
+            }
+        }
+
+        private async Task SendLoginDetectedNoticeAsync(
+            User user,
+            string malaysiaTime,
+            string location,
+            string resetPasswordUrl)
+        {
+            try
+            {
+                WriteEmailDebugLog(
+                    "login_detected_notice_start",
+                    user.Email,
+                    location,
+                    null);
+
+                await _emailService.SendLoginDetectedAsync(
+                    user.Email,
+                    user.FullName,
+                    malaysiaTime,
+                    location,
+                    resetPasswordUrl);
+
+                WriteEmailDebugLog(
+                    "login_detected_notice_sent",
+                    user.Email,
+                    location,
+                    null);
+            }
+            catch (Exception exception)
+            {
+                WriteEmailDebugLog(
+                    "login_detected_notice_failed",
+                    user.Email,
+                    location,
+                    exception);
+                System.Diagnostics.Trace.TraceWarning(
+                    "Login-detected email failed: " + exception.GetType().Name);
+            }
+        }
+
         private static bool VerifyPassword(string rawPassword, string passwordHash)
         {
             if (string.IsNullOrWhiteSpace(rawPassword) || string.IsNullOrWhiteSpace(passwordHash))
@@ -502,6 +675,28 @@ namespace ONYX_DDAC.Services
             return profile.Provider + ".user." + Guid.NewGuid().ToString("N").Substring(0, 12);
         }
 
+        private static string GetMalaysiaTimeLabel()
+        {
+            DateTime utcNow = DateTime.UtcNow;
+            try
+            {
+                TimeZoneInfo malaysiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time");
+                return TimeZoneInfo.ConvertTimeFromUtc(utcNow, malaysiaTimeZone).ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            catch
+            {
+                // ponytail: Malaysia has no DST; UTC+8 is enough if the Windows timezone id is unavailable.
+                return utcNow.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss");
+            }
+        }
+
+        private static string BuildLoginLocation(string ipAddress)
+        {
+            return string.IsNullOrWhiteSpace(ipAddress)
+                ? "unknown location"
+                : "IP address: " + ipAddress.Trim();
+        }
+
         private static void WriteEmailDebugLog(
             string status,
             string recipientEmail,
@@ -530,6 +725,46 @@ namespace ONYX_DDAC.Services
             {
                 // Email diagnostics must never affect the auth flow.
             }
+        }
+
+        private static void UpsertRateLimit(
+            DbConnection conn,
+            DbTransaction tx,
+            string action,
+            string identityKey,
+            int attempts,
+            DateTime windowStartedAt,
+            DateTime? blockedUntil)
+        {
+            using (DbCommand cmd = conn.CreateCommand())
+            {
+                cmd.Transaction = tx;
+                cmd.CommandText = @"
+                    INSERT INTO auth_rate_limits
+                        (action, identity_key, attempt_count, window_started_at, blocked_until, last_attempt_at)
+                    VALUES
+                        (@Action, @IdentityKey, @Attempts, @WindowStartedAt, @BlockedUntil, @LastAttemptAt)
+                    ON CONFLICT (action, identity_key) DO UPDATE SET
+                        attempt_count = EXCLUDED.attempt_count,
+                        window_started_at = EXCLUDED.window_started_at,
+                        blocked_until = EXCLUDED.blocked_until,
+                        last_attempt_at = EXCLUDED.last_attempt_at";
+                AddParameter(cmd, "@Action", action);
+                AddParameter(cmd, "@IdentityKey", identityKey);
+                AddParameter(cmd, "@Attempts", attempts);
+                AddParameter(cmd, "@WindowStartedAt", windowStartedAt);
+                AddParameter(cmd, "@BlockedUntil", (object)blockedUntil ?? DBNull.Value);
+                AddParameter(cmd, "@LastAttemptAt", DateTime.UtcNow);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void AddParameter(DbCommand cmd, string name, object value)
+        {
+            DbParameter parameter = cmd.CreateParameter();
+            parameter.ParameterName = name;
+            parameter.Value = value ?? DBNull.Value;
+            cmd.Parameters.Add(parameter);
         }
     }
 }

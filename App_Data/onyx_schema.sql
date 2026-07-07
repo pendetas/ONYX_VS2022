@@ -3,13 +3,68 @@ CREATE TABLE users (
   fullname VARCHAR(100) NOT NULL,
   username VARCHAR(50) NOT NULL UNIQUE,
   email VARCHAR(255) NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255),
   address TEXT,
   dob DATE,
   phone_number VARCHAR(30),
   role VARCHAR(20) NOT NULL DEFAULT 'customer',
   created_at TIMESTAMP NOT NULL DEFAULT now()
 );
+
+CREATE UNIQUE INDEX ux_users_username_ci
+  ON users (LOWER(username));
+
+CREATE UNIQUE INDEX ux_users_email_ci
+  ON users (LOWER(email));
+
+CREATE TABLE user_oauth_accounts (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  provider VARCHAR(30) NOT NULL,
+  provider_user_id VARCHAR(255) NOT NULL,
+  email VARCHAR(255),
+  email_verified BOOLEAN NOT NULL DEFAULT false,
+  display_name VARCHAR(255),
+  avatar_url TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_login_at TIMESTAMP,
+  CONSTRAINT ux_user_oauth_provider_user UNIQUE (provider, provider_user_id)
+);
+
+CREATE INDEX ix_user_oauth_accounts_user_id
+  ON user_oauth_accounts (user_id);
+
+CREATE TABLE password_reset_tokens (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token_hash VARCHAR(64) NOT NULL UNIQUE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX ix_password_reset_tokens_user_active
+  ON password_reset_tokens (user_id, expires_at)
+  WHERE used_at IS NULL;
+
+CREATE INDEX ix_password_reset_tokens_token_active
+  ON password_reset_tokens (token_hash)
+  WHERE used_at IS NULL;
+
+
+CREATE TABLE auth_rate_limits (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  action VARCHAR(50) NOT NULL,
+  identity_key VARCHAR(320) NOT NULL,
+  attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+  window_started_at TIMESTAMP NOT NULL,
+  blocked_until TIMESTAMP,
+  last_attempt_at TIMESTAMP NOT NULL,
+  UNIQUE (action, identity_key)
+);
+
+CREATE INDEX ix_auth_rate_limits_blocked_until
+  ON auth_rate_limits (blocked_until);
 
 CREATE TABLE products (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -65,6 +120,7 @@ CREATE TABLE orders (
   payment_method VARCHAR(100),
   payment_expires_at TIMESTAMPTZ,
   paid_at TIMESTAMPTZ,
+  checkout_success_email_sent_at TIMESTAMPTZ,
   receipt_s3_key TEXT,
   ordered_at TIMESTAMP NOT NULL DEFAULT now(),
   status_updated_at TIMESTAMP,
@@ -150,6 +206,40 @@ CREATE TABLE wishlists (
   FOREIGN KEY (product_id) REFERENCES products(id),
   UNIQUE (user_id, product_id)
 );
+
+CREATE TABLE user_personalization_profiles (
+  user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  gaming_style VARCHAR(40) NOT NULL,
+  preferred_categories TEXT NOT NULL,
+  priorities TEXT NOT NULL,
+  budget_range VARCHAR(40) NOT NULL,
+  setup_goal VARCHAR(60) NOT NULL,
+  comfort_preferences TEXT NOT NULL DEFAULT '',
+  performance_preferences TEXT NOT NULL DEFAULT '',
+  setup_constraints TEXT NOT NULL DEFAULT '',
+  completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_user_personalization_completed
+  ON user_personalization_profiles (completed_at);
+
+CREATE TABLE catalog_search_events (
+  catalog_search_event_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  search_term TEXT NOT NULL,
+  inferred_category VARCHAR(50),
+  searched_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT fk_catalog_search_events_user
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_catalog_search_events_user_time
+  ON catalog_search_events (user_id, searched_at DESC);
+
+CREATE INDEX idx_catalog_search_events_user_category
+  ON catalog_search_events (user_id, inferred_category)
+  WHERE inferred_category IS NOT NULL;
 
 INSERT INTO users (fullname, username, email, password_hash, role)
 VALUES ('Admin', 'admin', 'admin@onyx.com',

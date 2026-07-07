@@ -1,7 +1,7 @@
 <%@ Page Title="Personalization" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_personalization.aspx.cs" Inherits="ONYX_DDAC.customer_page.onyx_personalization" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-personalization.css?v=20260706-question-stepper-4") %>" />
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-personalization.css?v=20260707-stepper-css-1") %>" />
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">

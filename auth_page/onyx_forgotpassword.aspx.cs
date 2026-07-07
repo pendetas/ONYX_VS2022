@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.auth_page
@@ -29,6 +30,17 @@ namespace ONYX_DDAC.auth_page
                 return;
             }
 
+            if (!authService.IsAuthRequestAllowed(
+                "forgot_password",
+                AuthService.BuildRateLimitKey(email, Request.UserHostAddress),
+                3,
+                TimeSpan.FromMinutes(15),
+                TimeSpan.FromMinutes(30)))
+            {
+                ShowMessage("Too many reset requests. Please wait 30 minutes and try again.", false);
+                return;
+            }
+
             try
             {
                 await authService.RequestPasswordResetAsync(email, BuildResetPasswordUrl);
@@ -44,8 +56,7 @@ namespace ONYX_DDAC.auth_page
 
         private string BuildResetPasswordUrl(string token)
         {
-            return Request.Url.GetLeftPart(UriPartial.Authority) +
-                   ResolveUrl("~/auth_page/onyx_resetpassword.aspx") +
+            return AppUrlHelper.BuildAbsoluteUrl(this, "~/auth_page/onyx_resetpassword.aspx") +
                    "?token=" +
                    HttpUtility.UrlEncode(token);
         }

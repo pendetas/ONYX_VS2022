@@ -516,6 +516,7 @@
     <Compile Include="DAL\UserRepository.cs" />
     <Compile Include="DAL\WishlistRepository.cs" />
     <Compile Include="Helpers\AuthHelper.cs" />
+    <Compile Include="Helpers\AppUrlHelper.cs" />
     <Compile Include="Helpers\CurrencyHelper.cs" />
     <Compile Include="Helpers\GoogleOAuthAccountHelper.cs" />
     <Compile Include="Helpers\GoogleOAuthRedirectHelper.cs" />

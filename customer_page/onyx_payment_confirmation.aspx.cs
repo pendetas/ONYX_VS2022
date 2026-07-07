@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Web;
 using System.Web.UI;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
@@ -39,6 +40,10 @@ namespace ONYX_DDAC.customer_page
                 if (result.IsPaid)
                 {
                     new CartService().RefreshCurrentUserCartFromDatabase();
+                    new OrderService().SendCheckoutSuccessEmailOnce(
+                        result.OrderId,
+                        userId,
+                        BuildInvoiceUrl(result.OrderId));
                     RedirectTo("~/customer_page/onyx_invoice.aspx?orderId=" + result.OrderId);
                     return;
                 }
@@ -71,6 +76,13 @@ namespace ONYX_DDAC.customer_page
         {
             Response.Redirect(url, false);
             Context.ApplicationInstance.CompleteRequest();
+        }
+
+        private string BuildInvoiceUrl(long orderId)
+        {
+            return AppUrlHelper.BuildAbsoluteUrl(this, "~/customer_page/onyx_invoice.aspx") +
+                   "?orderId=" +
+                   HttpUtility.UrlEncode(orderId.ToString());
         }
 
         private static bool TryGetUserId(out long userId)

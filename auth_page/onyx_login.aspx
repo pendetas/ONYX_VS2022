@@ -16,7 +16,7 @@
             -webkit-appearance: none !important;
         }
 
-        /* Fullscreen takeover to override MasterPage formatting */
+        
         .auth-takeover {
             position: fixed;
             top: 0;

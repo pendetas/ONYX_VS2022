@@ -22,6 +22,17 @@ namespace ONYX_DDAC.auth_page
 
         protected void ResetPasswordButton_Click(object sender, EventArgs e)
         {
+            if (!authService.IsAuthRequestAllowed(
+                "reset_password",
+                AuthService.BuildRateLimitKey(string.Empty, Request.UserHostAddress),
+                10,
+                TimeSpan.FromMinutes(15),
+                TimeSpan.FromMinutes(15)))
+            {
+                ShowMessage("Too many reset attempts. Please wait 15 minutes and try again.", false);
+                return;
+            }
+
             string error = authService.ResetPassword(
                 ResetToken,
                 NewPasswordTextBox.Text,

@@ -164,8 +164,7 @@ namespace ONYX_DDAC.auth_page
                 ? "~/auth_page/google_callback.aspx"
                 : "~/auth_page/oauth_callback.aspx";
 
-            return Request.Url.GetLeftPart(UriPartial.Authority) +
-                   ResolveUrl(callbackPath);
+            return AppUrlHelper.BuildAbsoluteUrl(this, callbackPath);
         }
 
         private bool TryBuildSessionUser(out User user)
