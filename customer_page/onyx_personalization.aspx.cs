@@ -11,6 +11,8 @@ namespace ONYX_DDAC.customer_page
     public partial class onyx_personalization : Page
     {
         private const string GenericFailureMessage = "Personalization is temporarily unavailable. Please try again.";
+        private const string PersonalizationCompletedSessionKey = "OnyxPersonalizationCompleted";
+        private const string PersonalizationCompletedUserIdSessionKey = "OnyxPersonalizationCompletedUserId";
         private readonly PersonalizationService personalizationService = new PersonalizationService();
 
         protected void Page_Load(object sender, EventArgs e)
@@ -55,6 +57,7 @@ namespace ONYX_DDAC.customer_page
                     SetupConstraints = SplitValues(SetupConstraintsField.Value)
                 });
 
+                CachePersonalizationCompleted(userId);
                 Response.Redirect("~/customer_page/onyx_home.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
             }
@@ -149,7 +152,13 @@ namespace ONYX_DDAC.customer_page
         {
             try
             {
-                return personalizationService.HasCompletedProfile(userId);
+                bool hasCompletedProfile = personalizationService.HasCompletedProfile(userId);
+                if (hasCompletedProfile)
+                {
+                    CachePersonalizationCompleted(userId);
+                }
+
+                return hasCompletedProfile;
             }
             catch (Exception exception)
             {
@@ -163,6 +172,12 @@ namespace ONYX_DDAC.customer_page
                 BuildSetupButton.Enabled = false;
                 return false;
             }
+        }
+
+        private void CachePersonalizationCompleted(long userId)
+        {
+            Session[PersonalizationCompletedSessionKey] = true;
+            Session[PersonalizationCompletedUserIdSessionKey] = userId;
         }
     }
 }

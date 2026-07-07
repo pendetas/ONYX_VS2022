@@ -9,6 +9,8 @@ namespace ONYX_DDAC.Services
 {
     public class CartService
     {
+        private const string CartSessionKey = "Cart";
+        private const string CartUserIdSessionKey = "OnyxCartUserId";
         private readonly ProductRepository _productRepository;
         private readonly CartRepository _cartRepository;
 
@@ -24,16 +26,24 @@ namespace ONYX_DDAC.Services
             long? userId = GetCurrentUserId();
             if (userId.HasValue)
             {
+                var cachedCart = HttpContext.Current.Session[CartSessionKey] as List<CartItem>;
+                if (cachedCart != null &&
+                    TryGetSessionCartUserId(out long cachedUserId) &&
+                    cachedUserId == userId.Value)
+                {
+                    return cachedCart;
+                }
+
                 List<CartItem> persistedCart = LoadPersistedCartForUser(userId.Value);
-                HttpContext.Current.Session["Cart"] = persistedCart;
+                StoreCartInSession(persistedCart, userId.Value);
                 return persistedCart;
             }
 
-            var cart = HttpContext.Current.Session["Cart"] as List<CartItem>;
+            var cart = HttpContext.Current.Session[CartSessionKey] as List<CartItem>;
             if (cart == null)
             {
                 cart = new List<CartItem>();
-                HttpContext.Current.Session["Cart"] = cart;
+                StoreCartInSession(cart, null);
             }
             return cart;
         }
@@ -112,7 +122,7 @@ namespace ONYX_DDAC.Services
             }
 
             // Save back to session
-            HttpContext.Current.Session["Cart"] = cart;
+            StoreCartInSession(cart, null);
         }
 
         // Calculates the grand total of the cart
@@ -139,7 +149,7 @@ namespace ONYX_DDAC.Services
             if (itemToRemove != null)
             {
                 cart.Remove(itemToRemove);
-                HttpContext.Current.Session["Cart"] = cart;
+                StoreCartInSession(cart, null);
             }
         }
 
@@ -166,7 +176,7 @@ namespace ONYX_DDAC.Services
             if (item != null)
             {
                 item.Quantity = newQuantity;
-                HttpContext.Current.Session["Cart"] = cart;
+                StoreCartInSession(cart, null);
             }
         }
 
@@ -179,20 +189,20 @@ namespace ONYX_DDAC.Services
                 _cartRepository.ClearCart(userId.Value);
             }
 
-            HttpContext.Current.Session["Cart"] = new List<CartItem>();
+            StoreCartInSession(new List<CartItem>(), userId);
         }
 
         public void MergeSessionCartForUser(long userId, List<CartItem> sessionCart)
         {
             if (sessionCart == null || sessionCart.Count == 0)
             {
-                HttpContext.Current.Session["Cart"] = LoadPersistedCartForUser(userId);
+                StoreCartInSession(LoadPersistedCartForUser(userId), userId);
                 return;
             }
 
             _cartRepository.MergeCartItems(userId, sessionCart);
 
-            HttpContext.Current.Session["Cart"] = LoadPersistedCartForUser(userId);
+            StoreCartInSession(LoadPersistedCartForUser(userId), userId);
         }
 
         public void PersistCartForCurrentUser()
@@ -218,14 +228,43 @@ namespace ONYX_DDAC.Services
 
         public List<CartItem> RefreshCurrentUserCartFromDatabase()
         {
-            List<CartItem> cart = LoadPersistedCartForCurrentUser();
-            HttpContext.Current.Session["Cart"] = cart;
+            long? userId = GetCurrentUserId();
+            List<CartItem> cart = userId.HasValue
+                ? LoadPersistedCartForUser(userId.Value)
+                : new List<CartItem>();
+            StoreCartInSession(cart, userId);
             return cart;
         }
 
         private List<CartItem> LoadPersistedCartForUser(long userId)
         {
             return _cartRepository.GetCartItems(userId).ToList();
+        }
+
+        private static void StoreCartInSession(List<CartItem> cart, long? userId)
+        {
+            HttpContext.Current.Session[CartSessionKey] = cart;
+            if (userId.HasValue)
+            {
+                HttpContext.Current.Session[CartUserIdSessionKey] = userId.Value;
+            }
+            else
+            {
+                HttpContext.Current.Session.Remove(CartUserIdSessionKey);
+            }
+        }
+
+        private static bool TryGetSessionCartUserId(out long userId)
+        {
+            userId = 0;
+            object value = HttpContext.Current.Session[CartUserIdSessionKey];
+            if (value is long longValue)
+            {
+                userId = longValue;
+                return true;
+            }
+
+            return value != null && long.TryParse(value.ToString(), out userId);
         }
 
         private static long? GetCurrentUserId()

@@ -6,6 +6,8 @@ namespace ONYX_DDAC.customer_page
 {
     public partial class onyx_user : MasterPage
     {
+        private const string PersonalizationCompletedSessionKey = "OnyxPersonalizationCompleted";
+        private const string PersonalizationCompletedUserIdSessionKey = "OnyxPersonalizationCompletedUserId";
         private readonly PersonalizationService personalizationService = new PersonalizationService();
 
         protected bool IsLoggedIn
@@ -142,9 +144,20 @@ namespace ONYX_DDAC.customer_page
 
         private bool HasCompletedProfileSafely(long userId)
         {
+            if (IsPersonalizationCompletedCached(userId))
+            {
+                return true;
+            }
+
             try
             {
-                return personalizationService.HasCompletedProfile(userId);
+                bool hasCompletedProfile = personalizationService.HasCompletedProfile(userId);
+                if (hasCompletedProfile)
+                {
+                    CachePersonalizationCompleted(userId);
+                }
+
+                return hasCompletedProfile;
             }
             catch (Exception exception)
             {
@@ -155,6 +168,34 @@ namespace ONYX_DDAC.customer_page
 
                 return false;
             }
+        }
+
+        private bool IsPersonalizationCompletedCached(long userId)
+        {
+            object completed = Session[PersonalizationCompletedSessionKey];
+            return completed is bool &&
+                   (bool)completed &&
+                   TryGetSessionLong(PersonalizationCompletedUserIdSessionKey, out long cachedUserId) &&
+                   cachedUserId == userId;
+        }
+
+        private void CachePersonalizationCompleted(long userId)
+        {
+            Session[PersonalizationCompletedSessionKey] = true;
+            Session[PersonalizationCompletedUserIdSessionKey] = userId;
+        }
+
+        private bool TryGetSessionLong(string key, out long value)
+        {
+            value = 0;
+            object rawValue = Session[key];
+            if (rawValue is long longValue)
+            {
+                value = longValue;
+                return true;
+            }
+
+            return rawValue != null && long.TryParse(rawValue.ToString(), out value);
         }
     }
 }

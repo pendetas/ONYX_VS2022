@@ -44,7 +44,6 @@ namespace ONYX_DDAC.auth_page
             string email = txtEmail.Text.Trim();
             string dobString = txtDob.Text;
             string phoneNumber = txtPhone.Text.Trim();
-            string address = txtAddress.Text.Trim();
             string password = txtPassword.Text;
             string confirmPassword = txtConfirmPassword.Text;
 
@@ -88,7 +87,7 @@ namespace ONYX_DDAC.auth_page
                     email,
                     password,
                     dob,
-                    address,
+                    null,
                     phoneNumber);
                 AuthHelper.EstablishAuthenticatedSession(this, user);
                 PostAuthRedirectHelper.Redirect(this, user);

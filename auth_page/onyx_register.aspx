@@ -680,11 +680,6 @@
                             <div id="dateMsg" class="date-feedback"></div>
                         </div>
 
-                        <div class="auth-field full-width">
-                            <label>Shipping Address</label>
-                            <asp:TextBox ID="txtAddress" runat="server" CssClass="auth-input" placeholder="Your default delivery address" />
-                        </div>
-
                     </div>
 
                     <div class="captcha-wrapper">
