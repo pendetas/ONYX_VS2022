@@ -5,6 +5,9 @@ CREATE TABLE IF NOT EXISTS user_personalization_profiles (
     priorities TEXT NOT NULL,
     budget_range VARCHAR(40) NOT NULL,
     setup_goal VARCHAR(60) NOT NULL,
+    comfort_preferences TEXT NOT NULL DEFAULT '',
+    performance_preferences TEXT NOT NULL DEFAULT '',
+    setup_constraints TEXT NOT NULL DEFAULT '',
     completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

@@ -90,6 +90,14 @@ $checks = [ordered]@{
         $repositoryText -match 'UserPersonalizationProfile\s+GetProfile\s*\(\s*long\s+userId\s*\)' -and
         $repositoryText -match 'void\s+SaveProfile\s*\(\s*UserPersonalizationProfile\s+profile\s*\)'
 
+    'Repository self-heals personalization schema before profile reads and saves' =
+        $repositoryText -match 'EnsureProfileSchema' -and
+        $repositoryText -match 'CREATE TABLE IF NOT EXISTS user_personalization_profiles' -and
+        $repositoryText -match 'ADD COLUMN IF NOT EXISTS comfort_preferences' -and
+        $repositoryText -match 'ADD COLUMN IF NOT EXISTS performance_preferences' -and
+        $repositoryText -match 'ADD COLUMN IF NOT EXISTS setup_constraints' -and
+        $repositoryText -match 'profileSchemaEnsured'
+
     'Repository reads wishlist and purchased category signals' =
         $repositoryText -match 'IList<string>\s+GetWishlistCategories\s*\(\s*long\s+userId\s*\)' -and
         $repositoryText -match 'IList<string>\s+GetPurchasedCategories\s*\(\s*long\s+userId\s*\)' -and
