@@ -102,6 +102,12 @@ $checks = [ordered]@{
         $repositoryText -match 'catalog_search_events' -and
         $repositoryText -match 'InferSearchCategory'
 
+    'Repository treats catalog search writes as best-effort telemetry' =
+        $repositoryText -match 'Catalog search personalization event skipped' -and
+        $repositoryText -match 'Catalog search personalization event failed' -and
+        $repositoryText -match 'catch\s*\(\s*Exception\s+exception\s*\)' -and
+        $repositoryText -match 'TraceWarning'
+
     'Repository treats missing optional signal tables as empty signals' =
         $repositoryText -match 'PostgresException' -and
         $repositoryText -match 'PostgresErrorCodes\.UndefinedTable' -and
@@ -139,7 +145,9 @@ $checks = [ordered]@{
         $serviceText -match 'SearchedCategoryMatches' -and
         $serviceText -match 'PurchasedCategoryMatches' -and
         $serviceText -match 'MatchedSearchedCategories' -and
-        $serviceText -match 'MatchedPurchasedCategories'
+        $serviceText -match 'MatchedPurchasedCategories' -and
+        $serviceText -match 'Math\.Min\s*\(\s*signals\.MatchedPurchasedCategories\.Count,\s*5\s*\)\s*\*\s*18' -and
+        $serviceText -match 'Math\.Min\s*\(\s*signals\.MatchedSearchedCategories\.Count,\s*5\s*\)\s*\*\s*12'
 
     'Recommendation ranking supports expanded answer scoring and price intent' =
         $serviceText -match 'MatchedComfortPreferences' -and
@@ -150,6 +158,7 @@ $checks = [ordered]@{
         $serviceText -match 'Entry' -and
         $serviceText -match 'GetPriceIntent' -and
         $serviceText -match 'ThenByPriceIntent' -and
+        $serviceText -match 'GetBudgetDistance' -and
         $serviceText -match 'ThenBy\s*\(\s*item\s*=>\s*item\.Product\.Price\s*\)' -and
         $serviceText -match 'ThenByDescending\s*\(\s*item\s*=>\s*item\.Product\.Price\s*\)'
 
@@ -354,7 +363,8 @@ $checks = [ordered]@{
     'Catalog records logged-in non-empty searches for personalization' =
         $catalogCode -match 'RecordCatalogSearch' -and
         $catalogCode -match '!string\.IsNullOrWhiteSpace\(SearchTerm\)' -and
-        $catalogCode -match 'recommendationUserId\.HasValue'
+        $catalogCode -match 'recommendationUserId\.HasValue' -and
+        $catalogCode -match 'GetCatalogProducts[\s\S]*RecordCatalogSearch'
 
     'Search personalization records immediate dynamic signals' =
         $repositoryText -match 'InferSearchCategories' -and
@@ -362,7 +372,10 @@ $checks = [ordered]@{
         $repositoryText -match 'mousepad' -and
         $catalogCode -match 'StoreRecentSearchSignal' -and
         $catalogCode -match 'GetRecentSearchSignals' -and
-        $catalogCode -match 'CurrentSearchSignals'
+        $catalogCode -match 'CurrentSearchSignals' -and
+        $catalogCode -match 'UrlEncode' -and
+        $catalogCode -match 'UrlDecode' -and
+        $productServiceText -match 'normalizedQuery\.CurrentSearchSignals'
 
     'Product service handles recommended sort through personalization' =
         $productServiceText -match 'recommended' -and

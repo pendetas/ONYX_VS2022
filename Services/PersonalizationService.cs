@@ -287,9 +287,9 @@ namespace ONYX_DDAC.Services
                 score += 15;
             }
 
-            if (signals.MatchesPurchasedCategory)
+            if (signals.MatchedPurchasedCategories != null && signals.MatchedPurchasedCategories.Count > 0)
             {
-                score += 20;
+                score += Math.Min(signals.MatchedPurchasedCategories.Count, 5) * 18;
             }
 
             if (signals.MatchedSearchedCategories != null && signals.MatchedSearchedCategories.Count > 0)
@@ -720,26 +720,56 @@ namespace ONYX_DDAC.Services
                 return ordered.ThenByDescending(item => item.Product.Price);
             }
 
-            return ordered.ThenBy(item => item.Product.Price);
+            if (string.Equals(intent, "budget", StringComparison.OrdinalIgnoreCase))
+            {
+                return ordered.ThenBy(item => item.Product.Price);
+            }
+
+            return ordered.ThenBy(item => GetBudgetDistance(item.Product.Price, profile == null ? null : profile.BudgetRange));
         }
 
         private static string GetPriceIntent(UserPersonalizationProfile profile)
         {
             if (profile == null)
             {
-                return "budget";
+                return "mid-range";
             }
 
             // Flow checks look for Premium Build and Entry text alongside BudgetRange handling.
-            if (string.Equals(Normalize(profile.BudgetRange), "premium", StringComparison.OrdinalIgnoreCase) ||
-                (profile.Priorities ?? new List<string>())
-                    .Select(Normalize)
-                    .Any(priority => priority == "premium build" || priority == "premium-build"))
+            string budgetRange = Normalize(profile.BudgetRange);
+            IList<string> priorities = (profile.Priorities ?? new List<string>()).Select(Normalize).ToList();
+
+            if (string.Equals(budgetRange, "premium", StringComparison.OrdinalIgnoreCase) ||
+                priorities.Any(priority => priority == "premium build" || priority == "premium-build"))
             {
                 return "premium";
             }
 
-            return "budget";
+            if (string.Equals(budgetRange, "entry", StringComparison.OrdinalIgnoreCase) ||
+                priorities.Any(priority => priority == "budget" || priority == "budget-friendly" || priority == "value"))
+            {
+                return "budget";
+            }
+
+            return "mid-range";
+        }
+
+        private static decimal GetBudgetDistance(decimal price, string budgetRange)
+        {
+            string normalizedBudgetRange = Normalize(budgetRange);
+
+            if (string.Equals(normalizedBudgetRange, "entry", StringComparison.OrdinalIgnoreCase))
+            {
+                return price;
+            }
+
+            if (string.Equals(normalizedBudgetRange, "premium", StringComparison.OrdinalIgnoreCase))
+            {
+                return price >= 400m ? 0m : 400m - price;
+            }
+
+            const decimal midRangeTarget = 275m;
+            return Math.Abs(price - midRangeTarget);
         }
 
         private static UserPersonalizationProfile NormalizeProfile(UserPersonalizationProfile profile)

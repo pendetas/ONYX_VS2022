@@ -155,6 +155,13 @@ namespace ONYX_DDAC.DAL
                     userId,
                     exception.MessageText);
             }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Catalog search personalization event failed for user {0}: {1}",
+                    userId,
+                    exception.Message);
+            }
         }
 
         public IList<string> GetSearchedCategories(long userId)

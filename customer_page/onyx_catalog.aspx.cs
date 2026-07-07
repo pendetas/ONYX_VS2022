@@ -47,11 +47,6 @@ namespace ONYX_DDAC.customer_page
                 StoreRecentSearchSignal(SearchTerm);
             }
 
-            if (recommendationUserId.HasValue && !string.IsNullOrWhiteSpace(SearchTerm))
-            {
-                personalizationService.RecordCatalogSearch(recommendationUserId.Value, SearchTerm);
-            }
-
             PagedResult<Product> result = productService.GetCatalogProducts(new CatalogQuery
             {
                 Category = SelectedCategory,
@@ -62,6 +57,12 @@ namespace ONYX_DDAC.customer_page
                 UserId = recommendationUserId,
                 CurrentSearchSignals = GetRecentSearchSignals()
             });
+
+            if (recommendationUserId.HasValue && !string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                personalizationService.RecordCatalogSearch(recommendationUserId.Value, SearchTerm);
+            }
+
             CurrentPage = result.Page;
             LoadWishlistProductIds();
 
