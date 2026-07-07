@@ -16,6 +16,212 @@
     <link href="<%= ResolveUrl("~/Content/onyx-design-system.css") %>" rel="stylesheet" />
     <link href="<%= ResolveUrl("~/Content/onyx-user-master.css") %>" rel="stylesheet" />
     <script src="<%= ResolveUrl("~/Scripts/onyx-user-master.js") %>"></script>
+    <style>
+        .onyx-ai-assistant {
+            bottom: 24px;
+            position: fixed;
+            right: 24px;
+            z-index: 120;
+        }
+
+        .onyx-ai-panel {
+            background: #101012;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 18px;
+            box-shadow: 0 28px 80px rgba(0,0,0,0.45);
+            color: #fff;
+            display: none;
+            flex-direction: column;
+            height: min(620px, calc(100vh - 120px));
+            overflow: hidden;
+            width: min(380px, calc(100vw - 32px));
+        }
+
+        .onyx-ai-assistant.is-open .onyx-ai-panel {
+            display: flex;
+        }
+
+        .onyx-ai-header,
+        .onyx-ai-form {
+            align-items: center;
+            display: flex;
+            gap: 12px;
+            padding: 14px;
+        }
+
+        .onyx-ai-header {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            justify-content: space-between;
+        }
+
+        .onyx-ai-brand {
+            align-items: center;
+            display: flex;
+            gap: 10px;
+        }
+
+        .onyx-ai-avatar,
+        .onyx-ai-trigger,
+        .onyx-ai-close,
+        .onyx-ai-send {
+            align-items: center;
+            display: inline-flex;
+            justify-content: center;
+        }
+
+        .onyx-ai-avatar {
+            background: #fff;
+            border-radius: 999px;
+            color: #050505;
+            height: 34px;
+            width: 34px;
+        }
+
+        .onyx-ai-avatar svg,
+        .onyx-ai-trigger svg,
+        .onyx-ai-close svg,
+        .onyx-ai-send svg {
+            height: 18px;
+            width: 18px;
+        }
+
+        .onyx-ai-title {
+            display: grid;
+            gap: 2px;
+        }
+
+        .onyx-ai-title strong {
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .onyx-ai-title span,
+        .onyx-ai-title small {
+            color: #a1a1aa;
+            font-size: 12px;
+        }
+
+        .onyx-ai-close,
+        .onyx-ai-send,
+        .onyx-ai-trigger {
+            border: 0;
+            cursor: pointer;
+        }
+
+        .onyx-ai-close {
+            background: transparent;
+            color: #d8dde3;
+            padding: 6px;
+        }
+
+        .onyx-ai-messages {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            padding: 14px;
+        }
+
+        .onyx-ai-message {
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.5;
+            max-width: 88%;
+            padding: 10px 12px;
+            white-space: pre-line;
+        }
+
+        .onyx-ai-message.bot {
+            align-self: flex-start;
+            background: #18181b;
+            color: #f4f4f5;
+        }
+
+        .onyx-ai-message.user {
+            align-self: flex-end;
+            background: #f8fafc;
+            color: #050505;
+        }
+
+        .onyx-ai-message.error {
+            border: 1px solid rgba(248,113,113,0.45);
+        }
+
+        .onyx-ai-chips {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 14px;
+        }
+
+        .onyx-ai-chip {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 999px;
+            color: #d8dde3;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 7px 10px;
+        }
+
+        .onyx-ai-form {
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .onyx-ai-input {
+            background: #050505;
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 999px;
+            color: #fff;
+            flex: 1;
+            font-size: 13px;
+            min-width: 0;
+            padding: 11px 14px;
+        }
+
+        .onyx-ai-send,
+        .onyx-ai-trigger {
+            background: #fff;
+            color: #050505;
+        }
+
+        .onyx-ai-send {
+            border-radius: 999px;
+            height: 42px;
+            width: 42px;
+        }
+
+        .onyx-ai-send:disabled {
+            cursor: wait;
+            opacity: 0.55;
+        }
+
+        .onyx-ai-trigger {
+            border-radius: 999px;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+            height: 58px;
+            margin-left: auto;
+            margin-top: 14px;
+            width: 58px;
+        }
+
+        .onyx-ai-assistant.is-open .onyx-ai-trigger {
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .onyx-ai-assistant {
+                bottom: 16px;
+                right: 16px;
+            }
+
+            .onyx-ai-panel {
+                height: min(620px, calc(100vh - 88px));
+            }
+        }
+    </style>
 </head>
 <body class="<%= BodyCssClass %>" data-catalog-url="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>">
     <form id="form1" runat="server" class="<%= ShellCssClass %>">
@@ -75,6 +281,7 @@
                     </div>
                 </div>
                 <a class="<%= Page.AppRelativeVirtualPath.EndsWith("/onyx_about.aspx", StringComparison.OrdinalIgnoreCase) ? "is-active" : string.Empty %>" href="<%= ResolveUrl("~/customer_page/onyx_about.aspx") %>">About</a>
+                <a class="<%= Page.AppRelativeVirtualPath.EndsWith("/proGears.aspx", StringComparison.OrdinalIgnoreCase) ? "is-active" : string.Empty %>" href="<%= ResolveUrl("~/customer_page/proGears.aspx") %>">Pro Gear</a>
                 <a class="<%= Page.AppRelativeVirtualPath.EndsWith("/onyx_support.aspx", StringComparison.OrdinalIgnoreCase) ? "is-active" : string.Empty %>" href="<%= ResolveUrl("~/customer_page/onyx_support.aspx") %>">Support</a>
 
                 <span class="text-secondary">|</span>
@@ -131,6 +338,7 @@
             <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>">Home</a>
             <a href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx") %>">Catalog</a>
             <a href="<%= ResolveUrl("~/customer_page/onyx_about.aspx") %>">About</a>
+            <a href="<%= ResolveUrl("~/customer_page/proGears.aspx") %>">Pro Gear</a>
             <a href="<%= ResolveUrl("~/customer_page/onyx_support.aspx") %>">Support</a>
             <% if (Session["UserId"] != null) { %>
                 <a href="<%= ResolveUrl("~/customer_page/onyx_wishlist.aspx") %>">Wishlist</a>
@@ -185,6 +393,7 @@
                         <h3>Company</h3>
                         <div class="onyx-master-footer-links">
                             <a href="<%= ResolveUrl("~/customer_page/onyx_about.aspx") %>">About</a>
+                            <a href="<%= ResolveUrl("~/customer_page/proGears.aspx") %>">Pro Gear</a>
                             <a href="<%= ResolveUrl("~/customer_page/onyx_support.aspx") %>">Support</a>
                         </div>
                     </div>
@@ -207,6 +416,232 @@
         </footer>
         <% } %>
 
+        <% if (ShowAiChatbot) { %>
+        <section id="onyxAiAssistant" class="onyx-ai-assistant" aria-label="ONYX AI chat assistant">
+            <div class="onyx-ai-panel" role="dialog" aria-modal="false" aria-labelledby="onyxAiTitle">
+                <div class="onyx-ai-header">
+                    <div class="onyx-ai-brand">
+                        <span class="onyx-ai-avatar" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"></path>
+                                <path d="M8 9h8"></path>
+                                <path d="M8 13h5"></path>
+                            </svg>
+                        </span>
+                        <div class="onyx-ai-title">
+                            <strong id="onyxAiTitle">ONYX Assistant</strong>
+                            <span>Gear, orders, warranty</span>
+                            <small>Site-trained ONYX help</small>
+                        </div>
+                    </div>
+                    <button type="button" id="onyxAiClose" class="onyx-ai-close" aria-label="Close chat">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M18 6 6 18"></path>
+                            <path d="m6 6 12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="onyxAiMessages" class="onyx-ai-messages" role="log" aria-live="polite" aria-relevant="additions">
+                    <div class="onyx-ai-message bot">Ask about ONYX gear, setup, orders, warranty, returns, or account help.</div>
+                </div>
+                <div class="onyx-ai-chips" aria-label="Suggested ONYX questions">
+                    <button type="button" class="onyx-ai-chip" data-onyx-ai-prompt="Help me compare ONYX mice">Compare mice</button>
+                    <button type="button" class="onyx-ai-chip" data-onyx-ai-prompt="How do I claim ONYX warranty?">Warranty</button>
+                    <button type="button" class="onyx-ai-chip" data-onyx-ai-prompt="Where can I view my ONYX order history?">Order history</button>
+                </div>
+                <div class="onyx-ai-form">
+                    <input id="onyxAiInput" class="onyx-ai-input" type="text" placeholder="Ask about ONYX gear..." autocomplete="off" aria-label="Ask ONYX Assistant" />
+                    <button type="button" id="onyxAiSend" class="onyx-ai-send" aria-label="Send message">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m22 2-7 20-4-9-9-4Z"></path>
+                            <path d="M22 2 11 13"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <button type="button" id="onyxAiToggle" class="onyx-ai-trigger" aria-label="Open ONYX AI chat" aria-expanded="false" aria-controls="onyxAiMessages">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"></path>
+                    <path d="M8 9h8"></path>
+                    <path d="M8 13h5"></path>
+                </svg>
+            </button>
+        </section>
+
+        <script>
+            (function () {
+                var aiAssistant = document.getElementById('onyxAiAssistant');
+                var aiToggle = document.getElementById('onyxAiToggle');
+                var aiClose = document.getElementById('onyxAiClose');
+                var aiInput = document.getElementById('onyxAiInput');
+                var aiSend = document.getElementById('onyxAiSend');
+                var aiMessages = document.getElementById('onyxAiMessages');
+                var aiEndpoint = '<%= ResolveUrl("~/customer_page/onyx_ai_chat.ashx") %>';
+                var aiIsSending = false;
+
+                function setAiOpen(isOpen) {
+                    if (!aiAssistant || !aiToggle) {
+                        return;
+                    }
+
+                    aiAssistant.classList.toggle('is-open', isOpen);
+                    aiToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+                    if (isOpen && aiInput) {
+                        setTimeout(function () { aiInput.focus(); }, 120);
+                    }
+                }
+
+                function formatAiReply(text) {
+                    return (text || '').toString()
+                        .replace(/\*\*([^*]+)\*\*/g, '$1')
+                        .replace(/\*([^*]+)\*/g, '$1')
+                        .replace(/`([^`]+)`/g, '$1')
+                        .replace(/^\s*#{1,6}\s+/gm, '')
+                        .replace(/^\s*[-*]\s+/gm, '')
+                        .replace(/\n{3,}/g, '\n\n')
+                        .trim();
+                }
+
+                function addAiMessage(text, type) {
+                    if (!aiMessages) {
+                        return null;
+                    }
+
+                    var message = document.createElement('div');
+                    message.className = 'onyx-ai-message ' + type;
+                    message.textContent = formatAiReply(text);
+                    aiMessages.appendChild(message);
+                    aiMessages.scrollTop = aiMessages.scrollHeight;
+                    return message;
+                }
+
+                function setAiSending(isSending) {
+                    aiIsSending = isSending;
+                    if (aiSend) {
+                        aiSend.disabled = isSending;
+                        aiSend.setAttribute('aria-busy', isSending ? 'true' : 'false');
+                    }
+                    if (aiInput) {
+                        aiInput.disabled = isSending;
+                    }
+                }
+
+                function requestAiReply(text) {
+                    return fetch(aiEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: text,
+                            pagePath: window.location.pathname
+                        })
+                    }).then(function (response) {
+                        return response.text().then(function (rawBody) {
+                            var data = {};
+                            if (rawBody) {
+                                try {
+                                    data = JSON.parse(rawBody);
+                                } catch (parseError) {
+                                    data = { reply: 'Server returned a non-JSON assistant response. Restart the ONYX app and try again.' };
+                                }
+                            }
+                            if (!response.ok && data && data.reply) {
+                                return { reply: data.reply, isError: true };
+                            }
+                            if (!response.ok) {
+                                throw new Error('Assistant request failed');
+                            }
+                            return {
+                                reply: data && data.reply ? data.reply : 'I could not read the assistant reply. Please try again.',
+                                isError: false
+                            };
+                        });
+                    });
+                }
+
+                function sendAiMessage() {
+                    if (!aiInput) {
+                        return;
+                    }
+
+                    var text = aiInput.value.trim();
+                    if (!text || aiIsSending) {
+                        return;
+                    }
+
+                    addAiMessage(text, 'user');
+                    aiInput.value = '';
+                    setAiSending(true);
+                    var pendingMessage = addAiMessage('Searching ONYX knowledge...', 'bot');
+
+                    requestAiReply(text)
+                        .then(function (result) {
+                            if (pendingMessage) {
+                                pendingMessage.className = result.isError ? 'onyx-ai-message bot error' : 'onyx-ai-message bot';
+                                pendingMessage.textContent = formatAiReply(result.reply);
+                                aiMessages.scrollTop = aiMessages.scrollHeight;
+                            }
+                        })
+                        .catch(function () {
+                            if (pendingMessage) {
+                                pendingMessage.className = 'onyx-ai-message bot error';
+                                pendingMessage.textContent = 'The ONYX Assistant is unavailable right now. Please try again or email support@onyxgaming.com.';
+                            }
+                        })
+                        .finally(function () {
+                            setAiSending(false);
+                            if (aiInput) {
+                                aiInput.focus();
+                            }
+                        });
+                }
+
+                if (aiToggle) {
+                    aiToggle.addEventListener('click', function () {
+                        setAiOpen(!aiAssistant.classList.contains('is-open'));
+                    });
+                }
+                if (aiClose) {
+                    aiClose.addEventListener('click', function () {
+                        setAiOpen(false);
+                        aiToggle.focus();
+                    });
+                }
+                if (aiSend) {
+                    aiSend.addEventListener('click', sendAiMessage);
+                }
+                if (aiInput) {
+                    aiInput.addEventListener('keydown', function (event) {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            sendAiMessage();
+                        }
+                    });
+                }
+
+                Array.prototype.forEach.call(aiAssistant ? aiAssistant.querySelectorAll('[data-onyx-ai-prompt]') : [], function (chip) {
+                    chip.addEventListener('click', function () {
+                        if (!aiInput || aiIsSending) {
+                            return;
+                        }
+                        aiInput.value = chip.getAttribute('data-onyx-ai-prompt') || '';
+                        sendAiMessage();
+                    });
+                });
+
+                if (window.location.hash === '#ai-chat') {
+                    setAiOpen(true);
+                }
+
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape' && aiAssistant && aiAssistant.classList.contains('is-open')) {
+                        setAiOpen(false);
+                        aiToggle.focus();
+                    }
+                });
+            })();
+        </script>
+        <% } %>
 
     </form>
 </body>

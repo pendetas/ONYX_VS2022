@@ -22,6 +22,7 @@ App_Data/*.mdf
 App_Data/*.ldf
 App_Data/*.log
 *_debug.log
+AppSettings.Local.config
 
 # OS/editor files
 .DS_Store

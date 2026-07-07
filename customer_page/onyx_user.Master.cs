@@ -75,6 +75,18 @@ namespace ONYX_DDAC.customer_page
             }
         }
 
+        protected bool ShowAiChatbot
+        {
+            get
+            {
+                string currentPath = Page.AppRelativeVirtualPath ?? string.Empty;
+
+                return !currentPath.StartsWith("~/auth_page/", StringComparison.OrdinalIgnoreCase)
+                    && !currentPath.EndsWith("/onyx_checkout.aspx", StringComparison.OrdinalIgnoreCase)
+                    && !currentPath.EndsWith("/onyx_invoice.aspx", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             EnsureCustomerPersonalizationCompleted();
