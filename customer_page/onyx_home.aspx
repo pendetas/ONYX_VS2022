@@ -35,7 +35,7 @@
         <main id="top">
             <section class="onyx-ddac-hero-section relative w-full h-screen flex flex-col justify-center items-center px-6 pt-20" aria-label="ONYX hero video">
                 <video class="onyx-ddac-hero-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
-                    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_055001_8e16d972-3b2b-441c-86ad-2901a54682f9.mp4" type="video/mp4" />
+                    <source src="<%= ResolveUrl("~/Video/Dragon.mp4") %>" type="video/mp4" />
                 </video>
                 <div class="onyx-ddac-hero-scrim" aria-hidden="true"></div>
                 <h1 class="onyx-ddac-hero-title reveal-item opacity-0">Dominate<br />the game.</h1>
@@ -218,6 +218,9 @@
             </section>
 
             <footer class="onyx-ddac-footer w-full py-32 px-6 md:px-12 relative z-10">
+                <video class="onyx-ddac-footer-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+                    <source src="<%= ResolveUrl("~/Video/DragonInk.mp4") %>" type="video/mp4" />
+                </video>
                 <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
                     <div class="reveal-item">
                         <h2 class="text-4xl md:text-6xl font-syne font-bold tracking-tighter mb-6 leading-tight">
