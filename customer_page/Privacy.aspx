@@ -2,158 +2,201 @@
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
-        .onyx-legal {
-            background:
-                radial-gradient(circle at 76% 10%, rgba(216, 221, 227, 0.16), transparent 20rem),
-                linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 34rem),
-                #050505;
-            color: #ffffff;
+        .onyx-privacy-page {
+            --bg: #09090b;
+            --panel: #121214;
+            --line: #27272a;
+            --text: #ffffff;
+            --muted: #a1a1aa;
+            --soft: #d8dde3;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             min-height: 100vh;
-            padding: 180px 24px 80px;
+            padding: 156px 0 84px;
         }
 
-        .onyx-legal-shell {
+        .onyx-privacy-page *,
+        .onyx-privacy-page h1,
+        .onyx-privacy-page h2,
+        .onyx-privacy-page p,
+        .onyx-privacy-page li,
+        .onyx-privacy-page a,
+        .onyx-privacy-page span {
+            box-sizing: border-box;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+            font-weight: 400 !important;
+            letter-spacing: 0 !important;
+        }
+
+        .onyx-privacy-shell {
             display: grid;
-            gap: 72px;
-            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 56px;
+            grid-template-columns: 240px minmax(0, 1fr);
             margin: 0 auto;
-            max-width: 1220px;
+            max-width: 1180px;
+            width: min(100% - 48px, 1180px);
         }
 
-        .onyx-legal-aside {
+        .onyx-privacy-aside {
             align-self: start;
             position: sticky;
-            top: 140px;
+            top: 128px;
         }
 
-        .onyx-legal-kicker,
-        .onyx-legal-toc-title,
-        .onyx-legal-section span {
-            color: #9ca3af;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.18em;
+        .onyx-privacy-kicker,
+        .onyx-privacy-label,
+        .onyx-privacy-toc a {
+            color: var(--soft);
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+            font-size: 12px;
+            line-height: 1.4;
             text-transform: uppercase;
         }
 
-        .onyx-legal h1,
-        .onyx-legal h2 {
-            font-family: Syne, Inter, sans-serif;
-            letter-spacing: -0.04em;
-        }
-
-        .onyx-legal h1 {
-            font-size: clamp(54px, 8vw, 112px);
-            line-height: 0.92;
-            margin: 18px 0 24px;
-            max-width: 860px;
-            text-transform: uppercase;
-        }
-
-        .onyx-legal-lede {
-            color: #b8bec7;
-            font-size: clamp(17px, 2vw, 22px);
-            line-height: 1.65;
-            margin: 0;
-            max-width: 780px;
-        }
-
-        .onyx-legal-meta {
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-            color: #9ca3af;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px 32px;
-            margin-top: 42px;
-            padding-top: 24px;
-        }
-
-        .onyx-legal-toc {
-            border-left: 1px solid rgba(255, 255, 255, 0.12);
+        .onyx-privacy-toc {
+            border-left: 1px solid var(--line);
             display: grid;
             gap: 10px;
-            margin-top: 24px;
-            padding-left: 20px;
-        }
-
-        .onyx-legal-toc a {
-            color: #9ca3af;
-            font-size: 14px;
-            line-height: 1.4;
-            transition: color 160ms ease, transform 160ms ease;
-        }
-
-        .onyx-legal-toc a:hover,
-        .onyx-legal-toc a.active {
-            color: #ffffff;
-            transform: translateX(4px);
-        }
-
-        .onyx-legal-content {
-            display: grid;
-            gap: 42px;
-        }
-
-        .onyx-legal-section {
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-            padding-top: 42px;
-        }
-
-        .onyx-legal-section h2 {
-            font-size: clamp(30px, 4vw, 58px);
-            line-height: 1;
-            margin: 12px 0 22px;
-        }
-
-        .onyx-legal-section p,
-        .onyx-legal-section li {
-            color: #c7ccd4;
-            font-size: 17px;
-            line-height: 1.8;
-        }
-
-        .onyx-legal-section ul {
-            display: grid;
-            gap: 12px;
-            list-style: none;
-            margin: 22px 0 0;
-            padding: 0;
-        }
-
-        .onyx-legal-section li {
-            border-left: 1px solid rgba(216, 221, 227, 0.28);
+            margin-top: 18px;
             padding-left: 18px;
         }
 
-        .onyx-legal-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            margin-top: 28px;
-            padding: 28px;
+        .onyx-privacy-toc a {
+            color: var(--muted) !important;
+            text-decoration: none;
+            text-transform: none;
+            transition: color 160ms ease, transform 160ms ease;
+        }
+
+        .onyx-privacy-toc a:hover {
+            color: var(--text) !important;
+            transform: translateX(4px);
+        }
+
+        .onyx-privacy-page h1 {
+            color: var(--text) !important;
+            font-size: 84px;
+            line-height: 0.96;
+            margin: 18px 0 28px;
+            max-width: 860px;
+        }
+
+        .onyx-privacy-page h2 {
+            color: var(--text) !important;
+            font-size: 38px;
+            line-height: 1.08;
+            margin: 10px 0 18px;
+        }
+
+        .onyx-privacy-lede,
+        .onyx-privacy-section p,
+        .onyx-privacy-section li {
+            color: var(--muted) !important;
+            font-size: 17px;
+            line-height: 1.75;
+        }
+
+        .onyx-privacy-lede {
+            margin: 0;
+            max-width: 760px;
+        }
+
+        .onyx-privacy-meta {
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 26px;
+            margin-top: 34px;
+            padding-top: 20px;
+        }
+
+        .onyx-privacy-content {
+            display: grid;
+            gap: 34px;
+            margin-top: 56px;
+        }
+
+        .onyx-privacy-section {
+            border-top: 1px solid var(--line);
+            scroll-margin-top: 130px;
+            padding-top: 34px;
+        }
+
+        .onyx-privacy-section ul {
+            display: grid;
+            gap: 10px;
+            list-style: none;
+            margin: 18px 0 0;
+            padding: 0;
+        }
+
+        .onyx-privacy-section li {
+            border-left: 1px solid rgba(216, 221, 227, 0.32);
+            padding-left: 16px;
+        }
+
+        .onyx-privacy-note {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            margin-top: 22px;
+            padding: 22px;
+        }
+
+        .onyx-privacy-note p {
+            margin: 0;
         }
 
         @media (max-width: 980px) {
-            .onyx-legal {
-                padding-top: 140px;
+            .onyx-privacy-page {
+                padding-top: 124px;
             }
 
-            .onyx-legal-shell {
+            .onyx-privacy-shell {
                 grid-template-columns: 1fr;
             }
 
-            .onyx-legal-aside {
-                display: none;
+            .onyx-privacy-aside {
+                position: static;
+            }
+
+            .onyx-privacy-toc {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .onyx-privacy-page h1 {
+                font-size: 62px;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .onyx-privacy-shell {
+                width: min(100% - 32px, 1180px);
+            }
+
+            .onyx-privacy-page h1 {
+                font-size: 42px;
+            }
+
+            .onyx-privacy-page h2 {
+                font-size: 30px;
+            }
+
+            .onyx-privacy-toc {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <main class="onyx-legal" aria-labelledby="privacy-title">
-        <div class="onyx-legal-shell">
-            <aside class="onyx-legal-aside">
-                <p class="onyx-legal-toc-title">Contents</p>
-                <nav class="onyx-legal-toc" aria-label="Privacy contents">
+    <main class="onyx-privacy-page" aria-labelledby="privacy-title">
+        <div class="onyx-privacy-shell">
+            <aside class="onyx-privacy-aside">
+                <span class="onyx-privacy-label">Contents</span>
+                <nav class="onyx-privacy-toc" aria-label="Privacy contents">
                     <a class="hover-trigger" href="#collect">Information we collect</a>
                     <a class="hover-trigger" href="#use">How we use it</a>
                     <a class="hover-trigger" href="#sharing">Data sharing</a>
@@ -166,20 +209,20 @@
 
             <div>
                 <header>
-                    <p class="onyx-legal-kicker">Privacy standard</p>
-                    <h1 id="privacy-title">Your data stays under control.</h1>
-                    <p class="onyx-legal-lede">
-                        ONYX uses personal information to run accounts, process orders, protect the store, and improve the player experience. We keep the policy direct so you know what is collected and why.
+                    <span class="onyx-privacy-kicker">Privacy standard</span>
+                    <h1 id="privacy-title">Your data stays practical and protected.</h1>
+                    <p class="onyx-privacy-lede">
+                        ONYX uses personal information to run accounts, process orders, provide support, protect the store, and improve the shopping experience.
                     </p>
-                    <div class="onyx-legal-meta">
+                    <div class="onyx-privacy-meta">
                         <span>Last updated: January 2026</span>
                         <span>Region: Malaysia</span>
                     </div>
                 </header>
 
-                <div class="onyx-legal-content">
-                    <section id="collect" class="onyx-legal-section">
-                        <span>01</span>
+                <div class="onyx-privacy-content">
+                    <section id="collect" class="onyx-privacy-section">
+                        <span class="onyx-privacy-label">01</span>
                         <h2>Information we collect</h2>
                         <p>We collect information you provide when you create an account, place an order, contact support, join a promotion, or interact with ONYX services.</p>
                         <ul>
@@ -189,82 +232,46 @@
                         </ul>
                     </section>
 
-                    <section id="use" class="onyx-legal-section">
-                        <span>02</span>
+                    <section id="use" class="onyx-privacy-section">
+                        <span class="onyx-privacy-label">02</span>
                         <h2>How we use it</h2>
                         <p>We use your information to deliver products, provide support, secure the platform, improve website performance, and communicate important updates about your account or orders.</p>
-                        <div class="onyx-legal-card">
-                            <p>Marketing messages are only sent when allowed by law or your preferences. You can opt out of promotional email at any time while still receiving service messages about orders or account security.</p>
+                        <div class="onyx-privacy-note">
+                            <p>Marketing messages are only sent when allowed by law or your preferences. Service messages about orders or account security may still be sent.</p>
                         </div>
                     </section>
 
-                    <section id="sharing" class="onyx-legal-section">
-                        <span>03</span>
+                    <section id="sharing" class="onyx-privacy-section">
+                        <span class="onyx-privacy-label">03</span>
                         <h2>Data sharing</h2>
-                        <p>We do not sell your personal information. We share it only with service providers who help us run the store, including payment processors, delivery partners, hosting providers, analytics services, and customer support tools.</p>
+                        <p>We do not sell your personal information. We share it with service providers who help us run the store, including payment processors, delivery partners, hosting providers, analytics services, and customer support tools.</p>
                     </section>
 
-                    <section id="cookies" class="onyx-legal-section">
-                        <span>04</span>
+                    <section id="cookies" class="onyx-privacy-section">
+                        <span class="onyx-privacy-label">04</span>
                         <h2>Cookies</h2>
-                        <p>Cookies and similar technologies help us keep you signed in, remember preferences, measure site performance, and protect against abuse. Your browser settings may allow you to block or delete cookies, although some store features may stop working correctly.</p>
+                        <p>Cookies and similar technologies help us keep you signed in, remember preferences, measure site performance, and protect against abuse. Some store features may stop working correctly if cookies are blocked.</p>
                     </section>
 
-                    <section id="rights" class="onyx-legal-section">
-                        <span>05</span>
+                    <section id="rights" class="onyx-privacy-section">
+                        <span class="onyx-privacy-label">05</span>
                         <h2>Your rights</h2>
-                        <p>You may request access, correction, deletion, or restriction of your personal information where applicable. You may also ask us to explain how your data is used or withdraw consent for optional processing.</p>
+                        <p>You may request access, correction, deletion, or restriction of your personal information where applicable. You may also ask how your data is used or withdraw consent for optional processing.</p>
                     </section>
 
-                    <section id="security" class="onyx-legal-section">
-                        <span>06</span>
+                    <section id="security" class="onyx-privacy-section">
+                        <span class="onyx-privacy-label">06</span>
                         <h2>Security</h2>
-                        <p>We use technical and organizational measures to protect personal information, including access controls, encrypted connections, monitoring, and account safeguards. No online service can be guaranteed completely secure, so protect your login details carefully.</p>
+                        <p>We use technical and organizational measures to protect personal information, including access controls, encrypted connections, monitoring, and account safeguards. Protect your login details carefully.</p>
                     </section>
 
-                    <section id="contact" class="onyx-legal-section">
-                        <span>07</span>
+                    <section id="contact" class="onyx-privacy-section">
+                        <span class="onyx-privacy-label">07</span>
                         <h2>Contact</h2>
                         <p>Questions about privacy can be sent to privacy@onyxgaming.com or mailed to ONYX Gaming Technologies, Kuala Lumpur, Malaysia.</p>
                     </section>
                 </div>
             </div>
         </div>
-
     </main>
-
-    <script>
-        (function () {
-            var links = document.querySelectorAll('.onyx-legal-toc a');
-            var sections = document.querySelectorAll('.onyx-legal-section');
-
-            links.forEach(function (link) {
-                link.addEventListener('click', function (event) {
-                    var target = document.querySelector(link.getAttribute('href'));
-                    if (!target) {
-                        return;
-                    }
-
-                    event.preventDefault();
-                    window.scrollTo({
-                        top: target.offsetTop - 120,
-                        behavior: 'smooth'
-                    });
-                });
-            });
-
-            window.addEventListener('scroll', function () {
-                var activeId = '';
-                sections.forEach(function (section) {
-                    if (window.scrollY >= section.offsetTop - 160) {
-                        activeId = section.id;
-                    }
-                });
-
-                links.forEach(function (link) {
-                    link.classList.toggle('active', link.getAttribute('href') === '#' + activeId);
-                });
-            }, { passive: true });
-        })();
-    </script>
 </asp:Content>

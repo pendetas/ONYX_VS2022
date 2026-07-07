@@ -2,397 +2,257 @@
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
-        .onyx-support {
-            background: #09090b;
-            color: #ffffff;
+        .onyx-support-page {
+            --bg: #09090b;
+            --panel: #121214;
+            --panel-strong: #18181b;
+            --line: #27272a;
+            --text: #ffffff;
+            --muted: #a1a1aa;
+            --soft: #d8dde3;
+            background: var(--bg);
+            color: var(--text);
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             min-height: 100vh;
             overflow: hidden;
         }
 
-        .onyx-support *,
-        .onyx-support h1,
-        .onyx-support h2,
-        .onyx-support h3,
-        .onyx-support p,
-        .onyx-support a,
-        .onyx-support span,
-        .onyx-support label,
-        .onyx-support input,
-        .onyx-support select,
-        .onyx-support textarea {
-            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-weight: 400;
+        .onyx-support-page *,
+        .onyx-support-page h1,
+        .onyx-support-page h2,
+        .onyx-support-page h3,
+        .onyx-support-page p,
+        .onyx-support-page a,
+        .onyx-support-page span {
+            box-sizing: border-box;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+            font-weight: 400 !important;
+            letter-spacing: 0 !important;
         }
 
         .onyx-support-shell {
             margin: 0 auto;
-            max-width: 1240px;
-            width: min(100% - 48px, 1240px);
+            max-width: 1180px;
+            width: min(100% - 48px, 1180px);
         }
 
         .onyx-support-kicker,
-        .onyx-support-index,
         .onyx-support-label,
-        .onyx-support-button,
-        .onyx-support-meta,
-        .onyx-support-field label {
+        .onyx-support-button {
+            color: var(--soft);
             font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
             font-size: 12px;
-            letter-spacing: 1.2px;
+            line-height: 1.4;
             text-transform: uppercase;
         }
 
         .onyx-support-hero {
-            border-bottom: 1px solid #27272a;
-            padding: 164px 0 78px;
+            border-bottom: 1px solid var(--line);
+            padding: 156px 0 72px;
         }
 
-        .onyx-support-hero-grid {
+        .onyx-support-hero-grid,
+        .onyx-support-contact {
             align-items: end;
             display: grid;
-            gap: clamp(38px, 7vw, 92px);
-            grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr);
+            gap: 36px;
+            grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+        }
+
+        .onyx-support-contact {
+            align-items: start;
+            grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
         }
 
         .onyx-support-kicker {
-            color: #a1a1aa;
             display: inline-flex;
-            gap: 14px;
-            margin-bottom: 28px;
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .onyx-support-kicker::before {
-            background: #d8dde3;
+            background: var(--soft);
             content: "";
             height: 1px;
             margin-top: 8px;
-            width: 44px;
+            width: 36px;
         }
 
-        .onyx-support h1 {
-            color: #ffffff;
-            font-size: clamp(56px, 8.4vw, 124px);
-            letter-spacing: -4.6px;
-            line-height: 0.92;
+        .onyx-support-page h1 {
+            color: var(--text) !important;
+            font-size: 84px;
+            line-height: 0.96;
             margin: 0;
-            max-width: 880px;
+            max-width: 860px;
+        }
+
+        .onyx-support-page h2 {
+            color: var(--text) !important;
+            font-size: 52px;
+            line-height: 1.03;
+            margin: 0;
+            max-width: 820px;
+        }
+
+        .onyx-support-page h3 {
+            color: var(--text) !important;
+            font-size: 22px;
+            line-height: 1.2;
+            margin: 0 0 12px;
+        }
+
+        .onyx-support-lede,
+        .onyx-support-copy,
+        .onyx-support-card p,
+        .onyx-support-row p,
+        .onyx-support-faq p {
+            color: var(--muted) !important;
+            font-size: 17px;
+            line-height: 1.68;
+            margin: 0;
         }
 
         .onyx-support-lede {
-            color: #a1a1aa;
-            font-size: clamp(18px, 2vw, 24px);
-            line-height: 1.58;
-            margin: 34px 0 0;
-            max-width: 720px;
-        }
-
-        .onyx-support-lede strong {
-            color: #ffffff;
-            font-weight: 400;
+            margin-top: 28px;
+            max-width: 700px;
         }
 
         .onyx-support-actions {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-top: 38px;
+            margin-top: 34px;
         }
 
         .onyx-support-button {
             align-items: center;
             border: 1px solid rgba(255, 255, 255, 0.28);
             border-radius: 999px;
-            color: #ffffff;
+            color: var(--text) !important;
             display: inline-flex;
-            gap: 10px;
-            min-height: 48px;
-            padding: 0 22px;
+            min-height: 46px;
+            padding: 0 20px;
             text-decoration: none;
             transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
         }
 
         .onyx-support-button:hover {
-            background: #ffffff;
-            border-color: #ffffff;
-            color: #09090b;
+            background: var(--text);
+            border-color: var(--text);
+            color: var(--bg) !important;
             transform: translateY(-2px);
         }
 
+        .onyx-support-status,
+        .onyx-support-card,
+        .onyx-support-row,
+        .onyx-support-faq details {
+            background: var(--panel) !important;
+            border: 1px solid var(--line) !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+        }
+
         .onyx-support-status {
-            background: #121214;
-            border: 1px solid #27272a;
-            border-radius: 8px;
             overflow: hidden;
         }
 
-        .onyx-support-status-row {
-            border-top: 1px solid #27272a;
-            display: grid;
-            gap: 10px;
+        .onyx-support-status-item {
+            border-top: 1px solid var(--line);
             padding: 24px;
         }
 
-        .onyx-support-status-row:first-child {
+        .onyx-support-status-item:first-child {
             border-top: 0;
         }
 
-        .onyx-support-label {
-            color: #71717a;
+        .onyx-support-status strong {
+            color: var(--text);
             display: block;
-        }
-
-        .onyx-support-status-row strong {
-            color: #ffffff;
-            display: block;
-            font-size: clamp(30px, 4vw, 52px);
-            letter-spacing: -1.8px;
+            font-size: 34px;
             line-height: 1;
+            margin: 10px 0;
         }
 
-        .onyx-support-status-row p {
-            color: #a1a1aa;
+        .onyx-support-status p {
+            color: var(--muted) !important;
             font-size: 15px;
             line-height: 1.6;
             margin: 0;
         }
 
         .onyx-support-section {
-            border-bottom: 1px solid #27272a;
-            padding: clamp(72px, 9vw, 118px) 0;
+            border-bottom: 1px solid var(--line);
+            padding: 84px 0;
         }
 
-        .onyx-support-section-heading {
+        .onyx-support-heading {
             display: grid;
-            gap: 28px;
-            grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr);
-            margin-bottom: 46px;
+            gap: 22px;
+            grid-template-columns: 180px minmax(0, 1fr);
+            margin-bottom: 36px;
         }
 
-        .onyx-support-index {
-            color: #71717a;
-        }
-
-        .onyx-support h2 {
-            color: #ffffff;
-            font-size: clamp(38px, 6vw, 78px);
-            letter-spacing: -2.6px;
-            line-height: 0.98;
-            margin: 0;
-            max-width: 860px;
-        }
-
-        .onyx-support-section-copy {
-            color: #a1a1aa;
-            font-size: clamp(17px, 1.7vw, 22px);
-            line-height: 1.6;
-            margin: 22px 0 0;
-            max-width: 760px;
-        }
-
-        .onyx-support-lanes {
+        .onyx-support-card-grid {
             display: grid;
             gap: 14px;
             grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
-        .onyx-support-lane {
-            background: #121214;
-            border: 1px solid #27272a;
-            border-radius: 8px;
-            color: #ffffff;
-            display: block;
-            min-height: 260px;
+        .onyx-support-card {
+            min-height: 250px;
             padding: 24px;
-            text-decoration: none;
-            transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
         }
 
-        .onyx-support-lane:hover {
-            background: #18181b;
-            border-color: rgba(255, 255, 255, 0.38);
-            transform: translateY(-3px);
+        .onyx-support-card .onyx-support-label {
+            display: block;
+            margin-bottom: 42px;
         }
 
-        .onyx-support-lane .onyx-support-label {
-            margin-bottom: 48px;
-        }
-
-        .onyx-support-lane h3,
-        .onyx-support-process h3,
-        .onyx-support-contact-card h3,
-        .onyx-support-faq summary {
-            color: #ffffff;
-            font-size: 24px;
-            letter-spacing: -0.9px;
-            line-height: 1.12;
-            margin: 0 0 14px;
-        }
-
-        .onyx-support-lane p,
-        .onyx-support-process p,
-        .onyx-support-contact-card p,
-        .onyx-support-faq p {
-            color: #a1a1aa;
-            font-size: 15px;
-            line-height: 1.65;
-            margin: 0;
-        }
-
-        .onyx-support-process-list {
-            display: grid;
-        }
-
-        .onyx-support-process {
-            align-items: start;
-            border-top: 1px solid #27272a;
-            display: grid;
-            gap: 32px;
-            grid-template-columns: 150px 1fr 1.05fr;
-            padding: 30px 0;
-        }
-
-        .onyx-support-process:last-child {
-            border-bottom: 1px solid #27272a;
-        }
-
-        .onyx-support-process .onyx-support-label {
-            margin: 0;
-        }
-
-        .onyx-support-contact {
-            display: grid;
-            gap: 14px;
-            grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-        }
-
-        .onyx-support-contact-card,
-        .onyx-support-form-card {
-            background: #121214;
-            border: 1px solid #27272a;
+        .onyx-support-contact-card {
+            background: var(--panel-strong);
+            border: 1px solid var(--line);
             border-radius: 8px;
-            padding: clamp(26px, 4vw, 42px);
+            padding: 28px;
         }
 
-        .onyx-support-contact-card h3 {
-            font-size: clamp(30px, 4vw, 48px);
-            letter-spacing: -1.8px;
-            margin-bottom: 18px;
-        }
-
-        .onyx-support-channel-list {
+        .onyx-support-contact-list {
             display: grid;
             gap: 0;
-            margin-top: 34px;
+            margin-top: 28px;
         }
 
-        .onyx-support-channel {
+        .onyx-support-contact-line {
             align-items: start;
-            border-top: 1px solid #27272a;
+            border-top: 1px solid var(--line);
             display: grid;
-            gap: 12px;
-            grid-template-columns: 140px 1fr;
-            padding: 18px 0;
+            gap: 14px;
+            grid-template-columns: 130px minmax(0, 1fr);
+            padding: 16px 0;
         }
 
-        .onyx-support-channel:last-child {
-            border-bottom: 1px solid #27272a;
+        .onyx-support-contact-line:last-child {
+            border-bottom: 1px solid var(--line);
         }
 
-        .onyx-support-channel a,
-        .onyx-support-channel strong {
-            color: #ffffff;
+        .onyx-support-contact-line a,
+        .onyx-support-contact-line strong {
+            color: var(--text) !important;
             overflow-wrap: anywhere;
             text-decoration: none;
         }
 
-        .onyx-support-form-card {
+        .onyx-support-checklist {
             display: grid;
-            gap: 18px;
+            gap: 12px;
         }
 
-        .onyx-support-field {
+        .onyx-support-row {
+            align-items: start;
             display: grid;
-            gap: 8px;
-        }
-
-        .onyx-support-field label {
-            color: #8a8f98;
-        }
-
-        .onyx-support-field input,
-        .onyx-support-field select,
-        .onyx-support-field textarea {
-            background: #09090b;
-            border: 1px solid #27272a;
-            border-radius: 8px;
-            color: #ffffff;
-            font-size: 16px;
-            min-height: 52px;
-            outline: none;
-            padding: 14px 16px;
-            width: 100%;
-        }
-
-        .onyx-support-field input:focus,
-        .onyx-support-field select:focus,
-        .onyx-support-field textarea:focus {
-            border-color: rgba(255, 255, 255, 0.72);
-        }
-
-        .onyx-support-field select option {
-            background: #09090b;
-            color: #ffffff;
-        }
-
-        .onyx-support-field textarea {
-            min-height: 132px;
-            resize: vertical;
-        }
-
-        .onyx-support-form-note {
-            color: #71717a;
-            font-size: 13px;
-            line-height: 1.55;
-            margin: 0;
-        }
-
-        .onyx-support-docs {
-            display: grid;
-            gap: 14px;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-
-        .onyx-support-doc {
-            background: #121214;
-            border: 1px solid #27272a;
-            border-radius: 8px;
-            min-height: 210px;
-            padding: 24px;
-        }
-
-        .onyx-support-doc strong {
-            color: #ffffff;
-            display: block;
-            font-size: clamp(26px, 3.2vw, 42px);
-            letter-spacing: -1.2px;
-            line-height: 1;
-            margin-bottom: 22px;
-        }
-
-        .onyx-support-doc h3 {
-            color: #ffffff;
-            font-size: 23px;
-            letter-spacing: -0.8px;
-            line-height: 1.12;
-            margin: 0 0 12px;
-        }
-
-        .onyx-support-doc p {
-            color: #a1a1aa;
-            font-size: 15px;
-            line-height: 1.65;
-            margin: 0;
+            gap: 24px;
+            grid-template-columns: 140px minmax(160px, 0.7fr) minmax(0, 1fr);
+            padding: 22px;
         }
 
         .onyx-support-faq {
@@ -401,16 +261,16 @@
         }
 
         .onyx-support-faq details {
-            background: #121214;
-            border: 1px solid #27272a;
-            border-radius: 8px;
-            padding: 0 24px;
+            padding: 0 22px;
         }
 
         .onyx-support-faq summary {
+            color: var(--text);
             cursor: pointer;
+            font-size: 20px;
+            line-height: 1.3;
             list-style: none;
-            padding: 24px 0;
+            padding: 22px 0;
         }
 
         .onyx-support-faq summary::-webkit-details-marker {
@@ -418,204 +278,172 @@
         }
 
         .onyx-support-faq p {
-            border-top: 1px solid #27272a;
-            padding: 20px 0 24px;
+            border-top: 1px solid var(--line);
+            padding: 18px 0 22px;
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1080px) {
+            .onyx-support-card-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 980px) {
             .onyx-support-hero-grid,
             .onyx-support-contact {
                 grid-template-columns: 1fr;
             }
 
-            .onyx-support-lanes,
-            .onyx-support-docs {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+            .onyx-support-page h1 {
+                font-size: 62px;
+            }
+
+            .onyx-support-page h2 {
+                font-size: 40px;
             }
         }
 
-        @media (max-width: 760px) {
+        @media (max-width: 680px) {
             .onyx-support-shell {
-                width: min(100% - 32px, 1240px);
+                width: min(100% - 32px, 1180px);
             }
 
             .onyx-support-hero {
-                padding-top: 124px;
+                padding: 124px 0 54px;
             }
 
-            .onyx-support-section-heading,
-            .onyx-support-process,
-            .onyx-support-lanes,
-            .onyx-support-docs,
-            .onyx-support-channel {
+            .onyx-support-section {
+                padding: 62px 0;
+            }
+
+            .onyx-support-heading,
+            .onyx-support-card-grid,
+            .onyx-support-row,
+            .onyx-support-contact-line {
                 grid-template-columns: 1fr;
             }
 
-            .onyx-support-lane {
+            .onyx-support-page h1 {
+                font-size: 42px;
+            }
+
+            .onyx-support-page h2 {
+                font-size: 32px;
+            }
+
+            .onyx-support-card {
                 min-height: 0;
             }
 
-            .onyx-support-lane .onyx-support-label {
-                margin-bottom: 26px;
+            .onyx-support-card .onyx-support-label {
+                margin-bottom: 24px;
             }
         }
     </style>
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <main class="onyx-support" aria-labelledby="support-title">
+    <main class="onyx-support-page" aria-labelledby="support-title">
         <section class="onyx-support-hero">
             <div class="onyx-support-shell onyx-support-hero-grid">
                 <div>
                     <span class="onyx-support-kicker">ONYX Support</span>
-                    <h1 id="support-title">Help that keeps ownership clear.</h1>
+                    <h1 id="support-title">Clear help for orders, gear, and accounts.</h1>
                     <p class="onyx-support-lede">
-                        <strong>ONYX support is built around fast diagnosis, transparent next steps, and reliable post-purchase care.</strong> Get help with orders, warranty coverage, returns, setup, and account access without guessing where to start.
+                        Start with the right lane and send the details support needs first. ONYX handles orders, warranty, returns, setup, and account questions through one support address.
                     </p>
                     <div class="onyx-support-actions">
-                        <a href="#contact-support" class="onyx-support-button hover-trigger">Contact support</a>
-                        <a href="#support-faq" class="onyx-support-button hover-trigger">Read FAQ</a>
+                        <a class="onyx-support-button hover-trigger" href="mailto:support@onyxgaming.com?subject=ONYX%20Support%20Request">Email support</a>
+                        <a class="onyx-support-button hover-trigger" href="#support-lanes">Choose a lane</a>
                     </div>
                 </div>
 
                 <aside class="onyx-support-status" aria-label="ONYX support standards">
-                    <div class="onyx-support-status-row">
+                    <div class="onyx-support-status-item">
                         <span class="onyx-support-label">Average first reply</span>
                         <strong>24h</strong>
-                        <p>Most support requests are designed around a first human response within one business day.</p>
+                        <p>Usually around one business day.</p>
                     </div>
-                    <div class="onyx-support-status-row">
-                        <span class="onyx-support-label">Warranty coverage</span>
-                        <strong>2 years</strong>
-                        <p>Eligible manufacturing defects are covered for ONYX peripherals purchased through the store.</p>
+                    <div class="onyx-support-status-item">
+                        <span class="onyx-support-label">Support hours</span>
+                        <strong>10:00-18:00</strong>
+                        <p>Monday to Friday, MYT.</p>
                     </div>
-                    <div class="onyx-support-status-row">
+                    <div class="onyx-support-status-item">
                         <span class="onyx-support-label">Fastest route</span>
                         <strong>Order + serial</strong>
-                        <p>Include your order ID and product serial number so support can verify the request faster.</p>
+                        <p>Include both when the issue is product or order related.</p>
                     </div>
                 </aside>
             </div>
         </section>
 
-        <section id="contact-support" class="onyx-support-section">
+        <section id="support-lanes" class="onyx-support-section">
             <div class="onyx-support-shell">
-                <div class="onyx-support-contact">
-                    <div class="onyx-support-contact-card">
-                        <span class="onyx-support-kicker">Contact ONYX</span>
-                        <h3>Send the right details first.</h3>
-                        <p>Support works faster when the first message includes the full context. Use the guide beside this panel, then send the request through email.</p>
+                <div class="onyx-support-heading">
+                    <span class="onyx-support-label">Support lanes</span>
+                    <h2>Pick the lane that matches the problem.</h2>
+                </div>
 
-                        <div class="onyx-support-channel-list">
-                            <div class="onyx-support-channel">
-                                <span class="onyx-support-label">Email</span>
-                                <a class="hover-trigger" href="mailto:support@onyxgaming.com">support@onyxgaming.com</a>
-                            </div>
-                            <div class="onyx-support-channel">
-                                <span class="onyx-support-label">Hours</span>
-                                <strong>Mon-Fri / 10:00-18:00 MYT</strong>
-                            </div>
-                            <div class="onyx-support-channel">
-                                <span class="onyx-support-label">Location</span>
-                                <strong>Kuala Lumpur, Malaysia</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="onyx-support-form-card" aria-label="Support request preparation guide">
-                        <div class="onyx-support-field">
-                            <label for="support-name">Name</label>
-                            <input id="support-name" type="text" placeholder="Your name" />
-                        </div>
-                        <div class="onyx-support-field">
-                            <label for="support-email">Email</label>
-                            <input id="support-email" type="email" placeholder="you@example.com" />
-                        </div>
-                        <div class="onyx-support-field">
-                            <label for="support-topic">Topic</label>
-                            <select id="support-topic">
-                                <option>Order support</option>
-                                <option>Warranty claim</option>
-                                <option>Return request</option>
-                                <option>Technical setup</option>
-                                <option>Account access</option>
-                            </select>
-                        </div>
-                        <div class="onyx-support-field">
-                            <label for="support-message">Message</label>
-                            <textarea id="support-message" placeholder="Order ID, product, serial number, and what happened"></textarea>
-                        </div>
-                        <a class="onyx-support-button hover-trigger" href="mailto:support@onyxgaming.com?subject=ONYX%20Support%20Request">Email support</a>
-                        <p class="onyx-support-form-note">This form is a preparation guide. Use the email button to send your request through your mail app.</p>
-                    </div>
+                <div class="onyx-support-card-grid">
+                    <article class="onyx-support-card">
+                        <span class="onyx-support-label">Orders</span>
+                        <h3>Tracking, receipt, delivery, or missing item.</h3>
+                        <p>Use for payment, invoice, wrong address, receipt, tracking, delivery, and missing item questions.</p>
+                    </article>
+                    <article class="onyx-support-card">
+                        <span class="onyx-support-label">Warranty</span>
+                        <h3>Defect or hardware fault.</h3>
+                        <p>Use for sensor issues, switch faults, charging problems, headset audio faults, and manufacturing defects.</p>
+                    </article>
+                    <article class="onyx-support-card">
+                        <span class="onyx-support-label">Returns</span>
+                        <h3>Return or replacement review.</h3>
+                        <p>Use for unopened items, damaged delivery, wrong products, and replacement eligibility.</p>
+                    </article>
+                    <article class="onyx-support-card">
+                        <span class="onyx-support-label">Setup</span>
+                        <h3>Device, profile, cart, or account flow.</h3>
+                        <p>Use for pairing, DPI, macros, login, wishlist, cart, profile, and order history guidance.</p>
+                    </article>
                 </div>
             </div>
         </section>
 
         <section class="onyx-support-section">
-            <div class="onyx-support-shell">
-                <div class="onyx-support-section-heading">
-                    <span class="onyx-support-index">01 / Support lanes</span>
-                    <div>
-                        <h2>Match your request to the right support lane.</h2>
-                        <p class="onyx-support-section-copy">Large companies route support by issue category because it reduces delay. ONYX uses the same principle: order problems, warranty claims, returns, and setup requests each need different information.</p>
+            <div class="onyx-support-shell onyx-support-contact">
+                <div class="onyx-support-contact-card">
+                    <span class="onyx-support-kicker">Contact</span>
+                    <h2>Email the support team.</h2>
+                    <p class="onyx-support-copy">Send the request to support with the details listed beside this panel. Do not include passwords or payment card details.</p>
+
+                    <div class="onyx-support-contact-list">
+                        <div class="onyx-support-contact-line">
+                            <span class="onyx-support-label">Email</span>
+                            <a class="hover-trigger" href="mailto:support@onyxgaming.com">support@onyxgaming.com</a>
+                        </div>
+                        <div class="onyx-support-contact-line">
+                            <span class="onyx-support-label">Location</span>
+                            <strong>Kuala Lumpur, Malaysia</strong>
+                        </div>
                     </div>
                 </div>
 
-                <div class="onyx-support-lanes">
-                    <a class="onyx-support-lane hover-trigger" href="#contact-support">
-                        <span class="onyx-support-label">01 / Orders</span>
-                        <h3>Payment, delivery, and invoices</h3>
-                        <p>Use this path for tracking, receipt requests, delivery problems, wrong addresses, or missing items.</p>
-                    </a>
-                    <a class="onyx-support-lane hover-trigger" href="#contact-support">
-                        <span class="onyx-support-label">02 / Warranty</span>
-                        <h3>Defects and hardware faults</h3>
-                        <p>Use this path for sensor issues, switch faults, charging problems, headset audio, and manufacturing defects.</p>
-                    </a>
-                    <a class="onyx-support-lane hover-trigger" href="#contact-support">
-                        <span class="onyx-support-label">03 / Returns</span>
-                        <h3>Return or replacement flow</h3>
-                        <p>Use this path for unopened items, damaged deliveries, wrong products, or replacement eligibility.</p>
-                    </a>
-                    <a class="onyx-support-lane hover-trigger" href="#support-faq">
-                        <span class="onyx-support-label">04 / Setup</span>
-                        <h3>Device and account guidance</h3>
-                        <p>Use this path for pairing, profiles, DPI, keyboard modes, care, login, wishlist, and order history questions.</p>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <section class="onyx-support-section">
-            <div class="onyx-support-shell">
-                <div class="onyx-support-section-heading">
-                    <span class="onyx-support-index">02 / How it works</span>
-                    <div>
-                        <h2>A support flow customers can follow.</h2>
-                    </div>
-                </div>
-
-                <div class="onyx-support-process-list">
-                    <article class="onyx-support-process">
-                        <span class="onyx-support-label">Step 01</span>
-                        <h3>Identify the product and order.</h3>
-                        <p>Find the product name, order ID, purchase date, and serial number. These details let support confirm ownership and warranty status.</p>
+                <div class="onyx-support-checklist">
+                    <article class="onyx-support-row">
+                        <span class="onyx-support-label">Orders</span>
+                        <h3>Send purchase context.</h3>
+                        <p>Order ID, purchase date, account email, what happened, and evidence if available.</p>
                     </article>
-                    <article class="onyx-support-process">
-                        <span class="onyx-support-label">Step 02</span>
-                        <h3>Describe the issue clearly.</h3>
-                        <p>Tell us what happened, when it started, what you already tried, and whether the issue happens every time or only sometimes.</p>
+                    <article class="onyx-support-row">
+                        <span class="onyx-support-label">Warranty</span>
+                        <h3>Identify the unit.</h3>
+                        <p>Product name, variant, serial number, order ID, purchase date, issue description, troubleshooting tried, and photo or short video if available.</p>
                     </article>
-                    <article class="onyx-support-process">
-                        <span class="onyx-support-label">Step 03</span>
-                        <h3>Attach proof when possible.</h3>
-                        <p>Photos or short videos help with physical damage, switch behavior, charging issues, audio faults, and delivery condition.</p>
-                    </article>
-                    <article class="onyx-support-process">
-                        <span class="onyx-support-label">Step 04</span>
-                        <h3>Receive the next action.</h3>
-                        <p>Support will explain whether the case needs troubleshooting, inspection, replacement, return review, or account follow-up.</p>
+                    <article class="onyx-support-row">
+                        <span class="onyx-support-label">Returns</span>
+                        <h3>Describe condition.</h3>
+                        <p>Order ID, product name, purchase date, whether the item is unopened, damaged, wrong, or defective, plus packaging photos if available.</p>
                     </article>
                 </div>
             </div>
@@ -623,59 +451,27 @@
 
         <section class="onyx-support-section">
             <div class="onyx-support-shell">
-                <div class="onyx-support-section-heading">
-                    <span class="onyx-support-index">03 / Before you send</span>
-                    <div>
-                        <h2>Make the first message easier to solve.</h2>
-                    </div>
-                </div>
-
-                <div class="onyx-support-docs">
-                    <article class="onyx-support-doc">
-                        <strong>Order ID</strong>
-                        <h3>Start with purchase proof.</h3>
-                        <p>Include your order number, purchase date, and account email so support can find the transaction without a second reply.</p>
-                    </article>
-                    <article class="onyx-support-doc">
-                        <strong>Serial</strong>
-                        <h3>Identify the exact unit.</h3>
-                        <p>Share the product name, variant, serial number, and a short description of what changed or stopped working.</p>
-                    </article>
-                    <article class="onyx-support-doc">
-                        <strong>Evidence</strong>
-                        <h3>Show the issue clearly.</h3>
-                        <p>Attach photos, screenshots, or a short video when the issue is physical, intermittent, or hard to describe in text.</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section id="support-faq" class="onyx-support-section">
-            <div class="onyx-support-shell">
-                <div class="onyx-support-section-heading">
-                    <span class="onyx-support-index">04 / FAQ</span>
-                    <div>
-                        <h2>Answers before you wait.</h2>
-                        <p class="onyx-support-section-copy">These are the questions that usually slow down support when the first message is missing details.</p>
-                    </div>
+                <div class="onyx-support-heading">
+                    <span class="onyx-support-label">FAQ</span>
+                    <h2>Quick answers before you wait.</h2>
                 </div>
 
                 <div class="onyx-support-faq">
                     <details>
                         <summary>What should I include in a warranty request?</summary>
-                        <p>Send your order ID, product name, serial number, purchase date, a description of the issue, and photos or a short video when the issue is visible.</p>
+                        <p>Include your order ID, purchase date, account email, product name, variant, serial number, issue description, when it started, what you already tried, and photos, screenshots, or a short video if available.</p>
                     </details>
                     <details>
                         <summary>Can I return an opened product?</summary>
-                        <p>Opened products are reviewed case by case. Unused and unopened items are simpler to return, while defective products should go through warranty support.</p>
+                        <p>The current ONYX policy shown on this site does not specify opened-product return eligibility. Email support@onyxgaming.com with your order ID, product name, purchase date, and item condition.</p>
                     </details>
                     <details>
-                        <summary>What should I try before reporting a device issue?</summary>
-                        <p>Try another USB port, remove hubs, restart the device, test on a second computer if available, and mention the result in your request.</p>
+                        <summary>Where do I find order history?</summary>
+                        <p>Log in to your ONYX account and open the profile or order history area. If you cannot access it, email support with your account email and any available order details.</p>
                     </details>
                     <details>
-                        <summary>Where do I find my order history?</summary>
-                        <p>Sign in to your ONYX account and open the profile menu. Order history is kept separate from profile settings so it is easier to review.</p>
+                        <summary>How long does ONYX support take to reply?</summary>
+                        <p>ONYX lists an average first reply of around 24 hours, usually around one business day.</p>
                     </details>
                 </div>
             </div>

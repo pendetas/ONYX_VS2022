@@ -20,6 +20,7 @@ packages/
 # ASP.NET generated files
 App_Data/*.mdf
 App_Data/*.ldf
+AppSettings.Local.config
 
 # OS/editor files
 .DS_Store

@@ -701,6 +701,406 @@
             color: #d8dde3;
         }
 
+        .onyx-ai-assistant {
+            --onyx-ai-bottom-clearance: 28px;
+            --onyx-ai-panel-offset: 0px;
+            --onyx-ai-top-clearance: 112px;
+            bottom: var(--onyx-ai-bottom-clearance);
+            position: fixed;
+            right: 28px;
+            z-index: 70;
+        }
+
+        .onyx-ai-trigger {
+            align-items: center;
+            background:
+                linear-gradient(145deg, #ffffff 0%, #d9dee5 58%, #9ca3af 100%);
+            border: 1px solid rgba(255, 255, 255, 0.72);
+            border-radius: 999px;
+            color: #050505;
+            cursor: pointer;
+            display: inline-flex;
+            height: 60px;
+            justify-content: center;
+            position: relative;
+            touch-action: manipulation;
+            transition: background 180ms ease, opacity 160ms ease, outline-color 180ms ease, transform 180ms ease, visibility 160ms ease;
+            visibility: visible;
+            width: 60px;
+        }
+
+        .onyx-ai-trigger::after {
+            background: #72f2a1;
+            border: 2px solid #050505;
+            border-radius: 999px;
+            content: "";
+            height: 13px;
+            position: absolute;
+            right: 7px;
+            top: 8px;
+            width: 13px;
+        }
+
+        .onyx-ai-trigger:hover {
+            background: linear-gradient(145deg, #ffffff 0%, #eef2f7 48%, #b7bec8 100%);
+            outline: 6px solid rgba(216, 221, 227, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .onyx-ai-assistant.is-open .onyx-ai-trigger {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(4px) scale(0.92);
+            visibility: hidden;
+        }
+
+        .onyx-ai-trigger:focus-visible,
+        .onyx-ai-close:focus-visible,
+        .onyx-ai-chip:focus-visible,
+        .onyx-ai-send:focus-visible {
+            outline: 2px solid #ffffff;
+            outline-offset: 3px;
+        }
+
+        .onyx-ai-trigger svg {
+            height: 25px;
+            width: 25px;
+        }
+
+        .onyx-ai-panel {
+            background: #0a0b0d;
+            border: 1px solid #34363b;
+            border-radius: 10px;
+            bottom: var(--onyx-ai-panel-offset);
+            color: #ffffff;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr) auto auto;
+            height: min(560px, calc(100vh - var(--onyx-ai-top-clearance) - var(--onyx-ai-bottom-clearance) - var(--onyx-ai-panel-offset)));
+            height: min(560px, calc(100dvh - var(--onyx-ai-top-clearance) - var(--onyx-ai-bottom-clearance) - var(--onyx-ai-panel-offset)));
+            max-width: none;
+            opacity: 0;
+            overflow: hidden;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+            transform: translateY(10px) scale(0.985);
+            transform-origin: bottom right;
+            transition: opacity 180ms ease, transform 180ms cubic-bezier(.22, 1, .36, 1);
+            width: clamp(320px, calc(100vw - 32px), 420px);
+        }
+
+        .onyx-ai-panel::before {
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+            content: "";
+            height: 1px;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        .onyx-ai-assistant.is-open .onyx-ai-panel {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
+        .onyx-ai-header {
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            padding: 16px;
+        }
+
+        .onyx-ai-brand {
+            align-items: center;
+            display: flex;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .onyx-ai-avatar {
+            align-items: center;
+            background: #d8dde3;
+            border-radius: 10px;
+            color: #050505;
+            display: inline-flex;
+            flex: 0 0 auto;
+            height: 38px;
+            justify-content: center;
+            width: 38px;
+        }
+
+        .onyx-ai-avatar svg {
+            height: 18px;
+            width: 18px;
+        }
+
+        .onyx-ai-title {
+            display: grid;
+            gap: 3px;
+            min-width: 0;
+        }
+
+        .onyx-ai-title strong {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1;
+        }
+
+        .onyx-ai-title span {
+            align-items: center;
+            color: #a1a1aa;
+            display: inline-flex;
+            font-size: 11.5px;
+            gap: 6px;
+            line-height: 1.1;
+            white-space: nowrap;
+        }
+
+        .onyx-ai-context-strip {
+            color: #d8dde3;
+            font-size: 11px;
+            font-weight: 500;
+            line-height: 1.15;
+            white-space: nowrap;
+        }
+
+        .onyx-ai-title span::before {
+            background: #72f2a1;
+            border-radius: 999px;
+            content: "";
+            height: 6px;
+            width: 6px;
+        }
+
+        .onyx-ai-close {
+            align-items: center;
+            background: transparent;
+            border: 1px solid #27272a;
+            border-radius: 999px;
+            color: #d4d4d8;
+            cursor: pointer;
+            display: inline-flex;
+            height: 34px;
+            justify-content: center;
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+            width: 34px;
+        }
+
+        .onyx-ai-close svg {
+            height: 18px;
+            width: 18px;
+        }
+
+        .onyx-ai-close:hover {
+            background: #18181b;
+            border-color: #3f3f46;
+            color: #ffffff;
+        }
+
+        .onyx-ai-messages {
+            align-content: start;
+            display: grid;
+            gap: 12px;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 16px;
+            scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+            scrollbar-width: thin;
+        }
+
+        .onyx-ai-messages::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .onyx-ai-messages::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.28);
+            border-radius: 999px;
+        }
+
+        .onyx-ai-message {
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+            padding: 11px 13px;
+            width: fit-content;
+        }
+
+        .onyx-ai-message.bot {
+            background: #18181b;
+            border: 1px solid #303238;
+            color: #e4e4e7;
+            max-width: 92%;
+        }
+
+        .onyx-ai-message.user {
+            background: #d8dde3;
+            color: #050505;
+            justify-self: end;
+            max-width: 84%;
+        }
+
+        .onyx-ai-message.pending {
+            color: #a1a1aa;
+        }
+
+        .onyx-ai-message.pending::after {
+            animation: onyx-ai-thinking 1.2s steps(1, end) infinite;
+            content: "";
+            display: inline-block;
+            margin-left: 2px;
+            min-width: 16px;
+            text-align: left;
+        }
+
+        .onyx-ai-message.error {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #f4f4f5;
+        }
+
+        @keyframes onyx-ai-thinking {
+            0%,
+            20% {
+                content: ".";
+            }
+
+            40% {
+                content: "..";
+            }
+
+            60%,
+            100% {
+                content: "...";
+            }
+        }
+
+        .onyx-ai-chips {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            overflow: visible;
+            padding: 10px 16px;
+            scrollbar-width: none;
+        }
+
+        .onyx-ai-chips::-webkit-scrollbar {
+            display: none;
+        }
+
+        .onyx-ai-chip {
+            background: transparent;
+            border: 1px solid #3f3f46;
+            border-radius: 999px;
+            color: #e4e4e7;
+            cursor: pointer;
+            flex: 0 1 auto;
+            font-size: 12px;
+            height: 34px;
+            min-height: 36px;
+            padding: 0 12px;
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+            white-space: nowrap;
+        }
+
+        .onyx-ai-chip:hover {
+            background: #18181b;
+            border-color: #71717a;
+            color: #ffffff;
+        }
+
+        .onyx-ai-form {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: grid;
+            gap: 10px;
+            grid-template-columns: minmax(0, 1fr) auto;
+            padding: 12px 16px 14px;
+        }
+
+        .onyx-ai-input {
+            background: #050505;
+            border: 1px solid #3f3f46;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            min-height: 44px;
+            min-width: 0;
+            outline: none;
+            padding: 0 14px;
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+            width: 100%;
+        }
+
+        .onyx-ai-input::placeholder {
+            color: #a1a1aa;
+            opacity: 1;
+        }
+
+        .onyx-ai-input:focus {
+            border-color: #d8dde3;
+            box-shadow: 0 0 0 2px rgba(216, 221, 227, 0.16);
+        }
+
+        .onyx-ai-input:focus-visible {
+            outline: none;
+        }
+
+        .onyx-ai-send {
+            align-items: center;
+            background: #d8dde3;
+            border: 1px solid #d8dde3;
+            border-radius: 12px;
+            color: #050505;
+            cursor: pointer;
+            display: inline-flex;
+            height: 44px;
+            justify-content: center;
+            transition: background 160ms ease, transform 160ms ease;
+            width: 44px;
+        }
+
+        .onyx-ai-send svg {
+            height: 19px;
+            width: 19px;
+        }
+
+        .onyx-ai-send:hover {
+            background: #ffffff;
+            border-color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .onyx-ai-send:disabled,
+        .onyx-ai-input:disabled {
+            cursor: wait;
+            opacity: 0.58;
+        }
+
+        .onyx-ai-send:disabled:hover {
+            background: #d8dde3;
+            transform: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .onyx-ai-panel,
+            .onyx-ai-trigger,
+            .onyx-ai-close,
+            .onyx-ai-chip,
+            .onyx-ai-send {
+                transition: none;
+            }
+
+            .onyx-ai-trigger:hover,
+            .onyx-ai-send:hover {
+                transform: none;
+            }
+        }
+
         @media (max-width: 920px) {
             .onyx-ddac-nav {
                 padding: 14px 20px;
@@ -723,7 +1123,7 @@
             }
         }
 
-        @media (max-width: 640px), (pointer: coarse) {
+        @media (max-width: 640px) {
             .onyx-user-shell,
             .onyx-user-shell a,
             .onyx-user-shell button,
@@ -743,6 +1143,50 @@
 
             .onyx-master-footer-columns {
                 grid-template-columns: 1fr;
+            }
+
+            .onyx-ai-assistant {
+                --onyx-ai-bottom-clearance: max(12px, env(safe-area-inset-bottom));
+                --onyx-ai-panel-offset: 0px;
+                --onyx-ai-top-clearance: 104px;
+                right: max(12px, env(safe-area-inset-right));
+            }
+
+            .onyx-ai-trigger {
+                height: 56px;
+                width: 56px;
+            }
+
+            .onyx-ai-trigger svg {
+                height: 24px;
+                width: 24px;
+            }
+
+            .onyx-ai-panel {
+                bottom: max(12px, env(safe-area-inset-bottom));
+                height: min(720px, calc(100dvh - var(--onyx-ai-top-clearance) - max(12px, env(safe-area-inset-bottom))));
+                left: max(12px, env(safe-area-inset-left));
+                max-width: none;
+                position: fixed;
+                right: max(12px, env(safe-area-inset-right));
+                transform-origin: bottom center;
+                width: auto;
+            }
+
+            .onyx-ai-header,
+            .onyx-ai-messages,
+            .onyx-ai-chips {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .onyx-ai-message.bot,
+            .onyx-ai-message.user {
+                max-width: 94%;
+            }
+
+            .onyx-ai-form {
+                padding: 12px 14px max(14px, env(safe-area-inset-bottom));
             }
         }
     </style>
@@ -802,7 +1246,7 @@
                     </div>
                 </div>
 
-                <a href="/customer_page/Home.aspx#featured-products" class="hover-trigger">Pro Gear</a>
+                <a href="/customer_page/proGears.aspx" class="hover-trigger">Pro Gear</a>
                 <a href="/customer_page/About.aspx" class="hover-trigger">About</a>
                 <a href="/customer_page/Support.aspx" class="hover-trigger">Support</a>
 
@@ -892,7 +1336,7 @@
                         <div class="onyx-master-footer-links">
                             <a class="hover-trigger" href="/customer_page/About.aspx">About</a>
                             <a class="hover-trigger" href="/customer_page/Support.aspx">Support</a>
-                            <a class="hover-trigger" href="/customer_page/Home.aspx#featured-products">Pro Gear</a>
+                            <a class="hover-trigger" href="/customer_page/proGears.aspx">Pro Gear</a>
                         </div>
                     </div>
 
@@ -912,6 +1356,61 @@
                 <span>Malaysia / Performance gear studio</span>
             </div>
         </footer>
+        <% } %>
+
+        <% if (ShowAiChatbot) { %>
+        <section id="onyxAiAssistant" class="onyx-ai-assistant" aria-label="ONYX AI chat assistant">
+            <div class="onyx-ai-panel" role="dialog" aria-modal="false" aria-labelledby="onyxAiTitle">
+                <div class="onyx-ai-header">
+                    <div class="onyx-ai-brand">
+                        <span class="onyx-ai-avatar" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"></path>
+                                <path d="M8 9h8"></path>
+                                <path d="M8 13h5"></path>
+                            </svg>
+                        </span>
+                        <div class="onyx-ai-title">
+                            <strong id="onyxAiTitle">ONYX Assistant</strong>
+                            <span>Gear, orders, warranty</span>
+                            <small class="onyx-ai-context-strip">Site-trained ONYX help</small>
+                        </div>
+                    </div>
+                    <button type="button" id="onyxAiClose" class="onyx-ai-close hover-trigger" aria-label="Close chat">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M18 6 6 18"></path>
+                            <path d="m6 6 12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="onyxAiMessages" class="onyx-ai-messages" role="log" aria-live="polite" aria-relevant="additions">
+                    <div class="onyx-ai-message bot">Ask about ONYX gear, setup, orders, warranty, returns, or account help.</div>
+                </div>
+                <div class="onyx-ai-chips" aria-label="Suggested ONYX questions">
+                    <button type="button" class="onyx-ai-chip hover-trigger" data-onyx-ai-prompt="Help me compare ONYX mice">Compare mice</button>
+                    <button type="button" class="onyx-ai-chip hover-trigger" data-onyx-ai-prompt="How do I claim ONYX warranty?">Warranty</button>
+                    <button type="button" class="onyx-ai-chip hover-trigger" data-onyx-ai-prompt="Where can I view my ONYX order history?">Order history</button>
+                    <button type="button" class="onyx-ai-chip hover-trigger" data-onyx-ai-prompt="How do I use my ONYX wishlist and cart?">Cart help</button>
+                    <button type="button" class="onyx-ai-chip hover-trigger" data-onyx-ai-prompt="What should I include in an ONYX support request?">Support</button>
+                </div>
+                <div class="onyx-ai-form">
+                    <input id="onyxAiInput" class="onyx-ai-input" type="text" placeholder="Ask about ONYX gear..." autocomplete="off" aria-label="Ask ONYX Assistant" />
+                    <button type="button" id="onyxAiSend" class="onyx-ai-send hover-trigger" aria-label="Send message">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m22 2-7 20-4-9-9-4Z"></path>
+                            <path d="M22 2 11 13"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <button type="button" id="onyxAiToggle" class="onyx-ai-trigger hover-trigger" aria-label="Open ONYX AI chat" aria-expanded="false" aria-controls="onyxAiMessages">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"></path>
+                    <path d="M8 9h8"></path>
+                    <path d="M8 13h5"></path>
+                </svg>
+            </button>
+        </section>
         <% } %>
 
         <script>
@@ -999,6 +1498,207 @@
                         }
                     });
                 }
+
+                var aiAssistant = document.getElementById('onyxAiAssistant');
+                var aiToggle = document.getElementById('onyxAiToggle');
+                var aiClose = document.getElementById('onyxAiClose');
+                var aiInput = document.getElementById('onyxAiInput');
+                var aiSend = document.getElementById('onyxAiSend');
+                var aiMessages = document.getElementById('onyxAiMessages');
+                var aiEndpoint = '<%= ResolveUrl("~/customer_page/onyx_ai_chat.ashx") %>';
+                var aiIsSending = false;
+                var aiChips = aiAssistant ? aiAssistant.querySelectorAll('[data-onyx-ai-prompt]') : [];
+
+                function setAiOpen(isOpen) {
+                    if (!aiAssistant || !aiToggle) {
+                        return;
+                    }
+
+                    aiAssistant.classList.toggle('is-open', isOpen);
+                    aiToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+                    if (isOpen && aiInput) {
+                        setTimeout(function () {
+                            aiInput.focus();
+                        }, 120);
+                    }
+                }
+
+                function addAiMessage(text, type) {
+                    if (!aiMessages) {
+                        return;
+                    }
+
+                    var message = document.createElement('div');
+                    message.className = 'onyx-ai-message ' + type;
+                    message.textContent = formatAiReply(text);
+                    aiMessages.appendChild(message);
+                    aiMessages.scrollTop = aiMessages.scrollHeight;
+                    return message;
+                }
+
+                function formatAiReply(text) {
+                    var value = (text || '').toString();
+
+                    return value
+                        .replace(/\*\*([^*]+)\*\*/g, '$1')
+                        .replace(/\*([^*]+)\*/g, '$1')
+                        .replace(/`([^`]+)`/g, '$1')
+                        .replace(/^\s*#{1,6}\s+/gm, '')
+                        .replace(/^\s*[-*]\s+/gm, '')
+                        .replace(/\n{3,}/g, '\n\n')
+                        .trim();
+                }
+
+                function setAiSending(isSending) {
+                    aiIsSending = isSending;
+
+                    if (aiSend) {
+                        aiSend.disabled = isSending;
+                        aiSend.setAttribute('aria-busy', isSending ? 'true' : 'false');
+                    }
+
+                    if (aiInput) {
+                        aiInput.disabled = isSending;
+                    }
+                }
+
+                function requestAiReply(text) {
+                    return fetch(aiEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: text,
+                            pagePath: window.location.pathname
+                        })
+                    })
+                        .then(function (response) {
+                            return response.text().then(function (rawBody) {
+                                var data = {};
+
+                                if (rawBody) {
+                                    try {
+                                        data = JSON.parse(rawBody);
+                                    } catch (parseError) {
+                                        data = {
+                                            reply: 'Server returned a non-JSON assistant response. Restart the ONYX app and try again.'
+                                        };
+                                    }
+                                }
+
+                                if (!response.ok && data && data.reply) {
+                                    return {
+                                        reply: data.reply,
+                                        isError: true
+                                    };
+                                }
+
+                                if (!response.ok) {
+                                    throw new Error('Assistant request failed');
+                                }
+
+                                return {
+                                    reply: data && data.reply
+                                        ? data.reply
+                                        : 'I could not read the assistant reply. Please try again.',
+                                    isError: false
+                                };
+                            });
+                        });
+                }
+
+                function sendAiMessage() {
+                    if (!aiInput) {
+                        return;
+                    }
+
+                    var text = aiInput.value.trim();
+
+                    if (!text || aiIsSending) {
+                        return;
+                    }
+
+                    addAiMessage(text, 'user');
+                    aiInput.value = '';
+                    setAiSending(true);
+                    var pendingMessage = addAiMessage('Searching ONYX knowledge', 'bot pending');
+
+                    requestAiReply(text)
+                        .then(function (result) {
+                            if (pendingMessage) {
+                                pendingMessage.className = result.isError ? 'onyx-ai-message bot error' : 'onyx-ai-message bot';
+                                pendingMessage.textContent = formatAiReply(result.reply);
+                                aiMessages.scrollTop = aiMessages.scrollHeight;
+                            } else {
+                                addAiMessage(result.reply, result.isError ? 'bot error' : 'bot');
+                            }
+                        })
+                        .catch(function () {
+                            if (pendingMessage) {
+                                pendingMessage.className = 'onyx-ai-message bot error';
+                                pendingMessage.textContent = formatAiReply('The ONYX Assistant is unavailable right now. Please try again or email support@onyxgaming.com.');
+                            } else {
+                                addAiMessage('The ONYX Assistant is unavailable right now. Please try again or email support@onyxgaming.com.', 'bot error');
+                            }
+                        })
+                        .finally(function () {
+                            setAiSending(false);
+
+                            if (aiInput) {
+                                aiInput.focus();
+                            }
+                        });
+                }
+
+                if (aiToggle) {
+                    aiToggle.addEventListener('click', function () {
+                        setAiOpen(!aiAssistant.classList.contains('is-open'));
+                    });
+                }
+
+                if (aiClose) {
+                    aiClose.addEventListener('click', function () {
+                        setAiOpen(false);
+                        aiToggle.focus();
+                    });
+                }
+
+                if (aiSend) {
+                    aiSend.addEventListener('click', sendAiMessage);
+                }
+
+                if (aiInput) {
+                    aiInput.addEventListener('keydown', function (event) {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            sendAiMessage();
+                        }
+                    });
+                }
+
+                Array.prototype.forEach.call(aiChips, function (chip) {
+                    chip.addEventListener('click', function () {
+                        if (!aiInput || aiIsSending) {
+                            return;
+                        }
+
+                        aiInput.value = chip.getAttribute('data-onyx-ai-prompt') || '';
+                        sendAiMessage();
+                    });
+                });
+
+                if (window.location.hash === '#ai-chat') {
+                    setAiOpen(true);
+                }
+
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape' && aiAssistant && aiAssistant.classList.contains('is-open')) {
+                        setAiOpen(false);
+                        aiToggle.focus();
+                    }
+                });
             })();
         </script>
     </form>

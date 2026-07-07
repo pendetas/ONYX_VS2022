@@ -492,6 +492,48 @@
             background-color: #050505;
         }
 
+        .onyx-ddac-footer {
+            border-radius: clamp(16px, 2vw, 30px) clamp(16px, 2vw, 30px) 0 0;
+            isolation: isolate;
+            margin-inline: clamp(4px, 0.8vw, 12px);
+            overflow: hidden;
+            padding: clamp(76px, 8vw, 124px) clamp(24px, 6vw, 48px) clamp(44px, 5vw, 72px);
+            width: auto;
+        }
+
+        .onyx-ddac-footer-video {
+            filter: contrast(1.16) brightness(1.12) saturate(1.04);
+            height: 100%;
+            inset: 0;
+            object-fit: cover;
+            object-position: center bottom;
+            opacity: 0.78;
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+            z-index: -2;
+        }
+
+        .onyx-ddac-footer-scrim {
+            background:
+                radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.18), transparent 34%),
+                linear-gradient(90deg, rgba(5, 5, 5, 0.66) 0%, rgba(5, 5, 5, 0.42) 48%, rgba(5, 5, 5, 0.7) 100%),
+                linear-gradient(180deg, rgba(5, 5, 5, 0.34) 0%, rgba(5, 5, 5, 0.52) 48%, rgba(5, 5, 5, 0.72) 100%);
+            inset: 0;
+            position: absolute;
+            z-index: -1;
+        }
+
+        .onyx-ddac-footer-content {
+            padding-right: clamp(0px, 6vw, 96px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .onyx-ddac-footer-bottom {
+            margin-top: clamp(56px, 7vw, 92px);
+        }
+
         .onyx-ddac-marquee-content {
             animation: onyx-ddac-marquee 30s linear infinite;
             display: inline-flex;
@@ -550,29 +592,104 @@
             display: none;
         }
 
+        .onyx-ddac-featured-section {
+            background:
+                linear-gradient(180deg, #0b0b0c 0%, #09090b 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: clamp(82px, 9vw, 132px) clamp(24px, 4vw, 48px) clamp(24px, 4vw, 56px);
+            position: relative;
+            z-index: 10;
+        }
+
+        .onyx-ddac-featured-header {
+            align-items: end;
+            display: grid;
+            gap: 28px;
+            grid-template-columns: minmax(0, 1fr) auto;
+            margin-bottom: clamp(40px, 5vw, 72px);
+        }
+
+        .onyx-ddac-featured-kicker {
+            color: #d8dde3;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            margin: 0 0 16px;
+            text-transform: uppercase;
+        }
+
+        .onyx-ddac-featured-title {
+            color: #ffffff;
+            font-family: Inter, system-ui, sans-serif;
+            font-size: clamp(46px, 6.8vw, 92px);
+            font-weight: 400;
+            letter-spacing: -0.035em;
+            line-height: 0.96;
+            margin: 0;
+            max-width: 920px;
+            text-wrap: balance;
+        }
+
+        .onyx-ddac-featured-copy {
+            color: #a1a1aa;
+            font-size: 17px;
+            line-height: 1.65;
+            margin: 22px 0 0;
+            max-width: 620px;
+        }
+
+        .onyx-ddac-featured-link {
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 999px;
+            color: #ffffff;
+            display: inline-flex;
+            font-size: 12px;
+            font-weight: 800;
+            gap: 10px;
+            justify-content: center;
+            letter-spacing: 0.12em;
+            min-height: 52px;
+            padding: 0 24px;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: background 170ms ease, border-color 170ms ease, color 170ms ease, transform 170ms ease;
+            white-space: nowrap;
+        }
+
+        .onyx-ddac-featured-link:hover {
+            background: #ffffff;
+            border-color: #ffffff;
+            color: #09090b;
+            transform: translateY(-2px);
+        }
+
         .onyx-ddac-product-grid {
             display: grid;
-            gap: 18px;
+            gap: 16px;
             grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
         .onyx-ddac-product-card {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 18px;
+            background: #121214;
+            border: 1px solid #27272a;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
             overflow: hidden;
-            transition: border-color 220ms ease, transform 220ms ease, background 220ms ease;
+            transition: border-color 180ms ease, transform 180ms ease, background 180ms ease;
         }
 
         .onyx-ddac-product-card:hover {
-            background: rgba(255, 255, 255, 0.065);
-            border-color: rgba(216, 221, 227, 0.46);
-            transform: translateY(-5px);
+            background: #18181b;
+            border-color: rgba(216, 221, 227, 0.42);
+            transform: translateY(-3px);
         }
 
         .onyx-ddac-product-media {
             align-items: center;
-            aspect-ratio: 1.55 / 1;
+            aspect-ratio: 1.48 / 1;
             background: #050505;
             display: flex;
             justify-content: center;
@@ -582,7 +699,7 @@
 
         .onyx-ddac-product-media::after {
             background: linear-gradient(180deg, transparent 62%, rgba(5, 5, 5, 0.82) 100%);
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+            box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
             content: "";
             inset: 0;
             pointer-events: none;
@@ -603,28 +720,42 @@
         }
 
         .onyx-ddac-product-card:hover .onyx-ddac-product-image {
-            filter: saturate(1) contrast(1.08) brightness(1.05);
-            transform: scale(1.045);
+            filter: saturate(1) contrast(1.08) brightness(1.04);
+            transform: scale(1.035);
         }
 
         .onyx-ddac-product-body {
-            padding: 22px;
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            padding: 20px;
         }
 
         .onyx-ddac-product-body p {
-            color: #9ca3af;
+            color: #8f949d;
             font-size: 11px;
+            letter-spacing: 0.02em;
             margin: 0 0 10px;
         }
 
         .onyx-ddac-product-body h3 {
             color: #ffffff;
-            font-family: Syne, sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 1.18;
+            font-family: Inter, system-ui, sans-serif;
+            font-size: 21px;
+            font-weight: 500;
+            letter-spacing: -0.03em;
+            line-height: 1.12;
             margin: 0;
-            min-height: 44px;
+        }
+
+        .onyx-ddac-product-cue {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: #a1a1aa;
+            display: block;
+            font-size: 12px;
+            line-height: 1.45;
+            margin-top: 18px;
+            padding-top: 14px;
         }
 
         .onyx-ddac-product-meta {
@@ -632,29 +763,48 @@
             display: flex;
             gap: 12px;
             justify-content: space-between;
-            margin-top: 18px;
+            margin-top: auto;
+            padding-top: 24px;
         }
 
         .onyx-ddac-product-meta strong {
-            color: #d8dde3;
-            font-size: 13px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
             white-space: nowrap;
         }
 
         .onyx-ddac-product-meta a {
-            background: #d8dde3;
+            border: 1px solid #d8dde3;
             border-radius: 999px;
-            color: #050505;
+            color: #ffffff;
             font-size: 12px;
             font-weight: 800;
-            padding: 8px 12px;
+            min-height: 38px;
+            padding: 0 15px;
             text-decoration: none;
+            transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+        }
+
+        .onyx-ddac-product-meta a:hover {
+            background: #d8dde3;
+            color: #050505;
+            transform: translateY(-1px);
         }
 
         @media (max-width: 1024px) {
             .onyx-home-context-inner,
             .onyx-home-trust-row {
                 grid-template-columns: 1fr;
+            }
+
+            .onyx-ddac-featured-header {
+                align-items: start;
+                grid-template-columns: 1fr;
+            }
+
+            .onyx-ddac-featured-link {
+                justify-self: start;
             }
 
             .onyx-ddac-product-grid {
@@ -675,12 +825,20 @@
                 padding: 14px 20px;
             }
 
+            .onyx-ddac-featured-title {
+                font-size: clamp(42px, 13vw, 68px);
+            }
+
             .onyx-ddac-product-grid {
                 grid-template-columns: 1fr;
             }
 
             .onyx-home-standard-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .onyx-ddac-footer-content {
+                padding-right: 0;
             }
 
             .onyx-ddac-team-logo {
@@ -698,6 +856,10 @@
                 animation: none;
             }
 
+            .onyx-ddac-footer-video {
+                display: none;
+            }
+
         }
 
         .onyx-ddac-home.is-ready .onyx-ddac-hero-section .reveal-item {
@@ -711,7 +873,7 @@
         <main id="top">
             <section class="onyx-ddac-hero-section relative w-full h-screen flex flex-col justify-center items-center px-6 pt-20" aria-label="ONYX hero video">
                 <video class="onyx-ddac-hero-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
-                    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_055001_8e16d972-3b2b-441c-86ad-2901a54682f9.mp4" type="video/mp4" />
+                    <source src="/Video/Dragon.mp4" type="video/mp4" />
                 </video>
                 <div class="onyx-ddac-hero-scrim" aria-hidden="true"></div>
                 <h1 class="onyx-ddac-hero-title reveal-item opacity-0">Dominate<br />the game.</h1>
@@ -832,14 +994,15 @@
                 </div>
             </section>
 
-            <section id="featured-products" class="w-full py-32 px-6 md:px-12 bg-[#0b0b0c] relative z-10 border-t border-white/10">
+            <section id="featured-products" class="onyx-ddac-featured-section">
                 <div class="max-w-7xl mx-auto">
-                    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-14 reveal-item">
+                    <div class="onyx-ddac-featured-header reveal-item">
                         <div>
-                            <p class="text-accent uppercase tracking-widest text-sm font-bold mb-4">Featured Gear</p>
-                            <h2 class="text-5xl md:text-7xl font-syne font-bold tracking-tighter leading-tight">Shop the silver standard.</h2>
+                            <p class="onyx-ddac-featured-kicker">Featured Gear</p>
+                            <h2 class="onyx-ddac-featured-title">Shop the silver standard.</h2>
+                            <p class="onyx-ddac-featured-copy">A compact edit of ONYX hardware for players who want control, response, and clean setup flow without digging through the full catalog.</p>
                         </div>
-                        <a href="../customer_page/onyx_catalog.aspx" class="hover-trigger border border-white/30 px-8 py-4 rounded-full font-bold text-sm tracking-wide uppercase hover:border-white transition-colors no-underline text-white">View All</a>
+                        <a href="../customer_page/onyx_catalog.aspx" class="onyx-ddac-featured-link hover-trigger">View All</a>
                     </div>
 
                     <div class="onyx-ddac-product-grid">
@@ -852,9 +1015,10 @@
                                     <div class="onyx-ddac-product-body">
                                         <p><%# GetFeaturedProductBrandLine(Eval("Category"), Container.ItemIndex) %></p>
                                         <h3><%# GetFeaturedProductName(Eval("Category"), Container.ItemIndex) %></h3>
+                                        <span class="onyx-ddac-product-cue"><%# GetFeaturedProductCue(Eval("Category"), Container.ItemIndex) %></span>
                                         <div class="onyx-ddac-product-meta">
                                             <strong><%# ONYX_DDAC.Helpers.CurrencyHelper.FormatMyr((decimal)Eval("Price")) %></strong>
-                                            <a href="../customer_page/onyx_catalog.aspx" class="hover-trigger">View</a>
+                                            <a href='<%# "../customer_page/onyx_product_details.aspx?id=" + Eval("Id") %>' class="hover-trigger">Details</a>
                                         </div>
                                     </div>
                                 </article>
@@ -864,41 +1028,47 @@
                 </div>
             </section>
 
-            <footer class="onyx-ddac-footer w-full py-32 px-6 md:px-12 relative z-10">
-                <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
-                    <div class="reveal-item">
-                        <h2 class="text-4xl md:text-6xl font-syne font-bold tracking-tighter mb-6 leading-tight">
-                            Get early access to exclusive hardware drops.
-                        </h2>
-                        <div class="mt-12 flex flex-col sm:flex-row gap-4 border-b border-white/20 pb-4">
-                            <input type="email" placeholder="Email address" class="bg-transparent outline-none flex-grow text-white placeholder:text-white/30 font-inter text-lg" />
-                            <button type="button" class="hover-trigger font-syne font-bold uppercase tracking-widest text-sm text-accent hover:text-white transition-colors">Subscribe</button>
+            <footer class="onyx-ddac-footer w-full relative z-10">
+                <video class="onyx-ddac-footer-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+                    <source src="/Video/DragonInk.mp4" type="video/mp4" />
+                </video>
+                <div class="onyx-ddac-footer-scrim" aria-hidden="true"></div>
+                <div class="onyx-ddac-footer-content">
+                    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
+                        <div class="reveal-item">
+                            <h2 class="text-4xl md:text-6xl font-syne font-bold tracking-tighter mb-6 leading-tight">
+                                Get early access to exclusive hardware drops.
+                            </h2>
+                            <div class="mt-12 flex flex-col sm:flex-row gap-4 border-b border-white/20 pb-4">
+                                <input type="email" placeholder="Email address" class="bg-transparent outline-none flex-grow text-white placeholder:text-white/30 font-inter text-lg" />
+                                <button type="button" class="hover-trigger font-syne font-bold uppercase tracking-widest text-sm text-accent hover:text-white transition-colors">Subscribe</button>
+                            </div>
+                            <label class="flex items-center gap-3 mt-6 text-sm text-secondary hover-trigger">
+                                <input type="checkbox" class="accent-slate-200 w-4 h-4" />
+                                I agree to receive promotional emails.
+                            </label>
                         </div>
-                        <label class="flex items-center gap-3 mt-6 text-sm text-secondary hover-trigger">
-                            <input type="checkbox" class="accent-slate-200 w-4 h-4" />
-                            I agree to receive promotional emails.
-                        </label>
+
+                        <div class="flex md:justify-end reveal-item">
+                            <div class="flex flex-col gap-4 text-right">
+                                <h4 class="text-secondary text-sm font-bold uppercase tracking-widest mb-4">Shop Onyx</h4>
+                                <a href="../customer_page/onyx_catalog.aspx?category=Mouse" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Gaming Mice</a>
+                                <a href="../customer_page/onyx_catalog.aspx?category=Keyboard" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Mechanical Keyboards</a>
+                                <a href="../customer_page/onyx_catalog.aspx?category=Headset" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Headsets</a>
+                                <a href="../customer_page/onyx_catalog.aspx?category=Accessory" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Accessories</a>
+                                <a href="/customer_page/Support.aspx" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Support & Warranty</a>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex md:justify-end reveal-item">
-                        <div class="flex flex-col gap-4 text-right">
-                            <h4 class="text-secondary text-sm font-bold uppercase tracking-widest mb-4">Shop Onyx</h4>
-                            <a href="../customer_page/onyx_catalog.aspx?category=Mouse" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Gaming Mice</a>
-                            <a href="../customer_page/onyx_catalog.aspx?category=Keyboard" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Mechanical Keyboards</a>
-                            <a href="../customer_page/onyx_catalog.aspx?category=Headset" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Headsets</a>
-                            <a href="../customer_page/onyx_catalog.aspx?category=Accessory" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Accessories</a>
-                            <a href="/customer_page/Support.aspx" class="hover-trigger text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Support & Warranty</a>
+                    <div class="onyx-ddac-footer-bottom max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs text-secondary border-t border-white/10 pt-8 reveal-item">
+                        <p>Onyx Gaming Technologies, 2026</p>
+                        <div class="flex gap-6 mt-4 md:mt-0">
+                            <a href="/customer_page/Terms.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Terms of Sale</a>
+                            <a href="/customer_page/Privacy.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Privacy Policy</a>
                         </div>
+                        <button type="button" id="onyx-back-to-top" class="mt-4 md:mt-0 hover:text-white transition-colors hover-trigger uppercase tracking-widest font-bold">Back to Top</button>
                     </div>
-                </div>
-
-                <div class="max-w-7xl mx-auto mt-32 flex flex-col md:flex-row justify-between items-center text-xs text-secondary border-t border-white/10 pt-8 reveal-item">
-                    <p>Onyx Gaming Technologies, 2026</p>
-                    <div class="flex gap-6 mt-4 md:mt-0">
-                        <a href="/customer_page/Terms.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Terms of Sale</a>
-                        <a href="/customer_page/Privacy.aspx" class="hover:text-white transition-colors hover-trigger no-underline text-secondary">Privacy Policy</a>
-                    </div>
-                    <button type="button" id="onyx-back-to-top" class="mt-4 md:mt-0 hover:text-white transition-colors hover-trigger uppercase tracking-widest font-bold">Back to Top</button>
                 </div>
             </footer>
         </main>

@@ -57,6 +57,21 @@ namespace ONYX_DDAC.customer_page
             return GetFeaturedProductName(category, itemIndex) + " product render";
         }
 
+        protected string GetFeaturedProductCue(object category, int itemIndex)
+        {
+            switch (GetProductVisualKey(category, itemIndex))
+            {
+                case "keyboard":
+                    return "Fast actuation for sharper inputs and cleaner desk rhythm.";
+                case "headset":
+                    return "Closed-in focus for clearer calls, footsteps, and late-round cues.";
+                case "monitor":
+                    return "High-refresh clarity for tracking motion without visual drag.";
+                default:
+                    return "Stable tracking, confident grip, and crisp click control.";
+            }
+        }
+
         private static string GetProductCategoryLabel(object category, int itemIndex)
         {
             switch (GetProductVisualKey(category, itemIndex))
