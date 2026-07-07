@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 
@@ -69,6 +70,15 @@ namespace ONYX_DDAC.Services
 
         public IList<PersonalizedProduct> GetRecommendedProducts(long userId, IList<Product> products, int count)
         {
+            return GetRecommendedProducts(userId, products, GetCurrentSearchSignals(), count);
+        }
+
+        public IList<PersonalizedProduct> GetRecommendedProducts(
+            long userId,
+            IList<Product> products,
+            IList<string> currentSearchSignals,
+            int count)
+        {
             UserPersonalizationProfile profile = _personalizationRepository.GetProfile(userId);
             if (profile == null || !profile.CompletedAt.HasValue)
             {
@@ -77,7 +87,9 @@ namespace ONYX_DDAC.Services
 
             IList<string> wishlistCategories = _personalizationRepository.GetWishlistCategories(userId);
             IList<string> purchasedCategories = _personalizationRepository.GetPurchasedCategories(userId);
-            IList<string> searchedCategories = _personalizationRepository.GetSearchedCategories(userId);
+            IList<string> searchedCategories = _personalizationRepository.GetSearchedCategories(userId)
+                .Concat(ConvertSearchSignalsToCategories(currentSearchSignals))
+                .ToList();
 
             return RankProductsForProfile(
                 profile,
@@ -86,6 +98,42 @@ namespace ONYX_DDAC.Services
                 purchasedCategories,
                 searchedCategories,
                 count);
+        }
+
+        private IList<string> ConvertSearchSignalsToCategories(IList<string> searchSignals)
+        {
+            var categories = new List<string>();
+            foreach (string signal in searchSignals ?? new List<string>())
+            {
+                categories.AddRange(_personalizationRepository.InferSearchCategories(signal));
+            }
+
+            return categories;
+        }
+
+        private static IList<string> GetCurrentSearchSignals()
+        {
+            HttpContext context = HttpContext.Current;
+            if (context == null)
+            {
+                return new List<string>();
+            }
+
+            object sessionValue = context.Session == null ? null : context.Session["OnyxRecentSearchSignals"];
+            if (sessionValue is IList<string> sessionSignals)
+            {
+                return sessionSignals.ToList();
+            }
+
+            HttpCookie cookie = context.Request == null ? null : context.Request.Cookies["onyx_recent_search"];
+            string cookieValue = cookie == null ? string.Empty : cookie.Value;
+
+            return (cookieValue ?? string.Empty)
+                .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(value => value.Trim())
+                .Where(value => value.Length > 0)
+                .Take(10)
+                .ToList();
         }
 
         public IList<PersonalizedProduct> RankProductsForProfile(

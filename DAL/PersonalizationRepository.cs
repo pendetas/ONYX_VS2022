@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using Npgsql;
 using ONYX_DDAC.Models;
 
 namespace ONYX_DDAC.DAL
@@ -94,7 +95,7 @@ namespace ONYX_DDAC.DAL
         {
             return GetCategorySignals(@"
                 SELECT DISTINCT p.category
-                FROM wishlist w
+                FROM wishlists w
                 INNER JOIN products p ON p.id = w.product_id
                 WHERE w.user_id = @UserId", userId);
         }
@@ -102,36 +103,104 @@ namespace ONYX_DDAC.DAL
         public IList<string> GetPurchasedCategories(long userId)
         {
             return GetCategorySignals(@"
-                SELECT DISTINCT p.category
+                SELECT p.category
                 FROM orders o
                 INNER JOIN order_items oi ON oi.order_id = o.id
                 INNER JOIN products p ON p.id = oi.product_id
                 WHERE o.user_id = @UserId
-                  AND COALESCE(o.status, '') <> 'cancelled'", userId);
+                  AND COALESCE(o.status, '') <> 'cancelled'
+                ORDER BY o.ordered_at DESC, oi.order_item_id DESC", userId);
+        }
+
+        public void RecordCatalogSearch(long userId, string searchTerm)
+        {
+            string normalizedTerm = (searchTerm ?? string.Empty).Trim();
+            if (userId <= 0 || string.IsNullOrWhiteSpace(normalizedTerm))
+            {
+                return;
+            }
+
+            try
+            {
+                using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+                {
+                    conn.Open();
+                    IList<string> inferredCategories = InferSearchCategories(normalizedTerm);
+                    if (inferredCategories.Count == 0)
+                    {
+                        inferredCategories.Add(null);
+                    }
+
+                    foreach (string inferredCategory in inferredCategories)
+                    {
+                        using (DbCommand cmd = conn.CreateCommand())
+                        {
+                            cmd.CommandText = @"
+                            INSERT INTO catalog_search_events
+                                (user_id, search_term, inferred_category, searched_at)
+                            VALUES
+                                (@UserId, @SearchTerm, @InferredCategory, NOW())";
+                            AddParameter(cmd, "@UserId", userId);
+                            AddParameter(cmd, "@SearchTerm", normalizedTerm);
+                            AddParameter(cmd, "@InferredCategory", inferredCategory);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch (PostgresException exception) when (exception.SqlState == PostgresErrorCodes.UndefinedTable)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Catalog search personalization event skipped because the table is missing for user {0}: {1}",
+                    userId,
+                    exception.MessageText);
+            }
+        }
+
+        public IList<string> GetSearchedCategories(long userId)
+        {
+            return GetCategorySignals(@"
+                SELECT inferred_category
+                FROM catalog_search_events
+                WHERE user_id = @UserId
+                  AND inferred_category IS NOT NULL
+                ORDER BY searched_at DESC
+                LIMIT 50", userId);
         }
 
         private IList<string> GetCategorySignals(string sql, long userId)
         {
             var values = new List<string>();
-            using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
+            try
             {
-                conn.Open();
-                using (DbCommand cmd = conn.CreateCommand())
+                using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
                 {
-                    cmd.CommandText = sql;
-                    AddParameter(cmd, "@UserId", userId);
-                    using (DbDataReader reader = cmd.ExecuteReader())
+                    conn.Open();
+                    using (DbCommand cmd = conn.CreateCommand())
                     {
-                        while (reader.Read())
+                        cmd.CommandText = sql;
+                        AddParameter(cmd, "@UserId", userId);
+                        using (DbDataReader reader = cmd.ExecuteReader())
                         {
-                            if (!reader.IsDBNull(0))
+                            while (reader.Read())
                             {
-                                values.Add(reader.GetString(0));
+                                if (!reader.IsDBNull(0))
+                                {
+                                    values.Add(reader.GetString(0));
+                                }
                             }
                         }
                     }
                 }
             }
+            catch (PostgresException exception) when (exception.SqlState == PostgresErrorCodes.UndefinedTable)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Optional personalization signal lookup skipped because a related table is missing for user {0}: {1}",
+                    userId,
+                    exception.MessageText);
+            }
+
             return values;
         }
 
@@ -176,6 +245,38 @@ namespace ONYX_DDAC.DAL
                 .Select(v => v.Trim())
                 .Where(v => v.Length > 0)
                 .ToList();
+        }
+
+        public IList<string> InferSearchCategories(string searchTerm)
+        {
+            string value = (searchTerm ?? string.Empty).Trim().ToLowerInvariant();
+            var categories = new List<string>();
+
+            AddIfMatches(categories, value, "Keyboard", "keyboard", "keycap", "switch", "mechanical");
+            AddIfMatches(categories, value, "Mouse", "mouse", "mice", "dpi", "tracking", "sensor");
+            AddIfMatches(categories, value, "Headset", "headset", "headphone", "audio", "ear cushion", "noise cancellation");
+            AddIfMatches(categories, value, "Mic", "mic", "microphone", "voice");
+            AddIfMatches(categories, value, "Monitor", "monitor", "display", "screen", "refresh", "hz");
+            AddIfMatches(categories, value, "Mousepad", "mousepad", "mouse pad", "pad");
+            AddIfMatches(categories, value, "Cable", "cable", "wire", "charging");
+            AddIfMatches(categories, value, "Chair", "chair", "seat", "ergonomic");
+            AddIfMatches(categories, value, "Monitor Extension", "monitor extension", "monitor arm", "arm", "mount");
+            AddIfMatches(categories, value, "Accessory", "accessory", "accessories", "desk", "minimal");
+
+            return categories.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private string InferSearchCategory(string searchTerm)
+        {
+            return InferSearchCategories(searchTerm).FirstOrDefault();
+        }
+
+        private static void AddIfMatches(IList<string> categories, string value, string category, params string[] terms)
+        {
+            if (terms.Any(term => value.Contains(term)))
+            {
+                categories.Add(category);
+            }
         }
     }
 }

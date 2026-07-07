@@ -10,8 +10,10 @@ namespace ONYX_DDAC.customer_page
 {
     public partial class onyx_catalog : Page
     {
+        private const string RecentSearchSessionKey = "OnyxRecentSearchSignals";
         private readonly ProductService productService = new ProductService();
         private readonly WishlistService wishlistService = new WishlistService();
+        private readonly PersonalizationService personalizationService = new PersonalizationService();
         private HashSet<long> wishlistProductIds = new HashSet<long>();
 
         protected string SelectedCategory { get; private set; }
@@ -25,7 +27,7 @@ namespace ONYX_DDAC.customer_page
         {
             SelectedCategory = NormalizeCategory(Request.QueryString["category"]);
             SearchTerm = (Request.QueryString["q"] ?? string.Empty).Trim();
-            SelectedSort = NormalizeSort(Request.QueryString["sort"]);
+            SelectedSort = ResolveCatalogSort(Request.QueryString["sort"]);
             CurrentPage = ParsePage(Request.QueryString["page"]);
 
             if (!IsPostBack)
@@ -38,6 +40,15 @@ namespace ONYX_DDAC.customer_page
         {
             long userId;
             long? recommendationUserId = TryGetCurrentUserId(out userId) ? (long?)userId : null;
+            if (!string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                StoreRecentSearchSignal(SearchTerm);
+            }
+
+            if (recommendationUserId.HasValue && !string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                personalizationService.RecordCatalogSearch(recommendationUserId.Value, SearchTerm);
+            }
 
             PagedResult<Product> result = productService.GetCatalogProducts(new CatalogQuery
             {
@@ -46,7 +57,8 @@ namespace ONYX_DDAC.customer_page
                 Sort = SelectedSort,
                 Page = CurrentPage,
                 PageSize = 8,
-                UserId = recommendationUserId
+                UserId = recommendationUserId,
+                CurrentSearchSignals = GetRecentSearchSignals()
             });
             CurrentPage = result.Page;
             LoadWishlistProductIds();
@@ -213,6 +225,39 @@ namespace ONYX_DDAC.customer_page
             return "onyx_catalog.aspx" + (parameters.Count == 0 ? string.Empty : "?" + string.Join("&", parameters));
         }
 
+        private void StoreRecentSearchSignal(string searchTerm)
+        {
+            IList<string> signals = GetRecentSearchSignals();
+            signals.Insert(0, searchTerm.Trim());
+            Session[RecentSearchSessionKey] = signals
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Take(10)
+                .ToList();
+
+            Response.Cookies["onyx_recent_search"].Value = string.Join("|", signals.Take(10));
+            Response.Cookies["onyx_recent_search"].Expires = DateTime.UtcNow.AddDays(14);
+        }
+
+        private IList<string> GetRecentSearchSignals()
+        {
+            var values = Session[RecentSearchSessionKey] as IList<string>;
+            if (values != null)
+            {
+                return values.ToList();
+            }
+
+            string cookieValue = Request.Cookies["onyx_recent_search"] == null
+                ? string.Empty
+                : Request.Cookies["onyx_recent_search"].Value;
+
+            return (cookieValue ?? string.Empty)
+                .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(value => value.Trim())
+                .Where(value => value.Length > 0)
+                .Take(10)
+                .ToList();
+        }
+
         private static int ParsePage(string value)
         {
             return int.TryParse(value, out int page) && page > 0 ? page : 1;
@@ -230,6 +275,22 @@ namespace ONYX_DDAC.customer_page
                 default:
                     return "newest";
             }
+        }
+
+        private string ResolveCatalogSort(string value)
+        {
+            string explicitSort = Request.QueryString["sort"];
+            if (!string.IsNullOrWhiteSpace(explicitSort))
+            {
+                return NormalizeSort(explicitSort);
+            }
+
+            if (TryGetCurrentUserId(out _))
+            {
+                return "recommended";
+            }
+
+            return NormalizeSort(value);
         }
 
         protected string GetCategoryDisplayName(object category)
