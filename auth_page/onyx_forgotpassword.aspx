@@ -1,4 +1,4 @@
-<%@ Page Title="Forgot Password - ONYX" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_forgotpassword.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_forgotpassword" %>
+<%@ Page Title="Forgot Password - ONYX" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" Async="true" CodeBehind="onyx_forgotpassword.aspx.cs" Inherits="ONYX_DDAC.auth_page.onyx_forgotpassword" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>

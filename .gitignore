@@ -20,6 +20,8 @@ packages/
 # ASP.NET generated files
 App_Data/*.mdf
 App_Data/*.ldf
+App_Data/*.log
+*_debug.log
 
 # OS/editor files
 .DS_Store
@@ -29,7 +31,11 @@ Thumbs.db
 
 # Local agent/tooling state
 .agents/
+.codex/
 .impeccable/
+.superpowers/
+.magicpath-work/
+.playwright-mcp/
 
 # Local secrets
 .env

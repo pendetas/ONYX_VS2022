@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 
@@ -7,12 +10,19 @@ namespace ONYX_DDAC.Services
     public class ProductService
     {
         private readonly ProductRepository _repo;
+        private readonly PersonalizationService _personalizationService;
 
-        public ProductService() : this(new ProductRepository()) { }
+        public ProductService() : this(new ProductRepository(), new PersonalizationService()) { }
 
         public ProductService(ProductRepository repo)
+            : this(repo, new PersonalizationService())
+        {
+        }
+
+        public ProductService(ProductRepository repo, PersonalizationService personalizationService)
         {
             _repo = repo;
+            _personalizationService = personalizationService;
         }
 
         // ── Customer-facing ──────────────────────────────────────────────────
@@ -116,12 +126,94 @@ namespace ONYX_DDAC.Services
                 ? 8
                 : normalizedQuery.PageSize;
 
-            return _repo.GetCatalogProducts(normalizedQuery);
+            if (string.Equals(normalizedQuery.Sort, "recommended", System.StringComparison.OrdinalIgnoreCase))
+            {
+                if (!normalizedQuery.UserId.HasValue)
+                {
+                    return GetRepositoryCatalogProducts(normalizedQuery);
+                }
+
+                try
+                {
+                    if (!_personalizationService.HasCompletedProfile(normalizedQuery.UserId.Value))
+                    {
+                        return GetRepositoryCatalogProducts(normalizedQuery);
+                    }
+
+                    IList<Product> filteredCandidates = _repo.GetAllProducts()
+                        .Where(product => MatchesCategory(product, normalizedQuery.Category))
+                        .Where(product => MatchesSearchTerm(product, normalizedQuery.SearchTerm))
+                        .ToList();
+
+                    if (filteredCandidates.Count <= 0)
+                    {
+                        return BuildPagedCatalogResult(new List<Product>(), normalizedQuery);
+                    }
+
+                    IList<Product> filtered = _personalizationService
+                        .GetRecommendedProducts(
+                            normalizedQuery.UserId.Value,
+                            filteredCandidates,
+                            normalizedQuery.CurrentSearchSignals,
+                            filteredCandidates.Count)
+                        .Select(item => item.Product)
+                        .ToList();
+
+                    if (filtered.Count <= 0)
+                    {
+                        return GetRepositoryCatalogProducts(normalizedQuery);
+                    }
+
+                    return BuildPagedCatalogResult(filtered, normalizedQuery);
+                }
+                catch (Exception exception)
+                {
+                    Trace.TraceWarning(
+                        "Recommended catalog personalization lookup failed for user {0}: {1}",
+                        normalizedQuery.UserId.Value,
+                        exception);
+
+                    return GetRepositoryCatalogProducts(normalizedQuery);
+                }
+            }
+
+            return GetRepositoryCatalogProducts(normalizedQuery);
         }
 
         public IList<ProductVariant> GetProductVariants(long productId)
         {
             return _repo.GetProductVariants(productId);
+        }
+
+        private static PagedResult<Product> BuildPagedCatalogResult(IList<Product> filtered, CatalogQuery normalizedQuery)
+        {
+            int totalCount = filtered.Count;
+            int totalPages = System.Math.Max(1, (int)System.Math.Ceiling(totalCount / (double)normalizedQuery.PageSize));
+            int page = System.Math.Min(normalizedQuery.Page, totalPages);
+            int skip = (page - 1) * normalizedQuery.PageSize;
+
+            return new PagedResult<Product>
+            {
+                Items = filtered.Skip(skip).Take(normalizedQuery.PageSize).ToList(),
+                Page = page,
+                PageSize = normalizedQuery.PageSize,
+                TotalCount = totalCount
+            };
+        }
+
+        private static bool MatchesCategory(Product product, string category)
+        {
+            return string.IsNullOrWhiteSpace(category) ||
+                string.Equals(product.Category, category, System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool MatchesSearchTerm(Product product, string searchTerm)
+        {
+            return string.IsNullOrWhiteSpace(searchTerm) ||
+                (product.Name ?? string.Empty).IndexOf(searchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (product.Brand ?? string.Empty).IndexOf(searchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (product.Category ?? string.Empty).IndexOf(searchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (product.Description ?? string.Empty).IndexOf(searchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private static string NormalizeSort(string sort)
@@ -131,10 +223,29 @@ namespace ONYX_DDAC.Services
                 case "name":
                 case "price-asc":
                 case "price-desc":
+                case "recommended":
                     return sort.Trim().ToLowerInvariant();
                 default:
                     return "newest";
             }
+        }
+
+        private PagedResult<Product> GetRepositoryCatalogProducts(CatalogQuery query)
+        {
+            CatalogQuery repositoryQuery = new CatalogQuery
+            {
+                Category = query.Category,
+                SearchTerm = query.SearchTerm,
+                Sort = string.Equals(query.Sort, "recommended", System.StringComparison.OrdinalIgnoreCase)
+                    ? "newest"
+                    : query.Sort,
+                Page = query.Page,
+                PageSize = query.PageSize,
+                UserId = query.UserId,
+                CurrentSearchSignals = query.CurrentSearchSignals
+            };
+
+            return _repo.GetCatalogProducts(repositoryQuery);
         }
     }
 }

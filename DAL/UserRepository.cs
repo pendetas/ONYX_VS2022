@@ -358,6 +358,106 @@ namespace ONYX_DDAC.DAL
             }
         }
 
+        public User CreateOAuthUser(OAuthProfile profile, string username)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    const string sql = @"
+                        INSERT INTO users (
+                            fullname,
+                            username,
+                            email,
+                            password_hash,
+                            role,
+                            created_at)
+                        VALUES (
+                            @FullName,
+                            @Username,
+                            @Email,
+                            NULL,
+                            'customer',
+                            @CreatedAt)
+                        RETURNING id, username, email, password_hash, role, fullname";
+
+                    User user;
+                    using (var cmd = new NpgsqlCommand(sql, conn, tx))
+                    {
+                        DateTime now = DateTime.UtcNow;
+                        cmd.Parameters.AddWithValue("@FullName", profile.FullName);
+                        cmd.Parameters.AddWithValue("@Username", username);
+                        cmd.Parameters.AddWithValue("@Email", profile.Email);
+                        cmd.Parameters.AddWithValue("@CreatedAt", now);
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            user = reader.Read() ? ReadAuthUser(reader) : null;
+                        }
+                    }
+
+                    if (user != null)
+                        UpsertOAuthAccount(conn, tx, user.Id, profile);
+
+                    tx.Commit();
+                    return user;
+                }
+            }
+        }
+
+        public User GetUserByOAuthAccount(string provider, string providerUserId)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                const string sql = @"
+                    SELECT u.id, u.username, u.email, u.password_hash, u.role, u.fullname
+                    FROM user_oauth_accounts a
+                    INNER JOIN users u ON u.id = a.user_id
+                    WHERE LOWER(a.provider) = @Provider
+                      AND a.provider_user_id = @ProviderUserId
+                    LIMIT 1";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Provider", NormalizeOAuthProvider(provider));
+                    cmd.Parameters.AddWithValue("@ProviderUserId", providerUserId);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        return reader.Read() ? ReadAuthUser(reader) : null;
+                    }
+                }
+            }
+        }
+
+        public void LinkOAuthAccount(long userId, OAuthProfile profile)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    UpsertOAuthAccount(conn, tx, userId, profile);
+                    tx.Commit();
+                }
+            }
+        }
+
+        public bool UsernameExists(string username)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                const string sql = "SELECT COUNT(*) FROM users WHERE LOWER(username) = @Username";
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Username", (username ?? string.Empty).Trim().ToLowerInvariant());
+                    return (long)cmd.ExecuteScalar() > 0;
+                }
+            }
+        }
+
         public string CheckDuplicate(string username, string email)
         {
             using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
@@ -388,32 +488,12 @@ namespace ONYX_DDAC.DAL
 
         public User GetUserByEmail(string email)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
-            {
-                conn.Open();
-                string sql = "SELECT id, username, email, password_hash, role FROM users WHERE email = @Email";
+            return GetUserByEmailInternal(email, "ReadConnection");
+        }
 
-                using (var cmd = new NpgsqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Email", email);
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            return new User
-                            {
-                                Id           = reader.GetInt64(0),
-                                Username     = reader.GetString(1),
-                                Email        = reader.GetString(2),
-                                PasswordHash = reader.GetString(3),
-                                Role         = reader.GetString(4)
-                            };
-                        }
-                    }
-                }
-            }
-            return null;
+        public User GetUserByEmailForWrite(string email)
+        {
+            return GetUserByEmailInternal(email, "DefaultConnection");
         }
 
         public User GetUserByUsername(string username)
@@ -461,6 +541,122 @@ namespace ONYX_DDAC.DAL
             }
         }
 
+        public void CreatePasswordResetToken(
+            long userId,
+            string tokenHash,
+            int expiryMinutes)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    using (var expireCmd = new NpgsqlCommand(
+                        @"UPDATE password_reset_tokens
+                          SET used_at = NOW()
+                          WHERE user_id = @UserId
+                            AND used_at IS NULL", conn, tx))
+                    {
+                        expireCmd.Parameters.AddWithValue("@UserId", userId);
+                        expireCmd.ExecuteNonQuery();
+                    }
+
+                    using (var insertCmd = new NpgsqlCommand(
+                        @"INSERT INTO password_reset_tokens
+                            (user_id, token_hash, expires_at, created_at)
+                          VALUES
+                            (@UserId, @TokenHash, NOW() + (@ExpiryMinutes * INTERVAL '1 minute'), NOW())", conn, tx))
+                    {
+                        insertCmd.Parameters.AddWithValue("@UserId", userId);
+                        insertCmd.Parameters.AddWithValue("@TokenHash", tokenHash);
+                        insertCmd.Parameters.AddWithValue("@ExpiryMinutes", expiryMinutes);
+                        insertCmd.ExecuteNonQuery();
+                    }
+
+                    tx.Commit();
+                }
+            }
+        }
+
+        public long? GetValidPasswordResetUserId(string tokenHash)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(
+                        @"SELECT user_id
+                      FROM password_reset_tokens
+                      WHERE token_hash = @TokenHash
+                        AND used_at IS NULL
+                        AND expires_at > NOW()
+                      LIMIT 1", conn))
+                {
+                    cmd.Parameters.AddWithValue("@TokenHash", tokenHash);
+                    object result = cmd.ExecuteScalar();
+                    if (result == null || result == DBNull.Value)
+                        return null;
+
+                    return Convert.ToInt64(result);
+                }
+            }
+        }
+
+        public bool ResetPasswordWithToken(string tokenHash, string newPasswordHash)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    long resetTokenId;
+                    long userId;
+
+                    using (var selectCmd = new NpgsqlCommand(
+                        @"SELECT id, user_id
+                          FROM password_reset_tokens
+                          WHERE token_hash = @TokenHash
+                            AND used_at IS NULL
+                            AND expires_at > NOW()
+                          FOR UPDATE", conn, tx))
+                    {
+                        selectCmd.Parameters.AddWithValue("@TokenHash", tokenHash);
+
+                        using (var reader = selectCmd.ExecuteReader())
+                        {
+                            if (!reader.Read())
+                                return false;
+
+                            resetTokenId = reader.GetInt64(0);
+                            userId = reader.GetInt64(1);
+                        }
+                    }
+
+                    using (var updateUserCmd = new NpgsqlCommand(
+                        @"UPDATE users
+                          SET password_hash = @PasswordHash
+                          WHERE id = @UserId", conn, tx))
+                    {
+                        updateUserCmd.Parameters.AddWithValue("@PasswordHash", newPasswordHash);
+                        updateUserCmd.Parameters.AddWithValue("@UserId", userId);
+                        if (updateUserCmd.ExecuteNonQuery() == 0)
+                            return false;
+                    }
+
+                    using (var useTokenCmd = new NpgsqlCommand(
+                        @"UPDATE password_reset_tokens
+                          SET used_at = NOW()
+                          WHERE id = @Id", conn, tx))
+                    {
+                        useTokenCmd.Parameters.AddWithValue("@Id", resetTokenId);
+                        useTokenCmd.ExecuteNonQuery();
+                    }
+
+                    tx.Commit();
+                    return true;
+                }
+            }
+        }
+
         public User GetUserByEmailOrUsername(string emailOrUsername)
         {
             using (DbConnection conn = DbConnectionFactory.CreateReadConnection())
@@ -484,7 +680,7 @@ namespace ONYX_DDAC.DAL
                                 Id = reader.GetInt64(0),
                                 Username = reader.GetString(1),
                                 Email = reader.GetString(2),
-                                PasswordHash = reader.GetString(3),
+                                PasswordHash = reader.IsDBNull(3) ? null : reader.GetString(3),
                                 Role = reader.GetString(4)
                             };
                         }
@@ -568,9 +764,156 @@ namespace ONYX_DDAC.DAL
             return (parts[0][0].ToString() + parts[parts.Length - 1][0].ToString()).ToUpper();
         }
 
+        private User GetUserByEmailInternal(string email, string connectionName)
+        {
+            using (var conn = new NpgsqlConnection(GetConnectionString(connectionName)))
+            {
+                conn.Open();
+                const string sql =
+                    "SELECT id, username, email, password_hash, role, fullname FROM users WHERE LOWER(email) = LOWER(@Email)";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Email", email);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        return reader.Read() ? ReadAuthUser(reader) : null;
+                    }
+                }
+            }
+        }
+
+        private static void UpsertOAuthAccount(
+            NpgsqlConnection conn,
+            NpgsqlTransaction tx,
+            long userId,
+            OAuthProfile profile)
+        {
+            string provider = NormalizeOAuthProvider(profile.Provider);
+            const string sql = @"
+                INSERT INTO user_oauth_accounts (
+                    user_id,
+                    provider,
+                    provider_user_id,
+                    email,
+                    email_verified,
+                    display_name,
+                    avatar_url,
+                    created_at,
+                    last_login_at)
+                VALUES (
+                    @UserId,
+                    @Provider,
+                    @ProviderUserId,
+                    @Email,
+                    @EmailVerified,
+                    @DisplayName,
+                    @AvatarUrl,
+                    @Now,
+                    @Now)
+                ON CONFLICT (provider, provider_user_id)
+                DO UPDATE SET
+                    user_id = EXCLUDED.user_id,
+                    email = EXCLUDED.email,
+                    email_verified = EXCLUDED.email_verified,
+                    display_name = EXCLUDED.display_name,
+                    avatar_url = COALESCE(EXCLUDED.avatar_url, user_oauth_accounts.avatar_url),
+                    last_login_at = EXCLUDED.last_login_at";
+
+            using (var cmd = new NpgsqlCommand(sql, conn, tx))
+            {
+                cmd.Parameters.AddWithValue("@UserId", userId);
+                cmd.Parameters.AddWithValue("@Provider", provider);
+                cmd.Parameters.AddWithValue("@ProviderUserId", profile.Subject);
+                cmd.Parameters.AddWithValue("@Email", (object)profile.Email ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@EmailVerified", profile.EmailVerified);
+                cmd.Parameters.AddWithValue("@DisplayName", (object)profile.FullName ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@AvatarUrl", (object)profile.AvatarUrl ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Now", DateTime.UtcNow);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static User ReadAuthUser(IDataRecord reader)
+        {
+            return new User
+            {
+                Id = reader.GetInt64(0),
+                Username = reader.GetString(1),
+                Email = reader.GetString(2),
+                PasswordHash = reader.IsDBNull(3) ? null : reader.GetString(3),
+                Role = reader.GetString(4),
+                FullName = reader.FieldCount > 5 && !reader.IsDBNull(5) ? reader.GetString(5) : null
+            };
+        }
+
+        private static string NormalizeOAuthProvider(string provider)
+        {
+            if (string.IsNullOrWhiteSpace(provider))
+                throw new InvalidOperationException("OAuth provider is required.");
+
+            return provider.Trim().ToLowerInvariant();
+        }
+
         private string GetConnectionString(string connectionName = "DefaultConnection")
         {
+            string host = GetEnvironmentValue("ONYX_DB_HOST");
+            string portValue = GetEnvironmentValue("ONYX_DB_PORT");
+            string database = GetEnvironmentValue("ONYX_DB_NAME");
+            string username = GetEnvironmentValue("ONYX_DB_USER");
+            string password = GetEnvironmentValue("ONYX_DB_PASSWORD");
+
+            bool hasAnyRdsSetting =
+                !string.IsNullOrWhiteSpace(host) ||
+                !string.IsNullOrWhiteSpace(portValue) ||
+                !string.IsNullOrWhiteSpace(database) ||
+                !string.IsNullOrWhiteSpace(username) ||
+                !string.IsNullOrWhiteSpace(password);
+
+            if (hasAnyRdsSetting)
+            {
+                if (string.IsNullOrWhiteSpace(host) ||
+                    string.IsNullOrWhiteSpace(portValue) ||
+                    string.IsNullOrWhiteSpace(database) ||
+                    string.IsNullOrWhiteSpace(username) ||
+                    string.IsNullOrWhiteSpace(password))
+                {
+                    throw new ConfigurationErrorsException(
+                        "RDS database configuration is incomplete. Check ONYX_DB_HOST, ONYX_DB_PORT, ONYX_DB_NAME, ONYX_DB_USER, and ONYX_DB_PASSWORD.");
+                }
+
+                int port;
+                if (!int.TryParse(portValue, out port) || port < 1 || port > 65535)
+                    throw new ConfigurationErrorsException("ONYX_DB_PORT must be a valid TCP port number.");
+
+                return new NpgsqlConnectionStringBuilder
+                {
+                    Host = host,
+                    Port = port,
+                    Database = database,
+                    Username = username,
+                    Password = password,
+                    SslMode = SslMode.Require,
+                    TrustServerCertificate = true,
+                    Pooling = true,
+                    MinPoolSize = 1,
+                    MaxPoolSize = 100,
+                    KeepAlive = 30
+                }.ConnectionString;
+            }
+
             return ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
+        }
+
+        private static string GetEnvironmentValue(string variableName)
+        {
+            string value = Environment.GetEnvironmentVariable(variableName);
+
+            if (string.IsNullOrWhiteSpace(value))
+                value = Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User);
+
+            return value;
         }
     }
 }

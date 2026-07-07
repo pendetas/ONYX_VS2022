@@ -33,6 +33,7 @@
                     <label class="onyx-catalog-sort" for="onyx-catalog-sort">
                         <span>Sort</span>
                         <select id="onyx-catalog-sort">
+                            <option value="recommended"<%= GetSelectedSortAttribute("recommended") %>>Recommended</option>
                             <option value="newest"<%= GetSelectedSortAttribute("newest") %>>Newest</option>
                             <option value="name"<%= GetSelectedSortAttribute("name") %>>Name A-Z</option>
                             <option value="price-asc"<%= GetSelectedSortAttribute("price-asc") %>>Price Low-High</option>

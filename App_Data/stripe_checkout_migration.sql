@@ -8,7 +8,8 @@ ALTER TABLE orders
     ADD COLUMN IF NOT EXISTS stripe_payment_intent_id TEXT,
     ADD COLUMN IF NOT EXISTS payment_method VARCHAR(100),
     ADD COLUMN IF NOT EXISTS payment_expires_at TIMESTAMPTZ,
-    ADD COLUMN IF NOT EXISTS paid_at TIMESTAMPTZ;
+    ADD COLUMN IF NOT EXISTS paid_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS checkout_success_email_sent_at TIMESTAMPTZ;
 
 ALTER TABLE orders
     ALTER COLUMN status SET DEFAULT 'pending_payment';

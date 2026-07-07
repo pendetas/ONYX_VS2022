@@ -156,6 +156,35 @@
                 </div>
             </section>
 
+            <asp:Panel ID="PersonalizedProductsPanel" runat="server" Visible="false" CssClass="onyx-personalized-strip w-full py-32 px-6 md:px-12 bg-[#050505] relative z-10 border-t border-white/10">
+                <div class="max-w-7xl mx-auto">
+                    <div class="mb-14 reveal-item">
+                        <p class="text-accent uppercase tracking-widest text-sm font-bold mb-4">For your setup</p>
+                        <h2 class="text-4xl md:text-6xl font-syne font-bold tracking-tighter leading-tight">Recommended from your ONYX profile.</h2>
+                    </div>
+
+                    <div class="onyx-ddac-product-grid">
+                        <asp:Repeater ID="PersonalizedProductsRepeater" runat="server">
+                            <ItemTemplate>
+                                <article class="onyx-ddac-product-card reveal-item">
+                                    <div class="onyx-ddac-product-media">
+                                        <img src='<%# GetPersonalizedProductImageUrl(Container.DataItem, Container.ItemIndex) %>' alt='<%# GetPersonalizedProductAlt(Container.DataItem) %>' class="onyx-ddac-product-image" loading="lazy" />
+                                    </div>
+                                    <div class="onyx-ddac-product-body">
+                                        <p><%# GetPersonalizedProductReason(Container.DataItem) %></p>
+                                        <h3><%# GetPersonalizedProductName(Container.DataItem) %></h3>
+                                        <div class="onyx-ddac-product-meta">
+                                            <strong><%# GetPersonalizedProductPrice(Container.DataItem) %></strong>
+                                            <a href='<%# GetPersonalizedProductUrl(Container.DataItem) %>'>View</a>
+                                        </div>
+                                    </div>
+                                </article>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                    </div>
+                </div>
+            </asp:Panel>
+
             <section id="featured-products" class="w-full py-32 px-6 md:px-12 bg-[#0b0b0c] relative z-10 border-t border-white/10">
                 <div class="max-w-7xl mx-auto">
                     <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-14 reveal-item">

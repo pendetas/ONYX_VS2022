@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using ONYX_DDAC.Models;
@@ -10,8 +12,10 @@ namespace ONYX_DDAC.customer_page
 {
     public partial class onyx_catalog : Page
     {
+        private const string RecentSearchSessionKey = "OnyxRecentSearchSignals";
         private readonly ProductService productService = new ProductService();
         private readonly WishlistService wishlistService = new WishlistService();
+        private readonly PersonalizationService personalizationService = new PersonalizationService();
         private HashSet<long> wishlistProductIds = new HashSet<long>();
 
         protected string SelectedCategory { get; private set; }
@@ -25,7 +29,7 @@ namespace ONYX_DDAC.customer_page
         {
             SelectedCategory = NormalizeCategory(Request.QueryString["category"]);
             SearchTerm = (Request.QueryString["q"] ?? string.Empty).Trim();
-            SelectedSort = NormalizeSort(Request.QueryString["sort"]);
+            SelectedSort = ResolveCatalogSort(Request.QueryString["sort"]);
             CurrentPage = ParsePage(Request.QueryString["page"]);
 
             if (!IsPostBack)
@@ -36,14 +40,29 @@ namespace ONYX_DDAC.customer_page
 
         private void BindCatalog()
         {
+            long userId;
+            long? recommendationUserId = TryGetCurrentUserId(out userId) ? (long?)userId : null;
+            if (!string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                StoreRecentSearchSignal(SearchTerm);
+            }
+
             PagedResult<Product> result = productService.GetCatalogProducts(new CatalogQuery
             {
                 Category = SelectedCategory,
                 SearchTerm = SearchTerm,
                 Sort = SelectedSort,
                 Page = CurrentPage,
-                PageSize = 8
+                PageSize = 8,
+                UserId = recommendationUserId,
+                CurrentSearchSignals = GetRecentSearchSignals()
             });
+
+            if (recommendationUserId.HasValue && !string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                personalizationService.RecordCatalogSearch(recommendationUserId.Value, SearchTerm);
+            }
+
             CurrentPage = result.Page;
             LoadWishlistProductIds();
 
@@ -209,6 +228,54 @@ namespace ONYX_DDAC.customer_page
             return "onyx_catalog.aspx" + (parameters.Count == 0 ? string.Empty : "?" + string.Join("&", parameters));
         }
 
+        private void StoreRecentSearchSignal(string searchTerm)
+        {
+            IList<string> signals = GetRecentSearchSignals();
+            signals.Insert(0, searchTerm.Trim());
+            IList<string> filteredSignals = signals
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Take(10)
+                .ToList();
+
+            Session[RecentSearchSessionKey] = filteredSignals;
+            Response.Cookies["onyx_recent_search"].Value = EncodeRecentSearchSignals(filteredSignals);
+            Response.Cookies["onyx_recent_search"].Expires = DateTime.UtcNow.AddDays(14);
+        }
+
+        private IList<string> GetRecentSearchSignals()
+        {
+            var values = Session[RecentSearchSessionKey] as IList<string>;
+            if (values != null)
+            {
+                return values.ToList();
+            }
+
+            string cookieValue = Request.Cookies["onyx_recent_search"] == null
+                ? string.Empty
+                : Request.Cookies["onyx_recent_search"].Value;
+
+            return DecodeRecentSearchSignals(cookieValue);
+        }
+
+        private static string EncodeRecentSearchSignals(IList<string> signals)
+        {
+            return string.Join("|", (signals ?? new List<string>())
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Take(10)
+                .Select(value => HttpUtility.UrlEncode(value.Trim())));
+        }
+
+        private static IList<string> DecodeRecentSearchSignals(string encodedValue)
+        {
+            return (encodedValue ?? string.Empty)
+                .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(HttpUtility.UrlDecode)
+                .Select(value => (value ?? string.Empty).Trim())
+                .Where(value => value.Length > 0)
+                .Take(10)
+                .ToList();
+        }
+
         private static int ParsePage(string value)
         {
             return int.TryParse(value, out int page) && page > 0 ? page : 1;
@@ -221,10 +288,27 @@ namespace ONYX_DDAC.customer_page
                 case "name":
                 case "price-asc":
                 case "price-desc":
+                case "recommended":
                     return value.Trim().ToLowerInvariant();
                 default:
                     return "newest";
             }
+        }
+
+        private string ResolveCatalogSort(string value)
+        {
+            string explicitSort = Request.QueryString["sort"];
+            if (!string.IsNullOrWhiteSpace(explicitSort))
+            {
+                return NormalizeSort(explicitSort);
+            }
+
+            if (TryGetCurrentUserId(out _))
+            {
+                return "recommended";
+            }
+
+            return NormalizeSort(value);
         }
 
         protected string GetCategoryDisplayName(object category)
