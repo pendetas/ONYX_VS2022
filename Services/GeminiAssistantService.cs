@@ -106,7 +106,7 @@ namespace ONYX_DDAC.Services
             string apiKey = GetApiKey();
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                return AssistantResult.ConfigurationMissing("The ONYX Assistant needs a Gemini API key before it can answer. Add GEMINI_API_KEY or GeminiApiKey.");
+                return AssistantResult.Success(SanitizeAssistantReply(BuildKnowledgeFallbackReply(cleanQuestion, knowledgeContext)));
             }
 
             try

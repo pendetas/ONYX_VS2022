@@ -15,8 +15,7 @@ namespace ONYX_DDAC.customer_page
         {
             if (!IsPostBack)
             {
-                FeaturedProductsRepeater.DataSource = productService.GetFeaturedProducts(4);
-                FeaturedProductsRepeater.DataBind();
+                BindFeaturedProducts();
                 BindPersonalizedProducts();
             }
         }
@@ -74,6 +73,23 @@ namespace ONYX_DDAC.customer_page
                 default:
                     return "Stable tracking, confident grip, and crisp click control.";
             }
+        }
+
+        private void BindFeaturedProducts()
+        {
+            try
+            {
+                FeaturedProductsRepeater.DataSource = productService.GetFeaturedProducts(4);
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Featured home products unavailable: {0}",
+                    exception);
+                FeaturedProductsRepeater.DataSource = Array.Empty<Product>();
+            }
+
+            FeaturedProductsRepeater.DataBind();
         }
 
         private void BindPersonalizedProducts()

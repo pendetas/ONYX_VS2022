@@ -717,29 +717,27 @@ body::-webkit-scrollbar-thumb:hover {
     }
 }
 
-/* Navy glass shared shell */
+/* Black shared shell */
 html,
 body,
 .onyx-user-shell {
-    background:
-        radial-gradient(circle at 50% -10%, rgba(48, 115, 194, 0.2), transparent 34rem),
-        linear-gradient(180deg, #02070d, #050b14 36%, #07111d) !important;
+    background: #050505 !important;
 }
 
 .onyx-ddac-nav {
-    background: rgba(2, 8, 15, 0.76) !important;
-    backdrop-filter: blur(22px) saturate(140%) !important;
-    border-bottom: 1px solid rgba(126, 163, 202, 0.16) !important;
+    background: rgba(5, 5, 5, 0.82) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
     display: grid !important;
     gap: 24px;
     grid-template-columns: auto minmax(220px, 360px) 1fr;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     min-height: 88px !important;
     padding: 14px clamp(24px, 4vw, 56px) !important;
 }
 
 .onyx-ddac-nav.is-scrolled {
-    background: rgba(2, 8, 15, 0.94) !important;
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32) !important;
+    background: #0a0a0a !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6) !important;
 }
 
 .onyx-nav-brand {
@@ -747,10 +745,14 @@ body,
     display: inline-flex;
 }
 
+.onyx-ddac-nav .onyx-wordmark {
+    color: #ffffff !important;
+}
+
 .onyx-nav-search {
     align-items: center;
-    background: rgba(8, 20, 34, 0.68);
-    border: 1px solid rgba(126, 163, 202, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 8px;
     display: flex;
     gap: 10px;
@@ -759,14 +761,14 @@ body,
 }
 
 .onyx-nav-search:focus-within {
-    border-color: rgba(75, 156, 255, 0.62);
-    box-shadow: 0 0 0 3px rgba(75, 156, 255, 0.1);
+    border-color: rgba(216, 221, 227, 0.62);
+    box-shadow: 0 0 0 3px rgba(216, 221, 227, 0.12);
 }
 
 .onyx-nav-search svg {
     fill: none;
     height: 18px;
-    stroke: var(--onyx-body);
+    stroke: #9ca3af;
     stroke-linecap: round;
     stroke-width: 1.8;
     width: 18px;
@@ -775,7 +777,7 @@ body,
 .onyx-nav-search input {
     background: transparent;
     border: 0;
-    color: var(--onyx-ink);
+    color: #ffffff;
     font-size: 13px;
     min-width: 0;
     outline: 0;
@@ -783,7 +785,7 @@ body,
 }
 
 .onyx-nav-search input::placeholder {
-    color: var(--onyx-body-mid);
+    color: #7f8791;
 }
 
 .onyx-ddac-nav-links {
@@ -794,6 +796,7 @@ body,
 .onyx-ddac-nav-links > a,
 .onyx-ddac-dropdown-trigger {
     border-bottom: 1px solid transparent;
+    color: rgba(255, 255, 255, 0.88) !important;
     padding: 12px 0;
 }
 
@@ -801,41 +804,41 @@ body,
 .onyx-ddac-nav-links > a.is-active,
 .onyx-ddac-dropdown-trigger:hover,
 .onyx-ddac-dropdown-trigger.is-active {
-    border-bottom-color: var(--onyx-accent);
-    color: var(--onyx-ink) !important;
+    border-bottom-color: #d8dde3;
+    color: #ffffff !important;
 }
 
 .onyx-ddac-nav-register,
 .onyx-ddac-account-trigger {
-    background: rgba(16, 34, 55, 0.9) !important;
-    border: 1px solid rgba(75, 156, 255, 0.5) !important;
-    border-radius: 7px !important;
-    color: var(--onyx-ink) !important;
+    background: #ffffff !important;
+    border: 1px solid #ffffff !important;
+    border-radius: 999px !important;
+    color: #050505 !important;
 }
 
 .onyx-ddac-account-name {
-    color: var(--onyx-ink) !important;
+    color: #050505 !important;
 }
 
 .onyx-ddac-nav-icon {
-    background: rgba(8, 20, 34, 0.7) !important;
-    border-color: rgba(126, 163, 202, 0.24) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
 }
 
 .onyx-ddac-nav-icon-count {
-    background: var(--onyx-accent) !important;
-    color: #02070d !important;
+    background: #ffffff !important;
+    color: #050505 !important;
 }
 
 .onyx-ddac-megapanel,
 .onyx-ddac-account-menu {
-    background: rgba(3, 11, 20, 0.96) !important;
-    border-color: rgba(126, 163, 202, 0.18) !important;
+    background: rgba(7, 7, 9, 0.98) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .onyx-mobile-menu-button {
-    background: rgba(8, 20, 34, 0.72);
-    border: 1px solid var(--onyx-hairline);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 7px;
     display: none;
     height: 44px;
@@ -844,7 +847,7 @@ body,
 }
 
 .onyx-mobile-menu-button span {
-    background: var(--onyx-ink);
+    background: #ffffff;
     display: block;
     height: 1px;
     margin: 5px 0;
@@ -865,8 +868,8 @@ body,
 }
 
 .onyx-mobile-menu {
-    background: rgba(3, 11, 20, 0.98);
-    border-bottom: 1px solid var(--onyx-hairline);
+    background: rgba(5, 5, 5, 0.98);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     display: none;
     gap: 8px;
     left: 0;
@@ -882,8 +885,8 @@ body,
 }
 
 .onyx-mobile-menu > a {
-    border-bottom: 1px solid rgba(126, 163, 202, 0.12);
-    color: var(--onyx-ink);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: #ffffff;
     font-family: var(--onyx-mono);
     font-size: 12px;
     letter-spacing: 1.2px;
@@ -892,16 +895,13 @@ body,
 }
 
 .onyx-master-footer {
-    background:
-        linear-gradient(180deg, rgba(5, 11, 20, 0.2), rgba(2, 7, 13, 0.98)) !important;
-    border-top: 1px solid var(--onyx-hairline) !important;
+    background: #050505 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 .onyx-logout-card {
-    background:
-        radial-gradient(circle at 80% 0%, rgba(75, 156, 255, 0.16), transparent 18rem),
-        linear-gradient(180deg, rgba(14, 31, 51, 0.98), rgba(3, 10, 18, 0.98)) !important;
-    border-color: rgba(126, 163, 202, 0.24) !important;
+    background: #101012 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 @media (max-width: 1180px) {
