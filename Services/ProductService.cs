@@ -154,6 +154,7 @@ namespace ONYX_DDAC.Services
                         .GetRecommendedProducts(
                             normalizedQuery.UserId.Value,
                             filteredCandidates,
+                            normalizedQuery.CurrentSearchSignals,
                             filteredCandidates.Count)
                         .Select(item => item.Product)
                         .ToList();
@@ -240,7 +241,8 @@ namespace ONYX_DDAC.Services
                     : query.Sort,
                 Page = query.Page,
                 PageSize = query.PageSize,
-                UserId = query.UserId
+                UserId = query.UserId,
+                CurrentSearchSignals = query.CurrentSearchSignals
             };
 
             return _repo.GetCatalogProducts(repositoryQuery);

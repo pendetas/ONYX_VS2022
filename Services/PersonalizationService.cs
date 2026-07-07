@@ -128,9 +128,15 @@ namespace ONYX_DDAC.Services
             HttpCookie cookie = context.Request == null ? null : context.Request.Cookies["onyx_recent_search"];
             string cookieValue = cookie == null ? string.Empty : cookie.Value;
 
-            return (cookieValue ?? string.Empty)
+            return DecodeSearchSignals(cookieValue);
+        }
+
+        private static IList<string> DecodeSearchSignals(string encodedValue)
+        {
+            return (encodedValue ?? string.Empty)
                 .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(value => value.Trim())
+                .Select(value => HttpUtility.UrlDecode(value))
+                .Select(value => (value ?? string.Empty).Trim())
                 .Where(value => value.Length > 0)
                 .Take(10)
                 .ToList();
@@ -284,6 +290,11 @@ namespace ONYX_DDAC.Services
             if (signals.MatchesPurchasedCategory)
             {
                 score += 20;
+            }
+
+            if (signals.MatchedSearchedCategories != null && signals.MatchedSearchedCategories.Count > 0)
+            {
+                score += Math.Min(signals.MatchedSearchedCategories.Count, 5) * 12;
             }
 
             if (signals.MatchesSetupGoal)

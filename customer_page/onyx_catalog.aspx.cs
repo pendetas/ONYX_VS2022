@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using ONYX_DDAC.Models;
@@ -229,12 +231,13 @@ namespace ONYX_DDAC.customer_page
         {
             IList<string> signals = GetRecentSearchSignals();
             signals.Insert(0, searchTerm.Trim());
-            Session[RecentSearchSessionKey] = signals
+            IList<string> filteredSignals = signals
                 .Where(value => !string.IsNullOrWhiteSpace(value))
                 .Take(10)
                 .ToList();
 
-            Response.Cookies["onyx_recent_search"].Value = string.Join("|", signals.Take(10));
+            Session[RecentSearchSessionKey] = filteredSignals;
+            Response.Cookies["onyx_recent_search"].Value = EncodeRecentSearchSignals(filteredSignals);
             Response.Cookies["onyx_recent_search"].Expires = DateTime.UtcNow.AddDays(14);
         }
 
@@ -250,9 +253,23 @@ namespace ONYX_DDAC.customer_page
                 ? string.Empty
                 : Request.Cookies["onyx_recent_search"].Value;
 
-            return (cookieValue ?? string.Empty)
+            return DecodeRecentSearchSignals(cookieValue);
+        }
+
+        private static string EncodeRecentSearchSignals(IList<string> signals)
+        {
+            return string.Join("|", (signals ?? new List<string>())
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Take(10)
+                .Select(value => HttpUtility.UrlEncode(value.Trim())));
+        }
+
+        private static IList<string> DecodeRecentSearchSignals(string encodedValue)
+        {
+            return (encodedValue ?? string.Empty)
                 .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(value => value.Trim())
+                .Select(HttpUtility.UrlDecode)
+                .Select(value => (value ?? string.Empty).Trim())
                 .Where(value => value.Length > 0)
                 .Take(10)
                 .ToList();
