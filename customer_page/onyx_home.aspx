@@ -221,23 +221,23 @@
                 <video class="onyx-ddac-footer-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
                     <source src="<%= ResolveUrl("~/Video/DragonInk.mp4") %>" type="video/mp4" />
                 </video>
-                <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
-                    <div class="reveal-item">
-                        <h2 class="text-4xl md:text-6xl font-syne font-bold tracking-tighter mb-6 leading-tight">
+                <div class="onyx-ddac-footer-main max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
+                    <div class="onyx-ddac-footer-signup reveal-item">
+                        <h2 class="onyx-ddac-footer-title text-4xl md:text-6xl font-syne font-bold tracking-tighter mb-6 leading-tight">
                             Get early access to exclusive hardware drops.
                         </h2>
-                        <div class="mt-12 flex flex-col sm:flex-row gap-4 border-b border-white/20 pb-4">
-                            <input type="email" placeholder="Email address" class="bg-transparent outline-none flex-grow text-white placeholder:text-white/30 font-inter text-lg" />
-                            <button type="button" class="font-syne font-bold uppercase tracking-widest text-sm text-accent hover:text-white transition-colors">Subscribe</button>
+                        <div class="onyx-ddac-footer-form mt-12 flex flex-col sm:flex-row gap-4 border-b border-white/20 pb-4">
+                            <input type="email" placeholder="Email address" class="onyx-ddac-footer-input bg-transparent outline-none flex-grow text-white placeholder:text-white/30 font-inter text-lg" />
+                            <button type="button" class="onyx-ddac-footer-submit font-syne font-bold uppercase tracking-widest text-sm text-accent hover:text-white transition-colors">Subscribe</button>
                         </div>
-                        <label class="flex items-center gap-3 mt-6 text-sm text-secondary">
+                        <label class="onyx-ddac-footer-consent flex items-center gap-3 mt-6 text-sm text-secondary">
                             <input type="checkbox" class="accent-slate-200 w-4 h-4" />
                             I agree to receive promotional emails.
                         </label>
                     </div>
 
-                    <div class="flex md:justify-end reveal-item">
-                        <div class="flex flex-col gap-4 text-right">
+                    <div class="onyx-ddac-footer-nav flex md:justify-end reveal-item">
+                        <div class="onyx-ddac-footer-links flex flex-col gap-4 text-right">
                             <h4 class="text-secondary text-sm font-bold uppercase tracking-widest mb-4">Shop Onyx</h4>
                             <a href="../customer_page/onyx_catalog.aspx?category=Mouse" class="text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Gaming Mice</a>
                             <a href="../customer_page/onyx_catalog.aspx?category=Keyboard" class="text-2xl font-syne font-medium hover:text-accent transition-colors no-underline text-white">Mechanical Keyboards</a>
@@ -248,7 +248,7 @@
                     </div>
                 </div>
 
-                <div class="max-w-7xl mx-auto mt-32 flex flex-col md:flex-row justify-between items-center text-xs text-secondary border-t border-white/10 pt-8 reveal-item">
+                <div class="onyx-ddac-footer-bottom max-w-7xl mx-auto mt-32 flex flex-col md:flex-row justify-between items-center text-xs text-secondary border-t border-white/10 pt-8 reveal-item">
                     <p>Onyx Gaming Technologies, 2026</p>
                     <div class="flex gap-6 mt-4 md:mt-0">
                         <a href="onyx_terms.aspx" class="hover:text-white transition-colors no-underline text-secondary">Terms of Sale</a>
