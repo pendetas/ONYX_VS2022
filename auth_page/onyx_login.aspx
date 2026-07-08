@@ -23,6 +23,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             background: #000000 !important;
             z-index: 9999;
             display: flex;
@@ -30,14 +31,20 @@
             justify-content: center;
             font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #ffffff;
-            overflow: hidden;
+            overflow: auto;
+            padding: 16px 0;
+            box-sizing: border-box;
         }
 
         .auth-container {
             width: 95vw;
             max-width: 1480px;
             height: min(90vh, 820px);
-            min-height: 650px;
+            height: min(90dvh, 820px);
+            max-height: calc(100vh - 32px);
+            max-height: calc(100dvh - 32px);
+            min-height: min(650px, calc(100vh - 32px));
+            min-height: min(650px, calc(100dvh - 32px));
             background-color: #000000;
             border-radius: 18px;
             display: flex;
@@ -59,13 +66,22 @@
         }
 
         .auth-brand {
+            color: #ffffff;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 28px;
+            font-weight: 400;
+            left: 40px;
+            letter-spacing: -0.08em;
+            line-height: 1;
             position: absolute;
             top: 30px;
-            left: 40px;
-            font-size: 19px;
-            font-weight: 700;
-            letter-spacing: -0.04em;
+            text-decoration: none;
+            text-transform: lowercase;
             z-index: 2;
+        }
+
+        .auth-brand:hover {
+            color: #d8dde3;
         }
 
         .auth-copyright {
@@ -75,7 +91,7 @@
             font-size: 11px;
             color: rgba(255,255,255,0.28);
             letter-spacing: 0.16em;
-            text-transform: uppercase;
+            text-transform: none;
             z-index: 2;
         }
 
@@ -110,7 +126,23 @@
             background: #000000 !important;
             display: flex;
             flex-direction: column;
+            min-height: 0;
             overflow-y: auto !important; 
+            scrollbar-color: rgba(255,255,255,0.28) transparent !important;
+            scrollbar-width: thin !important;
+        }
+
+        .auth-right::-webkit-scrollbar {
+            background: transparent !important;
+            display: block !important;
+            height: 8px !important;
+            width: 8px !important;
+        }
+
+        .auth-right::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.28) !important;
+            border: 2px solid #000000 !important;
+            border-radius: 999px !important;
         }
 
         .auth-top-nav {
@@ -395,7 +427,7 @@
         }
 
         .cta.captcha-pending {
-            opacity: 0.45;
+            opacity: 0.72;
             cursor: not-allowed;
         }
 
@@ -416,6 +448,8 @@
             .auth-container {
                 width: 100vw;
                 height: 100vh;
+                height: 100dvh;
+                max-height: none;
                 min-height: 0;
                 border-radius: 0;
             }
@@ -430,6 +464,90 @@
 
             .auth-form-wrapper {
                 max-width: none;
+            }
+        }
+
+        @media (max-height: 720px) {
+            .auth-takeover {
+                padding: 12px 0;
+            }
+
+            .auth-container {
+                height: calc(100vh - 24px);
+                height: calc(100dvh - 24px);
+                max-height: calc(100vh - 24px);
+                max-height: calc(100dvh - 24px);
+                min-height: 0;
+            }
+
+            .auth-right {
+                padding-top: clamp(20px, 3vh, 30px);
+                padding-bottom: clamp(20px, 3vh, 30px);
+            }
+
+            .auth-form-wrapper {
+                margin: 0;
+                padding-top: 14px;
+                padding-bottom: 14px;
+            }
+
+            .auth-title {
+                font-size: clamp(40px, 4vw, 52px);
+                margin-bottom: 22px;
+            }
+
+            .oauth-entry {
+                gap: 12px;
+                margin-bottom: 22px;
+            }
+
+            .social-button {
+                height: 46px;
+                width: 58px;
+            }
+
+            .auth-form-grid {
+                gap: 20px;
+            }
+
+            .auth-input {
+                min-height: 46px;
+            }
+
+            .captcha-wrapper {
+                margin-top: 18px;
+                min-height: 54px;
+            }
+
+            .cta {
+                margin-top: 22px;
+            }
+        }
+
+        @media (max-height: 620px) {
+            .auth-top-nav a {
+                font-size: 10px;
+            }
+
+            .auth-title {
+                font-size: 40px;
+                margin-bottom: 18px;
+            }
+
+            .oauth-entry {
+                margin-bottom: 18px;
+            }
+
+            .auth-form-grid {
+                gap: 16px;
+            }
+
+            .captcha-wrapper {
+                margin-top: 14px;
+            }
+
+            .cta {
+                margin-top: 16px;
             }
         }
 
@@ -485,13 +603,13 @@
             
             <!-- Left Side: Video Background -->
             <div class="auth-left">
-                <div class="auth-brand">ONYX&deg;</div>
+                <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" class="auth-brand" aria-label="Back to ONYX home">onyx</a>
                 
                 <video autoplay loop muted playsinline class="auth-video-bg">
                     <source src="<%= ResolveUrl("~/Videos/ONYX_Cinematic_Logo.mp4") %>" type="video/mp4" />
                 </video>
 
-                <div class="auth-copyright">&copy; ONYX 2025. All rights reserved.</div>
+                <div class="auth-copyright">&copy; 2026 ONYX Gaming Technologies.</div>
             </div>
 
             <div class="auth-right">
@@ -536,7 +654,7 @@
                     <div class="auth-form-grid">
                         <div class="auth-field">
                             <label>Email / Username</label>
-                            <asp:TextBox ID="EmailTextBox" runat="server" CssClass="auth-input" placeholder="Enter email or 'admin'" />
+                            <asp:TextBox ID="EmailTextBox" runat="server" CssClass="auth-input" placeholder="Enter email or username" />
                         </div>
 
                         <div class="auth-field">
@@ -618,9 +736,7 @@
                 .from(".auth-brand, .auth-copyright", { duration: 0.8, x: -30, opacity: 0, stagger: 0.2, ease: "power3.out" }, "-=1.5")
               .from(".auth-top-nav, .auth-title", { duration: 0.8, y: 20, opacity: 0, stagger: 0.1, ease: "power3.out" }, "-=1.2")
                 .from(".oauth-divider", { duration: 0.6, y: 12, opacity: 0, ease: "power3.out" }, "-=0.65")
-                .from(".auth-field", { duration: 0.6, y: 20, opacity: 0, stagger: 0.1, ease: "power3.out" }, "-=0.45")
-                // Uiverse button elegantly slides in. clearProps ensures hover CSS works smoothly afterwards!
-                .from(".cta", { duration: 1.2, y: 30, opacity: 0, ease: "expo.out", clearProps: "all" }, "-=0.4");
+                .from(".auth-field", { duration: 0.6, y: 20, opacity: 0, stagger: 0.1, ease: "power3.out" }, "-=0.45");
         });
     </script>
 </asp:Content>

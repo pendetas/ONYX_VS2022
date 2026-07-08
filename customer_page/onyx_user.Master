@@ -14,8 +14,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
     <link href="<%= ResolveUrl("~/Content/onyx-design-system.css") %>" rel="stylesheet" />
-    <link href="<%= ResolveUrl("~/Content/onyx-user-master.css") %>" rel="stylesheet" />
-    <script src="<%= ResolveUrl("~/Scripts/onyx-user-master.js") %>"></script>
+    <link href="<%= ResolveUrl("~/Content/onyx-user-master.css") %>?v=20260708-header-register" rel="stylesheet" />
+    <script src="<%= ResolveUrl("~/Scripts/onyx-user-master.js") %>?v=20260708-catalog-sort"></script>
     <style>
         .onyx-ai-assistant {
             bottom: 24px;
@@ -403,7 +403,7 @@
                         <div class="onyx-master-footer-links">
                             <a href="<%= ResolveUrl("~/customer_page/onyx_privacy.aspx") %>">Privacy</a>
                             <a href="<%= ResolveUrl("~/customer_page/onyx_terms.aspx") %>">Terms</a>
-                            <a href="mailto:support@onyxgaming.com">Email Support</a>
+                            <a href="mailto:support.onyxgaming@gmail.com">Email Support</a>
                         </div>
                     </div>
                 </div>
@@ -585,7 +585,7 @@
                         .catch(function () {
                             if (pendingMessage) {
                                 pendingMessage.className = 'onyx-ai-message bot error';
-                                pendingMessage.textContent = 'The ONYX Assistant is unavailable right now. Please try again or email support@onyxgaming.com.';
+                                pendingMessage.textContent = 'The ONYX Assistant is unavailable right now. Please try again or email support.onyxgaming@gmail.com.';
                             }
                         })
                         .finally(function () {

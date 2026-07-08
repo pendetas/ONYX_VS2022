@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', function () {
             input.value = currentSearchTerm;
         });
 
+        function normalizeCatalogPath(path) {
+            return (path || '').toLowerCase().replace(/\.aspx$/, '');
+        }
+
         function openCatalogSearch(searchTerm, preserveCatalogState) {
             var catalogUrl = document.body.getAttribute('data-catalog-url') || '/customer_page/onyx_catalog.aspx';
             var target = new URL(catalogUrl, window.location.origin);
@@ -45,7 +49,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 target.searchParams.set('q', searchTerm.trim());
             }
 
-            window.location.href = target.pathname + target.search;
+            var nextUrl = target.pathname + target.search;
+            if (normalizeCatalogPath(target.pathname) === normalizeCatalogPath(window.location.pathname)
+                && target.search === window.location.search) {
+                return;
+            }
+
+            document.documentElement.classList.add('onyx-catalog-is-loading');
+            window.location.href = nextUrl;
         }
 
         navSearchInputs.forEach(function (input) {
@@ -75,7 +86,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 current.searchParams.delete('sort');
             }
 
-            window.location.href = current.pathname + current.search;
+            var nextUrl = current.pathname + current.search;
+            if (nextUrl === window.location.pathname + window.location.search) {
+                return;
+            }
+
+            document.documentElement.classList.add('onyx-catalog-is-loading');
+            window.location.href = nextUrl;
         };
 
         var catalogSearch = document.getElementById('onyx-catalog-search');
@@ -89,8 +106,78 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         var catalogSort = document.getElementById('onyx-catalog-sort');
-        if (catalogSort) {
-            catalogSort.addEventListener('change', window.onyxApplyCatalogFilters);
+        var catalogSortRoot = document.querySelector('[data-onyx-catalog-sort]');
+        if (catalogSort && catalogSortRoot) {
+            var catalogSortTrigger = catalogSortRoot.querySelector('.onyx-catalog-sort-trigger');
+            var catalogSortCurrent = catalogSortRoot.querySelector('.onyx-catalog-sort-current');
+            var catalogSortOptions = Array.prototype.slice.call(catalogSortRoot.querySelectorAll('[data-value]'));
+
+            function syncCatalogSort() {
+                var selectedOption = catalogSort.options[catalogSort.selectedIndex];
+                var selectedText = selectedOption ? selectedOption.text : 'Newest';
+
+                if (catalogSortCurrent) {
+                    catalogSortCurrent.textContent = selectedText;
+                }
+
+                catalogSortOptions.forEach(function (option) {
+                    var isActive = option.getAttribute('data-value') === catalogSort.value;
+                    option.classList.toggle('is-active', isActive);
+                    option.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                });
+            }
+
+            function closeCatalogSort() {
+                catalogSortRoot.classList.remove('is-open');
+                if (catalogSortTrigger) {
+                    catalogSortTrigger.setAttribute('aria-expanded', 'false');
+                }
+            }
+
+            function openCatalogSort() {
+                catalogSortRoot.classList.add('is-open');
+                if (catalogSortTrigger) {
+                    catalogSortTrigger.setAttribute('aria-expanded', 'true');
+                }
+            }
+
+            if (catalogSortTrigger) {
+                catalogSortTrigger.addEventListener('click', function () {
+                    if (catalogSortRoot.classList.contains('is-open')) {
+                        closeCatalogSort();
+                    } else {
+                        openCatalogSort();
+                    }
+                });
+            }
+
+            catalogSortOptions.forEach(function (option) {
+                option.addEventListener('click', function () {
+                    catalogSort.value = option.getAttribute('data-value') || 'newest';
+                    syncCatalogSort();
+                    closeCatalogSort();
+                    if (catalogSortTrigger) {
+                        catalogSortTrigger.focus();
+                    }
+                });
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!catalogSortRoot.contains(event.target)) {
+                    closeCatalogSort();
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && catalogSortRoot.classList.contains('is-open')) {
+                    closeCatalogSort();
+                    if (catalogSortTrigger) {
+                        catalogSortTrigger.focus();
+                    }
+                }
+            });
+
+            syncCatalogSort();
         }
 
         if (mobileMenuButton && mobileMenu) {

@@ -19,6 +19,7 @@
                     <a  href="#property">Intellectual property</a>
                     <a  href="#liability">Liability</a>
                     <a  href="#law">Governing law</a>
+                    <a  href="#contact">Contact</a>
                 </nav>
             </aside>
 
@@ -90,6 +91,12 @@
                         <span>08</span>
                         <h2>Governing law</h2>
                         <p>These terms are governed by the laws of Malaysia. Any dispute connected to these terms will be handled by the courts of Malaysia unless another written agreement applies.</p>
+                    </section>
+
+                    <section id="contact" class="onyx-legal-section">
+                        <span>09</span>
+                        <h2>Contact</h2>
+                        <p>Questions about these terms can be sent to <a href="mailto:support.onyxgaming@gmail.com">support.onyxgaming@gmail.com</a>.</p>
                     </section>
                 </div>
             </div>

@@ -82,7 +82,7 @@
                     <section id="contact" class="onyx-legal-section">
                         <span>07</span>
                         <h2>Contact</h2>
-                        <p>Questions about privacy can be sent to privacy@onyxgaming.com or mailed to ONYX Gaming Technologies, Kuala Lumpur, Malaysia.</p>
+                        <p>Questions about privacy can be sent to <a href="mailto:support.onyxgaming@gmail.com">support.onyxgaming@gmail.com</a> or mailed to ONYX Gaming Technologies, Kuala Lumpur, Malaysia.</p>
                     </section>
                 </div>
             </div>

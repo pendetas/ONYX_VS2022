@@ -1,7 +1,7 @@
 <%@ Page Title="Catalog" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_catalog.aspx.cs" Inherits="ONYX_DDAC.customer_page.onyx_catalog" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-catalog.css") %>" />
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-catalog.css") %>?v=20260708-black-catalog-sort" />
 
 </asp:Content>
 
@@ -30,16 +30,27 @@
                         <span class="sr-only">Search catalog</span>
                         <input id="onyx-catalog-search" type="search" value="<%= Server.HtmlEncode(SearchTerm) %>" placeholder="Search gaming gear" />
                     </label>
-                    <label class="onyx-catalog-sort" for="onyx-catalog-sort">
-                        <span>Sort</span>
-                        <select id="onyx-catalog-sort">
+                    <div class="onyx-catalog-sort" data-onyx-catalog-sort>
+                        <span id="onyx-catalog-sort-label">Sort</span>
+                        <select id="onyx-catalog-sort" class="onyx-catalog-sort-native" aria-hidden="true" tabindex="-1">
                             <option value="recommended"<%= GetSelectedSortAttribute("recommended") %>>Recommended</option>
                             <option value="newest"<%= GetSelectedSortAttribute("newest") %>>Newest</option>
                             <option value="name"<%= GetSelectedSortAttribute("name") %>>Name A-Z</option>
                             <option value="price-asc"<%= GetSelectedSortAttribute("price-asc") %>>Price Low-High</option>
                             <option value="price-desc"<%= GetSelectedSortAttribute("price-desc") %>>Price High-Low</option>
                         </select>
-                    </label>
+                        <button type="button" class="onyx-catalog-sort-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="onyx-catalog-sort-label onyx-catalog-sort-current">
+                            <span id="onyx-catalog-sort-current" class="onyx-catalog-sort-current">Newest</span>
+                            <span class="onyx-catalog-sort-chev" aria-hidden="true"></span>
+                        </button>
+                        <div class="onyx-catalog-sort-menu" role="listbox" aria-labelledby="onyx-catalog-sort-label">
+                            <button type="button" role="option" data-value="recommended">Recommended</button>
+                            <button type="button" role="option" data-value="newest">Newest</button>
+                            <button type="button" role="option" data-value="name">Name A-Z</button>
+                            <button type="button" role="option" data-value="price-asc">Price Low-High</button>
+                            <button type="button" role="option" data-value="price-desc">Price High-Low</button>
+                        </div>
+                    </div>
                     <button type="button" class="onyx-glass-button" onclick="onyxApplyCatalogFilters()">Apply</button>
                     <asp:Literal ID="CatalogCountLiteral" runat="server" />
                 </div>

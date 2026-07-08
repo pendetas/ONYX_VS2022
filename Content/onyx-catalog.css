@@ -295,35 +295,61 @@
     }
 }
 
-/* Navy glass catalog overrides */
+/* Black steel catalog overrides */
 .onyx-catalog-page {
+    --catalog-ink: #f7f7f7;
+    --catalog-muted: #a6a6a6;
+    --catalog-soft: #707070;
+    --catalog-line: rgba(255, 255, 255, 0.14);
+    --catalog-panel: rgba(14, 14, 14, 0.88);
+    --catalog-panel-strong: rgba(22, 22, 22, 0.96);
+    --catalog-shadow: rgba(0, 0, 0, 0.46);
+    background:
+        radial-gradient(circle at 50% 0, rgba(255, 255, 255, 0.08), transparent 32rem),
+        linear-gradient(180deg, #080808 0%, #030303 56%, #000000 100%);
     padding: 124px 30px 100px;
 }
 
 .onyx-catalog-banner {
     align-items: center;
     background:
-        linear-gradient(90deg, rgba(2, 8, 15, 0.9), rgba(4, 17, 31, 0.42), rgba(2, 8, 15, 0.82)),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.94), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9)),
         url("/Content/home/products/onyx-monitor.png") right 8% center / min(42%, 520px) auto no-repeat,
-        radial-gradient(circle at 72% 18%, rgba(75, 156, 255, 0.26), transparent 24rem),
-        linear-gradient(135deg, #071321, #02070d);
-    border: 1px solid rgba(126, 163, 202, 0.2);
+        linear-gradient(135deg, #111111, #030303);
+    border: 1px solid var(--catalog-line);
     border-radius: 8px;
+    box-shadow: 0 24px 80px var(--catalog-shadow);
     display: flex;
-    min-height: 230px;
+    min-height: 244px;
     overflow: hidden;
-    padding: clamp(28px, 5vw, 64px);
+    padding: clamp(30px, 5vw, 64px);
     position: relative;
 }
 
+.onyx-catalog-banner::before {
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.08) 0,
+            rgba(255, 255, 255, 0.08) 1px,
+            transparent 1px,
+            transparent 72px
+        );
+    content: "";
+    inset: 0;
+    opacity: 0.16;
+    pointer-events: none;
+    position: absolute;
+}
+
 .onyx-catalog-banner::after {
-    background: linear-gradient(90deg, var(--onyx-accent), transparent);
+    background: linear-gradient(90deg, #ffffff, rgba(255, 255, 255, 0));
     bottom: 0;
     content: "";
     height: 1px;
     left: 0;
     position: absolute;
-    width: 46%;
+    width: 50%;
 }
 
 .onyx-catalog-banner-content {
@@ -333,33 +359,50 @@
 }
 
 .onyx-catalog-title {
+    color: var(--catalog-ink) !important;
     font-size: clamp(42px, 6vw, 84px) !important;
     line-height: 0.95 !important;
     margin-bottom: 18px !important;
 }
 
 .onyx-catalog-copy {
+    color: var(--catalog-muted) !important;
     max-width: 580px !important;
 }
 
+.onyx-catalog-page .onyx-catalog-kicker,
+.onyx-catalog-page .onyx-catalog-count,
+.onyx-catalog-page .onyx-product-meta,
+.onyx-catalog-page .onyx-product-description {
+    color: var(--catalog-muted) !important;
+}
+
 .onyx-catalog-toolbar {
-    border-bottom: 1px solid rgba(126, 163, 202, 0.14);
+    align-items: flex-start;
+    border-bottom: 1px solid var(--catalog-line);
     gap: 20px;
     padding: 28px 0;
 }
 
-.onyx-catalog-pill {
-    border-color: transparent;
-    border-radius: 0;
-    color: var(--onyx-body);
-    padding: 0 8px;
+.onyx-catalog-filters {
+    gap: 8px;
 }
 
-.onyx-catalog-pill:hover,
-.onyx-catalog-pill.is-active {
-    background: transparent !important;
-    border-bottom-color: var(--onyx-accent) !important;
-    color: var(--onyx-ink) !important;
+.onyx-catalog-page .onyx-catalog-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--catalog-line);
+    border-radius: 6px;
+    color: var(--catalog-muted);
+    min-height: 40px;
+    padding: 0 14px;
+}
+
+.onyx-catalog-page .onyx-catalog-pill:hover,
+.onyx-catalog-page .onyx-catalog-pill:focus-visible,
+.onyx-catalog-page .onyx-catalog-pill.is-active {
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #050505 !important;
 }
 
 .onyx-catalog-tools {
@@ -370,69 +413,227 @@
     justify-content: flex-end;
 }
 
-.onyx-catalog-search,
-.onyx-catalog-sort {
+.onyx-catalog-page .onyx-catalog-search,
+.onyx-catalog-page .onyx-catalog-sort {
     align-items: center;
-    background: rgba(7, 18, 31, 0.72);
-    border: 1px solid var(--onyx-hairline);
+    background: var(--catalog-panel) !important;
+    border: 1px solid var(--catalog-line) !important;
     border-radius: 6px;
+    color: var(--catalog-muted) !important;
     display: flex;
-    min-height: 42px;
+    min-height: 44px;
+}
+
+.onyx-catalog-page .onyx-catalog-search:focus-within,
+.onyx-catalog-page .onyx-catalog-sort:focus-within {
+    border-color: rgba(255, 255, 255, 0.72) !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08) !important;
+}
+
+.onyx-catalog-page #onyx-catalog-search,
+.onyx-catalog-page #onyx-catalog-sort,
+.onyx-catalog-page .onyx-catalog-search input,
+.onyx-catalog-page .onyx-catalog-sort select {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: var(--catalog-ink) !important;
+    outline: 0;
+}
+
+.onyx-catalog-page #onyx-catalog-search::placeholder {
+    color: var(--catalog-soft) !important;
 }
 
 .onyx-catalog-search input {
     border: 0 !important;
-    min-height: 40px;
+    min-height: 42px;
     padding: 0 14px;
-    width: min(30vw, 250px);
+    width: min(34vw, 280px);
 }
 
 .onyx-catalog-sort {
-    color: var(--onyx-body);
     font-family: var(--onyx-mono);
     font-size: 10px;
     gap: 8px;
     letter-spacing: 1px;
+    min-width: 180px;
     padding-left: 12px;
+    position: relative;
     text-transform: uppercase;
 }
 
 .onyx-catalog-sort select {
     border: 0 !important;
-    min-height: 40px;
+    min-height: 42px;
 }
 
-.onyx-glass-button {
+.onyx-catalog-page .onyx-catalog-sort-native {
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none;
+    position: absolute !important;
+    width: 1px !important;
+}
+
+.onyx-catalog-page .onyx-catalog-sort-trigger {
+    align-items: center;
+    background: transparent !important;
+    border: 0 !important;
+    color: var(--catalog-ink) !important;
+    display: inline-flex;
+    flex: 1;
+    font: inherit;
+    gap: 12px;
+    justify-content: space-between;
     min-height: 42px;
-    padding: 0 18px;
+    min-width: 112px;
+    padding: 0 6px;
+}
+
+.onyx-catalog-page .onyx-catalog-sort-trigger:hover,
+.onyx-catalog-page .onyx-catalog-sort-trigger:focus-visible {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+    outline: 0;
+    transform: none !important;
+}
+
+.onyx-catalog-sort-chev {
+    border-bottom: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    height: 8px;
+    transform: rotate(45deg) translateY(-2px);
+    transition: transform 160ms ease;
+    width: 8px;
+}
+
+.onyx-catalog-sort.is-open .onyx-catalog-sort-chev {
+    transform: rotate(225deg) translateY(-2px);
+}
+
+.onyx-catalog-sort-menu {
+    background: #070707;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.68);
+    display: none;
+    gap: 4px;
+    left: 0;
+    min-width: 100%;
+    padding: 6px;
+    position: absolute;
+    top: calc(100% + 8px);
+    z-index: 70;
+}
+
+.onyx-catalog-sort.is-open .onyx-catalog-sort-menu {
+    display: grid;
+}
+
+.onyx-catalog-page .onyx-catalog-sort-menu button {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 4px;
+    color: var(--catalog-muted) !important;
+    font: inherit;
+    min-height: 34px;
+    padding: 0 12px;
+    text-align: left;
+    transform: none !important;
+    white-space: nowrap;
+}
+
+.onyx-catalog-page .onyx-catalog-sort-menu button:hover,
+.onyx-catalog-page .onyx-catalog-sort-menu button:focus-visible,
+.onyx-catalog-page .onyx-catalog-sort-menu button.is-active {
+    background: #ffffff !important;
+    border: 0 !important;
+    color: #050505 !important;
+    outline: 0;
+}
+
+.onyx-catalog-page .onyx-glass-button {
+    background: #ffffff !important;
+    border: 1px solid #ffffff !important;
+    border-radius: 6px !important;
+    color: #050505 !important;
+    min-height: 44px;
+    padding: 0 20px;
+}
+
+.onyx-catalog-page .onyx-glass-button:hover,
+.onyx-catalog-page .onyx-glass-button:focus-visible {
+    background: transparent !important;
+    color: #ffffff !important;
+}
+
+.onyx-catalog-count {
+    align-items: center;
+    border: 1px solid var(--catalog-line);
+    border-radius: 6px;
+    color: var(--catalog-muted);
+    display: inline-flex;
+    min-height: 44px;
+    padding: 0 12px;
 }
 
 .onyx-product-grid {
-    gap: 14px;
+    gap: 16px;
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 18px;
 }
 
-.onyx-product-card {
+.onyx-catalog-page .onyx-product-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)) !important;
+    border-color: var(--catalog-line) !important;
     border-radius: 8px !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+    transition: border-color 180ms ease, transform 180ms ease;
 }
 
-.onyx-product-media {
-    aspect-ratio: 1.15;
-    background: transparent;
+.onyx-catalog-page .onyx-product-card:hover {
+    border-color: rgba(255, 255, 255, 0.48) !important;
+    transform: translateY(-3px);
+}
+
+.onyx-catalog-page .onyx-product-card::before {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 44%);
+    display: block !important;
+}
+
+.onyx-catalog-page .onyx-product-media {
+    aspect-ratio: 1.16;
+    background:
+        radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.11), transparent 58%),
+        #0a0a0a !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     padding: 18px;
+}
+
+.onyx-catalog-page .onyx-product-media img {
+    filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.5)) !important;
 }
 
 .onyx-product-body {
-    gap: 11px;
-    min-height: 215px;
+    gap: 12px;
+    min-height: 220px;
     padding: 18px;
 }
 
+.onyx-product-meta {
+    color: var(--catalog-soft);
+    gap: 12px;
+}
+
 .onyx-product-name {
+    color: var(--catalog-ink);
     font-size: 19px;
 }
 
 .onyx-product-description {
+    color: var(--catalog-muted);
     display: -webkit-box;
     font-size: 13px;
     -webkit-box-orient: vertical;
@@ -440,28 +641,64 @@
     overflow: hidden;
 }
 
-.onyx-product-love {
-    background: rgba(3, 11, 20, 0.74);
-    border-color: rgba(126, 163, 202, 0.28);
+.onyx-product-price {
+    color: var(--catalog-ink);
+}
+
+.onyx-catalog-page .onyx-product-view {
+    background: #ffffff !important;
+    border: 1px solid #ffffff !important;
+    border-radius: 6px !important;
+    color: #050505 !important;
+}
+
+.onyx-catalog-page .onyx-product-view:hover,
+.onyx-catalog-page .onyx-product-view:focus-visible {
+    background: transparent !important;
+    color: #ffffff !important;
+}
+
+.onyx-catalog-page .onyx-product-love {
+    background: rgba(0, 0, 0, 0.76) !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
     height: 38px;
     right: 12px;
     top: 12px;
     width: 38px;
 }
 
+.onyx-catalog-page .onyx-product-love:hover,
+.onyx-catalog-page .onyx-product-love:focus-visible,
+.onyx-catalog-page .onyx-product-love.is-active {
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #050505 !important;
+}
+
+.onyx-catalog-feedback {
+    color: var(--catalog-ink);
+}
+
+.onyx-catalog-page .onyx-empty-catalog {
+    background: var(--catalog-panel) !important;
+    border-color: var(--catalog-line) !important;
+    color: var(--catalog-muted);
+}
+
 .onyx-catalog-pager {
     display: flex;
-    gap: 6px;
+    flex-wrap: wrap;
+    gap: 8px;
     justify-content: center;
     margin-top: 42px;
 }
 
 .onyx-catalog-page-link {
     align-items: center;
-    background: rgba(8, 20, 34, 0.72);
-    border: 1px solid var(--onyx-hairline);
+    background: var(--catalog-panel);
+    border: 1px solid var(--catalog-line);
     border-radius: 6px;
-    color: var(--onyx-body);
+    color: var(--catalog-muted);
     display: inline-flex;
     font-family: var(--onyx-mono);
     font-size: 11px;
@@ -473,10 +710,11 @@
 }
 
 .onyx-catalog-page-link:hover,
+.onyx-catalog-page-link:focus-visible,
 .onyx-catalog-page-link.is-active {
-    background: rgba(75, 156, 255, 0.18);
-    border-color: var(--onyx-accent);
-    color: var(--onyx-ink);
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #050505;
 }
 
 .onyx-catalog-page-link.is-disabled {
@@ -496,16 +734,27 @@
 
     .onyx-catalog-banner {
         background:
-            linear-gradient(180deg, rgba(2, 8, 15, 0.48), rgba(2, 8, 15, 0.94)),
-            url("/Content/home/products/onyx-monitor.png") center / cover no-repeat;
+            linear-gradient(180deg, rgba(0, 0, 0, 0.54), rgba(0, 0, 0, 0.96)),
+            url("/Content/home/products/onyx-monitor.png") center / cover no-repeat,
+            #050505;
         min-height: 260px;
+    }
+
+    .onyx-catalog-toolbar {
+        align-items: stretch;
     }
 
     .onyx-catalog-tools,
     .onyx-catalog-search,
     .onyx-catalog-search input,
-    .onyx-catalog-sort {
+    .onyx-catalog-sort,
+    .onyx-glass-button,
+    .onyx-catalog-count {
         width: 100%;
+    }
+
+    .onyx-catalog-tools {
+        justify-content: stretch;
     }
 
     .onyx-product-grid {

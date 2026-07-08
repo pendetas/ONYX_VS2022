@@ -11,31 +11,31 @@
             <div class="onyx-support-shell onyx-support-hero-grid">
                 <div>
                     <span class="onyx-support-kicker">ONYX Support</span>
-                    <h1 id="support-title">Help that keeps ownership clear.</h1>
+                    <h1 id="support-title">Get help without guessing.</h1>
                     <p class="onyx-support-lede">
-                        <strong>ONYX support is built around fast diagnosis, transparent next steps, and reliable post-purchase care.</strong> Get help with orders, warranty coverage, returns, setup, and account access without guessing where to start.
+                        <strong>Email support with your order ID, product name, and what happened.</strong> That is the fastest path for orders, warranty, returns, setup, and account access.
                     </p>
                     <div class="onyx-support-actions">
-                        <a href="#contact-support" class="onyx-support-button">Contact support</a>
+                        <a href="mailto:support.onyxgaming@gmail.com?subject=ONYX%20Support%20Request" class="onyx-support-button">Email support</a>
                         <a href="#support-faq" class="onyx-support-button">Read FAQ</a>
                     </div>
                 </div>
 
                 <aside class="onyx-support-status" aria-label="ONYX support standards">
                     <div class="onyx-support-status-row">
-                        <span class="onyx-support-label">Average first reply</span>
-                        <strong>24h</strong>
-                        <p>Most support requests are designed around a first human response within one business day.</p>
+                        <span class="onyx-support-label">Email</span>
+                        <strong>support.onyxgaming@gmail.com</strong>
+                        <p>Use this address for every support request.</p>
                     </div>
                     <div class="onyx-support-status-row">
-                        <span class="onyx-support-label">Warranty coverage</span>
-                        <strong>2 years</strong>
-                        <p>Eligible manufacturing defects are covered for ONYX peripherals purchased through the store.</p>
-                    </div>
-                    <div class="onyx-support-status-row">
-                        <span class="onyx-support-label">Fastest route</span>
+                        <span class="onyx-support-label">Best details</span>
                         <strong>Order + serial</strong>
-                        <p>Include your order ID and product serial number so support can verify the request faster.</p>
+                        <p>Include both so support can check the product faster.</p>
+                    </div>
+                    <div class="onyx-support-status-row">
+                        <span class="onyx-support-label">Hours</span>
+                        <strong>Mon-Fri / 10:00-18:00 MYT</strong>
+                        <p>Replies are handled during business hours.</p>
                     </div>
                 </aside>
             </div>
@@ -46,149 +46,41 @@
                 <div class="onyx-support-contact">
                     <div class="onyx-support-contact-card">
                         <span class="onyx-support-kicker">Contact ONYX</span>
-                        <h3>Send the right details first.</h3>
-                        <p>Support works faster when the first message includes the full context. Use the guide beside this panel, then send the request through email.</p>
+                        <h3>Send one clear email.</h3>
+                        <p>Use the checklist beside this panel. Keep the first message short and complete.</p>
 
                         <div class="onyx-support-channel-list">
                             <div class="onyx-support-channel">
                                 <span class="onyx-support-label">Email</span>
-                                <a  href="mailto:support@onyxgaming.com">support@onyxgaming.com</a>
+                                <a href="mailto:support.onyxgaming@gmail.com">support.onyxgaming@gmail.com</a>
                             </div>
                             <div class="onyx-support-channel">
-                                <span class="onyx-support-label">Hours</span>
-                                <strong>Mon-Fri / 10:00-18:00 MYT</strong>
-                            </div>
-                            <div class="onyx-support-channel">
-                                <span class="onyx-support-label">Location</span>
-                                <strong>Kuala Lumpur, Malaysia</strong>
+                                <span class="onyx-support-label">Subject</span>
+                                <strong>Order, warranty, return, setup, or account</strong>
                             </div>
                         </div>
                     </div>
 
-                    <div class="onyx-support-form-card" aria-label="Support request preparation guide">
-                        <div class="onyx-support-field">
-                            <label for="support-name">Name</label>
-                            <input id="support-name" type="text" placeholder="Your name" />
+                    <div class="onyx-support-form-card" aria-label="Support request checklist">
+                        <div class="onyx-support-docs">
+                            <article class="onyx-support-doc">
+                                <strong>01</strong>
+                                <h3>Order ID</h3>
+                                <p>Order number, purchase date, and account email.</p>
+                            </article>
+                            <article class="onyx-support-doc">
+                                <strong>02</strong>
+                                <h3>Product</h3>
+                                <p>Product name, variant, and serial number if available.</p>
+                            </article>
+                            <article class="onyx-support-doc">
+                                <strong>03</strong>
+                                <h3>Proof</h3>
+                                <p>Photos or video if the issue is visible.</p>
+                            </article>
                         </div>
-                        <div class="onyx-support-field">
-                            <label for="support-email">Email</label>
-                            <input id="support-email" type="email" placeholder="you@example.com" />
-                        </div>
-                        <div class="onyx-support-field">
-                            <label for="support-topic">Topic</label>
-                            <select id="support-topic">
-                                <option>Order support</option>
-                                <option>Warranty claim</option>
-                                <option>Return request</option>
-                                <option>Technical setup</option>
-                                <option>Account access</option>
-                            </select>
-                        </div>
-                        <div class="onyx-support-field">
-                            <label for="support-message">Message</label>
-                            <textarea id="support-message" placeholder="Order ID, product, serial number, and what happened"></textarea>
-                        </div>
-                        <a class="onyx-support-button" href="mailto:support@onyxgaming.com?subject=ONYX%20Support%20Request">Email support</a>
-                        <p class="onyx-support-form-note">This form is a preparation guide. Use the email button to send your request through your mail app.</p>
+                        <a class="onyx-support-button" href="mailto:support.onyxgaming@gmail.com?subject=ONYX%20Support%20Request&body=Order%20ID%3A%0AProduct%3A%0ASerial%20number%3A%0AIssue%3A%0AAttach%20photos%20or%20video%20if%20needed.">Start email</a>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="onyx-support-section">
-            <div class="onyx-support-shell">
-                <div class="onyx-support-section-heading">
-                    <span class="onyx-support-index">01 / Support lanes</span>
-                    <div>
-                        <h2>Match your request to the right support lane.</h2>
-                        <p class="onyx-support-section-copy">Large companies route support by issue category because it reduces delay. ONYX uses the same principle: order problems, warranty claims, returns, and setup requests each need different information.</p>
-                    </div>
-                </div>
-
-                <div class="onyx-support-lanes">
-                    <a class="onyx-support-lane" href="#contact-support">
-                        <span class="onyx-support-label">01 / Orders</span>
-                        <h3>Payment, delivery, and invoices</h3>
-                        <p>Use this path for tracking, receipt requests, delivery problems, wrong addresses, or missing items.</p>
-                    </a>
-                    <a class="onyx-support-lane" href="#contact-support">
-                        <span class="onyx-support-label">02 / Warranty</span>
-                        <h3>Defects and hardware faults</h3>
-                        <p>Use this path for sensor issues, switch faults, charging problems, headset audio, and manufacturing defects.</p>
-                    </a>
-                    <a class="onyx-support-lane" href="#contact-support">
-                        <span class="onyx-support-label">03 / Returns</span>
-                        <h3>Return or replacement flow</h3>
-                        <p>Use this path for unopened items, damaged deliveries, wrong products, or replacement eligibility.</p>
-                    </a>
-                    <a class="onyx-support-lane" href="#support-faq">
-                        <span class="onyx-support-label">04 / Setup</span>
-                        <h3>Device and account guidance</h3>
-                        <p>Use this path for pairing, profiles, DPI, keyboard modes, care, login, wishlist, and order history questions.</p>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <section class="onyx-support-section">
-            <div class="onyx-support-shell">
-                <div class="onyx-support-section-heading">
-                    <span class="onyx-support-index">02 / How it works</span>
-                    <div>
-                        <h2>A support flow customers can follow.</h2>
-                    </div>
-                </div>
-
-                <div class="onyx-support-process-list">
-                    <article class="onyx-support-process">
-                        <span class="onyx-support-label">Step 01</span>
-                        <h3>Identify the product and order.</h3>
-                        <p>Find the product name, order ID, purchase date, and serial number. These details let support confirm ownership and warranty status.</p>
-                    </article>
-                    <article class="onyx-support-process">
-                        <span class="onyx-support-label">Step 02</span>
-                        <h3>Describe the issue clearly.</h3>
-                        <p>Tell us what happened, when it started, what you already tried, and whether the issue happens every time or only sometimes.</p>
-                    </article>
-                    <article class="onyx-support-process">
-                        <span class="onyx-support-label">Step 03</span>
-                        <h3>Attach proof when possible.</h3>
-                        <p>Photos or short videos help with physical damage, switch behavior, charging issues, audio faults, and delivery condition.</p>
-                    </article>
-                    <article class="onyx-support-process">
-                        <span class="onyx-support-label">Step 04</span>
-                        <h3>Receive the next action.</h3>
-                        <p>Support will explain whether the case needs troubleshooting, inspection, replacement, return review, or account follow-up.</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section class="onyx-support-section">
-            <div class="onyx-support-shell">
-                <div class="onyx-support-section-heading">
-                    <span class="onyx-support-index">03 / Before you send</span>
-                    <div>
-                        <h2>Make the first message easier to solve.</h2>
-                    </div>
-                </div>
-
-                <div class="onyx-support-docs">
-                    <article class="onyx-support-doc">
-                        <strong>Order ID</strong>
-                        <h3>Start with purchase proof.</h3>
-                        <p>Include your order number, purchase date, and account email so support can find the transaction without a second reply.</p>
-                    </article>
-                    <article class="onyx-support-doc">
-                        <strong>Serial</strong>
-                        <h3>Identify the exact unit.</h3>
-                        <p>Share the product name, variant, serial number, and a short description of what changed or stopped working.</p>
-                    </article>
-                    <article class="onyx-support-doc">
-                        <strong>Evidence</strong>
-                        <h3>Show the issue clearly.</h3>
-                        <p>Attach photos, screenshots, or a short video when the issue is physical, intermittent, or hard to describe in text.</p>
-                    </article>
                 </div>
             </div>
         </section>
@@ -196,10 +88,9 @@
         <section id="support-faq" class="onyx-support-section">
             <div class="onyx-support-shell">
                 <div class="onyx-support-section-heading">
-                    <span class="onyx-support-index">04 / FAQ</span>
+                    <span class="onyx-support-index">FAQ</span>
                     <div>
-                        <h2>Answers before you wait.</h2>
-                        <p class="onyx-support-section-copy">These are the questions that usually slow down support when the first message is missing details.</p>
+                        <h2>Fast answers.</h2>
                     </div>
                 </div>
 

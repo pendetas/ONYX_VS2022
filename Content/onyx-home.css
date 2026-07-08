@@ -221,18 +221,23 @@
 }
 
 .onyx-ddac-footer {
-    border-radius: clamp(24px, 4vw, 44px) clamp(24px, 4vw, 44px) 0 0;
+    background: #050505 url("home/dragonink-poster.png") center / cover no-repeat;
+    border: 0;
+    border-radius: clamp(22px, 3vw, 36px) clamp(22px, 3vw, 36px) 0 0;
+    box-sizing: border-box;
     isolation: isolate;
+    margin: 0;
     overflow: hidden;
     padding-bottom: clamp(56px, 7vw, 96px) !important;
     padding-top: clamp(72px, 9vw, 128px) !important;
+    width: 100% !important;
 }
 
 .onyx-ddac-footer::before {
     background:
-        radial-gradient(circle at 74% 26%, rgba(255, 255, 255, 0.05), transparent 28%),
-        linear-gradient(90deg, rgba(5, 5, 5, 0.94), rgba(5, 5, 5, 0.78) 56%, rgba(5, 5, 5, 0.96)),
-        linear-gradient(180deg, rgba(5, 5, 5, 0.76), rgba(5, 5, 5, 0.96));
+        radial-gradient(circle at 64% 28%, rgba(255, 255, 255, 0.10), transparent 34%),
+        linear-gradient(90deg, rgba(5, 5, 5, 0.72), rgba(5, 5, 5, 0.34) 52%, rgba(5, 5, 5, 0.70)),
+        linear-gradient(180deg, rgba(5, 5, 5, 0.32), rgba(5, 5, 5, 0.76));
     content: "";
     inset: 0;
     pointer-events: none;
@@ -246,11 +251,11 @@
 }
 
 .onyx-ddac-footer-video {
-    filter: grayscale(0.2) contrast(1.1) brightness(0.78);
+    filter: grayscale(0.05) saturate(1.08) contrast(1.28) brightness(1.35);
     height: 100%;
     inset: 0;
     object-fit: cover;
-    opacity: 0.18;
+    opacity: 0.58;
     pointer-events: none;
     position: absolute;
     width: 100%;
@@ -302,9 +307,10 @@
 
 @media (max-width: 640px) {
     .onyx-ddac-footer {
-        border-radius: 24px 24px 0 0;
+        border-radius: 22px 22px 0 0;
         padding-left: 20px !important;
         padding-right: 20px !important;
+        width: 100% !important;
     }
 
     .onyx-ddac-footer-title {
@@ -394,6 +400,166 @@
     display: grid;
     gap: 18px;
     grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.onyx-home-product-drop {
+    background:
+        radial-gradient(circle at 76% 16%, rgba(255, 255, 255, 0.08), transparent 30%),
+        linear-gradient(180deg, #050505 0%, #0a0a0b 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: clamp(78px, 9vw, 132px) 6vw;
+    position: relative;
+    z-index: 10;
+}
+
+.onyx-home-drop-shell {
+    margin: 0 auto;
+    max-width: 1240px;
+}
+
+.onyx-home-drop-header {
+    align-items: end;
+    display: grid;
+    gap: 24px;
+    grid-template-columns: minmax(0, 0.9fr) minmax(240px, 0.55fr);
+    margin-bottom: clamp(28px, 4vw, 54px);
+}
+
+.onyx-home-drop-header span,
+.onyx-home-drop-label {
+    color: #a1a1aa;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.onyx-home-drop-header h2 {
+    color: #ffffff;
+    font-family: Syne, sans-serif;
+    font-size: clamp(44px, 7vw, 88px);
+    font-weight: 700;
+    letter-spacing: -0.055em;
+    line-height: 0.92;
+    margin: 14px 0 0;
+    max-width: 720px;
+}
+
+.onyx-home-drop-header p {
+    color: #a1a1aa;
+    font-size: clamp(16px, 1.5vw, 19px);
+    line-height: 1.65;
+    margin: 0;
+    max-width: 430px;
+}
+
+.onyx-home-drop-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.onyx-home-drop-card {
+    background: #0d0d0f;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: #ffffff;
+    display: grid;
+    min-height: 520px;
+    overflow: hidden;
+    padding: 18px;
+    position: relative;
+    text-decoration: none;
+    transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.onyx-home-drop-card::after {
+    background:
+        linear-gradient(180deg, rgba(5, 5, 5, 0.02) 36%, rgba(5, 5, 5, 0.84) 72%, #050505 100%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 42%);
+    content: "";
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+}
+
+.onyx-home-drop-card:hover,
+.onyx-home-drop-card:focus-visible {
+    background: #141416;
+    border-color: rgba(216, 221, 227, 0.52);
+    color: #ffffff;
+    outline: 0;
+    transform: translateY(-4px);
+}
+
+.onyx-home-drop-card:focus-visible {
+    box-shadow: 0 0 0 3px rgba(216, 221, 227, 0.28);
+}
+
+.onyx-home-drop-card img {
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    opacity: 0.78;
+    position: absolute;
+    transition: opacity 180ms ease, transform 220ms ease;
+    width: 100%;
+}
+
+.onyx-home-drop-card:hover img,
+.onyx-home-drop-card:focus-visible img {
+    opacity: 0.95;
+    transform: scale(1.035);
+}
+
+.onyx-home-drop-label,
+.onyx-home-drop-card div {
+    position: relative;
+    z-index: 1;
+}
+
+.onyx-home-drop-label {
+    align-self: start;
+}
+
+.onyx-home-drop-card div {
+    align-self: end;
+}
+
+.onyx-home-drop-card h3 {
+    color: #ffffff;
+    font-family: Syne, sans-serif;
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 0.96;
+    margin: 0 0 12px;
+}
+
+.onyx-home-drop-card p {
+    color: #c7cbd1;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 0 22px;
+    max-width: 280px;
+}
+
+.onyx-home-drop-card strong {
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    display: flex;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    justify-content: space-between;
+    letter-spacing: 1.4px;
+    padding-top: 16px;
+    text-transform: uppercase;
+}
+
+.onyx-home-drop-card strong::after {
+    content: "->";
+    letter-spacing: 0;
 }
 
 .onyx-ddac-product-card {
@@ -497,6 +663,15 @@
         grid-template-columns: 1fr;
     }
 
+    .onyx-home-drop-header,
+    .onyx-home-drop-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-home-drop-card {
+        min-height: 420px;
+    }
+
     .onyx-ddac-product-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -517,6 +692,16 @@
 
     .onyx-home-standard-grid {
         grid-template-columns: 1fr;
+    }
+
+    .onyx-home-product-drop {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .onyx-home-drop-card {
+        min-height: 360px;
+        padding: 16px;
     }
 
     .onyx-ddac-team-logo {

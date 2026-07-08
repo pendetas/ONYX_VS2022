@@ -3,15 +3,16 @@
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
         .onyx-pro-page {
-            --bg: #09090b;
-            --panel: #121214;
-            --panel-strong: #18181b;
-            --line: #27272a;
-            --text: #ffffff;
-            --muted: #a1a1aa;
-            --soft: #d8dde3;
-            background: var(--bg);
-            color: var(--text);
+            --pro-bg: #040404;
+            --pro-panel: #101112;
+            --pro-panel-alt: #151617;
+            --pro-line: #292b2d;
+            --pro-ink: #f7f7f5;
+            --pro-muted: #a7a9ad;
+            --pro-faint: #6f7278;
+            --pro-glow: #d8dde3;
+            background: var(--pro-bg);
+            color: var(--pro-ink);
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             min-height: 100vh;
             overflow: hidden;
@@ -23,98 +24,389 @@
         .onyx-pro-page h3,
         .onyx-pro-page p,
         .onyx-pro-page a,
-        .onyx-pro-page span {
+        .onyx-pro-page span,
+        .onyx-pro-page strong {
             box-sizing: border-box;
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
             font-weight: 400 !important;
-            letter-spacing: 0 !important;
         }
 
         .onyx-pro-shell {
             margin: 0 auto;
-            max-width: 1180px;
-            width: min(100% - 48px, 1180px);
+            max-width: 1400px;
+            width: min(100% - 80px, 1400px);
         }
 
         .onyx-pro-kicker,
         .onyx-pro-label,
-        .onyx-pro-button {
-            color: var(--soft);
+        .onyx-pro-button,
+        .onyx-pro-spec em {
             font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
             font-size: 12px;
+            letter-spacing: 1.2px !important;
             line-height: 1.4;
             text-transform: uppercase;
         }
 
         .onyx-pro-hero {
-            border-bottom: 1px solid var(--line);
-            padding: 156px 0 72px;
+            border-bottom: 1px solid var(--pro-line);
+            padding: clamp(126px, 12vw, 172px) 0 74px;
         }
 
-        .onyx-pro-hero-grid,
-        .onyx-pro-feature,
-        .onyx-pro-cta {
+        .onyx-pro-hero-heading {
+            align-items: end;
             display: grid;
-            gap: 36px;
-            grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
-        }
-
-        .onyx-pro-hero-grid,
-        .onyx-pro-feature,
-        .onyx-pro-cta {
-            align-items: center;
+            gap: clamp(28px, 5vw, 70px);
+            grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+            text-align: left;
         }
 
         .onyx-pro-kicker {
+            color: var(--pro-muted);
             display: inline-flex;
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 14px;
+            margin-bottom: 30px;
         }
 
         .onyx-pro-kicker::before {
-            background: var(--soft);
+            background: #d8dde3;
             content: "";
             height: 1px;
             margin-top: 8px;
-            width: 36px;
+            width: 44px;
         }
 
         .onyx-pro-page h1 {
-            color: var(--text) !important;
-            font-size: 84px;
-            line-height: 0.96;
+            color: var(--pro-ink) !important;
+            font-size: clamp(54px, 8vw, 122px);
+            letter-spacing: -0.055em !important;
+            line-height: 0.88;
             margin: 0;
-            max-width: 860px;
+            max-width: 980px;
+            text-wrap: balance;
+            text-transform: uppercase;
         }
 
-        .onyx-pro-page h2 {
-            color: var(--text) !important;
-            font-size: 52px;
-            line-height: 1.03;
-            margin: 0;
-            max-width: 820px;
+        .onyx-pro-break {
+            display: block;
         }
 
-        .onyx-pro-page h3 {
-            color: var(--text) !important;
-            font-size: 22px;
-            line-height: 1.2;
-            margin: 0 0 12px;
+        .onyx-pro-lede {
+            color: var(--pro-muted) !important;
+            font-size: clamp(18px, 2vw, 24px);
+            line-height: 1.58;
+            margin: 28px 0 0;
+            max-width: 720px;
         }
 
-        .onyx-pro-lede,
+        .onyx-pro-brief-card {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0)),
+                var(--pro-panel);
+            border: 1px solid var(--pro-line);
+            border-radius: 8px;
+            padding: 22px;
+        }
+
+        .onyx-pro-brief-card strong {
+            color: var(--pro-ink) !important;
+            display: block;
+            font-size: 24px;
+            letter-spacing: -0.03em !important;
+            line-height: 1.1;
+            margin-top: 18px;
+        }
+
+        .onyx-pro-brief-card p {
+            color: var(--pro-muted) !important;
+            font-size: 14px;
+            line-height: 1.7;
+            margin: 18px 0 0;
+        }
+
+        .onyx-pro-signal {
+            display: grid;
+            gap: 7px;
+            grid-template-columns: repeat(6, 1fr);
+            margin-top: 24px;
+        }
+
+        .onyx-pro-signal span {
+            background: rgba(216, 221, 227, 0.22);
+            border-radius: 999px;
+            display: block;
+            height: 3px;
+        }
+
+        .onyx-pro-signal span:nth-child(-n + 4) {
+            background: var(--pro-glow);
+        }
+
+        .onyx-pro-stage {
+            background: #070707;
+            border: 1px solid var(--pro-line);
+            border-radius: 8px;
+            height: min(72vh, 720px);
+            margin-top: clamp(42px, 6vw, 72px);
+            min-height: 500px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .onyx-pro-stage::before {
+            background:
+                radial-gradient(circle at 74% 24%, rgba(216, 221, 227, 0.18), transparent 20rem),
+                linear-gradient(90deg, rgba(4, 4, 4, 0.16), transparent 42%, rgba(4, 4, 4, 0.58));
+            content: "";
+            inset: 0;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .onyx-pro-stage::after {
+            background: linear-gradient(180deg, transparent 46%, rgba(4, 4, 4, 0.66));
+            content: "";
+            inset: 0;
+            pointer-events: none;
+            position: absolute;
+            z-index: 2;
+        }
+
+        .onyx-pro-hero-image {
+            display: block;
+            height: 112%;
+            inset: -6% 0 auto;
+            object-fit: cover;
+            object-position: center;
+            position: absolute;
+            transform: scale(1.04);
+            width: 100%;
+            z-index: 0;
+        }
+
+        .onyx-pro-drop-card {
+            background: rgba(5, 5, 5, 0.76);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 8px;
+            bottom: 28px;
+            right: 28px;
+            padding: 24px;
+            position: absolute;
+            text-align: left;
+            width: min(420px, calc(100% - 56px));
+            z-index: 3;
+        }
+
+        .onyx-pro-label {
+            color: var(--pro-faint);
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .onyx-pro-drop-card h2 {
+            color: var(--pro-ink) !important;
+            font-size: clamp(30px, 3.2vw, 46px);
+            letter-spacing: -0.04em !important;
+            line-height: 1;
+            margin: 0 0 14px;
+        }
+
+        .onyx-pro-drop-card p,
+        .onyx-pro-section-copy,
         .onyx-pro-card p,
-        .onyx-pro-row p,
+        .onyx-pro-spec strong,
         .onyx-pro-cta p {
-            color: var(--muted) !important;
-            font-size: 17px;
+            color: var(--pro-muted) !important;
+            font-size: 16px;
             line-height: 1.68;
             margin: 0;
         }
 
-        .onyx-pro-lede {
+        .onyx-pro-section {
+            border-bottom: 1px solid var(--pro-line);
+            padding: clamp(76px, 9vw, 116px) 0;
+        }
+
+        .onyx-pro-section-last {
+            border-bottom: 0;
+        }
+
+        .onyx-pro-grid-layout {
+            display: grid;
+            gap: 42px;
+            grid-template-columns: minmax(160px, 0.24fr) minmax(0, 1fr);
+        }
+
+        .onyx-pro-section-title {
+            color: var(--pro-ink) !important;
+            font-size: clamp(34px, 5vw, 72px);
+            letter-spacing: -0.04em !important;
+            line-height: 1;
+            margin: 0;
+            max-width: 960px;
+            text-wrap: balance;
+        }
+
+        .onyx-pro-section-copy {
+            font-size: clamp(17px, 1.7vw, 22px) !important;
+            line-height: 1.62 !important;
+            margin-top: 24px;
+            max-width: 780px;
+        }
+
+        .onyx-pro-collab-grid {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-top: 48px;
+        }
+
+        .onyx-pro-card {
+            background: var(--pro-panel);
+            border: 1px solid var(--pro-line);
+            border-radius: 8px;
+            min-height: 290px;
+            padding: 24px;
+            text-decoration: none;
+            transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+        }
+
+        .onyx-pro-card:hover,
+        .onyx-pro-card:focus-visible {
+            background: #141416;
+            border-color: rgba(255, 255, 255, 0.36);
+            transform: translateY(-3px);
+        }
+
+        .onyx-pro-card .onyx-pro-label {
+            margin-bottom: 50px;
+        }
+
+        .onyx-pro-card h3 {
+            color: var(--pro-ink) !important;
+            font-size: clamp(26px, 3vw, 42px);
+            letter-spacing: -0.04em !important;
+            line-height: 1;
+            margin: 0 0 18px;
+        }
+
+        .onyx-pro-spec-list {
+            list-style: none;
+            margin: 44px 0 0;
+            padding: 0;
+        }
+
+        .onyx-pro-spec {
+            align-items: start;
+            border-top: 1px solid var(--pro-line);
+            display: grid;
+            gap: clamp(42px, 5vw, 80px);
+            grid-template-columns: minmax(360px, 0.42fr) minmax(0, 1fr) 60px;
+            padding: 30px 0;
+        }
+
+        .onyx-pro-spec:last-child {
+            border-bottom: 1px solid var(--pro-line);
+        }
+
+        .onyx-pro-spec h3 {
+            color: var(--pro-ink) !important;
+            font-size: clamp(36px, 5vw, 72px);
+            letter-spacing: -0.04em !important;
+            line-height: 0.98;
+            margin: 0;
+        }
+
+        .onyx-pro-spec strong {
+            display: block;
+            font-size: clamp(18px, 2vw, 24px) !important;
+            line-height: 1.45 !important;
+            padding-top: 10px;
+        }
+
+        .onyx-pro-spec em {
+            color: var(--pro-glow);
+            font-style: normal;
+            text-align: right;
+        }
+
+        .onyx-pro-product-band {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+        }
+
+        .onyx-pro-product-media,
+        .onyx-pro-product-copy {
+            background: var(--pro-panel);
+            border: 1px solid var(--pro-line);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .onyx-pro-product-media {
+            min-height: 560px;
+            position: relative;
+        }
+
+        .onyx-pro-product-media::after {
+            background: linear-gradient(180deg, transparent 48%, rgba(4, 4, 4, 0.78));
+            content: "";
+            inset: 0;
+            position: absolute;
+        }
+
+        .onyx-pro-product-media img {
+            background: #050505;
+            display: block;
+            height: 100%;
+            min-height: 560px;
+            object-fit: cover;
+            object-position: center;
+            padding: 0;
+            width: 100%;
+        }
+
+        .onyx-pro-product-copy {
+            align-content: end;
+            display: grid;
+            padding: clamp(28px, 4vw, 44px);
+        }
+
+        .onyx-pro-product-copy h2 {
+            color: var(--pro-ink) !important;
+            font-size: clamp(34px, 5vw, 68px);
+            letter-spacing: -0.04em !important;
+            line-height: 1;
+            margin: 0 0 22px;
+        }
+
+        .onyx-pro-console {
+            border-top: 1px solid var(--pro-line);
             margin-top: 28px;
-            max-width: 700px;
+        }
+
+        .onyx-pro-console-row {
+            align-items: baseline;
+            border-bottom: 1px solid var(--pro-line);
+            display: grid;
+            gap: 18px;
+            grid-template-columns: 112px minmax(0, 1fr);
+            padding: 16px 0;
+        }
+
+        .onyx-pro-console-row span {
+            color: var(--pro-faint);
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+            font-size: 11px;
+            letter-spacing: 1.2px !important;
+            text-transform: uppercase;
+        }
+
+        .onyx-pro-console-row strong {
+            color: var(--pro-ink) !important;
+            font-size: 17px;
+            line-height: 1.45;
         }
 
         .onyx-pro-actions {
@@ -128,170 +420,139 @@
             align-items: center;
             border: 1px solid rgba(255, 255, 255, 0.28);
             border-radius: 999px;
-            color: var(--text) !important;
+            color: var(--pro-ink) !important;
             display: inline-flex;
-            min-height: 46px;
-            padding: 0 20px;
+            min-height: 48px;
+            padding: 0 22px;
             text-decoration: none;
             transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
         }
 
-        .onyx-pro-button:hover {
-            background: var(--text);
-            border-color: var(--text);
-            color: var(--bg) !important;
+        .onyx-pro-button:hover,
+        .onyx-pro-button:focus-visible {
+            background: var(--pro-ink);
+            border-color: var(--pro-ink);
+            color: var(--pro-bg) !important;
             transform: translateY(-2px);
         }
 
-        .onyx-pro-stage,
-        .onyx-pro-card,
-        .onyx-pro-row {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 8px;
+        .onyx-pro-button.is-primary {
+            background: var(--pro-ink);
+            border-color: var(--pro-ink);
+            color: #050505 !important;
         }
 
-        .onyx-pro-stage {
-            overflow: hidden;
+        .onyx-pro-button.is-primary:hover,
+        .onyx-pro-button.is-primary:focus-visible {
+            background: var(--pro-glow);
+            border-color: var(--pro-glow);
         }
 
-        .onyx-pro-stage img {
-            aspect-ratio: 4 / 3;
-            background: #050505;
-            display: block;
-            object-fit: contain;
-            padding: 26px;
-            width: 100%;
-        }
-
-        .onyx-pro-stage-body {
-            border-top: 1px solid var(--line);
-            padding: 22px;
-        }
-
-        .onyx-pro-stage-body p {
-            color: var(--muted) !important;
-            font-size: 15px;
-            line-height: 1.6;
-            margin: 12px 0 0;
-        }
-
-        .onyx-pro-section {
-            border-bottom: 1px solid var(--line);
-            padding: 84px 0;
-        }
-
-        .onyx-pro-heading {
+        .onyx-pro-cta {
+            align-items: center;
             display: grid;
-            gap: 22px;
-            grid-template-columns: 180px minmax(0, 1fr);
-            margin-bottom: 36px;
-        }
-
-        .onyx-pro-card-grid {
-            display: grid;
-            gap: 14px;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-        }
-
-        .onyx-pro-card {
-            color: var(--text);
-            display: block;
-            min-height: 320px;
-            overflow: hidden;
-            text-decoration: none;
-            transition: border-color 160ms ease, transform 160ms ease;
-        }
-
-        .onyx-pro-card:hover {
-            border-color: rgba(255, 255, 255, 0.42);
-            transform: translateY(-3px);
-        }
-
-        .onyx-pro-card img {
-            aspect-ratio: 4 / 3;
-            background: #050505;
-            display: block;
-            object-fit: contain;
-            padding: 24px;
-            width: 100%;
-        }
-
-        .onyx-pro-card-body {
-            border-top: 1px solid var(--line);
-            padding: 20px;
-        }
-
-        .onyx-pro-card-body .onyx-pro-label {
-            display: block;
-            margin-bottom: 18px;
-        }
-
-        .onyx-pro-row-list {
-            display: grid;
-            gap: 12px;
-        }
-
-        .onyx-pro-row {
-            align-items: start;
-            display: grid;
-            gap: 24px;
-            grid-template-columns: 150px minmax(170px, 0.75fr) minmax(0, 1fr);
-            padding: 22px;
+            gap: 34px;
+            grid-template-columns: minmax(0, 1fr) auto;
         }
 
         .onyx-pro-cta p {
-            margin-top: 18px;
-            max-width: 620px;
+            font-size: 18px;
+            margin-top: 22px;
+            max-width: 680px;
         }
 
-        @media (max-width: 1080px) {
-            .onyx-pro-card-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+        .onyx-pro-reveal {
+            opacity: 1;
+            transform: none;
+        }
+
+        .onyx-pro-page.is-ready .onyx-pro-reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1), transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .onyx-pro-page.is-ready .onyx-pro-reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .onyx-pro-page *,
+            .onyx-pro-reveal {
+                transition: none !important;
+                transform: none !important;
             }
         }
 
-        @media (max-width: 980px) {
-            .onyx-pro-hero-grid,
-            .onyx-pro-feature,
+        @media (max-width: 1100px) {
+            .onyx-pro-shell {
+                width: min(100% - 48px, 1400px);
+            }
+
+            .onyx-pro-grid-layout,
+            .onyx-pro-product-band,
+            .onyx-pro-hero-heading,
             .onyx-pro-cta {
                 grid-template-columns: 1fr;
             }
 
-            .onyx-pro-page h1 {
-                font-size: 62px;
+            .onyx-pro-collab-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
-            .onyx-pro-page h2 {
-                font-size: 40px;
-            }
-        }
-
-        @media (max-width: 680px) {
-            .onyx-pro-shell {
-                width: min(100% - 32px, 1180px);
-            }
-
-            .onyx-pro-hero {
-                padding: 124px 0 54px;
-            }
-
-            .onyx-pro-section {
-                padding: 62px 0;
-            }
-
-            .onyx-pro-heading,
-            .onyx-pro-card-grid,
-            .onyx-pro-row {
+            .onyx-pro-spec {
                 grid-template-columns: 1fr;
             }
 
-            .onyx-pro-page h1 {
-                font-size: 42px;
+            .onyx-pro-spec em {
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .onyx-pro-shell {
+                width: min(100% - 32px, 1400px);
             }
 
-            .onyx-pro-page h2 {
-                font-size: 32px;
+            .onyx-pro-hero {
+                padding-top: 118px;
+            }
+
+            .onyx-pro-page h1 {
+                font-size: clamp(44px, 15vw, 72px);
+            }
+
+            .onyx-pro-stage {
+                height: 520px;
+                min-height: 520px;
+            }
+
+            .onyx-pro-hero-image {
+                height: 100%;
+                inset: 0;
+                object-position: 52% center;
+            }
+
+            .onyx-pro-drop-card {
+                bottom: 96px;
+                left: 16px;
+                right: 84px;
+                padding: 18px;
+                width: auto;
+            }
+
+            .onyx-pro-product-media,
+            .onyx-pro-product-media img {
+                min-height: 360px;
+            }
+
+            .onyx-pro-console-row {
+                grid-template-columns: 1fr;
+            }
+
+            .onyx-pro-collab-grid {
+                grid-template-columns: 1fr;
             }
 
             .onyx-pro-card {
@@ -304,112 +565,103 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <main class="onyx-pro-page" aria-labelledby="pro-title">
         <section class="onyx-pro-hero">
-            <div class="onyx-pro-shell onyx-pro-hero-grid">
+            <div class="onyx-pro-shell">
+                <div class="onyx-pro-hero-heading">
+                    <div>
+                        <span class="onyx-pro-kicker onyx-pro-reveal">Pro gear</span>
+                        <h1 id="pro-title" class="onyx-pro-reveal">Pro collab keyboard.</h1>
+                        <p class="onyx-pro-lede onyx-pro-reveal">
+                            A TenZ-style pro drop concept: compact keyboard, fast input feel, and more room for aim.
+                        </p>
+                    </div>
+                    <aside class="onyx-pro-brief-card onyx-pro-reveal" aria-label="Pro gear setup signal">
+                        <span class="onyx-pro-label">Best for</span>
+                        <strong>Keyboard-first players.</strong>
+                        <p>Pick this path when movement timing and mouse space matter most.</p>
+                        <div class="onyx-pro-signal" aria-hidden="true">
+                            <span></span><span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </aside>
+                </div>
+
+                <div class="onyx-pro-stage onyx-pro-reveal" aria-label="ONYX pro collab keyboard concept">
+                    <img class="onyx-pro-hero-image" src="/Content/home/onyx-pro-signature-keyboard.png?v=20260708-tenz-style" alt="Black ONYX compact pro keyboard with signature-style accent lighting" />
+                    <div class="onyx-pro-drop-card">
+                        <span class="onyx-pro-label">Collab concept</span>
+                        <h2>ONYX Pro Signature</h2>
+                        <p>Compact layout, fast switches, black shell, and a signature accent.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="onyx-pro-section">
+            <div class="onyx-pro-shell onyx-pro-grid-layout">
+                <div class="onyx-pro-label onyx-pro-reveal">Why it matters</div>
                 <div>
-                    <span class="onyx-pro-kicker">Pro gear</span>
-                    <h1 id="pro-title">A focused ONYX setup, category by category.</h1>
-                    <p class="onyx-pro-lede">
-                        Start here when you want a clean performance setup without browsing every product first. Choose the part of your desk that changes your game the most.
+                    <h2 class="onyx-pro-section-title onyx-pro-reveal">Three reasons to choose the pro keyboard path.</h2>
+                    <p class="onyx-pro-section-copy onyx-pro-reveal">
+                        No long explanation. This page should help a player decide if the keyboard upgrade is worth opening.
                     </p>
-                    <div class="onyx-pro-actions">
-                        <a class="onyx-pro-button hover-trigger" href="/customer_page/onyx_catalog.aspx">Shop all gear</a>
-                        <a class="onyx-pro-button hover-trigger" href="#pro-categories">Browse categories</a>
+
+                    <div class="onyx-pro-collab-grid">
+                        <article class="onyx-pro-card onyx-pro-reveal">
+                            <span class="onyx-pro-label">01</span>
+                            <h3>More mouse room.</h3>
+                            <p>Compact layout keeps the aim lane open for low-sensitivity players.</p>
+                        </article>
+                        <article class="onyx-pro-card onyx-pro-reveal">
+                            <span class="onyx-pro-label">02</span>
+                            <h3>Faster repeats.</h3>
+                            <p>Built around quick movement keys, peeks, ability timing, and reset feel.</p>
+                        </article>
+                        <article class="onyx-pro-card onyx-pro-reveal">
+                            <span class="onyx-pro-label">03</span>
+                            <h3>Cleaner desk.</h3>
+                            <p>One focused board instead of oversized gear fighting for space.</p>
+                        </article>
                     </div>
                 </div>
-
-                <aside class="onyx-pro-stage" aria-label="Featured ONYX pro mouse">
-                    <img src="/Content/home/onyx-pro-mouse.png?v=20260702-pro" alt="ONYX pro gaming mouse" />
-                    <div class="onyx-pro-stage-body">
-                        <span class="onyx-pro-label">Featured setup signal</span>
-                        <p>Precision first: mouse, keyboard, audio, then the desk pieces that keep everything stable.</p>
-                    </div>
-                </aside>
             </div>
         </section>
 
-        <section id="pro-categories" class="onyx-pro-section">
-            <div class="onyx-pro-shell">
-                <div class="onyx-pro-heading">
-                    <span class="onyx-pro-label">Categories</span>
-                    <h2>Build from the control point outward.</h2>
-                </div>
-
-                <div class="onyx-pro-card-grid">
-                    <a class="onyx-pro-card hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Mouse">
-                        <img src="/Content/home/products/onyx-mouse.png?v=20260702-pro" alt="ONYX gaming mouse" />
-                        <div class="onyx-pro-card-body">
-                            <span class="onyx-pro-label">Mice</span>
-                            <h3>Tracking and grip.</h3>
-                            <p>Start here if aim, comfort, or hand feel is the main upgrade.</p>
-                        </div>
-                    </a>
-                    <a class="onyx-pro-card hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Keyboard">
-                        <img src="/Content/home/products/onyx-keyboard.png?v=20260702-pro" alt="ONYX gaming keyboard" />
-                        <div class="onyx-pro-card-body">
-                            <span class="onyx-pro-label">Keyboards</span>
-                            <h3>Fast, repeatable inputs.</h3>
-                            <p>Use this path when movement, binds, and desk rhythm matter most.</p>
-                        </div>
-                    </a>
-                    <a class="onyx-pro-card hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Headset">
-                        <img src="/Content/home/products/onyx-headset.png?v=20260702-pro" alt="ONYX gaming headset" />
-                        <div class="onyx-pro-card-body">
-                            <span class="onyx-pro-label">Audio</span>
-                            <h3>Cleaner cues.</h3>
-                            <p>Choose audio gear when positioning, clarity, and team comms need attention.</p>
-                        </div>
-                    </a>
-                    <a class="onyx-pro-card hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Accessory">
-                        <img src="/Content/home/products/onyx-monitor.png?v=20260702-pro" alt="ONYX setup display" />
-                        <div class="onyx-pro-card-body">
-                            <span class="onyx-pro-label">Accessories</span>
-                            <h3>Desk support.</h3>
-                            <p>Finish the setup with the pieces that keep daily play stable and organized.</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <section class="onyx-pro-section">
-            <div class="onyx-pro-shell">
-                <div class="onyx-pro-heading">
-                    <span class="onyx-pro-label">Setup order</span>
-                    <h2>A practical upgrade path.</h2>
-                </div>
-
-                <div class="onyx-pro-row-list">
-                    <article class="onyx-pro-row">
-                        <span class="onyx-pro-label">01</span>
-                        <h3>Fix control first.</h3>
-                        <p>Pick the mouse shape and connection style that matches how you aim and how long you play.</p>
-                    </article>
-                    <article class="onyx-pro-row">
-                        <span class="onyx-pro-label">02</span>
-                        <h3>Match inputs to habit.</h3>
-                        <p>Choose keyboard gear around the inputs you repeat most: movement, abilities, shortcuts, and macros.</p>
-                    </article>
-                    <article class="onyx-pro-row">
-                        <span class="onyx-pro-label">03</span>
-                        <h3>Complete the support layer.</h3>
-                        <p>Add audio and desk accessories once the main control pieces feel right.</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section class="onyx-pro-section">
-            <div class="onyx-pro-shell onyx-pro-cta">
+        <section class="onyx-pro-section onyx-pro-section-last">
+            <div class="onyx-pro-shell onyx-pro-cta onyx-pro-reveal">
                 <div>
                     <span class="onyx-pro-kicker">Ready</span>
-                    <h2>Open the catalog with a clearer target.</h2>
-                    <p>Use the category links above when you know the part to upgrade, or browse the full catalog for the complete ONYX lineup.</p>
+                    <h2 class="onyx-pro-section-title">Open the keyboard lineup.</h2>
+                    <p>Compare layouts, price, stock, and product details in the catalog.</p>
                 </div>
                 <div class="onyx-pro-actions">
+                    <a class="onyx-pro-button is-primary hover-trigger" href="/customer_page/onyx_catalog.aspx?category=Keyboard">Keyboard gear</a>
                     <a class="onyx-pro-button hover-trigger" href="/customer_page/onyx_catalog.aspx">Full catalog</a>
-                    <a class="onyx-pro-button hover-trigger" href="/customer_page/Support.aspx">Ask support</a>
                 </div>
             </div>
         </section>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const page = document.querySelector('.onyx-pro-page');
+            const revealItems = document.querySelectorAll('.onyx-pro-reveal');
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            if (!page) return;
+            page.classList.add('is-ready');
+
+            if ('IntersectionObserver' in window && !reduceMotion) {
+                const observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) return;
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    });
+                }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+                revealItems.forEach(function (item) { observer.observe(item); });
+            } else {
+                revealItems.forEach(function (item) { item.classList.add('is-visible'); });
+            }
+        });
+    </script>
 </asp:Content>

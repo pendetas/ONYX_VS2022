@@ -23,8 +23,8 @@ if ($serviceText -notmatch 'using\s+Google\.GenAI' -or $serviceText -notmatch 'u
     throw 'Gemini assistant service must import Google.GenAI and Google.GenAI.Types.'
 }
 
-if ($serviceText -notmatch 'gemini-3\.5-flash' -or $webConfig -notmatch 'gemini-3\.5-flash') {
-    throw 'Gemini workflow must default to model gemini-3.5-flash.'
+if ($serviceText -notmatch 'gemini-2\.5-flash' -or $webConfig -notmatch 'gemini-2\.5-flash') {
+    throw 'Gemini workflow must default to model gemini-2.5-flash.'
 }
 
 if ($serviceText -notmatch 'GEMINI_API_KEY' -or $assistantService -notmatch 'ConfigurationManager\.AppSettings\["GeminiApiKey"\]') {
@@ -73,6 +73,18 @@ if ($assistantService -notmatch 'knowledge base.*ONYX information') {
 
 if ($assistantService -notmatch 'MaxOutputTokens\s*=\s*(2[0-9]{2}|3[0-9]{2})') {
     throw 'Gemini assistant must keep a small output cap for concise chat replies.'
+}
+
+if ($assistantService -match 'ThinkingBudget\s*=\s*0') {
+    throw 'Gemini assistant must not disable model thinking with ThinkingBudget = 0.'
+}
+
+if ($assistantService -match 'BuildKnowledgeFallbackReply') {
+    throw 'Gemini assistant must not answer with hard-coded knowledge fallbacks instead of calling the model.'
+}
+
+if ($assistantService -notmatch 'AssistantResult\.ConfigurationMissing') {
+    throw 'Gemini assistant must report missing Gemini configuration instead of pretending the canned fallback is an AI answer.'
 }
 
 if ($assistantService -notmatch '1-2 short sentences' -or $assistantService -notmatch 'at most 3 short sentences') {

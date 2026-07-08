@@ -69,7 +69,7 @@ namespace ONYX_DDAC.customer_page
                 {
                     Reply = IsDebugErrorsEnabled()
                         ? ex.GetType().FullName + ": " + ex.Message
-                        : "The ONYX Assistant had trouble answering. Please try again or contact support@onyxgaming.com."
+                        : "The ONYX Assistant had trouble answering. Please try again or contact support.onyxgaming@gmail.com."
                 });
             }
         }

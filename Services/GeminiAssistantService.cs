@@ -12,7 +12,7 @@ namespace ONYX_DDAC.Services
 {
     public class GeminiAssistantService
     {
-        private const string DefaultModel = "gemini-3.5-flash";
+        private const string DefaultModel = "gemini-2.5-flash";
         private const int MaxQuestionLength = 900;
         private static readonly OnyxKnowledgeService KnowledgeService = new OnyxKnowledgeService();
 
@@ -106,20 +106,20 @@ namespace ONYX_DDAC.Services
             string apiKey = GetApiKey();
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                return AssistantResult.Success(SanitizeAssistantReply(BuildKnowledgeFallbackReply(cleanQuestion, knowledgeContext)));
+                return AssistantResult.ConfigurationMissing("The ONYX Assistant is not connected to Gemini yet. Add GEMINI_API_KEY or GeminiApiKey, then try again.");
             }
 
             try
             {
                 var client = new Client(apiKey: apiKey);
-                GenerateContentResponse response = await client.Models.GenerateContentAsync(
-                    model: GetModel(),
-                    contents: BuildUserPrompt(cleanQuestion, pagePath, knowledgeContext),
-                    config: BuildGeminiConfig()).ConfigureAwait(false);
+                GenerateContentResponse response = await GenerateContentWithRetryAsync(
+                    client,
+                    GetModel(),
+                    BuildUserPrompt(cleanQuestion, pagePath, knowledgeContext)).ConfigureAwait(false);
 
                 string reply = ExtractReply(response);
                 return string.IsNullOrWhiteSpace(reply)
-                    ? AssistantResult.Success(SanitizeAssistantReply(BuildKnowledgeFallbackReply(cleanQuestion, knowledgeContext)))
+                    ? AssistantResult.Unavailable("Gemini did not return an answer. Please try again in a moment.")
                     : AssistantResult.Success(SanitizeAssistantReply(reply));
             }
             catch (Exception)
@@ -129,8 +129,36 @@ namespace ONYX_DDAC.Services
                     throw;
                 }
 
-                return AssistantResult.Success(SanitizeAssistantReply(BuildKnowledgeFallbackReply(cleanQuestion, knowledgeContext)));
+                return AssistantResult.Unavailable("Gemini could not answer right now. Please try again in a moment.");
             }
+        }
+
+        private static async Task<GenerateContentResponse> GenerateContentWithRetryAsync(Client client, string model, string prompt)
+        {
+            Exception lastException = null;
+
+            for (int attempt = 1; attempt <= 3; attempt++)
+            {
+                try
+                {
+                    return await client.Models.GenerateContentAsync(
+                        model: model,
+                        contents: prompt,
+                        config: BuildGeminiConfig()).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                    if (attempt == 3)
+                    {
+                        throw;
+                    }
+
+                    await Task.Delay(TimeSpan.FromSeconds(attempt)).ConfigureAwait(false);
+                }
+            }
+
+            throw lastException ?? new InvalidOperationException("Gemini did not return a response.");
         }
 
         private static string NormalizeQuestion(string question)
@@ -193,7 +221,7 @@ namespace ONYX_DDAC.Services
 
         private static string NoMatchingKnowledgeReply()
         {
-            return "I do not have that exact ONYX detail. The safest next step is to email support@onyxgaming.com with your order ID, product name, and account email.";
+            return "I do not have that exact ONYX detail. The safest next step is to email support.onyxgaming@gmail.com with your order ID, product name, and account email.";
         }
 
         private static string GetApiKey()
@@ -227,8 +255,7 @@ namespace ONYX_DDAC.Services
                     Parts = new List<Part> { new Part { Text = BuildSystemInstruction() } }
                 },
                 Temperature = 0.25f,
-                MaxOutputTokens = 320,
-                ThinkingConfig = new ThinkingConfig { ThinkingBudget = 0 }
+                MaxOutputTokens = 320
             };
         }
 
@@ -244,7 +271,7 @@ namespace ONYX_DDAC.Services
                 "For product recommendations, use only the visible catalog products and explain practical fit: control, response, comfort, long-session use, and setup fit.",
                 "Do not invent shipping times, refund rules, return windows, full product specs, warranty exclusions, opened-product return eligibility, stock, prices, discounts, or availability.",
                 "Do not guarantee warranty approval, replacement, refund, return approval, or account changes.",
-                "If the exact ONYX detail is not available, say so clearly and guide the customer to support@onyxgaming.com.",
+                "If the exact ONYX detail is not available, say so clearly and guide the customer to support.onyxgaming@gmail.com.",
                 "Never ask for passwords, full card numbers, CVV, banking credentials, or private security codes.",
                 "Use plain text only. Do not use Markdown, bold markers, headings, bullets, numbered lists, or links.",
                 "Default to 1-2 short sentences. Use at most 3 short sentences only for comparisons, troubleshooting, or support preparation.",
@@ -300,93 +327,6 @@ namespace ONYX_DDAC.Services
                 : string.Join(" ", sentences.Take(maxSentences));
         }
 
-        private static string BuildKnowledgeFallbackReply(string question, string knowledgeContext)
-        {
-            string normalized = string.IsNullOrWhiteSpace(question) ? string.Empty : question.ToLowerInvariant();
-            string context = string.IsNullOrWhiteSpace(knowledgeContext) ? string.Empty : knowledgeContext;
-
-            if (normalized.Contains("what is onyx") || normalized.Contains("about onyx") || normalized.Contains("onyx brand"))
-            {
-                return "ONYX is a black-and-silver gaming hardware brand focused on performance peripherals for competitive players. Its core message is \"Performance hardware for focused play,\" with gear built around precise aim, fast inputs, clean audio, durability, and a connected ownership experience.";
-            }
-
-            if (normalized.Contains("warranty") || normalized.Contains("waranty") || normalized.Contains("warrenty") || normalized.Contains("warantee") || normalized.Contains("broken") || normalized.Contains("defect"))
-            {
-                return "This sounds like a Warranty request. ONYX lists 2 years of coverage for flagship manufacturing defects on ONYX peripherals purchased through the store, but support must review the case. Prepare your product name, variant, serial number, order ID, purchase date, what changed, what troubleshooting you tried, and a photo or short video if available, then email support@onyxgaming.com.";
-            }
-
-            if (normalized.Contains("return") || normalized.Contains("refund") || normalized.Contains("replacement") || normalized.Contains("opened") || normalized.Contains("damaged") || normalized.Contains("wrong product") || normalized.Contains("wrong item"))
-            {
-                if (normalized.Contains("opened"))
-                {
-                    return "This sounds like a Returns request. ONYX does not list opened-product return eligibility in the current support details, so I should not guess. Prepare your order ID, product name, purchase date, item condition, and photos of the item and packaging if available, then email support@onyxgaming.com.";
-                }
-
-                return "This sounds like a Returns request. ONYX uses this lane for unopened items, damaged delivery, wrong products, and replacement eligibility. Prepare your order ID, product name, purchase date, whether the item is unopened, damaged, wrong, or defective, and photos of the item and packaging if available, then email support@onyxgaming.com.";
-            }
-
-            if (normalized.Contains("support hours") || normalized.Contains("hours") || normalized.Contains("reply time") || normalized.Contains("first reply") || normalized.Contains("support based") || normalized.Contains("kuala") || normalized.Contains("malaysia"))
-            {
-                return "ONYX support is based in Kuala Lumpur, Malaysia. Support hours are Monday to Friday, 10:00-18:00 MYT. ONYX lists an average first reply of around 24h on business days. For support, email support@onyxgaming.com.";
-            }
-
-            if (normalized.Contains("account") || normalized.Contains("login") || normalized.Contains("register") || normalized.Contains("password") || normalized.Contains("profile") || normalized.Contains("order history") || normalized.Contains("reviews"))
-            {
-                return "This sounds like an Account request. ONYX connects wishlist, checkout, order history, reviews, and profile tools through the customer account flow. Never share your password in chat. If you cannot access the account area, email support@onyxgaming.com with your account email and any available order details.";
-            }
-
-            if (normalized.Contains("setup") || normalized.Contains("pair") || normalized.Contains("pairing") || normalized.Contains("dpi") || normalized.Contains("macro") || normalized.Contains("profiles") || normalized.Contains("keyboard macros"))
-            {
-                return "This sounds like a Setup request. ONYX uses this lane for pairing, profiles, DPI, keyboard macros, cart, login, wishlist, and order history questions. Prepare your product name, device type, what you are trying to do, and any error message or screenshot if available. If it needs human help, email support@onyxgaming.com.";
-            }
-
-            if (normalized.Contains("newsletter") || normalized.Contains("drop") || normalized.Contains("drops") || normalized.Contains("restock"))
-            {
-                return "ONYX mentions newsletter and early-access updates for new drops and promotions, but the current site information does not include a specific release or restock date. Subscribe through the ONYX site for updates, or email support@onyxgaming.com if you need product-specific help.";
-            }
-
-            if (normalized.Contains("order") || normalized.Contains("invoice") || normalized.Contains("receipt") || normalized.Contains("history") || normalized.Contains("track"))
-            {
-                return "This sounds like an Orders request. For order status, delivery, invoice, receipt, tracking, missing item, or wrong address help, prepare your order ID, purchase date, account email, what happened, and evidence if available. Email support@onyxgaming.com, or check order history from your ONYX account/profile flow.";
-            }
-
-            if (normalized.Contains("cart") || normalized.Contains("checkout") || normalized.Contains("payment"))
-            {
-                return "This is a Setup or Orders topic depending on what happened. Use the cart to review saved items and continue checkout, but do not share passwords or payment details in chat. If there is a payment or order-specific issue, email support@onyxgaming.com with your order ID, purchase date, account email, and what happened.";
-            }
-
-            if (normalized.Contains("wishlist") || normalized.Contains("saved") || normalized.Contains("favorite"))
-            {
-                return "The ONYX wishlist is where saved products live, and you can remove items or move them to your cart from there. Open your Wishlist page.";
-            }
-
-            if (normalized.Contains("gear") || normalized.Contains("mouse") || normalized.Contains("mice") || normalized.Contains("keyboard") || normalized.Contains("headset") || normalized.Contains("monitor") || normalized.Contains("accessor") || normalized.Contains("product") || normalized.Contains("catalog") || normalized.Contains("buy") || normalized.Contains("shop") || normalized.Contains("choose") || normalized.Contains("recommend") || normalized.Contains("compare"))
-            {
-                if (normalized.Contains("wired") || normalized.Contains("ergonomic") || normalized.Contains("deathadder"))
-                {
-                    return "For a wired ergonomic mouse, the current catalog knowledge points to DeathAdder V3 by Razer. It fits customers who want comfort and controlled long-session use, but it is marked low stock in the visible catalog.";
-                }
-
-                if (normalized.Contains("logitech") || normalized.Contains("hero") || normalized.Contains("g502"))
-                {
-                    return "For a wireless Logitech mouse with a HERO sensor, the current catalog knowledge points to G502 X Plus. It is listed as in stock and fits customers who want wireless setup flow with practical control and response.";
-                }
-
-                if (normalized.Contains("lightweight") || normalized.Contains("fps") || normalized.Contains("viper"))
-                {
-                    return "For an ultra-lightweight wireless Razer mouse, the current catalog knowledge points to Viper V2 Pro. It is listed as in stock and fits competitive FPS-style control, fast response, and cleaner setup movement.";
-                }
-
-                return "For gaming mice, ONYX currently shows three clear choices: DeathAdder V3 for a wired ergonomic Razer setup, G502 X Plus for a wireless Logitech HERO sensor setup, and Viper V2 Pro for an ultra-lightweight wireless Razer FPS-style setup. Open the Catalog to browse the lineup.";
-            }
-
-            if (context.IndexOf("Support", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return "I found ONYX support context for this, but I need a clearer lane to give the right next step. Is this about Orders, Warranty, Returns, Setup, Account, or Catalog? If it is urgent or account-specific, email support@onyxgaming.com with the relevant order or product details.";
-            }
-
-            return "I found ONYX support context for this, but Gemini is busy right now. Try asking again shortly, or open the Support page if you need help with an order, product, warranty, or account issue.";
-        }
     }
 
     public class AssistantResult
@@ -410,6 +350,11 @@ namespace ONYX_DDAC.Services
         public static AssistantResult ConfigurationMissing(string reply)
         {
             return new AssistantResult { IsConfigurationMissing = true, Reply = reply, StatusCode = HttpStatusCode.ServiceUnavailable };
+        }
+
+        public static AssistantResult Unavailable(string reply)
+        {
+            return new AssistantResult { Reply = reply, StatusCode = HttpStatusCode.ServiceUnavailable };
         }
     }
 }

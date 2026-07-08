@@ -1,7 +1,7 @@
 <%@ Page Title="Home" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_home.aspx.cs" Inherits="ONYX_DDAC.customer_page.Home" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-home.css") %>" />
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-home.css") %>?v=20260709-product-drop" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@500;700;800&display=swap" rel="stylesheet" />
@@ -156,6 +156,48 @@
                 </div>
             </section>
 
+            <section class="onyx-home-product-drop" aria-labelledby="onyx-home-drop-title">
+                <div class="onyx-home-drop-shell">
+                    <div class="onyx-home-drop-header reveal-item">
+                        <span>Catalog drop</span>
+                        <h2 id="onyx-home-drop-title">New gear, one click to catalog.</h2>
+                        <p>Jump straight into the matching catalog section for the newest ONYX mouse and keyboard lineup.</p>
+                    </div>
+
+                    <div class="onyx-home-drop-grid" aria-label="Featured ONYX catalog products">
+                        <a class="onyx-home-drop-card reveal-item" href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx?category=Mouse") %>">
+                            <img src="<%= ResolveUrl("~/Content/home/products/onyx-gm1-se-plus.png") %>" alt="ONYX GM1 SE+ gaming mouse" loading="lazy" />
+                            <span class="onyx-home-drop-label">Mouse / SE+</span>
+                            <div>
+                                <h3>ONYX GM1 SE+</h3>
+                                <p>Light control for aim-heavy setups.</p>
+                                <strong>Shop gaming mice</strong>
+                            </div>
+                        </a>
+
+                        <a class="onyx-home-drop-card reveal-item" href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx?category=Keyboard") %>">
+                            <img src="<%= ResolveUrl("~/Content/home/products/onyx-60he-v2.jpeg") %>" alt="ONYX 60HE v2 compact keyboard" loading="lazy" />
+                            <span class="onyx-home-drop-label">Keyboard / 60%</span>
+                            <div>
+                                <h3>ONYX 60HE v2</h3>
+                                <p>Compact rapid input for clean desk space.</p>
+                                <strong>Shop keyboards</strong>
+                            </div>
+                        </a>
+
+                        <a class="onyx-home-drop-card reveal-item" href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx?category=Keyboard") %>">
+                            <img src="<%= ResolveUrl("~/Content/home/products/onyx-80he.png") %>" alt="ONYX 80HE gaming keyboard" loading="lazy" />
+                            <span class="onyx-home-drop-label">Keyboard / 80%</span>
+                            <div>
+                                <h3>ONYX 80HE</h3>
+                                <p>Fuller control layout with a focused footprint.</p>
+                                <strong>Shop keyboards</strong>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
             <asp:Panel ID="PersonalizedProductsPanel" runat="server" Visible="false" CssClass="onyx-personalized-strip w-full py-32 px-6 md:px-12 bg-[#050505] relative z-10 border-t border-white/10">
                 <div class="max-w-7xl mx-auto">
                     <div class="mb-14 reveal-item">
@@ -219,7 +261,7 @@
             </section>
 
             <footer class="onyx-ddac-footer w-full py-32 px-6 md:px-12 relative z-10">
-                <video class="onyx-ddac-footer-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+                <video class="onyx-ddac-footer-video" autoplay muted loop playsinline preload="auto" poster="<%= ResolveUrl("~/Content/home/dragonink-poster.png") %>" aria-hidden="true">
                     <source src="<%= ResolveUrl("~/Video/DragonInk.mp4") %>" type="video/mp4" />
                 </video>
                 <div class="onyx-ddac-footer-main max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
