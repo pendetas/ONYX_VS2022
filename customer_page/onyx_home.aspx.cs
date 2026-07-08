@@ -11,6 +11,9 @@ namespace ONYX_DDAC.customer_page
         private readonly ProductService productService = new ProductService();
         private readonly PersonalizationService personalizationService = new PersonalizationService();
 
+        protected string PersonalizedSetupHeadline { get; private set; } = "Recommended products";
+        protected string PersonalizedSetupSubheadline { get; private set; } = "A tighter edit of the catalog, ranked from your saved ONYX setup.";
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -97,6 +100,13 @@ namespace ONYX_DDAC.customer_page
             try
             {
                 if (!TryGetCurrentUserId(out long userId) || !personalizationService.HasCompletedProfile(userId))
+                {
+                    PersonalizedProductsPanel.Visible = false;
+                    return;
+                }
+
+                UserPersonalizationProfile profile = personalizationService.GetProfile(userId);
+                if (profile == null || !profile.CompletedAt.HasValue)
                 {
                     PersonalizedProductsPanel.Visible = false;
                     return;

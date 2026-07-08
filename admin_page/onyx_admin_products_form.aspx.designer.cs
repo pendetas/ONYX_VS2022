@@ -20,8 +20,10 @@ namespace ONYX_DDAC.admin_page
         protected global::System.Web.UI.WebControls.TextBox txtStock;
         protected global::System.Web.UI.WebControls.Label lblStockHint;
 
-        // ---- Colors (edit mode only) ----
+        // ---- Colors ----
         protected global::System.Web.UI.UpdatePanel upColors;
+        protected global::System.Web.UI.WebControls.Panel pnlCreateColors;
+        protected global::System.Web.UI.WebControls.CheckBoxList CreateColorChoices;
         protected global::System.Web.UI.WebControls.Panel pnlColors;
         protected global::System.Web.UI.WebControls.Repeater ColorSwatchRepeater;
         protected global::System.Web.UI.WebControls.Panel pnlColorVariants;
@@ -29,6 +31,7 @@ namespace ONYX_DDAC.admin_page
 
         // ---- Details / media ----
         protected global::System.Web.UI.WebControls.TextBox txtDescription;
+        protected global::System.Web.UI.WebControls.FileUpload ProductImageUpload;
         protected global::System.Web.UI.WebControls.TextBox txtImageUrl;
 
         // ---- Actions ----

@@ -160,7 +160,8 @@
                 <div class="max-w-7xl mx-auto">
                     <div class="mb-14 reveal-item">
                         <p class="text-accent uppercase tracking-widest text-sm font-bold mb-4">For your setup</p>
-                        <h2 class="text-4xl md:text-6xl font-syne font-bold tracking-tighter leading-tight">Recommended from your ONYX profile.</h2>
+                        <h2 class="text-4xl md:text-6xl font-syne font-bold tracking-tighter leading-tight"><%: PersonalizedSetupHeadline %></h2>
+                        <p class="onyx-personalized-copy"><%: PersonalizedSetupSubheadline %></p>
                     </div>
 
                     <div class="onyx-ddac-product-grid">
