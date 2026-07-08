@@ -1,7 +1,7 @@
 <%@ Page Title="Home" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_home.aspx.cs" Inherits="ONYX_DDAC.customer_page.Home" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-home.css") %>?v=20260708-footer-clean" />
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-home.css") %>?v=20260709-product-drop" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@500;700;800&display=swap" rel="stylesheet" />
@@ -152,6 +152,48 @@
                         <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/g2-esports.svg" alt="G2 Esports logo" loading="lazy" /></span>
                         <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/sentinels.svg" alt="Sentinels logo" loading="lazy" /></span>
                         <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/navi.svg" alt="NAVI logo" loading="lazy" /></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="onyx-home-product-drop" aria-labelledby="onyx-home-drop-title">
+                <div class="onyx-home-drop-shell">
+                    <div class="onyx-home-drop-header reveal-item">
+                        <span>Catalog drop</span>
+                        <h2 id="onyx-home-drop-title">New gear, one click to catalog.</h2>
+                        <p>Jump straight into the matching catalog section for the newest ONYX mouse and keyboard lineup.</p>
+                    </div>
+
+                    <div class="onyx-home-drop-grid" aria-label="Featured ONYX catalog products">
+                        <a class="onyx-home-drop-card reveal-item" href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx?category=Mouse") %>">
+                            <img src="<%= ResolveUrl("~/Content/home/products/onyx-gm1-se-plus.png") %>" alt="ONYX GM1 SE+ gaming mouse" loading="lazy" />
+                            <span class="onyx-home-drop-label">Mouse / SE+</span>
+                            <div>
+                                <h3>ONYX GM1 SE+</h3>
+                                <p>Light control for aim-heavy setups.</p>
+                                <strong>Shop gaming mice</strong>
+                            </div>
+                        </a>
+
+                        <a class="onyx-home-drop-card reveal-item" href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx?category=Keyboard") %>">
+                            <img src="<%= ResolveUrl("~/Content/home/products/onyx-60he-v2.jpeg") %>" alt="ONYX 60HE v2 compact keyboard" loading="lazy" />
+                            <span class="onyx-home-drop-label">Keyboard / 60%</span>
+                            <div>
+                                <h3>ONYX 60HE v2</h3>
+                                <p>Compact rapid input for clean desk space.</p>
+                                <strong>Shop keyboards</strong>
+                            </div>
+                        </a>
+
+                        <a class="onyx-home-drop-card reveal-item" href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx?category=Keyboard") %>">
+                            <img src="<%= ResolveUrl("~/Content/home/products/onyx-80he.png") %>" alt="ONYX 80HE gaming keyboard" loading="lazy" />
+                            <span class="onyx-home-drop-label">Keyboard / 80%</span>
+                            <div>
+                                <h3>ONYX 80HE</h3>
+                                <p>Fuller control layout with a focused footprint.</p>
+                                <strong>Shop keyboards</strong>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </section>
