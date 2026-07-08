@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -21,6 +22,7 @@ namespace ONYX_DDAC.admin_page
     public partial class onyx_admin_products_form : Page
     {
         private readonly ProductService _svc = new ProductService();
+        private const string LockedBrand = "ONYX";
 
         private static readonly string[] _colorNames =
             { "Black", "White", "Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Pink", "Gray" };
@@ -36,8 +38,17 @@ namespace ONYX_DDAC.admin_page
             set { ViewState["editId"] = value; }
         }
 
+        protected void Page_Init(object sender, EventArgs e)
+        {
+            BindCreateColorChoices();
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Page.Form != null) Page.Form.Enctype = "multipart/form-data";
+            txtBrand.Text = LockedBrand;
+            txtBrand.ReadOnly = true;
+
             if (!IsPostBack)
             {
                 long id;
@@ -45,6 +56,7 @@ namespace ONYX_DDAC.admin_page
                     _EditId = id;
 
                 UpdatePageLabels();
+                pnlCreateColors.Visible = !IsEditMode;
 
                 if (IsEditMode)
                 {
@@ -65,7 +77,7 @@ namespace ONYX_DDAC.admin_page
             if (p == null) { Response.Redirect("~/admin_page/onyx_admin_products.aspx"); return; }
 
             txtName.Text        = p.Name;
-            txtBrand.Text       = p.Brand ?? "";
+            txtBrand.Text       = LockedBrand;
             txtPrice.Text       = p.Price.ToString("N2", CultureInfo.InvariantCulture);
             txtStock.Text       = p.StockQty.ToString();
             txtImageUrl.Text    = p.ImageUrl ?? "";
@@ -200,10 +212,9 @@ namespace ONYX_DDAC.admin_page
         protected void btnSave_Click(object sender, EventArgs e)
         {
             string name     = txtName.Text.Trim();
-            string brand    = txtBrand.Text.Trim();
+            string brand    = LockedBrand;
             string category = ddlCategory.SelectedValue;
             string desc     = txtDescription.Text.Trim();
-            string imgUrl   = txtImageUrl.Text.Trim();
 
             decimal price;
             int     stock = 0;
@@ -216,6 +227,10 @@ namespace ONYX_DDAC.admin_page
 
             try
             {
+                string imgUrl = SaveUploadedProductImage();
+                if (string.IsNullOrWhiteSpace(imgUrl))
+                    imgUrl = txtImageUrl.Text.Trim();
+
                 if (IsEditMode)
                 {
                     _svc.UpdateProduct(_EditId, name, brand, category, desc, price, stock, imgUrl);
@@ -224,6 +239,7 @@ namespace ONYX_DDAC.admin_page
                 else
                 {
                     long newId = _svc.CreateProduct(name, brand, category, desc, price, stock, imgUrl);
+                    CreateColorVariantsForNewProduct(newId, price, stock);
                     Response.Redirect("onyx_admin_product_detail.aspx?id=" + newId + "&vmsg=created");
                 }
             }
@@ -231,6 +247,68 @@ namespace ONYX_DDAC.admin_page
             {
                 ShowAlert(ex.Message, isError: true);
             }
+        }
+
+        private void BindCreateColorChoices()
+        {
+            if (CreateColorChoices == null || CreateColorChoices.Items.Count > 0) return;
+
+            foreach (string colorName in _colorNames)
+                CreateColorChoices.Items.Add(new ListItem(colorName, colorName));
+        }
+
+        private IList<string> GetSelectedCreateColors()
+        {
+            return CreateColorChoices.Items.Cast<ListItem>()
+                .Where(item => item.Selected)
+                .Select(item => item.Value)
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        private void CreateColorVariantsForNewProduct(long productId, decimal price, int stock)
+        {
+            IList<string> selectedColors = GetSelectedCreateColors();
+            if (selectedColors.Count == 0) return;
+
+            int baseStock = stock / selectedColors.Count;
+            int remainder = stock % selectedColors.Count;
+
+            for (int i = 0; i < selectedColors.Count; i++)
+            {
+                int variantStock = baseStock + (i < remainder ? 1 : 0);
+                string err = _svc.AddVariant(productId, "Color", selectedColors[i], price, variantStock);
+                if (err != null) throw new ArgumentException(err);
+            }
+        }
+
+        private string SaveUploadedProductImage()
+        {
+            if (!ProductImageUpload.HasFile) return string.Empty;
+
+            string extension = Path.GetExtension(ProductImageUpload.FileName).ToLowerInvariant();
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
+            if (!allowedExtensions.Contains(extension))
+                throw new ArgumentException("Only JPG, JPEG, and PNG product images are allowed.");
+
+            string uploadFolder = Server.MapPath("~/Content/uploads/products/");
+            Directory.CreateDirectory(uploadFolder);
+
+            string baseName = Path.GetFileNameWithoutExtension(ProductImageUpload.FileName);
+            foreach (char invalid in Path.GetInvalidFileNameChars())
+                baseName = baseName.Replace(invalid, '-');
+
+            if (string.IsNullOrWhiteSpace(baseName))
+                baseName = "product";
+
+            string fileName = baseName.Trim() + "-" +
+                              DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture) +
+                              extension;
+            string path = Path.Combine(uploadFolder, fileName);
+            ProductImageUpload.SaveAs(path);
+
+            return ResolveUrl("~/Content/uploads/products/" + fileName);
         }
 
         protected string GetColorHex(string colorName)

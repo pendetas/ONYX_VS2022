@@ -61,6 +61,7 @@
     .field-input::placeholder, .field-textarea::placeholder { color: rgba(255,255,255,0.14); }
     .field-input:focus, .field-select:focus, .field-textarea:focus { border-bottom-color: rgba(255,255,255,0.40); }
     .field-input:disabled { opacity: 0.40; cursor: not-allowed; }
+    .field-input[readonly] { color: rgba(255,255,255,0.72); cursor: default; }
 
     .field-select {
         appearance: none; -webkit-appearance: none; cursor: pointer;
@@ -89,6 +90,27 @@
     /* ── Colors section ──────────────────────────── */
     .color-hint {
         font-size: 12px; color: rgba(255,255,255,0.22); margin-bottom: 18px; line-height: 1.6;
+    }
+
+    .create-color-choices {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 12px; margin-top: 14px;
+    }
+    .create-color-choices input { position: absolute; opacity: 0; pointer-events: none; }
+    .create-color-choices label {
+        display: flex; align-items: center; justify-content: space-between;
+        min-height: 42px; padding: 0 14px; border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.015); color: rgba(255,255,255,0.58);
+        font-size: 12px; font-weight: 600; cursor: pointer;
+        transition: border-color 0.16s, color 0.16s, background 0.16s;
+    }
+    .create-color-choices label:hover {
+        border-color: rgba(255,255,255,0.24); color: rgba(255,255,255,0.88);
+    }
+    .create-color-choices input:checked + label {
+        border-color: rgba(255,255,255,0.72);
+        background: rgba(255,255,255,0.08); color: #fff;
     }
 
     /* Color chip swatches */
@@ -178,6 +200,7 @@
     html[data-theme="light"] .field-input, html[data-theme="light"] .field-select, html[data-theme="light"] .field-textarea { color: #0d0d0f; border-bottom-color: rgba(0,0,0,0.10); }
     html[data-theme="light"] .field-input:focus, html[data-theme="light"] .field-select:focus, html[data-theme="light"] .field-textarea:focus { border-bottom-color: rgba(0,0,0,0.38); }
     html[data-theme="light"] .field-input::placeholder, html[data-theme="light"] .field-textarea::placeholder { color: rgba(0,0,0,0.18); }
+    html[data-theme="light"] .field-input[readonly] { color: rgba(0,0,0,0.62); }
     html[data-theme="light"] .field-hint   { color: rgba(0,0,0,0.22); }
     html[data-theme="light"] .field-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='rgba(0,0,0,0.30)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); color: rgba(0,0,0,0.75); }
     html[data-theme="light"] .field-select option { background: #fff; color: #0d0d0f; }
@@ -190,6 +213,9 @@
     html[data-theme="light"] .btn-cancel:hover { color: rgba(0,0,0,0.60); }
     html[data-theme="light"] .required-note { color: rgba(0,0,0,0.20); }
     html[data-theme="light"] .color-hint   { color: rgba(0,0,0,0.30); }
+    html[data-theme="light"] .create-color-choices label { border-color: rgba(0,0,0,0.10); background: rgba(0,0,0,0.015); color: rgba(0,0,0,0.50); }
+    html[data-theme="light"] .create-color-choices label:hover { border-color: rgba(0,0,0,0.25); color: rgba(0,0,0,0.80); }
+    html[data-theme="light"] .create-color-choices input:checked + label { border-color: rgba(0,0,0,0.70); background: rgba(0,0,0,0.06); color: #0d0d0f; }
     html[data-theme="light"] .swatch-chip  { border-color: rgba(0,0,0,0.10); color: rgba(0,0,0,0.45); }
     html[data-theme="light"] .swatch-chip:hover { border-color: rgba(0,0,0,0.25); color: rgba(0,0,0,0.75); }
     html[data-theme="light"] .swatch-chip.active { border-color: rgba(0,0,0,0.30); background: rgba(0,0,0,0.05); color: rgba(0,0,0,0.80); }
@@ -234,7 +260,8 @@
                 </div>
                 <div class="field-group">
                     <label class="field-label">Brand</label>
-                    <asp:TextBox ID="txtBrand" runat="server" CssClass="field-input" placeholder="e.g. Razer" MaxLength="50" />
+                    <asp:TextBox ID="txtBrand" runat="server" CssClass="field-input" Text="ONYX" ReadOnly="true" MaxLength="50" />
+                    <div class="field-hint managed">Locked to ONYX for every product.</div>
                 </div>
             </div>
             <div class="field-row fr-1">
@@ -247,6 +274,11 @@
                         <asp:ListItem Value="Headset"  Text="Headset" />
                         <asp:ListItem Value="Monitor"  Text="Monitor" />
                         <asp:ListItem Value="Chair"    Text="Chair" />
+                        <asp:ListItem Value="Mic" Text="Mic" />
+                        <asp:ListItem Value="Monitor Extension" Text="Monitor Extension" />
+                        <asp:ListItem Value="Accessory" Text="Accessory" />
+                        <asp:ListItem Value="Mousepad" Text="Mousepad" />
+                        <asp:ListItem Value="Cable" Text="Cable" />
                     </asp:DropDownList>
                 </div>
             </div>
@@ -272,6 +304,17 @@
         <%-- Colors — edit mode only (wrapped in UpdatePanel so chip clicks don't scroll to top) --%>
         <asp:UpdatePanel ID="upColors" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
         <ContentTemplate>
+        <asp:Panel ID="pnlCreateColors" runat="server" Visible="false">
+            <div class="form-section">
+                <div class="section-label">Launch colors</div>
+                <p class="color-hint">
+                    Choose the colors available when this product launches. ONYX will append them as product variants after saving.
+                </p>
+                <asp:CheckBoxList ID="CreateColorChoices" runat="server" CssClass="create-color-choices" RepeatLayout="Flow" />
+                <div class="field-hint">Selected colors use the base price. Entered stock is distributed across the chosen colors.</div>
+            </div>
+        </asp:Panel>
+
         <asp:Panel ID="pnlColors" runat="server" Visible="false">
             <div class="form-section">
                 <div class="section-label">Colors</div>
@@ -367,10 +410,14 @@
         <div class="form-section">
             <div class="section-label">Media</div>
             <div class="field-group">
+                <label class="field-label">Upload image</label>
+                <asp:FileUpload ID="ProductImageUpload" runat="server" CssClass="field-input" accept=".jpg,.jpeg,.png,image/jpeg,image/png" />
+                <div class="field-hint">Only JPG, JPEG, and PNG files are accepted.</div>
+
                 <label class="field-label">Image URL</label>
                 <asp:TextBox ID="txtImageUrl" runat="server" CssClass="field-input"
                     placeholder="https://..." />
-                <div class="field-hint">Paste the full S3 URL. Leave blank to show the ONYX placeholder.</div>
+                <div class="field-hint">Optional fallback URL. Uploaded files take priority.</div>
                 <div class="image-preview-wrap">
                     <img id="imgPreview" src="" alt="Image preview" />
                     <div class="preview-empty" id="previewEmpty">
