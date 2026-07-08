@@ -808,7 +808,13 @@ body,
     color: #ffffff !important;
 }
 
-.onyx-ddac-nav-register,
+.onyx-ddac-nav-register {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(216, 221, 227, 0.58) !important;
+    border-radius: 999px !important;
+    color: #f8fafc !important;
+}
+
 .onyx-ddac-account-trigger {
     background: #ffffff !important;
     border: 1px solid #ffffff !important;
@@ -818,20 +824,25 @@ body,
 
 .onyx-ddac-nav-links > a.onyx-ddac-nav-register {
     align-items: center;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045)) !important;
     border-bottom: 0 !important;
-    color: #050505 !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    color: #f8fafc !important;
     display: inline-flex;
     justify-content: center;
     min-height: 42px;
     padding: 0 22px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
     white-space: nowrap;
 }
 
 .onyx-ddac-nav-links > a.onyx-ddac-nav-register:hover,
 .onyx-ddac-nav-links > a.onyx-ddac-nav-register:focus-visible {
-    background: #d8dde3 !important;
+    background:
+        linear-gradient(180deg, rgba(216, 221, 227, 0.28), rgba(216, 221, 227, 0.1)) !important;
     border-color: #d8dde3 !important;
-    color: #050505 !important;
+    color: #ffffff !important;
 }
 
 .onyx-ddac-account-name {
