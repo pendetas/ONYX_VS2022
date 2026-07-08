@@ -816,6 +816,24 @@ body,
     color: #050505 !important;
 }
 
+.onyx-ddac-nav-links > a.onyx-ddac-nav-register {
+    align-items: center;
+    border-bottom: 0 !important;
+    color: #050505 !important;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 22px;
+    white-space: nowrap;
+}
+
+.onyx-ddac-nav-links > a.onyx-ddac-nav-register:hover,
+.onyx-ddac-nav-links > a.onyx-ddac-nav-register:focus-visible {
+    background: #d8dde3 !important;
+    border-color: #d8dde3 !important;
+    color: #050505 !important;
+}
+
 .onyx-ddac-account-name {
     color: #050505 !important;
 }
