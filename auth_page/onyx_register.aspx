@@ -53,12 +53,22 @@
         }
 
         .auth-brand {
+            color: #ffffff;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 28px;
+            font-weight: 400;
+            left: 40px;
+            letter-spacing: -0.08em;
+            line-height: 1;
             position: absolute;
-            top: 30px; left: 40px;
-            font-size: 19px;
-            font-weight: 700;
-            letter-spacing: -0.04em;
+            text-decoration: none;
+            text-transform: lowercase;
+            top: 30px;
             z-index: 2;
+        }
+
+        .auth-brand:hover {
+            color: #d8dde3;
         }
 
         .auth-copyright {
@@ -67,7 +77,7 @@
             font-size: 11px;
             color: rgba(255,255,255,0.28);
             letter-spacing: 0.16em;
-            text-transform: uppercase;
+            text-transform: none;
             z-index: 2;
         }
 
@@ -578,13 +588,13 @@
         <div class="auth-container">
 
             <div class="auth-left">
-                <div class="auth-brand">ONYX&deg;</div>
+                <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" class="auth-brand" aria-label="Back to ONYX home">onyx</a>
                 <video autoplay loop muted playsinline class="auth-video-bg">
                     <source src="<%= ResolveUrl("~/Videos/onyx_headset.mp4") %>" type="video/mp4" />
                 </video>
 
 
-                <div class="auth-copyright">&copy; ONYX 2026. All rights reserved.</div>
+                <div class="auth-copyright">&copy; 2026 ONYX Gaming Technologies.</div>
             </div>
 
             <div class="auth-right">
@@ -682,14 +692,16 @@
 
                     </div>
 
-                    <div class="captcha-wrapper">
-                        <div class="cf-turnstile"
-                             data-sitekey="<%= Server.HtmlEncode(TurnstileSiteKey) %>"
-                             data-theme="dark"
-                             data-callback="onTurnstileSuccess"
-                             data-expired-callback="onTurnstileExpired"
-                             data-error-callback="onTurnstileExpired"></div>
-                    </div>
+                    <% if (CaptchaRequired) { %>
+                        <div class="captcha-wrapper">
+                            <div class="cf-turnstile"
+                                 data-sitekey="<%= Server.HtmlEncode(TurnstileSiteKey) %>"
+                                 data-theme="dark"
+                                 data-callback="onTurnstileSuccess"
+                                 data-expired-callback="onTurnstileExpired"
+                                 data-error-callback="onTurnstileExpired"></div>
+                        </div>
+                    <% } %>
 
                     <asp:LinkButton ID="btnRegister" runat="server" CssClass="cta captcha-pending" OnClientClick="return ensureCaptchaCompleted();" OnClick="btnRegister_Click">
                         <span class="hover-underline-animation">REGISTER NOW</span>
@@ -705,10 +717,13 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <% if (CaptchaRequired) { %>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <% } %>
 
     <script>
-        let captchaCompleted = false;
+        const captchaRequired = <%= CaptchaRequired.ToString().ToLowerInvariant() %>;
+        let captchaCompleted = !captchaRequired;
 
         function onTurnstileSuccess() {
             captchaCompleted = true;
@@ -723,7 +738,7 @@
         }
 
         function ensureCaptchaCompleted() {
-            return captchaCompleted;
+            return !captchaRequired || captchaCompleted;
         }
 
         document.addEventListener("DOMContentLoaded", () => {

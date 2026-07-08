@@ -1,7 +1,7 @@
 <%@ Page Title="Home" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_home.aspx.cs" Inherits="ONYX_DDAC.customer_page.Home" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-home.css") %>" />
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-home.css") %>?v=20260708-footer-clean" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@500;700;800&display=swap" rel="stylesheet" />
@@ -218,7 +218,7 @@
             </section>
 
             <footer class="onyx-ddac-footer w-full py-32 px-6 md:px-12 relative z-10">
-                <video class="onyx-ddac-footer-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+                <video class="onyx-ddac-footer-video" autoplay muted loop playsinline preload="auto" poster="<%= ResolveUrl("~/Content/home/dragonink-poster.png") %>" aria-hidden="true">
                     <source src="<%= ResolveUrl("~/Video/DragonInk.mp4") %>" type="video/mp4" />
                 </video>
                 <div class="onyx-ddac-footer-main max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">

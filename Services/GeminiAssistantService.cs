@@ -193,7 +193,7 @@ namespace ONYX_DDAC.Services
 
         private static string NoMatchingKnowledgeReply()
         {
-            return "I do not have that exact ONYX detail. The safest next step is to email support@onyxgaming.com with your order ID, product name, and account email.";
+            return "I do not have that exact ONYX detail. The safest next step is to email support.onyxgaming@gmail.com with your order ID, product name, and account email.";
         }
 
         private static string GetApiKey()
@@ -244,7 +244,7 @@ namespace ONYX_DDAC.Services
                 "For product recommendations, use only the visible catalog products and explain practical fit: control, response, comfort, long-session use, and setup fit.",
                 "Do not invent shipping times, refund rules, return windows, full product specs, warranty exclusions, opened-product return eligibility, stock, prices, discounts, or availability.",
                 "Do not guarantee warranty approval, replacement, refund, return approval, or account changes.",
-                "If the exact ONYX detail is not available, say so clearly and guide the customer to support@onyxgaming.com.",
+                "If the exact ONYX detail is not available, say so clearly and guide the customer to support.onyxgaming@gmail.com.",
                 "Never ask for passwords, full card numbers, CVV, banking credentials, or private security codes.",
                 "Use plain text only. Do not use Markdown, bold markers, headings, bullets, numbered lists, or links.",
                 "Default to 1-2 short sentences. Use at most 3 short sentences only for comparisons, troubleshooting, or support preparation.",
@@ -312,47 +312,47 @@ namespace ONYX_DDAC.Services
 
             if (normalized.Contains("warranty") || normalized.Contains("waranty") || normalized.Contains("warrenty") || normalized.Contains("warantee") || normalized.Contains("broken") || normalized.Contains("defect"))
             {
-                return "This sounds like a Warranty request. ONYX lists 2 years of coverage for flagship manufacturing defects on ONYX peripherals purchased through the store, but support must review the case. Prepare your product name, variant, serial number, order ID, purchase date, what changed, what troubleshooting you tried, and a photo or short video if available, then email support@onyxgaming.com.";
+                return "This sounds like a Warranty request. ONYX lists 2 years of coverage for flagship manufacturing defects on ONYX peripherals purchased through the store, but support must review the case. Prepare your product name, variant, serial number, order ID, purchase date, what changed, what troubleshooting you tried, and a photo or short video if available, then email support.onyxgaming@gmail.com.";
             }
 
             if (normalized.Contains("return") || normalized.Contains("refund") || normalized.Contains("replacement") || normalized.Contains("opened") || normalized.Contains("damaged") || normalized.Contains("wrong product") || normalized.Contains("wrong item"))
             {
                 if (normalized.Contains("opened"))
                 {
-                    return "This sounds like a Returns request. ONYX does not list opened-product return eligibility in the current support details, so I should not guess. Prepare your order ID, product name, purchase date, item condition, and photos of the item and packaging if available, then email support@onyxgaming.com.";
+                    return "This sounds like a Returns request. ONYX does not list opened-product return eligibility in the current support details, so I should not guess. Prepare your order ID, product name, purchase date, item condition, and photos of the item and packaging if available, then email support.onyxgaming@gmail.com.";
                 }
 
-                return "This sounds like a Returns request. ONYX uses this lane for unopened items, damaged delivery, wrong products, and replacement eligibility. Prepare your order ID, product name, purchase date, whether the item is unopened, damaged, wrong, or defective, and photos of the item and packaging if available, then email support@onyxgaming.com.";
+                return "This sounds like a Returns request. ONYX uses this lane for unopened items, damaged delivery, wrong products, and replacement eligibility. Prepare your order ID, product name, purchase date, whether the item is unopened, damaged, wrong, or defective, and photos of the item and packaging if available, then email support.onyxgaming@gmail.com.";
             }
 
             if (normalized.Contains("support hours") || normalized.Contains("hours") || normalized.Contains("reply time") || normalized.Contains("first reply") || normalized.Contains("support based") || normalized.Contains("kuala") || normalized.Contains("malaysia"))
             {
-                return "ONYX support is based in Kuala Lumpur, Malaysia. Support hours are Monday to Friday, 10:00-18:00 MYT. ONYX lists an average first reply of around 24h on business days. For support, email support@onyxgaming.com.";
+                return "ONYX support is based in Kuala Lumpur, Malaysia. Support hours are Monday to Friday, 10:00-18:00 MYT. ONYX lists an average first reply of around 24h on business days. For support, email support.onyxgaming@gmail.com.";
             }
 
             if (normalized.Contains("account") || normalized.Contains("login") || normalized.Contains("register") || normalized.Contains("password") || normalized.Contains("profile") || normalized.Contains("order history") || normalized.Contains("reviews"))
             {
-                return "This sounds like an Account request. ONYX connects wishlist, checkout, order history, reviews, and profile tools through the customer account flow. Never share your password in chat. If you cannot access the account area, email support@onyxgaming.com with your account email and any available order details.";
+                return "This sounds like an Account request. ONYX connects wishlist, checkout, order history, reviews, and profile tools through the customer account flow. Never share your password in chat. If you cannot access the account area, email support.onyxgaming@gmail.com with your account email and any available order details.";
             }
 
             if (normalized.Contains("setup") || normalized.Contains("pair") || normalized.Contains("pairing") || normalized.Contains("dpi") || normalized.Contains("macro") || normalized.Contains("profiles") || normalized.Contains("keyboard macros"))
             {
-                return "This sounds like a Setup request. ONYX uses this lane for pairing, profiles, DPI, keyboard macros, cart, login, wishlist, and order history questions. Prepare your product name, device type, what you are trying to do, and any error message or screenshot if available. If it needs human help, email support@onyxgaming.com.";
+                return "This sounds like a Setup request. ONYX uses this lane for pairing, profiles, DPI, keyboard macros, cart, login, wishlist, and order history questions. Prepare your product name, device type, what you are trying to do, and any error message or screenshot if available. If it needs human help, email support.onyxgaming@gmail.com.";
             }
 
             if (normalized.Contains("newsletter") || normalized.Contains("drop") || normalized.Contains("drops") || normalized.Contains("restock"))
             {
-                return "ONYX mentions newsletter and early-access updates for new drops and promotions, but the current site information does not include a specific release or restock date. Subscribe through the ONYX site for updates, or email support@onyxgaming.com if you need product-specific help.";
+                return "ONYX mentions newsletter and early-access updates for new drops and promotions, but the current site information does not include a specific release or restock date. Subscribe through the ONYX site for updates, or email support.onyxgaming@gmail.com if you need product-specific help.";
             }
 
             if (normalized.Contains("order") || normalized.Contains("invoice") || normalized.Contains("receipt") || normalized.Contains("history") || normalized.Contains("track"))
             {
-                return "This sounds like an Orders request. For order status, delivery, invoice, receipt, tracking, missing item, or wrong address help, prepare your order ID, purchase date, account email, what happened, and evidence if available. Email support@onyxgaming.com, or check order history from your ONYX account/profile flow.";
+                return "This sounds like an Orders request. For order status, delivery, invoice, receipt, tracking, missing item, or wrong address help, prepare your order ID, purchase date, account email, what happened, and evidence if available. Email support.onyxgaming@gmail.com, or check order history from your ONYX account/profile flow.";
             }
 
             if (normalized.Contains("cart") || normalized.Contains("checkout") || normalized.Contains("payment"))
             {
-                return "This is a Setup or Orders topic depending on what happened. Use the cart to review saved items and continue checkout, but do not share passwords or payment details in chat. If there is a payment or order-specific issue, email support@onyxgaming.com with your order ID, purchase date, account email, and what happened.";
+                return "This is a Setup or Orders topic depending on what happened. Use the cart to review saved items and continue checkout, but do not share passwords or payment details in chat. If there is a payment or order-specific issue, email support.onyxgaming@gmail.com with your order ID, purchase date, account email, and what happened.";
             }
 
             if (normalized.Contains("wishlist") || normalized.Contains("saved") || normalized.Contains("favorite"))
@@ -382,7 +382,7 @@ namespace ONYX_DDAC.Services
 
             if (context.IndexOf("Support", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "I found ONYX support context for this, but I need a clearer lane to give the right next step. Is this about Orders, Warranty, Returns, Setup, Account, or Catalog? If it is urgent or account-specific, email support@onyxgaming.com with the relevant order or product details.";
+                return "I found ONYX support context for this, but I need a clearer lane to give the right next step. Is this about Orders, Warranty, Returns, Setup, Account, or Catalog? If it is urgent or account-specific, email support.onyxgaming@gmail.com with the relevant order or product details.";
             }
 
             return "I found ONYX support context for this, but Gemini is busy right now. Try asking again shortly, or open the Support page if you need help with an order, product, warranty, or account issue.";

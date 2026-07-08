@@ -59,6 +59,12 @@ namespace ONYX_DDAC.Services
             return GetSetting("TurnstileSiteKey", "TURNSTILE_SITE_KEY") ?? string.Empty;
         }
 
+        public static bool IsConfigured()
+        {
+            return !IsMissingSetting(GetSetting("TurnstileSiteKey", "TURNSTILE_SITE_KEY")) &&
+                   !IsMissingSetting(GetSetting("TurnstileSecretKey", "TURNSTILE_SECRET_KEY"));
+        }
+
         private static string GetSetting(string appSettingKey, string environmentKey)
         {
             string value = Environment.GetEnvironmentVariable(environmentKey) ??

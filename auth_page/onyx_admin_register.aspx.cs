@@ -12,7 +12,6 @@ namespace ONYX_DDAC.auth_page
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            Helpers.AuthHelper.RequireAdmin(Page);
         }
 
         protected void btnRegister_Click(object sender, EventArgs e)

@@ -51,7 +51,7 @@ namespace ONYX_DDAC.auth_page
                     "Password reset request failed: " + exception.GetType().Name);
             }
 
-            ShowMessage("If that email matches an ONYX account, reset instructions will be prepared. For urgent access, contact support@onyxgaming.com.", true);
+            ShowMessage("If that email matches an ONYX account, reset instructions will be prepared. For urgent access, contact support.onyxgaming@gmail.com.", true);
         }
 
         private string BuildResetPasswordUrl(string token)

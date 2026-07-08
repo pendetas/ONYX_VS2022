@@ -256,6 +256,9 @@
     <Content Include="Content\home\onyx-logo-horizontal.png" />
     <Content Include="Content\home\onyx-logo-stacked.png" />
     <Content Include="Content\home\onyx-pro-mouse.png" />
+    <Content Include="Content\home\onyx-pro-signature-keyboard.png" />
+    <Content Include="Content\home\onyx-related-hero.png" />
+    <Content Include="Content\home\dragonink-poster.png" />
     <Content Include="Content\home\products\onyx-headset.png" />
     <Content Include="Content\home\products\onyx-keyboard.png" />
     <Content Include="Content\home\products\onyx-monitor.png" />

@@ -14,10 +14,13 @@ namespace ONYX_DDAC.auth_page
         private readonly CaptchaService _captchaService = new CaptchaService();
 
         protected string TurnstileSiteKey { get; private set; }
+        protected bool CaptchaRequired { get; private set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             TurnstileSiteKey = CaptchaService.GetSiteKey();
+            CaptchaRequired = CaptchaService.IsConfigured() || !Context.IsDebuggingEnabled;
+            btnRegister.CssClass = CaptchaRequired ? "cta captcha-pending" : "cta";
 
             if (Session["UserId"] != null)
             {
@@ -68,15 +71,18 @@ namespace ONYX_DDAC.auth_page
                 return;
             }
 
-            string captchaToken = Request.Form["cf-turnstile-response"];
-            bool captchaValid = await _captchaService.VerifyCaptchaAsync(
-                captchaToken,
-                Request.UserHostAddress);
-
-            if (!captchaValid)
+            if (CaptchaRequired)
             {
-                ShowMessage("Please complete the Cloudflare verification before registering.", false);
-                return;
+                string captchaToken = Request.Form["cf-turnstile-response"];
+                bool captchaValid = await _captchaService.VerifyCaptchaAsync(
+                    captchaToken,
+                    Request.UserHostAddress);
+
+                if (!captchaValid)
+                {
+                    ShowMessage("Please complete the Cloudflare verification before registering.", false);
+                    return;
+                }
             }
 
             try
