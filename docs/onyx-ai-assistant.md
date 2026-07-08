@@ -5,7 +5,7 @@ This document defines how the ONYX chat assistant should behave on the customer-
 ## Model And Endpoint
 
 - Provider: Google Gemini through the official `Google.GenAI` SDK.
-- Default model: `gemini-3.5-flash`.
+- Default model: `gemini-2.5-flash`.
 - API route used by the site: `customer_page/onyx_ai_chat.ashx`.
 - API key lookup order: `GEMINI_API_KEY`, then `GeminiApiKey` from ignored local app settings.
 - The key must stay server-side. Do not place it in JavaScript, markup, CSS, committed config, or public documentation.
@@ -24,7 +24,7 @@ For local development, `Web.config` can load ignored overrides from `AppSettings
 ```xml
 <appSettings>
   <add key="GeminiApiKey" value="your-gemini-key" />
-  <add key="GeminiModel" value="gemini-3.5-flash" />
+  <add key="GeminiModel" value="gemini-2.5-flash" />
 </appSettings>
 ```
 

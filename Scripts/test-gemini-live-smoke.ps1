@@ -2,11 +2,19 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $webConfigPath = Join-Path $repoRoot 'Web.config'
+$localConfigPath = Join-Path $repoRoot 'AppSettings.Local.config'
 
 [xml]$webConfig = Get-Content -Raw -Path $webConfigPath
 $apiKey = [Environment]::GetEnvironmentVariable('GEMINI_API_KEY')
 if ([string]::IsNullOrWhiteSpace($apiKey)) {
     $apiKeyNode = $webConfig.configuration.appSettings.add | Where-Object { $_.key -eq 'GeminiApiKey' } | Select-Object -First 1
+    if ($apiKeyNode) {
+        $apiKey = $apiKeyNode.value
+    }
+}
+if ([string]::IsNullOrWhiteSpace($apiKey) -and (Test-Path $localConfigPath)) {
+    [xml]$localConfig = Get-Content -Raw -Path $localConfigPath
+    $apiKeyNode = $localConfig.appSettings.add | Where-Object { $_.key -eq 'GeminiApiKey' } | Select-Object -First 1
     if ($apiKeyNode) {
         $apiKey = $apiKeyNode.value
     }
@@ -17,7 +25,14 @@ if ([string]::IsNullOrWhiteSpace($apiKey)) {
 }
 
 $modelNode = $webConfig.configuration.appSettings.add | Where-Object { $_.key -eq 'GeminiModel' } | Select-Object -First 1
-$model = if ($modelNode -and -not [string]::IsNullOrWhiteSpace($modelNode.value)) { $modelNode.value } else { 'gemini-3.5-flash' }
+$model = if ($modelNode -and -not [string]::IsNullOrWhiteSpace($modelNode.value)) { $modelNode.value } else { 'gemini-2.5-flash' }
+if (([string]::IsNullOrWhiteSpace($model) -or $model -eq 'gemini-2.5-flash') -and (Test-Path $localConfigPath)) {
+    [xml]$localConfig = Get-Content -Raw -Path $localConfigPath
+    $modelNode = $localConfig.appSettings.add | Where-Object { $_.key -eq 'GeminiModel' } | Select-Object -First 1
+    if ($modelNode -and -not [string]::IsNullOrWhiteSpace($modelNode.value)) {
+        $model = $modelNode.value
+    }
+}
 
 $body = @{
     contents = @(
@@ -34,7 +49,19 @@ $body = @{
 } | ConvertTo-Json -Depth 8
 
 $uri = "https://generativelanguage.googleapis.com/v1beta/models/$model`:generateContent"
-$response = Invoke-RestMethod -Method Post -Uri $uri -Headers @{ 'x-goog-api-key' = $apiKey } -ContentType 'application/json' -Body $body
+$response = $null
+for ($attempt = 1; $attempt -le 3; $attempt++) {
+    try {
+        $response = Invoke-RestMethod -Method Post -Uri $uri -Headers @{ 'x-goog-api-key' = $apiKey } -ContentType 'application/json' -Body $body -TimeoutSec 30
+        break
+    } catch {
+        if ($attempt -eq 3) {
+            throw
+        }
+
+        Start-Sleep -Seconds (2 * $attempt)
+    }
+}
 $text = $response.candidates[0].content.parts[0].text.Trim()
 
 if ($text -notmatch 'ONYX_SMOKE_OK') {
