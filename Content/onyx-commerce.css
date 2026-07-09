@@ -704,8 +704,8 @@
 
 /* onyx_wishlist.aspx */
 .onyx-wishlist-page {
-    background: transparent;
-    color: var(--onyx-ink, #eef6ff);
+    background: #000000;
+    color: #f4f4f5;
     min-height: 100vh;
     padding: 132px 24px 80px;
 }
@@ -717,8 +717,8 @@
 
 .onyx-wishlist-hero {
     align-items: flex-start;
-    background: var(--onyx-canvas-soft, #091321);
-    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+    background: #050505;
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 8px 8px 0 0;
     display: flex;
     gap: 24px;
@@ -727,7 +727,7 @@
 }
 
 .onyx-wishlist-title {
-    color: var(--onyx-ink, #eef6ff);
+    color: #ffffff;
     font-size: 24px;
     font-weight: 400;
     letter-spacing: -1.2px !important;
@@ -736,7 +736,7 @@
 }
 
 .onyx-wishlist-copy {
-    color: var(--onyx-body, #9baabd);
+    color: #a1a1aa;
     font-size: 14px !important;
     line-height: 1.5;
     margin: 6px 0 0;
@@ -753,10 +753,10 @@
 
 .onyx-wishlist-count {
     align-items: center;
-    background: var(--onyx-canvas-deep, #02070d);
-    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 6px;
-    color: var(--onyx-body, #9baabd);
+    color: #a1a1aa;
     display: inline-flex;
     font-family: var(--onyx-mono, monospace) !important;
     font-size: 11px;
@@ -767,7 +767,7 @@
 }
 
 .onyx-wishlist-feedback {
-    color: var(--onyx-body, #9baabd);
+    color: #a1a1aa;
     display: block;
     font-size: 13px;
     line-height: 1.5;
@@ -776,7 +776,7 @@
 }
 
 .onyx-wishlist-grid {
-    border-bottom: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .onyx-wishlist-ledger-labels,
@@ -786,10 +786,10 @@
 }
 
 .onyx-wishlist-ledger-labels {
-    background: var(--onyx-canvas-deep, #02070d);
-    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-top: 0;
-    color: var(--onyx-body-mid, #6f8197);
+    color: #71717a;
     font-family: var(--onyx-mono, monospace);
     font-size: 10px;
     gap: 18px;
@@ -800,8 +800,8 @@
 
 .onyx-wishlist-page .onyx-wishlist-card {
     align-items: center;
-    background: var(--onyx-canvas-soft, #091321) !important;
-    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18)) !important;
+    background: #050505 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     gap: 18px;
@@ -813,8 +813,8 @@
 .onyx-wishlist-page .onyx-wishlist-media {
     align-items: center;
     aspect-ratio: 1;
-    background: var(--onyx-canvas-deep, #02070d) !important;
-    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18)) !important;
+    background: #000000 !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
     border-radius: 6px !important;
     display: flex;
     justify-content: center;
@@ -834,7 +834,7 @@
 }
 
 .onyx-wishlist-meta {
-    color: var(--onyx-body-mid, #6f8197);
+    color: #71717a;
     display: flex;
     font-size: 10px;
     gap: 12px;
@@ -845,13 +845,13 @@
 }
 
 .onyx-wishlist-meta span + span::before {
-    color: var(--onyx-mute, #4d6076);
+    color: #52525b;
     content: "/";
     margin-right: 12px;
 }
 
 .onyx-wishlist-name {
-    color: var(--onyx-ink, #eef6ff);
+    color: #ffffff;
     font-size: 17px;
     font-weight: 400;
     letter-spacing: -0.4px !important;
@@ -860,7 +860,7 @@
 }
 
 .onyx-wishlist-description {
-    color: var(--onyx-body, #9baabd);
+    color: #a1a1aa;
     display: -webkit-box;
     font-size: 13px !important;
     -webkit-box-orient: vertical;
@@ -887,7 +887,7 @@
 }
 
 .onyx-wishlist-price {
-    color: var(--onyx-ink, #eef6ff);
+    color: #ffffff;
     font-family: var(--onyx-mono, monospace) !important;
     font-size: 14px;
     letter-spacing: 0.4px;
@@ -912,10 +912,10 @@
 }
 
 .onyx-wishlist-page .onyx-wishlist-button {
-    background: rgba(75, 156, 255, 0.14) !important;
-    border: 1px solid rgba(75, 156, 255, 0.42) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.34) !important;
     border-radius: 6px !important;
-    color: var(--onyx-ink, #eef6ff) !important;
+    color: #ffffff !important;
 }
 
 .onyx-wishlist-button:hover,
@@ -926,19 +926,19 @@
 
 .onyx-wishlist-link {
     background: transparent;
-    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
-    color: var(--onyx-body, #9baabd);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #a1a1aa;
 }
 
 .onyx-wishlist-link:hover {
-    border-color: rgba(75, 156, 255, 0.42);
-    color: var(--onyx-ink, #eef6ff);
+    border-color: rgba(255, 255, 255, 0.34);
+    color: #ffffff;
 }
 
 .onyx-wishlist-remove {
     background: transparent;
     border: 1px solid transparent;
-    color: var(--onyx-body-mid, #6f8197);
+    color: #71717a;
 }
 
 .onyx-wishlist-remove:hover {
@@ -949,14 +949,14 @@
 .onyx-wishlist-button:focus-visible,
 .onyx-wishlist-link:focus-visible,
 .onyx-wishlist-remove:focus-visible {
-    box-shadow: 0 0 0 3px rgba(75, 156, 255, 0.12);
-    outline: 1px solid var(--onyx-accent, #4b9cff);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    outline: 1px solid rgba(255, 255, 255, 0.72);
     outline-offset: 2px;
 }
 
 .onyx-empty-wishlist {
-    background: var(--onyx-canvas-soft, #091321);
-    border: 1px solid var(--onyx-hairline, rgba(126, 163, 202, 0.18));
+    background: #050505;
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 0 0 8px 8px;
     border-top: 0;
 }
@@ -967,7 +967,7 @@
 }
 
 .onyx-empty-wishlist h2 {
-    color: var(--onyx-ink, #eef6ff);
+    color: #ffffff;
     font-size: 18px;
     font-weight: 400;
     letter-spacing: -0.5px !important;
@@ -976,7 +976,7 @@
 }
 
 .onyx-empty-wishlist p {
-    color: var(--onyx-body, #9baabd);
+    color: #a1a1aa;
     font-size: 14px !important;
     line-height: 1.5;
     margin: 0 0 18px;
