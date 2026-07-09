@@ -78,14 +78,130 @@
 
     .category-wrap { max-width: 260px; }
 
-    /* ── Image preview ───────────────────────────── */
-    .image-preview-wrap {
-        margin-top: 16px; height: 128px; border: 1px dashed rgba(255,255,255,0.07);
-        border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden;
+    .campaign-toggle {
+        display: inline-flex; align-items: center; gap: 10px;
+        color: rgba(255,255,255,0.76); font-size: 13px; font-weight: 600;
     }
-    #imgPreview { width: 100%; height: 100%; object-fit: contain; display: none; }
-    .preview-empty { display: flex; flex-direction: column; align-items: center; gap: 7px; color: rgba(255,255,255,0.10); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
-    .preview-empty i { width: 18px; height: 18px; }
+    .campaign-toggle input { width: 16px; height: 16px; accent-color: #fff; }
+    .campaign-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 36px; }
+    .campaign-grid .field-group.full { grid-column: 1 / -1; }
+    .campaign-builder-actions {
+        display: grid; grid-template-columns: minmax(220px, 1fr) auto;
+        gap: 14px; align-items: end; margin-top: 24px;
+    }
+    .campaign-add-btn, .campaign-block-btn {
+        border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04);
+        color: rgba(255,255,255,0.82); border-radius: 6px; padding: 10px 14px;
+        font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .campaign-block-btn { padding: 8px 10px; font-size: 10px; }
+    .campaign-block-btn.danger { border-color: rgba(255,68,68,0.26); color: #ff7777; }
+    .campaign-block-list { display: grid; gap: 16px; margin-top: 20px; }
+    .campaign-block-card {
+        border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+        padding: 18px; background: rgba(255,255,255,0.025);
+    }
+    .campaign-block-head {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        margin-bottom: 16px;
+    }
+    .campaign-block-title { color: rgba(255,255,255,0.84); font-size: 13px; font-weight: 700; }
+    .campaign-block-meta { color: rgba(255,255,255,0.34); font-size: 11px; margin-top: 4px; }
+    .campaign-block-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .campaign-block-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 22px; }
+    .campaign-block-fields .field-group.full { grid-column: 1 / -1; }
+    .campaign-block-card[data-block-type="TextSection"] .campaign-field--media,
+    .campaign-block-card[data-block-type="TextSection"] .campaign-field--json,
+    .campaign-block-card[data-block-type="HeroMedia"] .campaign-field--json,
+    .campaign-block-card[data-block-type="TextImageSection"] .campaign-field--json,
+    .campaign-block-card[data-block-type="MediaSection"] .campaign-field--json,
+    .campaign-block-card[data-block-type="VideoSection"] .campaign-field--json,
+    .campaign-block-card[data-block-type="TechSpecs"] .campaign-field--media,
+    .campaign-block-card[data-block-type="FeatureCards"] .campaign-field--media,
+    .campaign-block-card[data-block-type="CTASection"] .campaign-field--media,
+    .campaign-block-card[data-block-type="SpacerSection"] .campaign-field--text,
+    .campaign-block-card[data-block-type="SpacerSection"] .campaign-field--media,
+    .campaign-block-card[data-block-type="SpacerSection"] .campaign-field--json {
+        display: none;
+    }
+    .campaign-media-preview {
+        display: grid; grid-template-columns: 84px 1fr; gap: 12px; align-items: center;
+        margin-bottom: 10px; padding: 10px; border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 6px; background: rgba(255,255,255,0.025);
+    }
+    .campaign-media-preview img,
+    .campaign-media-preview video {
+        width: 84px; height: 64px; object-fit: cover; border-radius: 5px; background: #08080a;
+    }
+    .campaign-media-preview span { color: rgba(255,255,255,0.34); font-size: 11px; word-break: break-all; }
+    .campaign-media-upload { display: grid; gap: 10px; }
+    .campaign-file-input {
+        width: 100%; border: 1px dashed rgba(255,255,255,0.12); border-radius: 6px;
+        padding: 10px; color: rgba(255,255,255,0.58); background: rgba(255,255,255,0.02);
+        font-size: 12px;
+    }
+    .campaign-empty {
+        border: 1px dashed rgba(255,255,255,0.12); border-radius: 8px;
+        padding: 18px; color: rgba(255,255,255,0.24); font-size: 12px; margin-top: 18px;
+    }
+
+    /* ── Product images ──────────────────────────── */
+    .media-helper {
+        margin: -4px 0 16px; color: rgba(255,255,255,0.24);
+        font-size: 12px; line-height: 1.6;
+    }
+    .image-file-input {
+        width: 100%; padding: 12px; border: 1px dashed rgba(255,255,255,0.12);
+        border-radius: 6px; background: rgba(255,255,255,0.025); color: rgba(255,255,255,0.62);
+        font-size: 12px;
+    }
+    .product-image-manager {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(142px, 1fr));
+        gap: 12px; margin-top: 16px;
+    }
+    .product-image-card {
+        position: relative; min-width: 0; border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 8px; background: rgba(255,255,255,0.025); overflow: hidden;
+    }
+    .product-image-card.dragging { opacity: 0.52; border-color: rgba(255,255,255,0.35); }
+    .product-image-thumb {
+        width: 100%; aspect-ratio: 1 / 1; background: rgba(255,255,255,0.035);
+        object-fit: cover; display: block;
+    }
+    .product-image-meta { padding: 10px; }
+    .product-image-name {
+        color: rgba(255,255,255,0.70); font-size: 11px; line-height: 1.35;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .product-image-badge {
+        position: absolute; top: 8px; left: 8px; padding: 3px 7px;
+        border-radius: 999px; background: rgba(255,255,255,0.88); color: #111113;
+        font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .product-image-actions {
+        display: grid; grid-template-columns: 28px 28px 1fr; gap: 6px; margin-top: 10px;
+    }
+    .image-action-btn {
+        min-height: 28px; border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 5px; background: transparent; color: rgba(255,255,255,0.60);
+        font-size: 11px; font-family: inherit; cursor: pointer;
+    }
+    .image-action-btn:hover, .image-action-btn:focus {
+        border-color: rgba(255,255,255,0.28); color: rgba(255,255,255,0.92); outline: none;
+    }
+    .image-action-btn:disabled { opacity: 0.28; cursor: not-allowed; }
+    .image-remove-btn { color: #ff6a6a; }
+    .product-image-empty {
+        margin-top: 16px; min-height: 96px; border: 1px dashed rgba(255,255,255,0.08);
+        border-radius: 6px; display: flex; align-items: center; justify-content: center;
+        gap: 8px; color: rgba(255,255,255,0.16); font-size: 11px; letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+    .product-image-empty i { width: 16px; height: 16px; }
+    .product-image-validation {
+        display: none; margin-top: 12px; padding: 10px 12px; border-left: 2px solid rgba(255,68,68,0.55);
+        background: rgba(255,68,68,0.05); color: #ff6a6a; font-size: 12px; line-height: 1.45;
+    }
 
     /* ── Colors section ──────────────────────────── */
     .color-hint {
@@ -188,6 +304,14 @@
         cursor: pointer; transition: background 0.15s; font-family: inherit;
     }
     .btn-save:hover { background: rgba(255,255,255,0.82); }
+    .btn-delete {
+        display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px;
+        background: rgba(255,68,68,0.08); color: #ff6b6b; border: 1px solid rgba(255,68,68,0.28);
+        border-radius: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+        text-transform: uppercase; cursor: pointer; transition: background 0.15s, border-color 0.15s;
+        font-family: inherit;
+    }
+    .btn-delete:hover { background: rgba(255,68,68,0.14); border-color: rgba(255,68,68,0.45); }
     .btn-cancel { font-size: 12px; color: rgba(255,255,255,0.26); text-decoration: none; letter-spacing: 0.04em; transition: color 0.15s; }
     .btn-cancel:hover { color: rgba(255,255,255,0.62); text-decoration: none; }
     .required-note { margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.16); letter-spacing: 0.04em; }
@@ -202,13 +326,24 @@
     html[data-theme="light"] .field-input::placeholder, html[data-theme="light"] .field-textarea::placeholder { color: rgba(0,0,0,0.18); }
     html[data-theme="light"] .field-input[readonly] { color: rgba(0,0,0,0.62); }
     html[data-theme="light"] .field-hint   { color: rgba(0,0,0,0.22); }
+    html[data-theme="light"] .campaign-toggle { color: rgba(0,0,0,0.72); }
     html[data-theme="light"] .field-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='rgba(0,0,0,0.30)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); color: rgba(0,0,0,0.75); }
     html[data-theme="light"] .field-select option { background: #fff; color: #0d0d0f; }
-    html[data-theme="light"] .image-preview-wrap { border-color: rgba(0,0,0,0.08); }
-    html[data-theme="light"] .preview-empty { color: rgba(0,0,0,0.12); }
+    html[data-theme="light"] .media-helper { color: rgba(0,0,0,0.35); }
+    html[data-theme="light"] .image-file-input { border-color: rgba(0,0,0,0.12); background: rgba(0,0,0,0.018); color: rgba(0,0,0,0.62); }
+    html[data-theme="light"] .product-image-card { border-color: rgba(0,0,0,0.09); background: rgba(0,0,0,0.018); }
+    html[data-theme="light"] .product-image-thumb { background: rgba(0,0,0,0.04); }
+    html[data-theme="light"] .product-image-name { color: rgba(0,0,0,0.66); }
+    html[data-theme="light"] .product-image-badge { background: #0d0d0f; color: #fff; }
+    html[data-theme="light"] .image-action-btn { border-color: rgba(0,0,0,0.10); color: rgba(0,0,0,0.58); }
+    html[data-theme="light"] .image-action-btn:hover, html[data-theme="light"] .image-action-btn:focus { border-color: rgba(0,0,0,0.28); color: rgba(0,0,0,0.88); }
+    html[data-theme="light"] .product-image-empty { border-color: rgba(0,0,0,0.08); color: rgba(0,0,0,0.18); }
+    html[data-theme="light"] .product-image-validation { background: rgba(196,42,42,0.06); color: #c42a2a; }
     html[data-theme="light"] .form-actions { border-top-color: rgba(0,0,0,0.06); }
     html[data-theme="light"] .btn-save     { background: #0d0d0f; color: #fff; }
     html[data-theme="light"] .btn-save:hover { background: #2a2a2a; }
+    html[data-theme="light"] .btn-delete { background: rgba(196,42,42,0.05); color: #c42a2a; border-color: rgba(196,42,42,0.28); }
+    html[data-theme="light"] .btn-delete:hover { background: rgba(196,42,42,0.10); border-color: rgba(196,42,42,0.42); }
     html[data-theme="light"] .btn-cancel   { color: rgba(0,0,0,0.28); }
     html[data-theme="light"] .btn-cancel:hover { color: rgba(0,0,0,0.60); }
     html[data-theme="light"] .required-note { color: rgba(0,0,0,0.20); }
@@ -406,32 +541,166 @@
             </div>
         </div>
 
+        <%-- Product campaign --%>
+        <div class="form-section">
+            <div class="section-label">Product Campaign</div>
+            <label class="campaign-toggle">
+                <asp:CheckBox ID="chkCampaignEnabled" runat="server" />
+                Show long-form campaign layout on the product page
+            </label>
+            <div class="field-hint">Leave disabled for products that should use only the standard product details layout.</div>
+
+            <div class="section-label" style="margin-top:28px;">Product Campaign Builder</div>
+            <div class="field-hint">Add reusable blocks in any order. The same block type can be added multiple times; SortOrder controls rendering.</div>
+            <div class="campaign-builder-actions">
+                <div class="field-group">
+                    <label class="field-label">Block type</label>
+                    <asp:DropDownList ID="ddlCampaignBlockType" runat="server" CssClass="field-select">
+                        <asp:ListItem Value="HeroMedia">HeroMedia</asp:ListItem>
+                        <asp:ListItem Value="TextSection">TextSection</asp:ListItem>
+                        <asp:ListItem Value="TextImageSection">TextImageSection</asp:ListItem>
+                        <asp:ListItem Value="MediaSection">MediaSection</asp:ListItem>
+                        <asp:ListItem Value="VideoSection">VideoSection</asp:ListItem>
+                        <asp:ListItem Value="FeatureCards">FeatureCards</asp:ListItem>
+                        <asp:ListItem Value="TechSpecs">TechSpecs</asp:ListItem>
+                        <asp:ListItem Value="CTASection">CTASection</asp:ListItem>
+                        <asp:ListItem Value="SpacerSection">SpacerSection</asp:ListItem>
+                    </asp:DropDownList>
+                </div>
+                <asp:Button ID="btnAddCampaignBlock" runat="server" Text="Add Block"
+                    CssClass="campaign-add-btn" CausesValidation="false" OnClick="btnAddCampaignBlock_Click" />
+            </div>
+
+            <asp:Repeater ID="rptCampaignBlocks" runat="server" OnItemCommand="rptCampaignBlocks_ItemCommand">
+                <HeaderTemplate><div class="campaign-block-list"></HeaderTemplate>
+                <ItemTemplate>
+                    <div class="campaign-block-card" data-campaign-block data-block-type='<%# Eval("BlockType") %>'>
+                        <div class="campaign-block-head">
+                            <div>
+                                <div class="campaign-block-title">
+                                    #<%# Eval("SortOrder") %> · <%# Server.HtmlEncode(Eval("BlockType").ToString()) %>
+                                </div>
+                                <div class="campaign-block-meta"><%# Server.HtmlEncode(GetCampaignBlockLabel(Container.DataItem)) %></div>
+                            </div>
+                            <div class="campaign-block-actions">
+                                <asp:LinkButton ID="btnMoveCampaignBlockUp" runat="server" CssClass="campaign-block-btn"
+                                    CommandName="MoveUp" CommandArgument='<%# Eval("Id") %>' CausesValidation="false">Move Up</asp:LinkButton>
+                                <asp:LinkButton ID="btnMoveCampaignBlockDown" runat="server" CssClass="campaign-block-btn"
+                                    CommandName="MoveDown" CommandArgument='<%# Eval("Id") %>' CausesValidation="false">Move Down</asp:LinkButton>
+                                <asp:LinkButton ID="btnSaveCampaignBlock" runat="server" CssClass="campaign-block-btn"
+                                    CommandName="SaveBlock" CommandArgument='<%# Eval("Id") %>' CausesValidation="false">Save Block</asp:LinkButton>
+                                <asp:LinkButton ID="btnDeleteCampaignBlock" runat="server" CssClass="campaign-block-btn danger"
+                                    CommandName="DeleteBlock" CommandArgument='<%# Eval("Id") %>' CausesValidation="false"
+                                    OnClientClick="return confirm('Delete this campaign block?');">Delete</asp:LinkButton>
+                            </div>
+                        </div>
+                        <asp:HiddenField ID="hfCampaignBlockId" runat="server" Value='<%# Eval("Id") %>' />
+                        <asp:HiddenField ID="hfCampaignBlockType" runat="server" Value='<%# Eval("BlockType") %>' />
+                        <div class="campaign-block-fields">
+                            <div class="field-group">
+                                <label class="campaign-toggle">
+                                    <asp:CheckBox ID="chkBlockEnabled" runat="server" Checked='<%# (bool)Eval("IsEnabled") %>' />
+                                    Enabled
+                                </label>
+                            </div>
+                            <div class="field-group campaign-field--text">
+                                <label class="field-label">Eyebrow</label>
+                                <asp:TextBox ID="txtBlockEyebrow" runat="server" CssClass="field-input" MaxLength="100" Text='<%# Eval("Eyebrow") %>' />
+                            </div>
+                            <div class="field-group full campaign-field--text">
+                                <label class="field-label">Headline</label>
+                                <asp:TextBox ID="txtBlockHeadline" runat="server" CssClass="field-input" MaxLength="200" Text='<%# Eval("Headline") %>' />
+                            </div>
+                            <div class="field-group full campaign-field--text">
+                                <label class="field-label">Body</label>
+                                <asp:TextBox ID="txtBlockBody" runat="server" CssClass="field-textarea" TextMode="MultiLine" Rows="3" Text='<%# Eval("Body") %>' />
+                            </div>
+                            <div class="field-group campaign-field--media">
+                                <label class="field-label">Media type</label>
+                                <asp:TextBox ID="txtBlockMediaType" runat="server" CssClass="field-input" MaxLength="20" Text='<%# Eval("MediaType") %>' placeholder="image, gif, or mp4" />
+                            </div>
+                            <div class="field-group campaign-field--media">
+                                <label class="field-label">Media URL</label>
+                                <asp:TextBox ID="txtBlockMediaUrl" runat="server" CssClass="field-input" Text='<%# Eval("MediaUrl") %>' placeholder="/Content/..." />
+                            </div>
+                            <div class="field-group full campaign-field--media">
+                                <asp:Panel ID="pnlBlockMediaPreview" runat="server" CssClass="campaign-media-preview" Visible='<%# !string.IsNullOrWhiteSpace((Eval("MediaUrl") ?? "").ToString()) %>'>
+                                    <%# GetCampaignBlockMediaPreview(Container.DataItem) %>
+                                </asp:Panel>
+                                <div class="campaign-media-upload">
+                                    <asp:FileUpload ID="CampaignBlockMediaUpload" runat="server" CssClass="campaign-file-input" accept=".jpg,.jpeg,.png,.webp,.gif,.mp4,image/jpeg,image/png,image/webp,image/gif,video/mp4" />
+                                    <label class="campaign-toggle">
+                                        <asp:CheckBox ID="chkRemoveBlockMedia" runat="server" />
+                                        Remove media
+                                    </label>
+                                </div>
+                                <div class="field-hint">Upload JPG, PNG, WEBP, GIF, or MP4 up to 20 MB. Uploading replaces the media URL.</div>
+                            </div>
+                            <div class="field-group full campaign-field--media">
+                                <label class="field-label">Media alt / title</label>
+                                <asp:TextBox ID="txtBlockMediaAlt" runat="server" CssClass="field-input" MaxLength="200" Text='<%# Eval("MediaAlt") %>' />
+                            </div>
+                            <div class="field-group">
+                                <label class="field-label">Layout variant</label>
+                                <asp:TextBox ID="txtBlockLayoutVariant" runat="server" CssClass="field-input" MaxLength="50" Text='<%# Eval("LayoutVariant") %>' placeholder="contained, split, image-left..." />
+                            </div>
+                            <div class="field-group">
+                                <label class="field-label">Background variant</label>
+                                <asp:TextBox ID="txtBlockBackgroundVariant" runat="server" CssClass="field-input" MaxLength="50" Text='<%# Eval("BackgroundVariant") %>' placeholder="light or dark" />
+                            </div>
+                            <div class="field-group full campaign-field--json">
+                                <label class="field-label">JsonContent / line content</label>
+                                <asp:TextBox ID="txtBlockJsonContent" runat="server" CssClass="field-textarea" TextMode="MultiLine" Rows="5" Text='<%# Eval("JsonContent") %>'
+                                    placeholder="FeatureCards: Title|Body|ImageUrl&#10;TechSpecs: Label|Value&#10;CTASection: Label|Url|Style" />
+                                <div class="field-hint">Line-based content is stored directly and HTML encoded on the customer page.</div>
+                            </div>
+                        </div>
+                    </div>
+                </ItemTemplate>
+                <FooterTemplate></div></FooterTemplate>
+            </asp:Repeater>
+            <asp:Panel ID="pnlCampaignBlocksEmpty" runat="server" CssClass="campaign-empty" Visible="false">
+                No campaign blocks yet. Add a block to start building the long-form page.
+            </asp:Panel>
+        </div>
+
         <%-- Media --%>
         <div class="form-section">
             <div class="section-label">Media</div>
             <div class="field-group">
-                <label class="field-label">Upload image</label>
-                <asp:FileUpload ID="ProductImageUpload" runat="server" CssClass="field-input" accept=".jpg,.jpeg,.png,image/jpeg,image/png" />
-                <div class="field-hint">Only JPG, JPEG, and PNG files are accepted.</div>
+                <asp:HiddenField ID="ExistingProductImagesJson" runat="server" />
+                <asp:HiddenField ID="ProductImageOrder" runat="server" />
+                <asp:HiddenField ID="RemovedProductImages" runat="server" />
+                <asp:HiddenField ID="ProductImageManagerTouched" runat="server" />
 
-                <label class="field-label">Image URL</label>
+                <asp:Label ID="lblProductImages" runat="server" AssociatedControlID="ProductImageUpload" CssClass="field-label">
+                    Product photos
+                </asp:Label>
+                <p class="media-helper">Upload multiple product photos. Drag to reorder. The first image will be used as the main product image.</p>
+                <asp:FileUpload ID="ProductImageUpload" runat="server" CssClass="image-file-input" AllowMultiple="true" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                <div class="field-hint">Only JPG, JPEG, PNG, and WEBP files up to 5 MB each are accepted.</div>
+
+                <div id="productImageManager" class="product-image-manager" aria-live="polite"></div>
+                <div id="productImageEmpty" class="product-image-empty">
+                    <i data-lucide="image"></i>
+                    No product photos selected
+                </div>
+                <div id="productImageValidation" class="product-image-validation" role="alert"></div>
+
+                <label class="field-label" style="margin-top:22px;">Image URL</label>
                 <asp:TextBox ID="txtImageUrl" runat="server" CssClass="field-input"
                     placeholder="https://..." />
-                <div class="field-hint">Optional fallback URL. Uploaded files take priority.</div>
-                <div class="image-preview-wrap">
-                    <img id="imgPreview" src="" alt="Image preview" />
-                    <div class="preview-empty" id="previewEmpty">
-                        <i data-lucide="image"></i>
-                        No image
-                    </div>
-                </div>
+                <div class="field-hint">Optional fallback URL. The saved primary product photo keeps this field synchronized.</div>
             </div>
         </div>
 
         <%-- Actions --%>
         <div class="form-actions">
             <asp:Button ID="btnSave" runat="server" Text="Save Product"
-                CssClass="btn-save" OnClick="btnSave_Click" />
+                CssClass="btn-save" OnClick="btnSave_Click" OnClientClick="return validateProductImagesBeforeSubmit();" />
+            <asp:Button ID="btnDelete" runat="server" Text="Delete Product"
+                CssClass="btn-delete" OnClick="btnDelete_Click" CausesValidation="false"
+                OnClientClick="return confirm('Delete this product? This cannot be undone.');" />
             <a href="onyx_admin_products.aspx" class="btn-cancel">Cancel</a>
             <span class="required-note"><span class="req">*</span> Required</span>
         </div>
@@ -439,17 +708,219 @@
     </div>
 
     <script>
-        // Image URL live preview
+        // Product image manager
         (function () {
-            var urlInput = document.getElementById('<%= txtImageUrl.ClientID %>');
-            var imgEl    = document.getElementById('imgPreview');
-            var emptyEl  = document.getElementById('previewEmpty');
-            function updatePreview() {
-                var url = urlInput ? urlInput.value.trim() : '';
-                if (url) { imgEl.src = url; imgEl.style.display = 'block'; emptyEl.style.display = 'none'; }
-                else      { imgEl.style.display = 'none'; emptyEl.style.display = 'flex'; }
+            var input = document.getElementById('<%= ProductImageUpload.ClientID %>');
+            var existingJson = document.getElementById('<%= ExistingProductImagesJson.ClientID %>');
+            var orderField = document.getElementById('<%= ProductImageOrder.ClientID %>');
+            var removedField = document.getElementById('<%= RemovedProductImages.ClientID %>');
+            var touchedField = document.getElementById('<%= ProductImageManagerTouched.ClientID %>');
+            var manager = document.getElementById('productImageManager');
+            var empty = document.getElementById('productImageEmpty');
+            var validation = document.getElementById('productImageValidation');
+            var MaxProductImageBytes = 5 * 1024 * 1024;
+            var MaxProductUploadBytes = 50 * 1024 * 1024;
+            var allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+            var items = [];
+            var removedIds = [];
+
+            function parseExistingImages() {
+                try {
+                    var existing = JSON.parse(existingJson && existingJson.value ? existingJson.value : '[]');
+                    items = existing.map(function (image) {
+                        return {
+                            token: 'existing:' + image.Id,
+                            type: 'existing',
+                            id: image.Id,
+                            url: image.Url,
+                            name: image.Label || 'Existing image'
+                        };
+                    });
+                } catch (ex) {
+                    items = [];
+                }
             }
-            if (urlInput) { urlInput.addEventListener('input', updatePreview); updatePreview(); }
+
+            function syncHiddenFields() {
+                if (orderField) orderField.value = items.map(function (item) { return item.token; }).join(',');
+                if (removedField) removedField.value = removedIds.join(',');
+            }
+
+            function showValidationMessage(message) {
+                if (validation) {
+                    validation.textContent = message;
+                    validation.style.display = 'block';
+                    validation.scrollIntoView({ block: 'nearest' });
+                } else {
+                    alert(message);
+                }
+            }
+
+            function clearValidationMessage() {
+                if (!validation) return;
+                validation.textContent = '';
+                validation.style.display = 'none';
+            }
+
+            function formatMegabytes(bytes) {
+                return Math.round(bytes / 1024 / 1024);
+            }
+
+            function getExtension(fileName) {
+                var dotIndex = (fileName || '').lastIndexOf('.');
+                return dotIndex >= 0 ? fileName.substring(dotIndex).toLowerCase() : '';
+            }
+
+            function validateProductImagesBeforeSubmit() {
+                clearValidationMessage();
+
+                var totalBytes = 0;
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i];
+                    if (item.type !== 'new' || !item.file) continue;
+
+                    var extension = getExtension(item.name);
+                    if (allowedExtensions.indexOf(extension) < 0) {
+                        showValidationMessage('Only JPG, JPEG, PNG, and WEBP product images are allowed.');
+                        return false;
+                    }
+
+                    if (item.file.size > MaxProductImageBytes) {
+                        showValidationMessage('Each product image must be 5 MB or smaller.');
+                        return false;
+                    }
+
+                    totalBytes += item.file.size;
+                }
+
+                if (totalBytes > MaxProductUploadBytes) {
+                    showValidationMessage('Selected product images total ' + formatMegabytes(totalBytes) + ' MB. Keep the total upload size at 50 MB or less.');
+                    return false;
+                }
+
+                return true;
+            }
+
+            window.validateProductImagesBeforeSubmit = validateProductImagesBeforeSubmit;
+
+            function moveItem(fromIndex, toIndex) {
+                if (toIndex < 0 || toIndex >= items.length || fromIndex === toIndex) return;
+                if (touchedField) touchedField.value = 'true';
+                var moved = items.splice(fromIndex, 1)[0];
+                items.splice(toIndex, 0, moved);
+                render();
+            }
+
+            function removeItem(index) {
+                var item = items[index];
+                if (!item) return;
+                if (touchedField) touchedField.value = 'true';
+                if (item.type === 'existing' && removedIds.indexOf(item.id) < 0) removedIds.push(item.id);
+                items.splice(index, 1);
+                render();
+                validateProductImagesBeforeSubmit();
+            }
+
+            function render() {
+                manager.innerHTML = '';
+                empty.style.display = items.length ? 'none' : 'flex';
+
+                items.forEach(function (item, index) {
+                    var card = document.createElement('div');
+                    card.className = 'product-image-card';
+                    card.draggable = true;
+                    card.setAttribute('data-index', index);
+
+                    card.addEventListener('dragstart', function (event) {
+                        card.classList.add('dragging');
+                        event.dataTransfer.setData('text/plain', String(index));
+                    });
+                    card.addEventListener('dragend', function () { card.classList.remove('dragging'); });
+                    card.addEventListener('dragover', function (event) { event.preventDefault(); });
+                    card.addEventListener('drop', function (event) {
+                        event.preventDefault();
+                        var from = parseInt(event.dataTransfer.getData('text/plain'), 10);
+                        moveItem(from, index);
+                    });
+
+                    var img = document.createElement('img');
+                    img.className = 'product-image-thumb';
+                    img.src = item.url;
+                    img.alt = item.type === 'existing' ? 'Existing product image preview' : 'Selected product image preview for ' + item.name;
+                    card.appendChild(img);
+
+                    if (index === 0) {
+                        var badge = document.createElement('div');
+                        badge.className = 'product-image-badge';
+                        badge.textContent = 'Primary';
+                        card.appendChild(badge);
+                    }
+
+                    var meta = document.createElement('div');
+                    meta.className = 'product-image-meta';
+
+                    var name = document.createElement('div');
+                    name.className = 'product-image-name';
+                    name.textContent = item.name;
+                    meta.appendChild(name);
+
+                    var actions = document.createElement('div');
+                    actions.className = 'product-image-actions';
+
+                    var left = document.createElement('button');
+                    left.type = 'button';
+                    left.className = 'image-action-btn';
+                    left.textContent = '<';
+                    left.disabled = index === 0;
+                    left.setAttribute('aria-label', 'Move left ' + item.name);
+                    left.addEventListener('click', function () { moveItem(index, index - 1); });
+                    actions.appendChild(left);
+
+                    var right = document.createElement('button');
+                    right.type = 'button';
+                    right.className = 'image-action-btn';
+                    right.textContent = '>';
+                    right.disabled = index === items.length - 1;
+                    right.setAttribute('aria-label', 'Move right ' + item.name);
+                    right.addEventListener('click', function () { moveItem(index, index + 1); });
+                    actions.appendChild(right);
+
+                    var remove = document.createElement('button');
+                    remove.type = 'button';
+                    remove.className = 'image-action-btn image-remove-btn';
+                    remove.textContent = 'Remove';
+                    remove.setAttribute('aria-label', 'Remove ' + item.name);
+                    remove.addEventListener('click', function () { removeItem(index); });
+                    actions.appendChild(remove);
+
+                    meta.appendChild(actions);
+                    card.appendChild(meta);
+                    manager.appendChild(card);
+                });
+
+                syncHiddenFields();
+            }
+
+            if (input) {
+                input.addEventListener('change', function () {
+                    if (touchedField) touchedField.value = 'true';
+                    items = items.filter(function (item) { return item.type !== 'new'; });
+                    Array.prototype.slice.call(input.files || []).forEach(function (file, index) {
+                        items.push({
+                            token: 'new:' + index,
+                            type: 'new',
+                            url: URL.createObjectURL(file),
+                            name: file.name || 'Selected image',
+                            file: file
+                        });
+                    });
+                    render();
+                    validateProductImagesBeforeSubmit();
+                });
+            }
+
+            parseExistingImages();
+            render();
         })();
     </script>
 

@@ -362,6 +362,49 @@ namespace ONYX_DDAC.customer_page
             }
         }
 
+        protected string GetProductGalleryHtml(object dataItem)
+        {
+            var product = dataItem as Product;
+            if (product == null) return string.Empty;
+
+            IList<string> imageUrls = product.ImageUrls != null && product.ImageUrls.Count > 0
+                ? product.ImageUrls
+                : new List<string> { product.ImageUrl };
+            List<string> resolvedUrls = imageUrls
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Select(value => GetProductImageUrl(value, product.Category))
+                .ToList();
+
+            if (resolvedUrls.Count == 0)
+            {
+                resolvedUrls.Add(GetProductImageUrl(null, product.Category));
+            }
+
+            var html = new StringBuilder();
+            html.AppendFormat("<div class=\"onyx-product-gallery\" data-product-gallery data-gallery-index=\"0\" aria-label=\"{0} photos\">",
+                HttpUtility.HtmlAttributeEncode(product.Name));
+
+            for (int i = 0; i < resolvedUrls.Count; i++)
+            {
+                string activeClass = i == 0 ? " is-active" : string.Empty;
+                html.AppendFormat(
+                    "<img class=\"onyx-product-gallery-slide{0}\" data-gallery-slide src=\"{1}\" alt=\"{2}\" loading=\"lazy\" />",
+                    activeClass,
+                    HttpUtility.HtmlAttributeEncode(resolvedUrls[i]),
+                    HttpUtility.HtmlAttributeEncode(product.Name));
+            }
+
+            if (resolvedUrls.Count > 1)
+            {
+                html.Append("<button type=\"button\" class=\"onyx-product-gallery-nav onyx-product-gallery-nav--prev\" data-gallery-prev aria-label=\"Previous product photo\">‹</button>");
+                html.Append("<button type=\"button\" class=\"onyx-product-gallery-nav onyx-product-gallery-nav--next\" data-gallery-next aria-label=\"Next product photo\">›</button>");
+                html.AppendFormat("<span class=\"onyx-product-gallery-count\">1/{0}</span>", resolvedUrls.Count);
+            }
+
+            html.Append("</div>");
+            return html.ToString();
+        }
+
         protected string GetStockLabel(object stockQty)
         {
             int stock;

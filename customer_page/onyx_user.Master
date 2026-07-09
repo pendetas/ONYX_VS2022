@@ -13,8 +13,8 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
-    <link href="<%= ResolveUrl("~/Content/onyx-design-system.css") %>?v=20260709-legal-restore" rel="stylesheet" />
-    <link href="<%= ResolveUrl("~/Content/onyx-user-master.css") %>?v=20260708-header-register" rel="stylesheet" />
+<link href="<%= ResolveUrl("~/Content/onyx-design-system.css") %>?v=20260709-legal-restore" rel="stylesheet" />
+<link href="<%= ResolveUrl("~/Content/onyx-user-master.css") %>?v=20260709-onyx-campaign-template" rel="stylesheet" />
     <script src="<%= ResolveUrl("~/Scripts/onyx-user-master.js") %>?v=20260708-catalog-sort"></script>
     <style>
         .onyx-ai-assistant {

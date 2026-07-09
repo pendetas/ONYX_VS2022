@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Web;
 using System.Web.UI;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
@@ -25,6 +28,8 @@ namespace ONYX_DDAC.customer_page
             set { ViewState["BaseStockQty"] = value; }
         }
 
+        protected string DetailsPageCssClass { get; private set; } = "onyx-details-page";
+
         protected void Page_Load(object sender, EventArgs e)
         {
             // If there's no ID in the URL, kick them back to the catalog
@@ -37,6 +42,17 @@ namespace ONYX_DDAC.customer_page
             if (!IsPostBack)
             {
                 LoadProductDetails(productId);
+            }
+            else
+            {
+                Product currentProduct = productService.GetProductById(productId);
+                if (currentProduct == null)
+                {
+                    Response.Redirect("onyx_catalog.aspx");
+                    return;
+                }
+
+                BindProductCampaign(currentProduct);
             }
 
             UpdateWishlistButton(productId);
@@ -59,11 +75,13 @@ namespace ONYX_DDAC.customer_page
             litPrice.Text = CurrencyHelper.FormatMyr(currentProduct.Price);
             litDescription.Text = currentProduct.Description;
             BaseStockQty = currentProduct.StockQty;
+            BindProductCampaign(currentProduct);
 
             // Image Fallback check
             imgProduct.ImageUrl = string.IsNullOrWhiteSpace(currentProduct.ImageUrl)
                 ? "/Content/home/products/onyx-mouse.png"
                 : currentProduct.ImageUrl;
+            BindProductImageNavigation(currentProduct);
 
             // Check if this product has any variants in the product_variants table
             var variants = productService.GetProductVariants(productId);
@@ -90,6 +108,375 @@ namespace ONYX_DDAC.customer_page
             {
                 ApplyStockState(currentProduct.StockQty);
             }
+        }
+
+        private void BindProductCampaign(Product product)
+        {
+            ProductCampaign campaign = productService.GetProductCampaign(product.Id);
+            IList<ProductCampaignBlock> blocks = campaign != null && campaign.CampaignEnabled
+                ? productService.GetCampaignBlocksByProductId(product.Id)
+                : new List<ProductCampaignBlock>();
+            IList<ProductCampaignBlock> enabledBlocks = blocks
+                .Where(block => block.IsEnabled)
+                .OrderBy(block => block.SortOrder)
+                .ThenBy(block => block.Id)
+                .ToList();
+
+            bool showCampaign = enabledBlocks.Count > 0;
+
+            DetailsPageCssClass = showCampaign
+                ? "onyx-details-page onyx-keyboard-campaign"
+                : "onyx-details-page";
+
+            pnlKeyboardCampaign.Visible = showCampaign;
+            litCampaignBlocks.Text = string.Empty;
+            if (!showCampaign) return;
+
+            litCampaignBlocks.Text = RenderCampaignBlocks(enabledBlocks, product);
+        }
+
+        private void BindProductImageNavigation(Product product)
+        {
+            IList<string> imageUrls = product.ImageUrls != null && product.ImageUrls.Count > 0
+                ? product.ImageUrls
+                : new List<string> { product.ImageUrl };
+            List<string> resolvedUrls = imageUrls
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Select(ResolveCampaignUrl)
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .ToList();
+
+            if (resolvedUrls.Count <= 1)
+            {
+                litProductImageNav.Text = string.Empty;
+                return;
+            }
+
+            var html = new StringBuilder();
+            html.Append("<div class=\"onyx-detail-gallery-nav\" aria-label=\"Product photos\">");
+            for (int i = 0; i < resolvedUrls.Count; i++)
+            {
+                html.AppendFormat(
+                    "<button type=\"button\" class=\"onyx-detail-gallery-thumb{0}\" data-detail-target=\"{1}\" data-detail-image=\"{2}\" aria-label=\"Show product photo {3}\"><img src=\"{2}\" alt=\"\" loading=\"lazy\" /></button>",
+                    i == 0 ? " is-active" : string.Empty,
+                    EncodeAttr(imgProduct.ClientID),
+                    EncodeAttr(resolvedUrls[i]),
+                    i + 1);
+            }
+            html.Append("</div>");
+            litProductImageNav.Text = html.ToString();
+        }
+
+        private string RenderCampaignBlocks(IList<ProductCampaignBlock> blocks, Product product)
+        {
+            var html = new StringBuilder();
+            html.Append("<div class=\"onyx-campaign\">");
+
+            foreach (ProductCampaignBlock block in blocks)
+            {
+                switch ((block.BlockType ?? string.Empty).Trim())
+                {
+                    case "HeroMedia":
+                        html.Append(RenderHeroMediaBlock(block, product));
+                        break;
+                    case "TextSection":
+                        html.Append(RenderTextSectionBlock(block));
+                        break;
+                    case "TextImageSection":
+                        html.Append(RenderTextImageSectionBlock(block, product));
+                        break;
+                    case "MediaSection":
+                        html.Append(RenderMediaSectionBlock(block, product));
+                        break;
+                    case "VideoSection":
+                        html.Append(RenderVideoSectionBlock(block, product));
+                        break;
+                    case "FeatureCards":
+                        html.Append(RenderFeatureCardsBlock(block));
+                        break;
+                    case "TechSpecs":
+                        html.Append(RenderTechSpecsBlock(block));
+                        break;
+                    case "CTASection":
+                        html.Append(RenderCtaSectionBlock(block));
+                        break;
+                    case "SpacerSection":
+                        html.Append(RenderSpacerSectionBlock(block));
+                        break;
+                }
+            }
+
+            html.Append("</div>");
+            return html.ToString();
+        }
+
+        private string RenderHeroMediaBlock(ProductCampaignBlock block, Product product)
+        {
+            string media = RenderMediaHtml(block, product, "onyx-campaign-hero-media", useProductFallback: true);
+            return string.Format(
+                "<section class=\"{0}\"><div class=\"onyx-campaign-inner onyx-campaign-hero\"><div class=\"onyx-campaign-text onyx-campaign-hero-text\">{1}{2}{3}</div>{4}</div></section>",
+                CampaignBlockClass(block, "onyx-campaign-block--hero"),
+                RenderEyebrow(block.Eyebrow),
+                RenderHeadline(block.Headline, FirstText(product.Name)),
+                RenderBody(block.Body, FirstText(product.Description)),
+                media);
+        }
+
+        private string RenderTextSectionBlock(ProductCampaignBlock block)
+        {
+            return string.Format(
+                "<section class=\"{0}\"><div class=\"onyx-campaign-inner onyx-campaign-text onyx-campaign-text--{1}\">{2}{3}{4}</div></section>",
+                CampaignBlockClass(block, "onyx-campaign-block--text"),
+                CssToken(FirstText(block.LayoutVariant, "center")),
+                RenderEyebrow(block.Eyebrow),
+                RenderHeadline(block.Headline, string.Empty),
+                RenderBody(block.Body, string.Empty));
+        }
+
+        private string RenderTextImageSectionBlock(ProductCampaignBlock block, Product product)
+        {
+            string layout = CssToken(FirstText(block.LayoutVariant, "image-right"));
+            return string.Format(
+                "<section class=\"{0}\"><div class=\"onyx-campaign-inner onyx-campaign-text-image onyx-campaign-text-image--{1}\"><div class=\"onyx-campaign-text\">{2}{3}{4}</div>{5}</div></section>",
+                CampaignBlockClass(block, "onyx-campaign-block--text-image"),
+                layout,
+                RenderEyebrow(block.Eyebrow),
+                RenderHeadline(block.Headline, string.Empty),
+                RenderBody(block.Body, string.Empty),
+                RenderMediaHtml(block, product, "onyx-campaign-media"));
+        }
+
+        private string RenderMediaSectionBlock(ProductCampaignBlock block, Product product)
+        {
+            return string.Format(
+                "<section class=\"{0}\"><div class=\"onyx-campaign-inner onyx-campaign-media-section\">{1}{2}</div></section>",
+                CampaignBlockClass(block, "onyx-campaign-block--media"),
+                RenderMediaHtml(block, product, "onyx-campaign-media"),
+                RenderBody(block.Body, string.Empty));
+        }
+
+        private string RenderVideoSectionBlock(ProductCampaignBlock block, Product product)
+        {
+            return string.Format(
+                "<section class=\"{0}\"><div class=\"onyx-campaign-inner onyx-campaign-video-section\">{1}{2}{3}</div></section>",
+                CampaignBlockClass(block, "onyx-campaign-block--video"),
+                RenderHeadline(block.Headline, string.Empty),
+                RenderMediaHtml(new ProductCampaignBlock
+                {
+                    MediaType = FirstText(block.MediaType, "mp4"),
+                    MediaUrl = block.MediaUrl,
+                    MediaAlt = block.MediaAlt
+                }, product, "onyx-campaign-video"),
+                RenderBody(block.Body, string.Empty));
+        }
+
+        private string RenderFeatureCardsBlock(ProductCampaignBlock block)
+        {
+            IList<string[]> cards = ParseDelimitedLines(block.JsonContent, 2, 3);
+            var html = new StringBuilder();
+            html.AppendFormat("<section class=\"{0}\"><div class=\"onyx-campaign-inner\">{1}{2}{3}<div class=\"onyx-campaign-grid\">",
+                CampaignBlockClass(block, "onyx-campaign-block--features"),
+                RenderEyebrow(block.Eyebrow),
+                RenderHeadline(block.Headline, string.Empty),
+                RenderBody(block.Body, string.Empty));
+
+            foreach (string[] card in cards)
+            {
+                string imageUrl = card.Length > 2 ? ResolveCampaignUrl(card[2]) : string.Empty;
+                html.Append("<article class=\"onyx-campaign-feature-card\">");
+                if (!string.IsNullOrWhiteSpace(imageUrl))
+                    html.AppendFormat("<img src=\"{0}\" alt=\"{1}\" loading=\"lazy\" />", EncodeAttr(imageUrl), EncodeAttr(card[0]));
+                html.AppendFormat("<h3>{0}</h3><p>{1}</p>", Encode(card[0]), Encode(card[1]));
+                html.Append("</article>");
+            }
+
+            html.Append("</div></div></section>");
+            return html.ToString();
+        }
+
+        private string RenderTechSpecsBlock(ProductCampaignBlock block)
+        {
+            IList<string[]> specs = ParseDelimitedLines(block.JsonContent, 2, 2);
+            var html = new StringBuilder();
+            html.AppendFormat("<section class=\"{0}\"><div class=\"onyx-campaign-inner onyx-campaign-specs\">{1}{2}{3}<dl>",
+                CampaignBlockClass(block, "onyx-campaign-block--specs"),
+                RenderEyebrow(block.Eyebrow),
+                RenderHeadline(block.Headline, "Tech Specs"),
+                RenderBody(block.Body, string.Empty));
+
+            foreach (string[] spec in specs)
+                html.AppendFormat("<div><dt>{0}</dt><dd>{1}</dd></div>", Encode(spec[0]), Encode(spec[1]));
+
+            html.Append("</dl></div></section>");
+            return html.ToString();
+        }
+
+        private string RenderCtaSectionBlock(ProductCampaignBlock block)
+        {
+            IList<string[]> ctas = ParseDelimitedLines(block.JsonContent, 2, 3);
+            var html = new StringBuilder();
+            html.AppendFormat("<section class=\"{0}\"><div class=\"onyx-campaign-inner onyx-campaign-cta\">{1}{2}{3}<div class=\"onyx-campaign-cta-actions\">",
+                CampaignBlockClass(block, "onyx-campaign-block--cta"),
+                RenderEyebrow(block.Eyebrow),
+                RenderHeadline(block.Headline, string.Empty),
+                RenderBody(block.Body, string.Empty));
+
+            foreach (string[] cta in ctas)
+            {
+                string url = ResolveCampaignUrl(cta[1]);
+                if (string.IsNullOrWhiteSpace(url)) continue;
+                string style = cta.Length > 2 ? CssToken(cta[2]) : "primary";
+                html.AppendFormat("<a class=\"onyx-campaign-cta-link onyx-campaign-cta-link--{0}\" href=\"{1}\">{2}</a>",
+                    style,
+                    EncodeAttr(url),
+                    Encode(cta[0]));
+            }
+
+            html.Append("</div></div></section>");
+            return html.ToString();
+        }
+
+        private string RenderSpacerSectionBlock(ProductCampaignBlock block)
+        {
+            return string.Format(
+                "<div class=\"onyx-campaign-spacer onyx-campaign-spacer--{0}\" aria-hidden=\"true\"></div>",
+                CssToken(FirstText(block.LayoutVariant, "medium")));
+        }
+
+        private string RenderMediaHtml(ProductCampaignBlock block, Product product, string cssClass, bool useProductFallback = false)
+        {
+            string mediaUrl = ResolveCampaignUrl(useProductFallback ? FirstText(block.MediaUrl, product.ImageUrl) : block.MediaUrl);
+            if (string.IsNullOrWhiteSpace(mediaUrl)) return string.Empty;
+
+            string mediaType = FirstText(block.MediaType, mediaUrl.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase) ? "mp4" : "image").ToLowerInvariant();
+            string alt = FirstText(block.MediaAlt, product.Name, "ONYX product media");
+            if (mediaType == "mp4" || mediaType == "video")
+            {
+                return string.Format("<video class=\"{0}\" src=\"{1}\" title=\"{2}\" controls muted loop playsinline></video>",
+                    EncodeAttr(cssClass),
+                    EncodeAttr(mediaUrl),
+                    EncodeAttr(alt));
+            }
+
+            return string.Format("<img class=\"{0}\" src=\"{1}\" alt=\"{2}\" loading=\"lazy\" />",
+                EncodeAttr(cssClass),
+                EncodeAttr(mediaUrl),
+                EncodeAttr(alt));
+        }
+
+        private string CampaignBlockClass(ProductCampaignBlock block, string baseClass)
+        {
+            string background = CssToken(FirstText(block.BackgroundVariant, block.LayoutVariant, "light"));
+            string layout = CssToken(FirstText(block.LayoutVariant, "default"));
+            string themeClass = background == "dark" || layout == "dark"
+                ? "onyx-campaign-block--dark"
+                : "onyx-campaign-block--light";
+
+            return string.Format("onyx-campaign-block {0} {1} onyx-campaign-block--layout-{2}",
+                EncodeAttr(baseClass),
+                themeClass,
+                EncodeAttr(layout));
+        }
+
+        private string RenderEyebrow(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? string.Empty : "<span class=\"onyx-campaign-eyebrow\">" + Encode(value) + "</span>";
+        }
+
+        private string RenderHeadline(string value, string fallback)
+        {
+            string text = FirstText(value, fallback);
+            return string.IsNullOrWhiteSpace(text) ? string.Empty : "<h2>" + Encode(text) + "</h2>";
+        }
+
+        private string RenderBody(string value, string fallback)
+        {
+            string text = FirstText(value, fallback);
+            return string.IsNullOrWhiteSpace(text) ? string.Empty : "<p>" + EncodeMultiline(text) + "</p>";
+        }
+
+        private static IList<string[]> ParseDelimitedLines(string rawValue, int minimumParts, int maximumParts)
+        {
+            var rows = new List<string[]>();
+            foreach (string line in (rawValue ?? string.Empty).Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string[] parts = line
+                    .Split('|')
+                    .Take(maximumParts)
+                    .Select(part => part.Trim())
+                    .ToArray();
+
+                if (parts.Length < minimumParts) continue;
+                if (parts.Take(minimumParts).Any(string.IsNullOrWhiteSpace)) continue;
+                rows.Add(parts);
+            }
+
+            return rows;
+        }
+
+        private string ResolveCampaignUrl(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return string.Empty;
+            string trimmed = value.Trim();
+
+            if (trimmed.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.StartsWith("vbscript:", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+            {
+                return string.Empty;
+            }
+
+            Uri absoluteUri;
+            if (Uri.TryCreate(trimmed, UriKind.Absolute, out absoluteUri))
+            {
+                return absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps
+                    ? trimmed
+                    : string.Empty;
+            }
+
+            return trimmed.StartsWith("/", StringComparison.Ordinal)
+                ? trimmed
+                : ResolveUrl(trimmed);
+        }
+
+        private static string Encode(string value)
+        {
+            return HttpUtility.HtmlEncode(value ?? string.Empty);
+        }
+
+        private static string EncodeAttr(string value)
+        {
+            return HttpUtility.HtmlAttributeEncode(value ?? string.Empty);
+        }
+
+        private static string EncodeMultiline(string value)
+        {
+            return Encode(value).Replace("\r\n", "<br />").Replace("\n", "<br />");
+        }
+
+        private static string CssToken(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return "default";
+
+            var token = new StringBuilder();
+            foreach (char c in value.Trim().ToLowerInvariant())
+            {
+                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-')
+                    token.Append(c);
+                else if (char.IsWhiteSpace(c) || c == '_')
+                    token.Append('-');
+            }
+
+            return token.Length == 0 ? "default" : token.ToString();
+        }
+
+        private static string FirstText(params string[] values)
+        {
+            foreach (string value in values)
+                if (!string.IsNullOrWhiteSpace(value))
+                    return value.Trim();
+
+            return string.Empty;
         }
 
         // REPLACED: Handle Swatch Clicks instead of Dropdown

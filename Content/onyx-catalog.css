@@ -123,25 +123,86 @@
 
 .onyx-product-media {
     align-items: center;
-    aspect-ratio: 1.28;
-    background: transparent;
+    aspect-ratio: 1 / 1;
+    background: #18181c;
     display: flex;
     justify-content: center;
     overflow: hidden;
-    padding: 24px;
+    padding: 0;
     position: relative;
 }
 
 .onyx-product-media img {
+    width: 100%;
     height: 100%;
-    max-width: 100%;
-    object-fit: contain;
-    transform: scale(1.02);
+    max-width: none;
+    object-fit: cover;
+    transform: none;
     transition: transform 220ms ease;
 }
 
 .onyx-product-card:hover .onyx-product-media img {
-    transform: scale(1.08);
+    transform: scale(1.02);
+}
+
+.onyx-product-gallery {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.onyx-product-gallery-slide {
+    inset: 0;
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.onyx-product-gallery-slide.is-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.onyx-product-gallery-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 999px;
+    background: rgba(5,5,5,0.68);
+    color: #fff;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 160ms ease, background 160ms ease;
+}
+
+.onyx-product-gallery-nav--prev { left: 10px; }
+.onyx-product-gallery-nav--next { right: 10px; }
+
+.onyx-product-media:hover .onyx-product-gallery-nav,
+.onyx-product-gallery-nav:focus {
+    opacity: 1;
+}
+
+.onyx-product-gallery-nav:hover,
+.onyx-product-gallery-nav:focus {
+    background: #fff;
+    color: #050505;
+}
+
+.onyx-product-gallery-count {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 3;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: rgba(5,5,5,0.64);
+    color: rgba(255,255,255,0.8);
+    font-size: 10px;
+    font-weight: 700;
 }
 
 .onyx-product-love {
@@ -604,16 +665,14 @@
 }
 
 .onyx-catalog-page .onyx-product-media {
-    aspect-ratio: 1.16;
-    background:
-        radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.11), transparent 58%),
-        #0a0a0a !important;
+    aspect-ratio: 1 / 1;
+    background: #18181c !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    padding: 18px;
+    padding: 0;
 }
 
 .onyx-catalog-page .onyx-product-media img {
-    filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.5)) !important;
+    filter: none !important;
 }
 
 .onyx-product-body {

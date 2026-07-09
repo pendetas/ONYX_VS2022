@@ -24,6 +24,11 @@ namespace ONYX_DDAC.customer_page
         protected global::System.Web.UI.WebControls.Image imgProduct;
 
         /// <summary>
+        /// litProductImageNav control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal litProductImageNav;
+
+        /// <summary>
         /// litBrandCategory control.
         /// </summary>
         /// <remarks>
@@ -139,5 +144,20 @@ namespace ONYX_DDAC.customer_page
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblMessage;
+
+        /// <summary>
+        /// pnlKeyboardCampaign control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlKeyboardCampaign;
+
+        /// <summary>
+        /// litCampaignBlocks control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal litCampaignBlocks;
+
     }
 }

@@ -44,6 +44,10 @@ namespace ONYX_DDAC.customer_page
         /// <summary>
         /// CatalogPagerLiteral control.
         /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.Literal CatalogPagerLiteral;
 
         /// <summary>

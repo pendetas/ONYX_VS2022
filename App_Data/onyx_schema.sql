@@ -91,6 +91,63 @@ CREATE TABLE product_variants (
     UNIQUE (product_id, product_variant_id)
 );
 
+CREATE TABLE product_images (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  image_path TEXT NOT NULL,
+  display_order INTEGER NOT NULL DEFAULT 0,
+  is_primary BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE INDEX ix_product_images_product_order
+  ON product_images (product_id, display_order, id);
+
+CREATE UNIQUE INDEX ux_product_images_single_primary
+  ON product_images (product_id)
+  WHERE is_primary;
+
+CREATE TABLE product_campaigns (
+  product_id BIGINT PRIMARY KEY REFERENCES products(id) ON DELETE CASCADE,
+  campaign_enabled BOOLEAN NOT NULL DEFAULT false,
+  hero_eyebrow VARCHAR(120),
+  hero_headline VARCHAR(180),
+  hero_body TEXT,
+  hero_image_url TEXT,
+  overview_eyebrow VARCHAR(120),
+  overview_headline VARCHAR(180),
+  overview_body TEXT,
+  performance_eyebrow VARCHAR(120),
+  performance_headline VARCHAR(180),
+  performance_body TEXT,
+  feature_cards TEXT,
+  specs_text TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE TABLE product_campaign_blocks (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  block_type VARCHAR(50) NOT NULL,
+  sort_order INTEGER NOT NULL,
+  is_enabled BOOLEAN NOT NULL DEFAULT true,
+  eyebrow VARCHAR(100),
+  headline VARCHAR(200),
+  body TEXT,
+  media_type VARCHAR(20),
+  media_url TEXT,
+  media_alt VARCHAR(200),
+  layout_variant VARCHAR(50),
+  background_variant VARCHAR(50),
+  json_content TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP
+);
+
+CREATE INDEX ix_product_campaign_blocks_product_sort
+  ON product_campaign_blocks (product_id, sort_order, id);
+
 CREATE TABLE cart (
   cart_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id BIGINT NOT NULL,

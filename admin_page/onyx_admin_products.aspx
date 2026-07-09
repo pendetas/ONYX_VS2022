@@ -160,8 +160,8 @@
 
     /* Image */
     .card-image {
-        height: 185px;
-        background: #0d0d0f;
+        aspect-ratio: 1 / 1;
+        background: #18181c;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -179,6 +179,68 @@
     }
 
     .product-card:hover .card-image img { opacity: 1; }
+
+    .admin-product-gallery {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .admin-product-gallery-slide {
+        inset: 0;
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .admin-product-gallery-slide.is-active {
+        opacity: 0.88;
+        pointer-events: auto;
+    }
+
+    .product-card:hover .admin-product-gallery-slide.is-active { opacity: 1; }
+
+    .admin-product-gallery-nav {
+        position: absolute;
+        top: 50%;
+        z-index: 3;
+        width: 30px;
+        height: 30px;
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 999px;
+        background: rgba(0,0,0,0.58);
+        color: #fff;
+        transform: translateY(-50%);
+        opacity: 0;
+        transition: opacity 0.15s, background 0.15s;
+    }
+
+    .admin-product-gallery-nav--prev { left: 9px; }
+    .admin-product-gallery-nav--next { right: 9px; }
+
+    .card-image:hover .admin-product-gallery-nav,
+    .admin-product-gallery-nav:focus {
+        opacity: 1;
+    }
+
+    .admin-product-gallery-nav:hover,
+    .admin-product-gallery-nav:focus {
+        background: #fff;
+        color: #050505;
+    }
+
+    .admin-product-gallery-count {
+        position: absolute;
+        left: 10px;
+        bottom: 10px;
+        z-index: 3;
+        padding: 3px 7px;
+        border-radius: 999px;
+        background: rgba(0,0,0,0.56);
+        color: rgba(255,255,255,0.76);
+        font-size: 9px;
+        font-weight: 700;
+    }
 
     .card-placeholder {
         font-size: 54px;
@@ -317,9 +379,7 @@
                    data-category="<%# Eval("Category").ToString().ToLower() %>">
 
                     <div class="card-image">
-                        <%# !string.IsNullOrEmpty(Eval("ImageUrl") as string)
-                            ? "<img src=\"" + Eval("ImageUrl") + "\" alt=\"" + Eval("Name") + "\" onerror=\"this.style.display='none'\" />"
-                            : "" %>
+                        <%# GetProductGalleryHtml(Container.DataItem) %>
                         <div class="card-placeholder"<%# !string.IsNullOrEmpty(Eval("ImageUrl") as string) ? " style=\"display:none\"" : "" %>><%# Eval("Name").ToString().Substring(0, 1).ToUpper() %></div>
                         <span class="card-category-badge"><%# Eval("Category") %></span>
                     </div>
@@ -378,6 +438,31 @@
         }
 
         applyFilters();
+
+        document.addEventListener('click', function (event) {
+            var control = event.target.closest('[data-gallery-prev],[data-gallery-next]');
+            if (!control) return;
+            event.preventDefault();
+            event.stopPropagation();
+
+            var gallery = control.closest('[data-product-gallery]');
+            if (!gallery) return;
+
+            var slides = gallery.querySelectorAll('[data-gallery-slide]');
+            if (!slides.length) return;
+
+            var current = parseInt(gallery.getAttribute('data-gallery-index') || '0', 10);
+            var next = current + (control.hasAttribute('data-gallery-next') ? 1 : -1);
+            var index = (next + slides.length) % slides.length;
+
+            gallery.setAttribute('data-gallery-index', String(index));
+            slides.forEach(function (slide, slideIndex) {
+                slide.classList.toggle('is-active', slideIndex === index);
+            });
+
+            var count = gallery.querySelector('.admin-product-gallery-count');
+            if (count) count.textContent = (index + 1) + '/' + slides.length;
+        });
     </script>
 
 </asp:Content>

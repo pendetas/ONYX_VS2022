@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using Npgsql;
 using ONYX_DDAC.DAL;
 using ONYX_DDAC.Models;
 
@@ -11,6 +13,19 @@ namespace ONYX_DDAC.Services
     {
         private readonly ProductRepository _repo;
         private readonly PersonalizationService _personalizationService;
+        private static readonly HashSet<string> AllowedCampaignBlockTypes =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "HeroMedia",
+                "TextSection",
+                "TextImageSection",
+                "MediaSection",
+                "VideoSection",
+                "FeatureCards",
+                "TechSpecs",
+                "CTASection",
+                "SpacerSection"
+            };
 
         public ProductService() : this(new ProductRepository(), new PersonalizationService()) { }
 
@@ -46,6 +61,192 @@ namespace ONYX_DDAC.Services
         public Product GetProductById(long id)
         {
             return _repo.GetProductById(id);
+        }
+
+        public List<ProductImage> GetProductImages(long productId)
+        {
+            return _repo.GetProductImages(productId);
+        }
+
+        public ProductCampaign GetProductCampaign(long productId)
+        {
+            return _repo.GetProductCampaign(productId);
+        }
+
+        public void SaveProductCampaign(ProductCampaign campaign)
+        {
+            if (campaign == null || campaign.ProductId <= 0) return;
+
+            campaign.HeroEyebrow = NormalizeCampaignText(campaign.HeroEyebrow);
+            campaign.HeroHeadline = NormalizeCampaignText(campaign.HeroHeadline);
+            campaign.HeroBody = NormalizeCampaignText(campaign.HeroBody);
+            campaign.HeroImageUrl = NormalizeCampaignText(campaign.HeroImageUrl);
+            campaign.OverviewEyebrow = NormalizeCampaignText(campaign.OverviewEyebrow);
+            campaign.OverviewHeadline = NormalizeCampaignText(campaign.OverviewHeadline);
+            campaign.OverviewBody = NormalizeCampaignText(campaign.OverviewBody);
+            campaign.PerformanceEyebrow = NormalizeCampaignText(campaign.PerformanceEyebrow);
+            campaign.PerformanceHeadline = NormalizeCampaignText(campaign.PerformanceHeadline);
+            campaign.PerformanceBody = NormalizeCampaignText(campaign.PerformanceBody);
+            campaign.FeatureCards = NormalizeCampaignText(campaign.FeatureCards);
+            campaign.SpecsText = NormalizeCampaignText(campaign.SpecsText);
+
+            _repo.SaveProductCampaign(campaign);
+        }
+
+        public IList<ProductCampaignBlock> GetCampaignBlocksByProductId(long productId)
+        {
+            return _repo.GetCampaignBlocksByProductId(productId);
+        }
+
+        public string AddCampaignBlock(long productId, string blockType)
+        {
+            string normalizedBlockType = NormalizeCampaignBlockType(blockType);
+            if (productId <= 0) return "Product not found.";
+            if (string.IsNullOrWhiteSpace(normalizedBlockType)) return "Choose a valid campaign block type.";
+
+            _repo.AddCampaignBlock(new ProductCampaignBlock
+            {
+                ProductId = productId,
+                BlockType = normalizedBlockType,
+                IsEnabled = true
+            });
+
+            _repo.EnsureSortOrderIntegrity(productId);
+            return null;
+        }
+
+        public string AddCampaignBlock(ProductCampaignBlock block)
+        {
+            if (block == null || block.ProductId <= 0) return "Campaign block not found.";
+
+            string normalizedBlockType = NormalizeCampaignBlockType(block.BlockType);
+            if (string.IsNullOrWhiteSpace(normalizedBlockType)) return "Choose a valid campaign block type.";
+
+            block.BlockType = normalizedBlockType;
+            block.Eyebrow = NormalizeCampaignText(block.Eyebrow);
+            block.Headline = NormalizeCampaignText(block.Headline);
+            block.Body = NormalizeCampaignText(block.Body);
+            block.MediaType = NormalizeCampaignText(block.MediaType);
+            block.MediaUrl = NormalizeCampaignText(block.MediaUrl);
+            block.MediaAlt = NormalizeCampaignText(block.MediaAlt);
+            block.LayoutVariant = NormalizeCampaignText(block.LayoutVariant);
+            block.BackgroundVariant = NormalizeCampaignText(block.BackgroundVariant);
+            block.JsonContent = NormalizeCampaignText(block.JsonContent);
+
+            _repo.AddCampaignBlock(block);
+            return null;
+        }
+
+        public string UpdateCampaignBlock(ProductCampaignBlock block)
+        {
+            if (block == null || block.Id <= 0 || block.ProductId <= 0) return "Campaign block not found.";
+
+            string normalizedBlockType = NormalizeCampaignBlockType(block.BlockType);
+            if (string.IsNullOrWhiteSpace(normalizedBlockType)) return "Choose a valid campaign block type.";
+
+            block.BlockType = normalizedBlockType;
+            block.Eyebrow = NormalizeCampaignText(block.Eyebrow);
+            block.Headline = NormalizeCampaignText(block.Headline);
+            block.Body = NormalizeCampaignText(block.Body);
+            block.MediaType = NormalizeCampaignText(block.MediaType);
+            block.MediaUrl = NormalizeCampaignText(block.MediaUrl);
+            block.MediaAlt = NormalizeCampaignText(block.MediaAlt);
+            block.LayoutVariant = NormalizeCampaignText(block.LayoutVariant);
+            block.BackgroundVariant = NormalizeCampaignText(block.BackgroundVariant);
+            block.JsonContent = NormalizeCampaignText(block.JsonContent);
+
+            _repo.UpdateCampaignBlock(block);
+            return null;
+        }
+
+        public void DeleteCampaignBlock(long blockId, long productId)
+        {
+            _repo.DeleteCampaignBlock(blockId, productId);
+        }
+
+        public void MoveCampaignBlockUp(long blockId, long productId)
+        {
+            _repo.MoveCampaignBlockUp(blockId, productId);
+        }
+
+        public void MoveCampaignBlockDown(long blockId, long productId)
+        {
+            _repo.MoveCampaignBlockDown(blockId, productId);
+        }
+
+        public void ReorderCampaignBlocks(long productId)
+        {
+            _repo.ReorderCampaignBlocks(productId);
+        }
+
+        public void EnsureSortOrderIntegrity(long productId)
+        {
+            _repo.EnsureSortOrderIntegrity(productId);
+        }
+
+        public void EnsureProductImageRows(long productId, string imageUrl)
+        {
+            _repo.EnsureProductImageRows(productId, imageUrl);
+        }
+
+        public void SaveProductImages(long productId, IList<string> imageOrderTokens,
+            ISet<long> removedImageIds, IList<string> newImagePaths, string fallbackImageUrl)
+        {
+            IList<string> orderTokens = imageOrderTokens ?? new List<string>();
+            ISet<long> removedIds = removedImageIds ?? new HashSet<long>();
+            IList<string> uploadedPaths = newImagePaths ?? new List<string>();
+            Dictionary<long, ProductImage> existingImages = _repo.GetProductImages(productId)
+                .ToDictionary(image => image.Id);
+            var orderedImages = new List<ProductImage>();
+
+            foreach (string rawToken in orderTokens)
+            {
+                string token = (rawToken ?? string.Empty).Trim();
+                if (token.StartsWith("existing:", StringComparison.OrdinalIgnoreCase))
+                {
+                    long id;
+                    if (!long.TryParse(token.Substring("existing:".Length), out id)) continue;
+                    if (removedIds.Contains(id)) continue;
+                    ProductImage image;
+                    if (!existingImages.TryGetValue(id, out image)) continue;
+                    orderedImages.Add(new ProductImage { ImagePath = image.ImagePath });
+                }
+                else if (token.StartsWith("new:", StringComparison.OrdinalIgnoreCase))
+                {
+                    int index;
+                    if (int.TryParse(token.Substring("new:".Length), out index) &&
+                        index >= 0 &&
+                        index < uploadedPaths.Count &&
+                        !string.IsNullOrWhiteSpace(uploadedPaths[index]))
+                    {
+                        orderedImages.Add(new ProductImage { ImagePath = uploadedPaths[index] });
+                    }
+                }
+            }
+
+            if (orderedImages.Count == 0 && orderTokens.Count == 0 && removedIds.Count == 0)
+            {
+                orderedImages.AddRange(existingImages
+                    .Values
+                    .OrderBy(image => image.DisplayOrder)
+                    .ThenBy(image => image.Id)
+                    .Select(image => new ProductImage { ImagePath = image.ImagePath }));
+            }
+
+            if (orderedImages.Count == 0 && orderTokens.Count == 0 && removedIds.Count == 0 &&
+                !string.IsNullOrWhiteSpace(fallbackImageUrl))
+            {
+                orderedImages.Add(new ProductImage { ImagePath = fallbackImageUrl.Trim() });
+            }
+
+            for (int i = 0; i < orderedImages.Count; i++)
+            {
+                orderedImages[i].ProductId = productId;
+                orderedImages[i].DisplayOrder = i;
+                orderedImages[i].IsPrimary = i == 0;
+            }
+
+            _repo.ReplaceProductImages(productId, orderedImages);
         }
 
         // Validates and inserts a new product. Returns the new product ID,
@@ -113,6 +314,25 @@ namespace ONYX_DDAC.Services
         public void DeleteVariant(long variantId, long productId)
         {
             _repo.DeleteVariant(variantId, productId);
+        }
+
+        public string DeleteProduct(long id)
+        {
+            if (id <= 0) return "Product not found.";
+
+            try
+            {
+                bool deleted = _repo.DeleteProduct(id);
+                return deleted ? null : "Product not found.";
+            }
+            catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.ForeignKeyViolation)
+            {
+                return "This product is linked to existing orders, reviews, or wishlists and cannot be deleted.";
+            }
+            catch (DbException)
+            {
+                throw;
+            }
         }
 
         public PagedResult<Product> GetCatalogProducts(CatalogQuery query)
@@ -246,6 +466,19 @@ namespace ONYX_DDAC.Services
             };
 
             return _repo.GetCatalogProducts(repositoryQuery);
+        }
+
+        private static string NormalizeCampaignText(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        }
+
+        private static string NormalizeCampaignBlockType(string blockType)
+        {
+            string value = NormalizeCampaignText(blockType);
+            if (value == null) return null;
+
+            return AllowedCampaignBlockTypes.Contains(value) ? value : null;
         }
     }
 }

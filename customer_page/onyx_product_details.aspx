@@ -6,7 +6,7 @@
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <section class="onyx-details-page">
+    <section class="<%= DetailsPageCssClass %>">
         <div class="onyx-details-shell">
             <div class="row align-items-center">
                 
@@ -14,6 +14,7 @@
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <div class="onyx-image-stage">
                         <asp:Image ID="imgProduct" runat="server" />
+                        <asp:Literal ID="litProductImageNav" runat="server" />
                     </div>
                 </div>
 
@@ -93,5 +94,22 @@
                 </div>
             </div>
         </div>
+
+        <asp:Panel ID="pnlKeyboardCampaign" runat="server" Visible="false" CssClass="onyx-keyboard-campaign-body">
+            <asp:Literal ID="litCampaignBlocks" runat="server" />
+        </asp:Panel>
     </section>
+    <script>
+        document.addEventListener('click', function (event) {
+            var button = event.target.closest('[data-detail-image]');
+            if (!button) return;
+            var targetId = button.getAttribute('data-detail-target');
+            var image = targetId ? document.getElementById(targetId) : null;
+            if (!image) return;
+            image.src = button.getAttribute('data-detail-image');
+            document.querySelectorAll('[data-detail-image][data-detail-target="' + targetId + '"]').forEach(function (item) {
+                item.classList.toggle('is-active', item === button);
+            });
+        });
+    </script>
 </asp:Content>

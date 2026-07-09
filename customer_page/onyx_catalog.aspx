@@ -8,13 +8,6 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <section class="onyx-catalog-page">
         <div class="onyx-catalog-shell">
-            <header class="onyx-catalog-banner">
-                <div class="onyx-catalog-banner-content">
-                    <div class="onyx-catalog-kicker">Gear for every move</div>
-                    <h1 class="onyx-catalog-title"><%= CatalogTitle %></h1>
-                    <p class="onyx-catalog-copy"><%= CatalogDescription %></p>
-                </div>
-            </header>
 
             <div class="onyx-catalog-toolbar">
                 <nav class="onyx-catalog-filters" aria-label="Catalog filters">
@@ -70,7 +63,7 @@
                                     <path d="M20.8 4.6c-1.8-1.7-4.7-1.7-6.5 0L12 6.8 9.7 4.6c-1.8-1.7-4.7-1.7-6.5 0-1.9 1.8-1.9 4.7 0 6.5l8.8 8.4 8.8-8.4c1.9-1.8 1.9-4.7 0-6.5z" />
                                 </svg>
                             </asp:LinkButton>
-                            <img src='<%# GetProductImageUrl(Eval("ImageUrl"), Eval("Category")) %>' alt='<%# Server.HtmlEncode(Eval("Name").ToString()) %>' loading="lazy" />
+                            <%# GetProductGalleryHtml(Container.DataItem) %>
                         </div>
                         <div class="onyx-product-body">
                             <div class="onyx-product-meta">
@@ -96,4 +89,30 @@
             </asp:Panel>
         </div>
     </section>
+    <script>
+        (function () {
+            function showSlide(gallery, nextIndex) {
+                var slides = gallery.querySelectorAll('[data-gallery-slide]');
+                if (!slides.length) return;
+                var index = (nextIndex + slides.length) % slides.length;
+                gallery.setAttribute('data-gallery-index', String(index));
+                slides.forEach(function (slide, slideIndex) {
+                    slide.classList.toggle('is-active', slideIndex === index);
+                });
+                var count = gallery.querySelector('.onyx-product-gallery-count');
+                if (count) count.textContent = (index + 1) + '/' + slides.length;
+            }
+
+            document.addEventListener('click', function (event) {
+                var button = event.target.closest('[data-gallery-prev],[data-gallery-next]');
+                if (!button) return;
+                event.preventDefault();
+                event.stopPropagation();
+                var gallery = button.closest('[data-product-gallery]');
+                if (!gallery) return;
+                var current = parseInt(gallery.getAttribute('data-gallery-index') || '0', 10);
+                showSlide(gallery, current + (button.hasAttribute('data-gallery-next') ? 1 : -1));
+            });
+        })();
+    </script>
 </asp:Content>
