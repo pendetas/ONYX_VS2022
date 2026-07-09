@@ -1,21 +1,21 @@
 :root {
-    --onyx-primary: #f3f8ff;
-    --onyx-on-primary: #02070d;
-    --onyx-ink: #eef6ff;
+    --onyx-primary: #f4f4f5;
+    --onyx-on-primary: #050505;
+    --onyx-ink: #f4f4f5;
     --onyx-ink-hover: #ffffff;
-    --onyx-body: #9baabd;
-    --onyx-body-mid: #6f8197;
-    --onyx-mute: #4d6076;
-    --onyx-hairline: rgba(126, 163, 202, 0.18);
-    --onyx-canvas: #050b14;
-    --onyx-canvas-deep: #02070d;
-    --onyx-canvas-soft: #091321;
-    --onyx-canvas-card: rgba(11, 24, 39, 0.78);
-    --onyx-canvas-mid: #112033;
-    --onyx-glass: rgba(9, 21, 35, 0.72);
-    --onyx-glass-strong: rgba(10, 24, 40, 0.92);
-    --onyx-accent: #4b9cff;
-    --onyx-plasma: #4b9cff;
+    --onyx-body: #a1a1aa;
+    --onyx-body-mid: #71717a;
+    --onyx-mute: #52525b;
+    --onyx-hairline: rgba(216, 221, 227, 0.18);
+    --onyx-canvas: #050505;
+    --onyx-canvas-deep: #020202;
+    --onyx-canvas-soft: #0a0a0c;
+    --onyx-canvas-card: rgba(16, 16, 18, 0.78);
+    --onyx-canvas-mid: #18181b;
+    --onyx-glass: rgba(10, 10, 12, 0.72);
+    --onyx-glass-strong: rgba(16, 16, 18, 0.92);
+    --onyx-accent: #d8dde3;
+    --onyx-plasma: #00ff87;
     --onyx-laser: #ff2a5f;
     --onyx-overclock: #ff9d00;
     --onyx-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -135,9 +135,6 @@ p,
 .onyx-catalog-count,
 .onyx-product-meta,
 .onyx-product-price,
-.onyx-wishlist-kicker,
-.onyx-wishlist-count,
-.onyx-wishlist-price,
 .onyx-stock-status,
 .onyx-logout-kicker,
 .auth-field label,
@@ -208,7 +205,6 @@ p,
 .onyx-account-shell,
 .onyx-product-card,
 .onyx-empty-catalog,
-.onyx-wishlist-card,
 .onyx-support-card,
 .onyx-about-card,
 .onyx-legal-panel,
@@ -284,8 +280,7 @@ p,
 .onyx-product-love,
 .onyx-account-button-secondary,
 .onyx-logout-cancel,
-.onyx-wishlist-secondary,
-.onyx-wishlist-action {
+.onyx-wishlist-secondary {
     background: transparent !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
     border-radius: 9999px !important;
@@ -299,7 +294,7 @@ p,
 .onyx-product-love.is-active,
 .onyx-detail-wishlist:hover,
 .onyx-detail-wishlist.is-active,
-.onyx-wishlist-action:hover {
+.onyx-wishlist-secondary:hover {
     background: var(--onyx-primary) !important;
     border-color: var(--onyx-primary) !important;
     color: var(--onyx-on-primary) !important;
@@ -372,14 +367,14 @@ b {
     text-shadow: none !important;
 }
 
-/* Navy glass customer experience */
+/* Black-and-silver customer experience */
 html,
 body,
 .onyx-user-shell {
     background:
-        radial-gradient(circle at 50% -10%, rgba(48, 115, 194, 0.2), transparent 34rem),
-        radial-gradient(circle at 10% 50%, rgba(20, 65, 112, 0.14), transparent 32rem),
-        linear-gradient(180deg, var(--onyx-canvas-deep), var(--onyx-canvas) 32%, #07111d) !important;
+        radial-gradient(circle at 50% -10%, rgba(216, 221, 227, 0.14), transparent 34rem),
+        radial-gradient(circle at 10% 50%, rgba(255, 255, 255, 0.055), transparent 32rem),
+        linear-gradient(180deg, var(--onyx-canvas-deep), var(--onyx-canvas) 32%, #080809) !important;
     background-attachment: fixed !important;
 }
 
@@ -391,7 +386,7 @@ body,
 .onyx-user-main select,
 .onyx-user-main textarea,
 .onyx-glass-input {
-    background: rgba(4, 12, 22, 0.76) !important;
+    background: #000000 !important;
     border: 1px solid var(--onyx-hairline) !important;
     border-radius: 6px !important;
     color: var(--onyx-ink) !important;
@@ -401,8 +396,8 @@ body,
 .onyx-user-main input:focus,
 .onyx-user-main select:focus,
 .onyx-user-main textarea:focus {
-    border-color: rgba(75, 156, 255, 0.72) !important;
-    box-shadow: 0 0 0 3px rgba(75, 156, 255, 0.12) !important;
+    border-color: rgba(216, 221, 227, 0.72) !important;
+    box-shadow: 0 0 0 3px rgba(216, 221, 227, 0.12) !important;
 }
 
 .onyx-glass-button,
@@ -411,12 +406,11 @@ body,
 .onyx-profile-button,
 .onyx-support-button,
 .onyx-about-button,
-.onyx-wishlist-button,
 .onyx-pay-btn,
 .onyx-checkout-btn,
 .onyx-product-view {
-    background: rgba(17, 39, 63, 0.86) !important;
-    border: 1px solid rgba(75, 156, 255, 0.42) !important;
+    background: rgba(24, 24, 27, 0.86) !important;
+    border: 1px solid rgba(216, 221, 227, 0.32) !important;
     border-radius: 6px !important;
     color: var(--onyx-ink) !important;
     transition: background 160ms ease, border-color 160ms ease, transform 160ms ease !important;
@@ -428,11 +422,10 @@ body,
 .onyx-profile-button:hover,
 .onyx-support-button:hover,
 .onyx-about-button:hover,
-.onyx-wishlist-button:hover,
 .onyx-pay-btn:hover,
 .onyx-checkout-btn:hover,
 .onyx-product-view:hover {
-    background: rgba(75, 156, 255, 0.2) !important;
+    background: rgba(216, 221, 227, 0.14) !important;
     border-color: var(--onyx-accent) !important;
     transform: translateY(-1px);
 }
@@ -442,12 +435,8 @@ body,
 .onyx-checkout-page,
 .onyx-invoice-page,
 .onyx-details-page,
-.onyx-wishlist-page,
-.onyx-account-page,
-.onyx-profile-page,
 .onyx-about,
-.onyx-support,
-.onyx-legal {
+.onyx-support {
     background: transparent !important;
     color: var(--onyx-ink) !important;
 }
@@ -455,22 +444,16 @@ body,
 .onyx-cart-shell,
 .onyx-checkout-shell,
 .onyx-details-shell,
-.onyx-wishlist-shell,
-.onyx-account-layout,
 .onyx-profile-shell,
 .onyx-about-shell,
 .onyx-support-shell,
-.onyx-legal-shell,
 .onyx-catalog-shell {
     width: min(100% - 40px, 1440px) !important;
 }
 
 .onyx-product-card,
-.onyx-wishlist-card,
 .onyx-order-card,
 .onyx-profile-card,
-.onyx-account-section,
-.onyx-account-sidebar,
 .onyx-checkout-panel,
 .onyx-invoice-sheet,
 .onyx-cart-table,
@@ -486,13 +469,11 @@ body,
 .onyx-about-operation,
 .onyx-about-statement,
 .onyx-about-cta,
-.onyx-legal-card,
-.onyx-legal-aside,
 .onyx-invoice-card,
 .onyx-image-stage,
 .onyx-specs-list {
     background:
-        linear-gradient(145deg, rgba(18, 38, 61, 0.82), rgba(6, 16, 28, 0.82)) !important;
+        linear-gradient(145deg, rgba(24, 24, 27, 0.82), rgba(8, 8, 9, 0.82)) !important;
     border: 1px solid var(--onyx-hairline) !important;
     border-radius: 8px !important;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 20px 50px rgba(0, 0, 0, 0.16) !important;
@@ -505,37 +486,20 @@ body,
 
 .onyx-ddac-product-card,
 .onyx-home-standard-card {
-    background: linear-gradient(145deg, rgba(18, 38, 61, 0.78), rgba(6, 16, 28, 0.78)) !important;
+    background: linear-gradient(145deg, rgba(24, 24, 27, 0.78), rgba(8, 8, 9, 0.78)) !important;
     border-color: var(--onyx-hairline) !important;
-}
-
-.onyx-account-nav a,
-.onyx-legal-toc a {
-    border-color: rgba(126, 163, 202, 0.12) !important;
-    color: var(--onyx-body) !important;
-}
-
-.onyx-account-nav a:hover,
-.onyx-account-nav a.is-active,
-.onyx-legal-toc a:hover {
-    background: rgba(75, 156, 255, 0.12) !important;
-    color: var(--onyx-ink) !important;
 }
 
 .onyx-section-title,
 .onyx-cart-title,
 .onyx-checkout-title,
-.onyx-wishlist-title,
-.onyx-account-title,
-.onyx-product-title,
-.onyx-legal-title {
+.onyx-product-title {
     color: var(--onyx-ink) !important;
 }
 
 .onyx-catalog-kicker,
 .onyx-catalog-count,
 .onyx-product-meta,
-.onyx-account-subtitle,
 .onyx-page-lede,
 .onyx-stock-status {
     color: var(--onyx-body) !important;

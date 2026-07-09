@@ -664,14 +664,16 @@
                         </div>
                     </div>
 
-                    <div class="captcha-wrapper">
-                        <div class="cf-turnstile"
-                             data-sitekey="<%= Server.HtmlEncode(TurnstileSiteKey) %>"
-                             data-theme="dark"
-                             data-callback="onTurnstileSuccess"
-                             data-expired-callback="onTurnstileExpired"
-                             data-error-callback="onTurnstileExpired"></div>
-                    </div>
+                    <% if (CaptchaRequired) { %>
+                        <div class="captcha-wrapper">
+                            <div class="cf-turnstile"
+                                 data-sitekey="<%= Server.HtmlEncode(TurnstileSiteKey) %>"
+                                 data-theme="dark"
+                                 data-callback="onTurnstileSuccess"
+                                 data-expired-callback="onTurnstileExpired"
+                                 data-error-callback="onTurnstileExpired"></div>
+                        </div>
+                    <% } %>
 
                     <!-- Uiverse "empty-moose-12" LinkButton -->
                     <asp:LinkButton ID="LoginButton" runat="server" CssClass="cta captcha-pending" OnClientClick="return ensureCaptchaCompleted();" OnClick="LoginButton_Click">
@@ -687,10 +689,13 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <% if (CaptchaRequired) { %>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <% } %>
 
     <script>
-        let captchaCompleted = false;
+        const captchaRequired = <%= CaptchaRequired.ToString().ToLowerInvariant() %>;
+        let captchaCompleted = !captchaRequired;
 
         function onTurnstileSuccess() {
             captchaCompleted = true;
@@ -705,7 +710,7 @@
         }
 
         function ensureCaptchaCompleted() {
-            return captchaCompleted;
+            return !captchaRequired || captchaCompleted;
         }
 
         document.addEventListener("DOMContentLoaded", () => {

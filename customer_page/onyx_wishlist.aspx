@@ -1,7 +1,7 @@
 <%@ Page Title="Wishlist" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_wishlist.aspx.cs" Inherits="ONYX_DDAC.customer_page.onyx_wishlist" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-commerce.css") %>" />
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-commerce.css") %>?v=20260709-black-wishlist" />
 
 </asp:Content>
 

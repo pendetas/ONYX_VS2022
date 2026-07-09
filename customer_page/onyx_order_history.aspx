@@ -1,7 +1,7 @@
 <%@ Page Title="Order History" Language="C#" MasterPageFile="~/customer_page/onyx_user.Master" AutoEventWireup="true" CodeBehind="onyx_order_history.aspx.cs" Inherits="ONYX_DDAC.customer_page.onyx_order_history" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link rel="stylesheet" href="/Content/onyx-account.css" />
+    <link rel="stylesheet" href="/Content/onyx-account.css?v=20260709-black-console" />
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
