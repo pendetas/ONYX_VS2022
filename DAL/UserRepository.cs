@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using Npgsql;
@@ -334,7 +333,7 @@ namespace ONYX_DDAC.DAL
 
         public bool CreateUser(User user)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (var conn = CreateDefaultNpgsqlConnection())
             {
                 conn.Open();
                 string sql = @"
@@ -360,7 +359,7 @@ namespace ONYX_DDAC.DAL
 
         public User CreateOAuthUser(OAuthProfile profile, string username)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (var conn = CreateDefaultNpgsqlConnection())
             {
                 conn.Open();
                 using (var tx = conn.BeginTransaction())
@@ -408,7 +407,7 @@ namespace ONYX_DDAC.DAL
 
         public User GetUserByOAuthAccount(string provider, string providerUserId)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (var conn = CreateDefaultNpgsqlConnection())
             {
                 conn.Open();
                 const string sql = @"
@@ -433,7 +432,7 @@ namespace ONYX_DDAC.DAL
 
         public void LinkOAuthAccount(long userId, OAuthProfile profile)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (var conn = CreateDefaultNpgsqlConnection())
             {
                 conn.Open();
                 using (var tx = conn.BeginTransaction())
@@ -446,7 +445,7 @@ namespace ONYX_DDAC.DAL
 
         public bool UsernameExists(string username)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (var conn = CreateDefaultNpgsqlConnection())
             {
                 conn.Open();
                 const string sql = "SELECT COUNT(*) FROM users WHERE LOWER(username) = @Username";
@@ -460,7 +459,7 @@ namespace ONYX_DDAC.DAL
 
         public string CheckDuplicate(string username, string email)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (var conn = CreateDefaultNpgsqlConnection())
             {
                 conn.Open();
                 string sql = @"
@@ -498,7 +497,7 @@ namespace ONYX_DDAC.DAL
 
         public User GetUserByUsername(string username)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            using (var conn = CreateReadNpgsqlConnection())
             {
                 conn.Open();
                 string sql = "SELECT id, username, email, password_hash, role FROM users WHERE LOWER(username) = LOWER(@Username)";
@@ -528,7 +527,7 @@ namespace ONYX_DDAC.DAL
 
         public void UpdatePasswordHash(long userId, string newHash)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (var conn = CreateDefaultNpgsqlConnection())
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand(
@@ -546,7 +545,7 @@ namespace ONYX_DDAC.DAL
             string tokenHash,
             int expiryMinutes)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (var conn = CreateDefaultNpgsqlConnection())
             {
                 conn.Open();
                 using (var tx = conn.BeginTransaction())
@@ -580,7 +579,7 @@ namespace ONYX_DDAC.DAL
 
         public long? GetValidPasswordResetUserId(string tokenHash)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("ReadConnection")))
+            using (var conn = CreateReadNpgsqlConnection())
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand(
@@ -603,7 +602,7 @@ namespace ONYX_DDAC.DAL
 
         public bool ResetPasswordWithToken(string tokenHash, string newPasswordHash)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString("DefaultConnection")))
+            using (var conn = CreateDefaultNpgsqlConnection())
             {
                 conn.Open();
                 using (var tx = conn.BeginTransaction())
@@ -766,7 +765,7 @@ namespace ONYX_DDAC.DAL
 
         private User GetUserByEmailInternal(string email, string connectionName)
         {
-            using (var conn = new NpgsqlConnection(GetConnectionString(connectionName)))
+            using (var conn = CreateNpgsqlConnection(connectionName))
             {
                 conn.Open();
                 const string sql =
@@ -856,64 +855,24 @@ namespace ONYX_DDAC.DAL
             return provider.Trim().ToLowerInvariant();
         }
 
-        private string GetConnectionString(string connectionName = "DefaultConnection")
+        private static NpgsqlConnection CreateDefaultNpgsqlConnection()
         {
-            string host = GetEnvironmentValue("ONYX_DB_HOST");
-            string portValue = GetEnvironmentValue("ONYX_DB_PORT");
-            string database = GetEnvironmentValue("ONYX_DB_NAME");
-            string username = GetEnvironmentValue("ONYX_DB_USER");
-            string password = GetEnvironmentValue("ONYX_DB_PASSWORD");
-
-            bool hasAnyRdsSetting =
-                !string.IsNullOrWhiteSpace(host) ||
-                !string.IsNullOrWhiteSpace(portValue) ||
-                !string.IsNullOrWhiteSpace(database) ||
-                !string.IsNullOrWhiteSpace(username) ||
-                !string.IsNullOrWhiteSpace(password);
-
-            if (hasAnyRdsSetting)
-            {
-                if (string.IsNullOrWhiteSpace(host) ||
-                    string.IsNullOrWhiteSpace(portValue) ||
-                    string.IsNullOrWhiteSpace(database) ||
-                    string.IsNullOrWhiteSpace(username) ||
-                    string.IsNullOrWhiteSpace(password))
-                {
-                    throw new ConfigurationErrorsException(
-                        "RDS database configuration is incomplete. Check ONYX_DB_HOST, ONYX_DB_PORT, ONYX_DB_NAME, ONYX_DB_USER, and ONYX_DB_PASSWORD.");
-                }
-
-                int port;
-                if (!int.TryParse(portValue, out port) || port < 1 || port > 65535)
-                    throw new ConfigurationErrorsException("ONYX_DB_PORT must be a valid TCP port number.");
-
-                return new NpgsqlConnectionStringBuilder
-                {
-                    Host = host,
-                    Port = port,
-                    Database = database,
-                    Username = username,
-                    Password = password,
-                    SslMode = SslMode.Require,
-                    TrustServerCertificate = true,
-                    Pooling = true,
-                    MinPoolSize = 1,
-                    MaxPoolSize = 100,
-                    KeepAlive = 30
-                }.ConnectionString;
-            }
-
-            return ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
+            return (NpgsqlConnection)DbConnectionFactory.CreateDefaultConnection();
         }
 
-        private static string GetEnvironmentValue(string variableName)
+        private static NpgsqlConnection CreateReadNpgsqlConnection()
         {
-            string value = Environment.GetEnvironmentVariable(variableName);
+            return (NpgsqlConnection)DbConnectionFactory.CreateReadConnection();
+        }
 
-            if (string.IsNullOrWhiteSpace(value))
-                value = Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User);
+        private static NpgsqlConnection CreateNpgsqlConnection(string connectionName)
+        {
+            if (string.Equals(connectionName, "ReadConnection", StringComparison.OrdinalIgnoreCase))
+            {
+                return CreateReadNpgsqlConnection();
+            }
 
-            return value;
+            return CreateDefaultNpgsqlConnection();
         }
     }
 }

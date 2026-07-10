@@ -14,13 +14,27 @@ namespace ONYX_DDAC.DAL
     {
         private const string DefaultConnectionName = "DefaultConnection";
         private const string ReadConnectionName = "ReadConnection";
-        private static readonly string[] RdsEnvironmentVariableNames =
+        private const string DatabaseAppSettingName = "OnyxDatabaseName";
+        private static readonly string[] HostEnvironmentVariableNames = { "ONYX_DB_HOST", "DB_HOST", "RDS_HOSTNAME", "RDS_HOST", "PGHOST" };
+        private static readonly string[] PortEnvironmentVariableNames = { "ONYX_DB_PORT", "DB_PORT", "RDS_PORT", "PGPORT" };
+        private static readonly string[] DatabaseEnvironmentVariableNames = { "ONYX_DB_NAME", "DB_NAME", "RDS_DB_NAME", "PGDATABASE", "POSTGRES_DB" };
+        private static readonly string[] UserEnvironmentVariableNames = { "ONYX_DB_USER", "DB_USER", "RDS_USERNAME", "PGUSER", "POSTGRES_USER" };
+        private static readonly string[] PasswordEnvironmentVariableNames = { "ONYX_DB_PASSWORD", "DB_PASSWORD", "RDS_PASSWORD", "PGPASSWORD", "POSTGRES_PASSWORD" };
+        private static readonly string[][] RdsEnvironmentVariableGroups =
         {
-            "ONYX_DB_HOST",
-            "ONYX_DB_PORT",
-            "ONYX_DB_NAME",
-            "ONYX_DB_USER",
-            "ONYX_DB_PASSWORD"
+            HostEnvironmentVariableNames,
+            PortEnvironmentVariableNames,
+            DatabaseEnvironmentVariableNames,
+            UserEnvironmentVariableNames,
+            PasswordEnvironmentVariableNames
+        };
+        private static readonly string[] RdsEnvironmentVariableLabels =
+        {
+            "ONYX_DB_HOST/DB_HOST/RDS_HOSTNAME/RDS_HOST/PGHOST",
+            "ONYX_DB_PORT/DB_PORT/RDS_PORT/PGPORT",
+            "ONYX_DB_NAME/DB_NAME/RDS_DB_NAME/PGDATABASE/POSTGRES_DB",
+            "ONYX_DB_USER/DB_USER/RDS_USERNAME/PGUSER/POSTGRES_USER",
+            "ONYX_DB_PASSWORD/DB_PASSWORD/RDS_PASSWORD/PGPASSWORD/POSTGRES_PASSWORD"
         };
 
         /// <summary>
@@ -84,11 +98,15 @@ namespace ONYX_DDAC.DAL
             List<string> missingVariables = new List<string>();
             int configuredVariableCount = 0;
 
-            foreach (string variableName in RdsEnvironmentVariableNames)
+            for (int i = 0; i < RdsEnvironmentVariableGroups.Length; i++)
             {
-                if (string.IsNullOrWhiteSpace(GetEnvironmentValue(variableName)))
+                string value = i == 2
+                    ? GetDatabaseName()
+                    : GetEnvironmentValue(RdsEnvironmentVariableGroups[i]);
+
+                if (string.IsNullOrWhiteSpace(value))
                 {
-                    missingVariables.Add(variableName);
+                    missingVariables.Add(RdsEnvironmentVariableLabels[i]);
                 }
                 else
                 {
@@ -115,20 +133,20 @@ namespace ONYX_DDAC.DAL
         private static DbConnection CreateRdsConnection()
         {
             int port;
-            string portValue = GetEnvironmentValue("ONYX_DB_PORT");
+            string portValue = GetEnvironmentValue(PortEnvironmentVariableNames);
 
             if (!int.TryParse(portValue, out port) || port < 1 || port > 65535)
             {
-                throw new ConfigurationErrorsException("ONYX_DB_PORT must be a valid TCP port number.");
+                throw new ConfigurationErrorsException("Database port environment variable must be a valid TCP port number.");
             }
 
             NpgsqlConnectionStringBuilder builder = new NpgsqlConnectionStringBuilder
             {
-                Host = GetEnvironmentValue("ONYX_DB_HOST"),
+                Host = GetEnvironmentValue(HostEnvironmentVariableNames),
                 Port = port,
-                Database = GetEnvironmentValue("ONYX_DB_NAME"),
-                Username = GetEnvironmentValue("ONYX_DB_USER"),
-                Password = GetEnvironmentValue("ONYX_DB_PASSWORD"),
+                Database = GetDatabaseName(),
+                Username = GetEnvironmentValue(UserEnvironmentVariableNames),
+                Password = GetEnvironmentValue(PasswordEnvironmentVariableNames),
                 SslMode = SslMode.Require,
                 TrustServerCertificate = true,
                 Pooling = true,
@@ -150,6 +168,33 @@ namespace ONYX_DDAC.DAL
             }
 
             return value;
+        }
+
+        private static string GetEnvironmentValue(params string[] variableNames)
+        {
+            foreach (string variableName in variableNames)
+            {
+                string value = GetEnvironmentValue(variableName);
+
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+
+        private static string GetDatabaseName()
+        {
+            string databaseName = ConfigurationManager.AppSettings[DatabaseAppSettingName];
+
+            if (!string.IsNullOrWhiteSpace(databaseName))
+            {
+                return databaseName.Trim();
+            }
+
+            return GetEnvironmentValue(DatabaseEnvironmentVariableNames);
         }
 
         private static DbConnection CreateConnection(string connectionName)

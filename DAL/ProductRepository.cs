@@ -370,6 +370,37 @@ namespace ONYX_DDAC.DAL
             }
         }
 
+        public void EnsureProductCampaignEnabled(long productId)
+        {
+            if (productId <= 0) return;
+
+            using (DbConnection conn = DbConnectionFactory.CreateDefaultConnection())
+            {
+                conn.Open();
+                using (DbCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        INSERT INTO product_campaigns (
+                            product_id, campaign_enabled, updated_at
+                        )
+                        VALUES (
+                            @ProductId, true, now()
+                        )
+                        ON CONFLICT (product_id) DO UPDATE SET
+                            campaign_enabled = true,
+                            updated_at = now()
+                        WHERE product_campaigns.campaign_enabled = false";
+
+                    DbParameter productIdParam = cmd.CreateParameter();
+                    productIdParam.ParameterName = "@ProductId";
+                    productIdParam.Value = productId;
+                    cmd.Parameters.Add(productIdParam);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         public List<ProductCampaignBlock> GetCampaignBlocksByProductId(long productId)
         {
             var list = new List<ProductCampaignBlock>();
