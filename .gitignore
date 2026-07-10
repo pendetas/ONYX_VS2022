@@ -20,6 +20,12 @@ packages/
 # ASP.NET generated files
 App_Data/*.mdf
 App_Data/*.ldf
+App_Data/*.log
+
+# Agent development artifacts
+.agents/
+.impeccable/
+.claude/
 
 # OS/editor files
 .DS_Store
