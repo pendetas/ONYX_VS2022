@@ -12,6 +12,12 @@ namespace ONYX_DDAC.auth_page
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!IsPostBack &&
+                string.Equals(Convert.ToString(Session["Role"]), "admin", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
         }
 
         protected void btnRegister_Click(object sender, EventArgs e)

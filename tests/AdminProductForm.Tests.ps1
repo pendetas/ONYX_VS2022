@@ -233,7 +233,7 @@ $checks = [ordered]@{
     'HeroMedia campaign block uses centered black ONYX layout' =
         $detailsCode -match 'onyx-campaign-hero' -and
         $detailsCode -match 'onyx-campaign-hero-text' -and
-        $commerceCss -match '\.onyx-details-page\.onyx-keyboard-campaign \.onyx-campaign\s*\{[\s\S]*background:\s*#050505' -and
+        $commerceCss -match '\.onyx-details-page\.onyx-product-campaign \.onyx-campaign\s*\{[\s\S]*background:\s*#050505' -and
         $commerceCss -match '\.onyx-campaign-block\s*\{[\s\S]*background:\s*#050505' -and
         $commerceCss -match '\.onyx-campaign-hero\s*\{[\s\S]*display:\s*flex[\s\S]*flex-direction:\s*column[\s\S]*text-align:\s*center' -and
         $commerceCss -match '\.onyx-campaign-hero-text\s*\{[\s\S]*margin-left:\s*auto[\s\S]*margin-right:\s*auto' -and
