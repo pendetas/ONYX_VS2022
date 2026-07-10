@@ -21,14 +21,23 @@ packages/
 App_Data/*.mdf
 App_Data/*.ldf
 App_Data/*.log
-
-# Agent development artifacts
-.agents/
-.impeccable/
-.claude/
+*_debug.log
+AppSettings.Local.config
 
 # OS/editor files
 .DS_Store
 Thumbs.db
 *.tmp
 *.temp
+
+# Local agent/tooling state
+.agents/
+.codex/
+.impeccable/
+.superpowers/
+.magicpath-work/
+.playwright-mcp/
+
+# Local secrets
+.env
+.env.*

@@ -24,6 +24,21 @@ namespace ONYX_DDAC.auth_page
         protected global::System.Web.UI.WebControls.Label lblMessage;
 
         /// <summary>
+        /// GoogleRegisterButton control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton GoogleRegisterButton;
+
+        /// <summary>
+        /// DiscordRegisterButton control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton DiscordRegisterButton;
+
+        /// <summary>
+        /// FacebookRegisterButton control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton FacebookRegisterButton;
+
+        /// <summary>
         /// txtFullName control.
         /// </summary>
         /// <remarks>
@@ -51,15 +66,6 @@ namespace ONYX_DDAC.auth_page
         protected global::System.Web.UI.WebControls.TextBox txtEmail;
 
         /// <summary>
-        /// txtDob control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtDob;
-
-        /// <summary>
         /// txtPhone control.
         /// </summary>
         /// <remarks>
@@ -67,15 +73,6 @@ namespace ONYX_DDAC.auth_page
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPhone;
-
-        /// <summary>
-        /// txtAddress control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAddress;
 
         /// <summary>
         /// txtPassword control.
@@ -96,12 +93,21 @@ namespace ONYX_DDAC.auth_page
         protected global::System.Web.UI.WebControls.TextBox txtConfirmPassword;
 
         /// <summary>
+        /// txtDob control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtDob;
+
+        /// <summary>
         /// btnRegister control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnRegister;
+        protected global::System.Web.UI.WebControls.LinkButton btnRegister;
     }
 }

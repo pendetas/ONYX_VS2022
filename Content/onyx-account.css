@@ -1,0 +1,715 @@
+.onyx-profile-page,
+.onyx-account-page {
+    background: #000000;
+    color: #f4f4f5;
+    min-height: 100vh;
+    padding: 144px 28px 88px;
+}
+
+.onyx-account-layout {
+    display: grid;
+    align-items: start;
+    gap: 36px;
+    grid-template-columns: 280px minmax(0, 1fr);
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 1280px;
+}
+
+.onyx-account-sidebar {
+    align-self: start;
+    background: #000000 !important;
+    border: 0 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 4px 22px 8px 0;
+    position: sticky;
+    top: 112px;
+}
+
+.onyx-account-title {
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: -1.2px !important;
+    line-height: 1.15;
+    margin: 0 0 8px;
+}
+
+.onyx-account-subtitle {
+    color: #a1a1aa;
+    font-size: 13px !important;
+    line-height: 1.55;
+    margin: 0;
+    max-width: 24ch;
+}
+
+.onyx-account-nav {
+    display: grid;
+    gap: 8px;
+    margin-top: 30px;
+}
+
+.onyx-account-nav a {
+    align-items: center;
+    background: #050505 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: #a1a1aa;
+    display: flex;
+    font-size: 11px;
+    gap: 12px;
+    letter-spacing: 1px !important;
+    min-height: 50px;
+    padding: 0 15px;
+    text-decoration: none;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.onyx-account-nav a:hover {
+    background: #0d0d0f !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
+}
+
+.onyx-account-nav a.is-active {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.34) !important;
+    color: #ffffff !important;
+}
+
+.onyx-account-nav a:focus-visible {
+    border-color: rgba(255, 255, 255, 0.72) !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    outline: none;
+}
+
+.onyx-account-nav svg {
+    color: currentColor;
+    flex: 0 0 auto;
+    height: 18px;
+    width: 18px;
+}
+
+.onyx-account-main {
+    min-width: 0;
+}
+
+.onyx-profile-page .onyx-account-section,
+.onyx-order-section {
+    background: #050505 !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: clamp(28px, 3vw, 40px);
+}
+
+.onyx-account-section-header {
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    gap: 18px;
+    padding-bottom: 28px;
+}
+
+.onyx-profile-photo {
+    align-items: center;
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 8px;
+    color: #f4f4f5;
+    display: flex;
+    flex: 0 0 auto;
+    height: 54px;
+    justify-content: center;
+    width: 54px;
+}
+
+.onyx-profile-photo svg {
+    height: 22px;
+    width: 22px;
+}
+
+.onyx-profile-page .onyx-section-title,
+.onyx-order-section .onyx-section-title {
+    color: #ffffff;
+    font-size: 25px;
+    font-weight: 400;
+    letter-spacing: -1px !important;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.onyx-profile-page .onyx-page-lede,
+.onyx-order-section .onyx-page-lede {
+    color: #a1a1aa;
+    font-size: 14px !important;
+    line-height: 1.5;
+    margin: 5px 0 0;
+    max-width: 62ch;
+}
+
+.onyx-settings-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.onyx-settings-actions {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    margin-top: 28px;
+    padding-top: 22px;
+}
+
+.onyx-profile-button,
+.onyx-profile-ghost {
+    align-items: center;
+    border-radius: 6px;
+    display: inline-flex;
+    font-family: var(--onyx-mono, monospace) !important;
+    font-size: 11px;
+    font-weight: 400;
+    justify-content: center;
+    letter-spacing: 0.8px;
+    min-height: 42px;
+    padding: 0 18px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.onyx-profile-button {
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    color: #000000;
+}
+
+.onyx-profile-ghost {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #f4f4f5;
+}
+
+.onyx-profile-button:hover,
+.onyx-profile-ghost:hover {
+    transform: translateY(-1px);
+}
+
+.onyx-profile-button:focus-visible,
+.onyx-profile-ghost:focus-visible {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    outline: 1px solid rgba(255, 255, 255, 0.72);
+    outline-offset: 2px;
+}
+
+.onyx-settings-grid {
+    display: grid;
+    gap: 22px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 28px;
+}
+
+.onyx-profile-field {
+    display: grid;
+    gap: 7px;
+}
+
+.onyx-profile-field.full {
+    grid-column: 1 / -1;
+}
+
+.onyx-profile-field label {
+    color: #9ca3af;
+    font-family: var(--onyx-mono, monospace) !important;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    line-height: 1.35;
+    text-transform: uppercase;
+}
+
+.onyx-profile-input,
+.onyx-profile-textarea {
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+    color: #ffffff;
+    font: inherit;
+    font-size: 15px;
+    min-height: 44px;
+    outline: none;
+    padding: 11px 12px;
+    width: 100%;
+}
+
+.onyx-profile-textarea {
+    min-height: 118px;
+    resize: vertical;
+}
+
+.onyx-profile-input:focus,
+.onyx-profile-textarea:focus {
+    border-color: rgba(255, 255, 255, 0.74);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+.onyx-hidden-field,
+.onyx-rating-source {
+    left: -9999px;
+    position: absolute;
+}
+
+.onyx-profile-feedback {
+    color: #a1a1aa;
+    display: inline-flex;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.onyx-order-list {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.onyx-order-header {
+    align-items: flex-start;
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+}
+
+.onyx-order-header > div {
+    min-width: 0;
+}
+
+.onyx-order-filters {
+    align-items: center;
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    display: flex;
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 3px;
+}
+
+.onyx-order-filters a,
+.onyx-order-notice {
+    color: #a1a1aa;
+    text-decoration: none;
+}
+
+.onyx-order-filters a {
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-family: var(--onyx-mono, monospace) !important;
+    font-size: 10px;
+    letter-spacing: 0.6px;
+    min-height: 32px;
+    padding: 8px 10px;
+    text-transform: uppercase;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.onyx-order-filters a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+.onyx-order-filters a:focus-visible {
+    border-color: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    outline: none;
+}
+
+.onyx-order-filters a.is-active,
+.onyx-profile-ghost.is-primary {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.34);
+    color: #ffffff;
+}
+
+.onyx-order-notice {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 20px 0 0;
+    padding: 12px 14px;
+}
+
+.onyx-order-status.status-paid {
+    border-color: rgba(72, 210, 145, 0.55);
+    color: #87e8b8;
+}
+
+.onyx-order-status.status-cancelled {
+    border-color: rgba(235, 110, 124, 0.45);
+    color: #f0a0aa;
+}
+
+.onyx-order-status.status-pending_payment {
+    border-color: rgba(85, 160, 255, 0.55);
+    color: #93c2ff;
+}
+
+.onyx-order-ledger-labels,
+.onyx-order-card {
+    display: grid;
+    grid-template-columns: minmax(118px, 0.75fr) minmax(180px, 1.4fr) minmax(110px, 0.7fr) minmax(168px, 1fr);
+}
+
+.onyx-order-ledger-labels {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    color: #71717a;
+    font-family: var(--onyx-mono, monospace);
+    font-size: 10px;
+    gap: 16px;
+    letter-spacing: 0.8px;
+    margin-top: 24px;
+    padding: 10px 12px;
+    text-transform: uppercase;
+}
+
+.onyx-order-card {
+    align-items: center;
+    background: transparent !important;
+    border: 0 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    gap: 16px;
+    min-height: 92px;
+    padding: 16px 12px;
+}
+
+.onyx-order-card:first-child {
+    border-top: 0 !important;
+}
+
+.onyx-order-id {
+    color: #ffffff;
+    display: block;
+    font-family: var(--onyx-mono, monospace) !important;
+    font-size: 11px;
+    letter-spacing: 0.7px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.onyx-order-date {
+    color: #a1a1aa;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.onyx-order-status {
+    align-items: center;
+    border: 1px solid rgba(216, 221, 227, 0.32);
+    border-radius: 999px;
+    color: #d8dde3;
+    display: inline-flex;
+    font-family: var(--onyx-mono, monospace) !important;
+    font-size: 9px;
+    letter-spacing: 0.7px;
+    min-height: 26px;
+    padding: 0 9px;
+    text-transform: uppercase;
+}
+
+.onyx-order-summary {
+    color: #a1a1aa;
+    font-size: 13px !important;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.onyx-order-footer {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.onyx-order-total {
+    color: #ffffff;
+    font-family: var(--onyx-mono, monospace) !important;
+    font-size: 13px;
+    letter-spacing: 0.4px;
+}
+
+.onyx-order-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.onyx-order-actions .onyx-profile-ghost {
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    min-height: 30px;
+    padding: 0 10px;
+}
+
+.onyx-star-rating {
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 7px;
+    display: grid;
+    gap: 12px;
+    padding: 13px 16px;
+}
+
+.onyx-star-row {
+    display: flex;
+    gap: 8px;
+}
+
+.onyx-star-button {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 13px;
+    color: #000000;
+    display: inline-flex;
+    font-size: 20px;
+    height: 44px;
+    justify-content: center;
+    line-height: 1;
+    width: 44px;
+}
+
+.onyx-star-button::before {
+    content: "\2605";
+}
+
+.onyx-star-button:not(.is-active) {
+    background: #151515;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #55555d;
+}
+
+.onyx-order-section .onyx-profile-empty {
+    color: #a1a1aa;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.onyx-order-section .onyx-profile-empty {
+    background: #000000;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    font-size: 14px;
+    margin-top: 24px;
+    padding: 20px;
+}
+
+/* Preserve the unreviewed reviews page while account navigation remains shared. */
+.onyx-section-title {
+    font-family: Syne, Inter, sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    margin: 0;
+}
+
+.onyx-page-lede {
+    color: #a1a1aa;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 12px 0 0;
+    max-width: 680px;
+}
+
+.onyx-review-submit {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 999px;
+    color: #000000;
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 800;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 24px;
+    text-decoration: none;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.onyx-review-submit:hover {
+    transform: translateY(-2px);
+}
+
+.onyx-review-grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 34px;
+}
+
+.onyx-review-field {
+    display: grid;
+    gap: 12px;
+}
+
+.onyx-review-field.full {
+    grid-column: 1 / -1;
+}
+
+.onyx-review-field label {
+    color: #a1a1aa;
+    font-size: 14px;
+    line-height: 1.35;
+}
+
+.onyx-review-input,
+.onyx-review-textarea {
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 7px;
+    color: #ffffff;
+    font: inherit;
+    font-size: 17px;
+    outline: none;
+    padding: 16px 18px;
+    width: 100%;
+}
+
+.onyx-review-textarea {
+    min-height: 118px;
+    resize: vertical;
+}
+
+.onyx-review-input:focus,
+.onyx-review-textarea:focus {
+    border-color: rgba(255, 255, 255, 0.74);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+.onyx-rating-copy,
+.onyx-profile-empty {
+    color: #a1a1aa;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.onyx-profile-empty {
+    background: #080808;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    margin-top: 28px;
+    padding: 28px;
+}
+
+@media (max-width: 980px) {
+    .onyx-account-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-account-sidebar {
+        position: static;
+    }
+
+    .onyx-account-nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .onyx-order-header {
+        display: grid;
+    }
+
+    .onyx-order-filters {
+        justify-self: start;
+    }
+
+    .onyx-order-ledger-labels {
+        display: none;
+    }
+
+    .onyx-order-card {
+        align-items: start;
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .onyx-order-summary {
+        grid-column: 1;
+    }
+
+    .onyx-order-state {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .onyx-order-footer {
+        align-items: flex-start;
+        grid-column: 1 / -1;
+    }
+
+    .onyx-order-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 680px) {
+    .onyx-profile-page,
+    .onyx-account-page {
+        padding: 124px 18px 78px;
+    }
+
+    .onyx-settings-grid,
+    .onyx-review-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-profile-page .onyx-account-section {
+        padding: 20px;
+    }
+
+    .onyx-order-section {
+        padding: 20px;
+    }
+
+    .onyx-account-section-header {
+        align-items: flex-start;
+    }
+
+    .onyx-order-filters {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .onyx-order-filters a {
+        text-align: center;
+    }
+
+    .onyx-order-card {
+        grid-template-columns: 1fr;
+        padding: 16px 0;
+    }
+
+    .onyx-order-state,
+    .onyx-order-summary,
+    .onyx-order-footer {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .onyx-account-nav a,
+    .onyx-order-filters a,
+    .onyx-profile-button,
+    .onyx-profile-ghost {
+        transition: none;
+    }
+
+    .onyx-profile-button:hover,
+    .onyx-profile-ghost:hover {
+        transform: none;
+    }
+}

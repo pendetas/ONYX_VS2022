@@ -1,0 +1,612 @@
+:root {
+    --onyx-black: #000;
+    --onyx-night: #050505;
+    --onyx-panel: #0b0b0c;
+    --onyx-graphite: #141414;
+    --onyx-line: #2a2a2d;
+    --onyx-line-strong: #57575d;
+    --onyx-muted: #929298;
+    --onyx-text: #f5f5f3;
+    --onyx-silver: #d8dde3;
+    --onyx-white: #fff;
+}
+
+html.onyx-personalization-shell-page,
+body.onyx-personalization-shell-page {
+    background: var(--onyx-black) !important;
+    color: var(--onyx-text);
+    overflow-x: hidden;
+}
+
+.onyx-personalization-shell-page .onyx-user-shell {
+    background: var(--onyx-black) !important;
+    color: var(--onyx-text);
+    min-height: 100vh;
+}
+
+.onyx-personalization-shell-page .onyx-ddac-nav,
+.onyx-personalization-shell-page .onyx-ddac-nav.is-scrolled,
+.onyx-personalization-shell-page .onyx-master-footer {
+    display: none !important;
+}
+
+.onyx-personalization-shell-page .onyx-user-main {
+    align-items: stretch;
+    display: flex;
+    min-height: 100vh;
+}
+
+.onyx-personalization-shell-page .onyx-nav-search,
+.onyx-personalization-shell-page .onyx-ddac-nav-register,
+.onyx-personalization-shell-page .onyx-ddac-account-trigger,
+.onyx-personalization-shell-page .onyx-ddac-nav-icon,
+.onyx-personalization-shell-page .onyx-mobile-menu-button {
+    background: var(--onyx-panel) !important;
+    border-color: rgba(216, 221, 227, 0.18) !important;
+    color: var(--onyx-text) !important;
+}
+
+.onyx-personalization-shell-page .onyx-nav-search:focus-within {
+    border-color: rgba(216, 221, 227, 0.7) !important;
+    box-shadow: 0 0 0 3px rgba(216, 221, 227, 0.1) !important;
+}
+
+.onyx-personalization-shell-page .onyx-nav-search svg,
+.onyx-personalization-shell-page .onyx-nav-search input,
+.onyx-personalization-shell-page .onyx-nav-search input::placeholder,
+.onyx-personalization-shell-page .onyx-ddac-account-name,
+.onyx-personalization-shell-page .text-secondary {
+    color: var(--onyx-silver) !important;
+    stroke: var(--onyx-silver) !important;
+}
+
+.onyx-personalization-shell-page .onyx-ddac-nav-links > a:hover,
+.onyx-personalization-shell-page .onyx-ddac-nav-links > a.is-active,
+.onyx-personalization-shell-page .onyx-ddac-dropdown-trigger:hover,
+.onyx-personalization-shell-page .onyx-ddac-dropdown-trigger.is-active {
+    border-bottom-color: var(--onyx-silver) !important;
+    color: var(--onyx-text) !important;
+}
+
+.onyx-personalization-shell-page .onyx-ddac-nav-icon-count,
+.onyx-personalization-shell-page .onyx-ddac-account-avatar {
+    background: var(--onyx-silver) !important;
+    color: var(--onyx-black) !important;
+}
+
+.onyx-personalization-shell-page .onyx-ddac-megapanel,
+.onyx-personalization-shell-page .onyx-ddac-account-menu,
+.onyx-personalization-shell-page .onyx-mobile-menu {
+    background: var(--onyx-panel) !important;
+    border-color: rgba(216, 221, 227, 0.14) !important;
+}
+
+.onyx-personalization-shell-page .onyx-mobile-menu > a,
+.onyx-personalization-shell-page .onyx-master-footer-links a,
+.onyx-personalization-shell-page .onyx-master-footer-bottom,
+.onyx-personalization-shell-page .onyx-master-footer-bottom a {
+    color: rgba(216, 221, 227, 0.8) !important;
+}
+
+.onyx-personalization-shell-page .onyx-logout-card {
+    background: var(--onyx-panel) !important;
+    border-color: rgba(216, 221, 227, 0.18) !important;
+}
+
+.onyx-personalization-page {
+    align-items: center;
+    background: #050505;
+    color: var(--onyx-text);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 18px 24px 28px;
+    width: 100%;
+}
+
+.onyx-personalization-frame {
+    display: grid;
+    gap: 38px;
+    grid-template-rows: auto 1fr auto auto;
+    margin: 0 auto;
+    max-width: 864px;
+    min-height: min(100vh - 46px, 720px);
+    width: 100%;
+}
+
+.onyx-personalization-frame.is-intro {
+    align-content: center;
+    display: flex;
+    justify-content: center;
+}
+
+.onyx-personalization-frame.is-intro .onyx-personalization-progress,
+.onyx-personalization-frame.is-intro .onyx-personalization-stage,
+.onyx-personalization-frame.is-intro .onyx-personalization-client-feedback,
+.onyx-personalization-frame.is-intro .onyx-personalization-actions,
+.onyx-personalization-frame.is-intro .onyx-personalization-feedback {
+    display: none !important;
+}
+
+.onyx-personalization-sr {
+    height: 1px;
+    left: -10000px;
+    overflow: hidden;
+    position: absolute;
+    top: auto;
+    width: 1px;
+}
+
+.onyx-personalization-intro {
+    align-items: center;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    min-height: min(74vh, 560px);
+    text-align: center;
+    width: 100%;
+}
+
+.onyx-personalization-frame.is-intro .onyx-personalization-intro {
+    display: flex;
+}
+
+.onyx-personalization-intro.is-leaving {
+    animation: onyx-personalization-intro-out 420ms ease forwards;
+}
+
+.onyx-personalization-intro-kicker {
+    color: #929298;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    margin: 0 0 20px;
+    text-transform: uppercase;
+}
+
+.onyx-personalization-intro-title,
+.onyx-personalization-intro-subtitle {
+    margin: 0;
+    overflow: hidden;
+    text-align: center;
+}
+
+.onyx-personalization-intro-title {
+    color: #fff;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: clamp(46px, 7vw, 76px);
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.02;
+}
+
+.onyx-personalization-intro-subtitle {
+    color: #b7bbc4;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: clamp(20px, 3vw, 32px);
+    font-weight: 500;
+    line-height: 1.25;
+    margin-top: 18px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.onyx-personalization-intro-subtitle.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.onyx-split-char {
+    animation: onyx-split-char-in 860ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: var(--split-delay);
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(40px);
+    will-change: opacity, transform;
+}
+
+.onyx-personalization-progress {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+}
+
+.onyx-personalization-progress-copy {
+    align-items: center;
+    color: var(--onyx-muted);
+    display: flex;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    justify-content: space-between;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.onyx-personalization-progress-copy strong {
+    color: var(--onyx-silver);
+    font-weight: 400;
+}
+
+.onyx-personalization-progress-track {
+    background: #1a1a1d;
+    border-radius: 999px;
+    height: 4px;
+    overflow: hidden;
+}
+
+.onyx-personalization-progress-track span {
+    background: #f8f8f8;
+    display: block;
+    height: 100%;
+    transition: width 240ms ease;
+    width: 20%;
+}
+
+.onyx-personalization-stage {
+    align-items: start;
+    display: grid;
+    position: relative;
+}
+
+.onyx-personalization-step,
+.onyx-personalization-step[hidden] {
+    display: none !important;
+    min-height: 398px;
+}
+
+.onyx-personalization-step.is-active {
+    animation: onyx-personalization-enter 220ms ease both;
+    display: block !important;
+}
+
+.onyx-personalization-kicker {
+    display: none;
+}
+
+.onyx-personalization-step h1 {
+    color: #fff;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.12;
+    margin: 0 auto;
+    max-width: 760px;
+    text-align: center;
+}
+
+.onyx-personalization-prompt {
+    color: #b7bbc4;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 12px auto 46px;
+    max-width: 560px;
+    text-align: center;
+}
+
+.onyx-personalization-choices {
+    display: grid;
+    gap: 18px 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.onyx-personalization-choices-compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.onyx-choice {
+    align-items: center;
+    appearance: none;
+    background: #050505 !important;
+    border: 1px solid #25262a !important;
+    border-radius: 12px;
+    color: #f8f8f8 !important;
+    cursor: pointer;
+    display: flex;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    justify-content: space-between;
+    letter-spacing: 0;
+    min-height: 74px;
+    padding: 0 22px;
+    text-align: left;
+    transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    width: 100%;
+}
+
+.onyx-choice i {
+    align-items: center;
+    border: 1px solid #4a4a52;
+    border-radius: 999px;
+    display: inline-flex;
+    height: 22px;
+    justify-content: center;
+    position: relative;
+    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+    width: 22px;
+}
+
+.onyx-choice i::after {
+    border-bottom: 2px solid #050505;
+    border-right: 2px solid #050505;
+    content: "";
+    height: 9px;
+    opacity: 0;
+    transform: rotate(45deg) translate(-1px, -1px);
+    transition: opacity 120ms ease;
+    width: 5px;
+}
+
+.onyx-choice:hover,
+.onyx-choice:focus-visible {
+    background: #0d0d0e !important;
+    border-color: #f8f8f8 !important;
+    box-shadow: none;
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.onyx-choice:active,
+.onyx-choice.is-pressing {
+    transform: translateY(1px) scale(0.992);
+}
+
+.onyx-choice.is-selected,
+.onyx-choice[aria-pressed="true"] {
+    background: #171717 !important;
+    border-color: #f8f8f8 !important;
+    box-shadow: none;
+    color: #fff !important;
+}
+
+.onyx-choice.is-selected i,
+.onyx-choice[aria-pressed="true"] i {
+    background: #f8f8f8;
+    border-color: #f8f8f8;
+    transform: scale(1.04);
+}
+
+.onyx-choice.is-selected i::after,
+.onyx-choice[aria-pressed="true"] i::after {
+    border-color: #050505;
+    opacity: 1;
+}
+
+.onyx-personalization-client-feedback,
+.onyx-personalization-feedback {
+    color: #d8dde3;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: -18px 0 0;
+    min-height: 22px;
+    text-align: center;
+}
+
+.onyx-personalization-actions {
+    align-items: center;
+    border-top: 1px solid #1a1a1d;
+    display: flex;
+    justify-content: space-between;
+    min-height: 78px;
+    padding-top: 24px;
+}
+
+.onyx-personalization-primary-actions {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+}
+
+.onyx-personalization-back,
+.onyx-personalization-next,
+.onyx-personalization-submit {
+    align-items: center;
+    appearance: none;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    gap: 12px;
+    justify-content: center;
+    min-height: 50px;
+    padding: 0 26px;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, opacity 160ms ease, transform 160ms ease;
+}
+
+.onyx-personalization-back {
+    background: #f8f8f8 !important;
+    border: 1px solid #f8f8f8 !important;
+    color: #050505 !important;
+}
+
+.onyx-personalization-back span,
+.onyx-personalization-next span {
+    border-bottom: 1.5px solid currentColor;
+    border-left: 1.5px solid currentColor;
+    display: inline-block;
+    height: 8px;
+    width: 8px;
+}
+
+.onyx-personalization-back span {
+    transform: rotate(45deg);
+}
+
+.onyx-personalization-next span {
+    transform: rotate(225deg);
+}
+
+.onyx-personalization-next,
+.onyx-personalization-submit {
+    background: #f8f8f8 !important;
+    border: 1px solid #f8f8f8 !important;
+    color: #050505 !important;
+    min-width: 114px;
+    box-shadow: none;
+}
+
+.onyx-personalization-submit[hidden] {
+    display: none !important;
+}
+
+.onyx-personalization-back:hover:not(:disabled),
+.onyx-personalization-back:focus-visible {
+    background: #f8f8f8 !important;
+    border-color: #f8f8f8 !important;
+    color: #050505 !important;
+    outline: none;
+}
+
+.onyx-personalization-next:hover:not(:disabled),
+.onyx-personalization-next:focus-visible,
+.onyx-personalization-submit:hover,
+.onyx-personalization-submit:focus-visible {
+    background: #f8f8f8 !important;
+    border-color: #f8f8f8 !important;
+    color: #050505 !important;
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.onyx-personalization-back:disabled,
+.onyx-personalization-next:disabled {
+    cursor: default;
+    opacity: 0.44;
+}
+
+.onyx-personalization-next[hidden],
+button[hidden] {
+    display: none !important;
+}
+
+@keyframes onyx-personalization-enter {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes onyx-split-char-in {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes onyx-personalization-intro-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+@media (max-width: 780px) {
+    .onyx-personalization-page {
+        align-items: stretch;
+        padding: 24px 16px;
+    }
+
+    .onyx-personalization-frame {
+        gap: 32px;
+        min-height: auto;
+    }
+
+    .onyx-personalization-frame.is-intro {
+        min-height: calc(100vh - 48px);
+    }
+
+    .onyx-personalization-kicker {
+        display: none;
+    }
+
+    .onyx-personalization-step h1,
+    .onyx-personalization-prompt {
+        text-align: left;
+    }
+
+    .onyx-personalization-step h1 {
+        font-size: 34px;
+    }
+
+    .onyx-personalization-prompt {
+        margin-bottom: 32px;
+    }
+
+    .onyx-personalization-choices,
+    .onyx-personalization-choices-compact {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-personalization-actions {
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .onyx-personalization-primary-actions {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 520px) {
+    .onyx-personalization-actions {
+        flex-direction: column-reverse;
+    }
+
+    .onyx-personalization-primary-actions,
+    .onyx-personalization-back,
+    .onyx-personalization-next,
+    .onyx-personalization-submit {
+        width: 100%;
+    }
+
+    .onyx-personalization-primary-actions {
+        display: block;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .onyx-personalization-intro.is-leaving,
+    .onyx-personalization-step.is-active {
+        animation: none;
+    }
+
+    .onyx-split-char {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+
+    .onyx-personalization-intro-subtitle {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .onyx-choice,
+    .onyx-choice i,
+    .onyx-personalization-progress-track span,
+    .onyx-personalization-back,
+    .onyx-personalization-next,
+    .onyx-personalization-submit {
+        transition: none;
+    }
+}

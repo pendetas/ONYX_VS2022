@@ -2,11 +2,28 @@ using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Web.UI;
+using Npgsql;
+using ONYX_DDAC.Models;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.Helpers
 {
     public static class AuthHelper
     {
+        private const string ViewStateUserKeySessionKey = "ViewStateUserKey";
+
+        public static string GetOrCreateViewStateUserKey(Page page)
+        {
+            string key = page.Session[ViewStateUserKeySessionKey] as string;
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                key = System.Guid.NewGuid().ToString("N");
+                page.Session[ViewStateUserKeySessionKey] = key;
+            }
+
+            return key;
+        }
+
         public static bool IsLoggedIn(Page page)
         {
             return page.Session["UserId"] != null;
@@ -29,7 +46,7 @@ namespace ONYX_DDAC.Helpers
         {
             if (!IsAdmin(page))
             {
-                page.Response.Redirect("~/customer_page/onyx_catalog.aspx", true);
+                page.Response.Redirect("~/auth_page/onyx_Admin_Login.aspx", true);
             }
         }
 
@@ -37,6 +54,26 @@ namespace ONYX_DDAC.Helpers
         {
             session.Clear();
             FormsAuthentication.SignOut();
+        }
+
+        public static void EstablishAuthenticatedSession(Page page, User user)
+        {
+            var savedCart = page.Session["Cart"] as System.Collections.Generic.List<CartItem>;
+
+            page.Session["UserId"] = user.Id;
+            page.Session["Username"] = user.Username;
+            page.Session["Role"] = user.Role;
+            FormsAuthentication.SetAuthCookie(user.Email, false);
+
+            try
+            {
+                new CartService().MergeSessionCartForUser(user.Id, savedCart);
+            }
+            catch (PostgresException exception) when (exception.SqlState == PostgresErrorCodes.UndefinedTable)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Authenticated session created, but cart merge was skipped because the cart table is missing.");
+            }
         }
     }
 }
