@@ -6,6 +6,7 @@ $servicePath = "$root\Services\ProductService.cs"
 $repoPath = "$root\DAL\ProductRepository.cs"
 $webConfigPath = "$root\Web.config"
 $migrationPath = "$root\App_Data\20260709_product_images_rds.sql"
+$sequenceMigrationPath = "$root\App_Data\20260710_repair_products_identity_sequence.sql"
 $campaignMigrationPath = "$root\App_Data\20260709_product_campaigns.sql"
 $campaignBlocksMigrationPath = "$root\App_Data\20260709_product_campaign_blocks.sql"
 $modelPath = "$root\Models\ProductImage.cs"
@@ -28,6 +29,7 @@ $service = Get-Content $servicePath -Raw
 $repo = Get-Content $repoPath -Raw
 $webConfig = Get-Content $webConfigPath -Raw
 $migration = if (Test-Path $migrationPath) { Get-Content $migrationPath -Raw } else { '' }
+$sequenceMigration = if (Test-Path $sequenceMigrationPath) { Get-Content $sequenceMigrationPath -Raw } else { '' }
 $campaignMigration = if (Test-Path $campaignMigrationPath) { Get-Content $campaignMigrationPath -Raw } else { '' }
 $campaignBlocksMigration = if (Test-Path $campaignBlocksMigrationPath) { Get-Content $campaignBlocksMigrationPath -Raw } else { '' }
 $model = if (Test-Path $modelPath) { Get-Content $modelPath -Raw } else { '' }
@@ -115,6 +117,13 @@ $checks = [ordered]@{
         $service -match 'SaveProductImages' -and
         $code -match 'EnsureProductImageRows'
 
+    'Product identity repair safely advances an imported sequence' =
+        $sequenceMigration -match 'LOCK TABLE public\.products IN SHARE ROW EXCLUSIVE MODE' -and
+        $sequenceMigration -match "pg_get_serial_sequence\('public\.products',\s*'id'\)" -and
+        $sequenceMigration -match 'MAX\(id\)' -and
+        $sequenceMigration -match 'setval' -and
+        $sequenceMigration -match 'v_max_id IS NOT NULL'
+
     'Admin product edit form supports deleting products' =
         $markup -match 'ID="btnDelete"' -and
         $markup -match 'Text="Delete Product"' -and
@@ -127,6 +136,24 @@ $checks = [ordered]@{
         $code -match '_svc\.DeleteProduct\(_EditId\)' -and
         $service -match 'DeleteProduct\(long id\)' -and
         $repo -match 'DELETE FROM products WHERE id = @ProductId'
+
+    'Product form uses a persistent ONYX command bar' =
+        $markup -match 'data-admin-product-actions' -and
+        $markup -match '\.form-actions\s*\{[\s\S]*position:\s*sticky' -and
+        $markup -match 'backdrop-filter:\s*blur' -and
+        $markup -match '\.btn-save:focus-visible' -and
+        $markup -match '@media\s*\(prefers-reduced-motion:\s*reduce\)'
+
+    'Product save action prevents duplicate submissions' =
+        $markup -match 'validateAndPrepareProductSave' -and
+        $markup -match 'button\.disabled\s*=\s*true' -and
+        $markup -match "button\.value\s*=\s*'Saving"
+
+    'Product save action uses mode-specific copy and safe failure guidance' =
+        $code -match 'btnSave\.Text\s*=\s*IsEditMode\s*\?\s*"Save changes' -and
+        $code -match '"Save product' -and
+        $code -match 'The product was not created\. Check the database connection and try again, or contact an administrator\.' -and
+        $code -notmatch 'ShowAlert\(ex\.ToString\(\)'
 
     'Web config supports 50MB product image upload requests' =
         $webConfig -match '<httpRuntime[^>]*maxRequestLength="51200"[^>]*executionTimeout="300"[^>]*/>' -and

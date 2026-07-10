@@ -107,6 +107,7 @@ namespace ONYX_DDAC.admin_page
             }
 
             btnDelete.Visible = IsEditMode;
+            btnSave.Text = IsEditMode ? "Save changes →" : "Save product →";
         }
 
         private void LoadProduct(long id)
@@ -338,7 +339,11 @@ namespace ONYX_DDAC.admin_page
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.TraceError("Admin product save failed: {0}", ex);
-                ShowAlert("The product could not be saved. Please try again.", isError: true);
+                ShowAlert(
+                    IsEditMode
+                        ? "The product changes were not saved. Check the database connection and try again, or contact an administrator."
+                        : "The product was not created. Check the database connection and try again, or contact an administrator.",
+                    isError: true);
             }
         }
 

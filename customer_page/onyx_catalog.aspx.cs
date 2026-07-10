@@ -360,6 +360,8 @@ namespace ONYX_DDAC.customer_page
                     return "/Content/home/products/onyx-monitor.png";
                 case "Mic":
                     return "/Content/home/products/onyx-headset.png";
+                case "Mousepad":
+                    return "/Content/uploads/products/product-21cdf7a0ce6341ba93ffd20ed2b0f7b4.png";
                 default: // Mouse, Chair, Accessory, unknown
                     return "/Content/home/products/onyx-mouse.png";
             }

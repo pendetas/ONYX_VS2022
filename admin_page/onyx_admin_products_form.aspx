@@ -160,9 +160,11 @@
         .campaign-block-btn { min-height: 40px; }
         .campaign-media-preview { grid-template-columns: 1fr; }
         .campaign-media-preview img, .campaign-media-preview video { height: auto; max-height: 220px; width: 100%; }
-        .form-actions { align-items: stretch; flex-direction: column; }
-        .btn-save, .btn-delete, .btn-cancel { justify-content: center; min-height: 42px; text-align: center; }
-        .required-note { margin-left: 0; }
+        .form-actions { align-items: stretch; bottom: 10px; flex-direction: column; margin-left: -8px; margin-right: -8px; }
+        .form-actions .form-actions__main { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+        .btn-save, .btn-delete, .btn-cancel { box-sizing: border-box; justify-content: center; min-height: 42px; text-align: center; width: 100%; }
+        .btn-delete { margin-left: 0; }
+        .required-note { margin-left: 0; text-align: center; }
         .cv-table { display: block; overflow-x: auto; }
     }
 
@@ -315,27 +317,40 @@
 
     /* ── Action bar ──────────────────────────────── */
     .form-actions {
-        display: flex; align-items: center; gap: 18px;
-        padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 8px;
+        position: sticky; bottom: 18px; z-index: 20;
+        display: flex; align-items: center; gap: 10px;
+        margin: 34px -18px 0; padding: 12px 14px;
+        border: 1px solid rgba(255,255,255,0.10); border-top-color: rgba(255,255,255,0.18);
+        border-radius: 9px; background: rgba(12,12,15,0.88);
+        box-shadow: 0 18px 46px rgba(0,0,0,0.34);
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     }
-    .btn-save {
-        display: inline-flex; align-items: center; gap: 6px; padding: 9px 22px;
-        background: #ffffff; color: #000; border: none; border-radius: 5px;
-        font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-        cursor: pointer; transition: background 0.15s; font-family: inherit;
+    .form-actions__main { display: flex; align-items: center; gap: 10px; }
+    .btn-save, .btn-delete, .btn-cancel {
+        min-height: 42px; display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 6px; font-family: inherit; font-size: 11px; font-weight: 750;
+        letter-spacing: 0.09em; line-height: 1; text-decoration: none; text-transform: uppercase;
+        transition: transform 140ms ease, background 140ms ease, border-color 140ms ease, color 140ms ease;
     }
-    .btn-save:hover { background: rgba(255,255,255,0.82); }
+    .btn-save { padding: 0 24px; border: 1px solid #fff; background: #fff; color: #08080a; cursor: pointer; }
+    .btn-save:hover { transform: translateY(-1px); background: #e8e8ea; border-color: #e8e8ea; }
+    .btn-save:disabled { cursor: wait; opacity: 0.58; transform: none; }
     .btn-delete {
-        display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px;
+        margin-left: 8px; padding: 0 17px;
         background: rgba(255,68,68,0.08); color: #ff6b6b; border: 1px solid rgba(255,68,68,0.28);
-        border-radius: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-        text-transform: uppercase; cursor: pointer; transition: background 0.15s, border-color 0.15s;
-        font-family: inherit;
+        cursor: pointer;
     }
-    .btn-delete:hover { background: rgba(255,68,68,0.14); border-color: rgba(255,68,68,0.45); }
-    .btn-cancel { font-size: 12px; color: rgba(255,255,255,0.26); text-decoration: none; letter-spacing: 0.04em; transition: color 0.15s; }
-    .btn-cancel:hover { color: rgba(255,255,255,0.62); text-decoration: none; }
-    .required-note { margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.16); letter-spacing: 0.04em; }
+    .btn-delete:hover { transform: translateY(-1px); background: rgba(255,68,68,0.14); border-color: rgba(255,68,68,0.45); }
+    .btn-cancel { padding: 0 18px; border: 1px solid rgba(255,255,255,0.14); color: rgba(255,255,255,0.68); }
+    .btn-cancel:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.32); color: #fff; text-decoration: none; }
+    .btn-save:focus-visible, .btn-delete:focus-visible, .btn-cancel:focus-visible {
+        outline: 2px solid #fff; outline-offset: 3px;
+    }
+    .required-note { margin-left: auto; font-size: 10px; color: rgba(255,255,255,0.28); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .btn-save, .btn-delete, .btn-cancel { transition: none; }
+    }
 
     /* ── Light mode ──────────────────────────────── */
     html[data-theme="light"] .page-title    { color: #0d0d0f; }
@@ -360,13 +375,14 @@
     html[data-theme="light"] .image-action-btn:hover, html[data-theme="light"] .image-action-btn:focus { border-color: rgba(0,0,0,0.28); color: rgba(0,0,0,0.88); }
     html[data-theme="light"] .product-image-empty { border-color: rgba(0,0,0,0.08); color: rgba(0,0,0,0.18); }
     html[data-theme="light"] .product-image-validation { background: rgba(196,42,42,0.06); color: #c42a2a; }
-    html[data-theme="light"] .form-actions { border-top-color: rgba(0,0,0,0.06); }
+    html[data-theme="light"] .form-actions { background: rgba(255,255,255,0.90); border-color: rgba(0,0,0,0.10); border-top-color: rgba(0,0,0,0.18); box-shadow: 0 18px 46px rgba(16,16,20,0.12); }
     html[data-theme="light"] .btn-save     { background: #0d0d0f; color: #fff; }
-    html[data-theme="light"] .btn-save:hover { background: #2a2a2a; }
+    html[data-theme="light"] .btn-save:hover { background: #2a2a2a; border-color: #2a2a2a; }
     html[data-theme="light"] .btn-delete { background: rgba(196,42,42,0.05); color: #c42a2a; border-color: rgba(196,42,42,0.28); }
     html[data-theme="light"] .btn-delete:hover { background: rgba(196,42,42,0.10); border-color: rgba(196,42,42,0.42); }
-    html[data-theme="light"] .btn-cancel   { color: rgba(0,0,0,0.28); }
-    html[data-theme="light"] .btn-cancel:hover { color: rgba(0,0,0,0.60); }
+    html[data-theme="light"] .btn-cancel   { border-color: rgba(0,0,0,0.14); color: rgba(0,0,0,0.58); }
+    html[data-theme="light"] .btn-cancel:hover { border-color: rgba(0,0,0,0.32); color: rgba(0,0,0,0.90); }
+    html[data-theme="light"] .btn-save:focus-visible, html[data-theme="light"] .btn-delete:focus-visible, html[data-theme="light"] .btn-cancel:focus-visible { outline-color: #0d0d0f; }
     html[data-theme="light"] .required-note { color: rgba(0,0,0,0.20); }
     html[data-theme="light"] .color-hint   { color: rgba(0,0,0,0.30); }
     html[data-theme="light"] .create-color-choices label { border-color: rgba(0,0,0,0.10); background: rgba(0,0,0,0.015); color: rgba(0,0,0,0.50); }
@@ -717,14 +733,16 @@
         </div>
 
         <%-- Actions --%>
-        <div class="form-actions">
-            <asp:Button ID="btnSave" runat="server" Text="Save Product"
-                CssClass="btn-save" OnClick="btnSave_Click" OnClientClick="return validateProductImagesBeforeSubmit();" />
+        <div class="form-actions" data-admin-product-actions>
+            <div class="form-actions__main">
+                <asp:Button ID="btnSave" runat="server" Text="Save product →"
+                    CssClass="btn-save" OnClick="btnSave_Click" OnClientClick="return validateAndPrepareProductSave(this);" />
+                <a href="onyx_admin_products.aspx" class="btn-cancel">Cancel</a>
+            </div>
             <asp:Button ID="btnDelete" runat="server" Text="Delete Product"
                 CssClass="btn-delete" OnClick="btnDelete_Click" CausesValidation="false"
                 OnClientClick="return confirm('Delete this product? This cannot be undone.');" />
-            <a href="onyx_admin_products.aspx" class="btn-cancel">Cancel</a>
-            <span class="required-note"><span class="req">*</span> Required</span>
+            <span class="required-note"><span class="req">*</span> Required fields</span>
         </div>
 
     </div>
@@ -824,6 +842,20 @@
             }
 
             window.validateProductImagesBeforeSubmit = validateProductImagesBeforeSubmit;
+
+            window.validateAndPrepareProductSave = function (button) {
+                if (!validateProductImagesBeforeSubmit()) return false;
+
+                window.setTimeout(function () {
+                    button.disabled = true;
+                    button.value = 'Saving…';
+                    button.setAttribute('aria-disabled', 'true');
+                    var form = button.closest('form');
+                    if (form) form.setAttribute('aria-busy', 'true');
+                }, 0);
+
+                return true;
+            };
 
             function moveItem(fromIndex, toIndex) {
                 if (toIndex < 0 || toIndex >= items.length || fromIndex === toIndex) return;
