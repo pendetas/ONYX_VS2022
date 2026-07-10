@@ -335,6 +335,11 @@ namespace ONYX_DDAC.admin_page
             {
                 ShowAlert(ex.Message, isError: true);
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Admin product save failed: {0}", ex);
+                ShowAlert("The product could not be saved. Please try again.", isError: true);
+            }
         }
 
         private ProductCampaign BuildCampaignFromForm(long productId)
@@ -388,31 +393,36 @@ namespace ONYX_DDAC.admin_page
                 return;
             }
 
-            switch (e.CommandName)
+            try
             {
-                case "MoveUp":
-                    _svc.MoveCampaignBlockUp(blockId, _EditId);
-                    ShowAlert("Campaign block moved up.");
-                    break;
-                case "MoveDown":
-                    _svc.MoveCampaignBlockDown(blockId, _EditId);
-                    ShowAlert("Campaign block moved down.");
-                    break;
-                case "DeleteBlock":
-                    _svc.DeleteCampaignBlock(blockId, _EditId);
-                    ShowAlert("Campaign block deleted.");
-                    break;
-                case "SaveBlock":
-                    string error = _svc.UpdateCampaignBlock(BuildCampaignBlockFromRepeaterItem(blockId, e.Item, _EditId));
-                    if (!string.IsNullOrWhiteSpace(error))
-                    {
-                        ShowAlert(error, isError: true);
-                    }
-                    else
-                    {
-                        ShowAlert("Campaign block saved.");
-                    }
-                    break;
+                switch (e.CommandName)
+                {
+                    case "MoveUp":
+                        _svc.MoveCampaignBlockUp(blockId, _EditId);
+                        ShowAlert("Campaign block moved up.");
+                        break;
+                    case "MoveDown":
+                        _svc.MoveCampaignBlockDown(blockId, _EditId);
+                        ShowAlert("Campaign block moved down.");
+                        break;
+                    case "DeleteBlock":
+                        _svc.DeleteCampaignBlock(blockId, _EditId);
+                        ShowAlert("Campaign block deleted.");
+                        break;
+                    case "SaveBlock":
+                        string error = _svc.UpdateCampaignBlock(BuildCampaignBlockFromRepeaterItem(blockId, e.Item, _EditId));
+                        ShowAlert(string.IsNullOrWhiteSpace(error) ? "Campaign block saved." : error, isError: !string.IsNullOrWhiteSpace(error));
+                        break;
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                ShowAlert(ex.Message, isError: true);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Admin campaign block action failed: {0}", ex);
+                ShowAlert("The campaign block could not be updated. Please try again.", isError: true);
             }
 
             BindCampaignBlocks(_EditId);
@@ -479,7 +489,8 @@ namespace ONYX_DDAC.admin_page
                 HiddenField hfBlockId = item.FindControl("hfCampaignBlockId") as HiddenField;
                 long blockId;
                 if (hfBlockId == null || !long.TryParse(hfBlockId.Value, out blockId)) continue;
-                _svc.UpdateCampaignBlock(BuildCampaignBlockFromRepeaterItem(blockId, item, productId));
+                string error = _svc.UpdateCampaignBlock(BuildCampaignBlockFromRepeaterItem(blockId, item, productId));
+                if (!string.IsNullOrWhiteSpace(error)) throw new ArgumentException(error);
             }
         }
 
@@ -493,7 +504,8 @@ namespace ONYX_DDAC.admin_page
                 if (hfBlockId == null || !long.TryParse(hfBlockId.Value, out blockId)) continue;
 
                 ProductCampaignBlock block = BuildCampaignBlockFromRepeaterItem(blockId, item, productId);
-                _svc.AddCampaignBlock(block);
+                string error = _svc.AddCampaignBlock(block);
+                if (!string.IsNullOrWhiteSpace(error)) throw new ArgumentException(error);
             }
 
             _svc.EnsureSortOrderIntegrity(productId);

@@ -145,6 +145,12 @@ namespace ONYX_DDAC.customer_page
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblMessage;
 
+        protected global::System.Web.UI.WebControls.Literal litDetailBrand;
+
+        protected global::System.Web.UI.WebControls.Literal litDetailCategory;
+
+        protected global::System.Web.UI.WebControls.Literal litDetailAvailability;
+
         /// <summary>
         /// pnlKeyboardCampaign control.
         /// </summary>
@@ -152,7 +158,7 @@ namespace ONYX_DDAC.customer_page
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlKeyboardCampaign;
+        protected global::System.Web.UI.WebControls.Panel pnlProductCampaign;
 
         /// <summary>
         /// litCampaignBlocks control.

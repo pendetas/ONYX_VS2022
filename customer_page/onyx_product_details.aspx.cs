@@ -70,17 +70,18 @@ namespace ONYX_DDAC.customer_page
             }
 
             // Bind base product details to the UI
-            litBrandCategory.Text = $"{currentProduct.Brand} / {currentProduct.Category}";
-            litName.Text = currentProduct.Name;
+            litBrandCategory.Text = Encode(FirstText(currentProduct.Brand, "ONYX") + " / " + FirstText(currentProduct.Category, "Uncategorized"));
+            litName.Text = Encode(currentProduct.Name);
             litPrice.Text = CurrencyHelper.FormatMyr(currentProduct.Price);
-            litDescription.Text = currentProduct.Description;
+            litDescription.Text = EncodeMultiline(currentProduct.Description);
+            litDetailBrand.Text = Encode(FirstText(currentProduct.Brand, "ONYX"));
+            litDetailCategory.Text = Encode(FirstText(currentProduct.Category, "Uncategorized"));
             BaseStockQty = currentProduct.StockQty;
             BindProductCampaign(currentProduct);
 
             // Image Fallback check
-            imgProduct.ImageUrl = string.IsNullOrWhiteSpace(currentProduct.ImageUrl)
-                ? "/Content/home/products/onyx-mouse.png"
-                : currentProduct.ImageUrl;
+            imgProduct.ImageUrl = ResolveCampaignUrl(FirstText(currentProduct.ImageUrl, "/Content/home/products/onyx-mouse.png"));
+            imgProduct.AlternateText = FirstText(currentProduct.Name, "ONYX product");
             BindProductImageNavigation(currentProduct);
 
             // Check if this product has any variants in the product_variants table
@@ -89,7 +90,7 @@ namespace ONYX_DDAC.customer_page
             if (variants != null && variants.Any())
             {
                 pnlVariants.Visible = true;
-                litVariantType.Text = variants.First().VariantType; // E.g., "Color"
+                litVariantType.Text = Encode(FirstText(variants.First().VariantType, "Variant"));
 
                 // If nothing is selected yet, default to the first variant
                 if (SelectedVariantId == null)
@@ -118,6 +119,7 @@ namespace ONYX_DDAC.customer_page
                 : new List<ProductCampaignBlock>();
             IList<ProductCampaignBlock> enabledBlocks = blocks
                 .Where(block => block.IsEnabled)
+                .Where(block => HasVisibleCampaignBlockContent(block, product))
                 .OrderBy(block => block.SortOrder)
                 .ThenBy(block => block.Id)
                 .ToList();
@@ -125,10 +127,10 @@ namespace ONYX_DDAC.customer_page
             bool showCampaign = enabledBlocks.Count > 0;
 
             DetailsPageCssClass = showCampaign
-                ? "onyx-details-page onyx-keyboard-campaign"
+                ? "onyx-details-page onyx-product-campaign"
                 : "onyx-details-page";
 
-            pnlKeyboardCampaign.Visible = showCampaign;
+            pnlProductCampaign.Visible = showCampaign;
             litCampaignBlocks.Text = string.Empty;
             if (!showCampaign) return;
 
@@ -208,6 +210,39 @@ namespace ONYX_DDAC.customer_page
 
             html.Append("</div>");
             return html.ToString();
+        }
+
+        private static bool HasVisibleCampaignBlockContent(ProductCampaignBlock block, Product product)
+        {
+            if (block == null || !block.IsEnabled) return false;
+
+            string type = (block.BlockType ?? string.Empty).Trim();
+            bool hasText = !string.IsNullOrWhiteSpace(block.Eyebrow)
+                || !string.IsNullOrWhiteSpace(block.Headline)
+                || !string.IsNullOrWhiteSpace(block.Body);
+            bool hasMedia = !string.IsNullOrWhiteSpace(block.MediaUrl);
+
+            switch (type)
+            {
+                case "HeroMedia":
+                    return hasText || hasMedia || (product != null && (!string.IsNullOrWhiteSpace(product.Name) || !string.IsNullOrWhiteSpace(product.ImageUrl)));
+                case "TextSection":
+                    return hasText;
+                case "TextImageSection":
+                case "MediaSection":
+                case "VideoSection":
+                    return hasText || hasMedia;
+                case "FeatureCards":
+                    return hasText || ParseDelimitedLines(block.JsonContent, 2, 3).Count > 0;
+                case "TechSpecs":
+                    return hasText || ParseDelimitedLines(block.JsonContent, 2, 2).Count > 0;
+                case "CTASection":
+                    return hasText || ParseDelimitedLines(block.JsonContent, 2, 3).Count > 0;
+                case "SpacerSection":
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private string RenderHeroMediaBlock(ProductCampaignBlock block, Product product)
@@ -421,7 +456,8 @@ namespace ONYX_DDAC.customer_page
 
             if (trimmed.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase) ||
                 trimmed.StartsWith("vbscript:", StringComparison.OrdinalIgnoreCase) ||
-                trimmed.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                trimmed.StartsWith("data:", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.StartsWith("//", StringComparison.Ordinal))
             {
                 return string.Empty;
             }
@@ -484,7 +520,8 @@ namespace ONYX_DDAC.customer_page
         {
             if (e.CommandName == "SelectVariant")
             {
-                long variantId = long.Parse(e.CommandArgument.ToString());
+                long variantId;
+                if (!long.TryParse(Convert.ToString(e.CommandArgument), out variantId) || variantId <= 0) return;
                 SelectedVariantId = variantId; // Save the newly selected ID
 
                 if (long.TryParse(Request.QueryString["id"], out long productId))
@@ -510,12 +547,12 @@ namespace ONYX_DDAC.customer_page
                 litPrice.Text = CurrencyHelper.FormatMyr(variant.VariantPrice);
 
                 // Update the label next to "COLOR:"
-                lblSelectedVariantName.Text = variant.VariantValue;
+                lblSelectedVariantName.Text = Encode(variant.VariantValue);
 
                 // Swap the main image if the variant has a custom image!
                 if (!string.IsNullOrWhiteSpace(variant.ImageUrl))
                 {
-                    imgProduct.ImageUrl = variant.ImageUrl;
+                    imgProduct.ImageUrl = ResolveCampaignUrl(variant.ImageUrl);
                 }
 
                 ApplyStockState(variant.StockQty);
@@ -543,6 +580,7 @@ namespace ONYX_DDAC.customer_page
             }
 
             litStockStatus.Text = $"<span class=\"{cssClass}\">{Server.HtmlEncode(text)}</span>";
+            litDetailAvailability.Text = Encode(text);
             txtQty.Attributes["max"] = Math.Max(stockQty, 0).ToString();
             btnAddToCart.Enabled = stockQty > 0;
             btnAddToCart.Text = stockQty > 0 ? "Add to Cart" : "Out of Stock";
@@ -579,7 +617,7 @@ namespace ONYX_DDAC.customer_page
         // NEW: Helper to map database text strings to actual CSS Hex colors
         protected string GetColorHex(string colorName)
         {
-            switch (colorName.Trim().ToLower())
+            switch ((colorName ?? string.Empty).Trim().ToLowerInvariant())
             {
                 case "white": return "#ffffff";
 
@@ -608,8 +646,20 @@ namespace ONYX_DDAC.customer_page
 
         protected void btnAddToCart_Click(object sender, EventArgs e)
         {
-            long productId = long.Parse(Request.QueryString["id"]);
-            int qty = int.Parse(txtQty.Text);
+            long productId;
+            int qty;
+            if (!long.TryParse(Request.QueryString["id"], out productId) || productId <= 0)
+            {
+                Response.Redirect("onyx_catalog.aspx");
+                return;
+            }
+            if (!int.TryParse(txtQty.Text, out qty))
+            {
+                lblMessage.Text = "Please enter a valid quantity.";
+                lblMessage.CssClass = "d-block mt-4 fw-bold text-danger";
+                lblMessage.Visible = true;
+                return;
+            }
 
             // Replaced dropdown value with the ViewState value
             long? variantId = null;

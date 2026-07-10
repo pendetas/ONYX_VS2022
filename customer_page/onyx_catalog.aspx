@@ -15,6 +15,12 @@
                     <a class='<%= GetFilterClass("Mouse") %>' href="<%= GetCatalogUrl("Mouse") %>">Gaming Mice</a>
                     <a class='<%= GetFilterClass("Keyboard") %>' href="<%= GetCatalogUrl("Keyboard") %>">Keyboards</a>
                     <a class='<%= GetFilterClass("Headset") %>' href="<%= GetCatalogUrl("Headset") %>">Audio</a>
+                    <a class='<%= GetFilterClass("Monitor") %>' href="<%= GetCatalogUrl("Monitor") %>">Monitors</a>
+                    <a class='<%= GetFilterClass("Mic") %>' href="<%= GetCatalogUrl("Mic") %>">Microphones</a>
+                    <a class='<%= GetFilterClass("Mousepad") %>' href="<%= GetCatalogUrl("Mousepad") %>">Mousepads</a>
+                    <a class='<%= GetFilterClass("Chair") %>' href="<%= GetCatalogUrl("Chair") %>">Chairs</a>
+                    <a class='<%= GetFilterClass("Monitor Extension") %>' href="<%= GetCatalogUrl("Monitor Extension") %>">Monitor Arms</a>
+                    <a class='<%= GetFilterClass("Cable") %>' href="<%= GetCatalogUrl("Cable") %>">Cables</a>
                     <a class='<%= GetFilterClass("Accessory") %>' href="<%= GetCatalogUrl("Accessory") %>">Accessories</a>
                 </nav>
 

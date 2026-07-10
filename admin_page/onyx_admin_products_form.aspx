@@ -11,7 +11,7 @@
         margin-bottom: 44px;
     }
     .page-title    { font-size: 22px; font-weight: 600; color: #fff; letter-spacing: -0.02em; margin: 0; }
-    .page-subtitle { font-size: 12px; color: rgba(255,255,255,0.28); margin-top: 5px; font-weight: 400; letter-spacing: 0.02em; }
+    .page-subtitle { font-size: 12px; color: rgba(255,255,255,0.58); margin-top: 5px; font-weight: 400; letter-spacing: 0.02em; }
 
     .back-link {
         display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
@@ -23,11 +23,11 @@
 
     /* ── Alert ───────────────────────────────────── */
     .alert-panel { padding: 12px 16px; margin-bottom: 32px; font-size: 13px; line-height: 1.5; }
-    .alert-success-dark { border-left: 2px solid rgba(255,255,255,0.30); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.68); padding-left: 14px; }
-    .alert-error-dark   { border-left: 2px solid rgba(255,68,68,0.55);   background: rgba(255,68,68,0.05);    color: #ff5555;                padding-left: 14px; }
+    .alert-success-dark { border: 1px solid rgba(255,255,255,0.20); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.82); }
+    .alert-error-dark   { border: 1px solid rgba(255,68,68,0.42); background: rgba(255,68,68,0.06); color: #ff8a8a; }
 
     /* ── Form body ───────────────────────────────── */
-    .form-body { max-width: 700px; }
+    .form-body { max-width: 960px; width: 100%; }
 
     /* ── Section ─────────────────────────────────── */
     .form-section { margin-bottom: 40px; }
@@ -42,11 +42,11 @@
     .field-row:last-child { margin-bottom: 0; }
     .fr-2 { grid-template-columns: 1fr 1fr; }
     .fr-1 { grid-template-columns: 1fr; }
-    .field-group { display: flex; flex-direction: column; }
+    .field-group { display: flex; flex-direction: column; min-width: 0; }
 
     .field-label {
         font-size: 10px; font-weight: 600; letter-spacing: 0.10em; text-transform: uppercase;
-        color: rgba(255,255,255,0.26); margin-bottom: 10px;
+        color: rgba(255,255,255,0.62); margin-bottom: 10px;
     }
     .req { color: rgba(255,68,68,0.75); margin-left: 3px; }
 
@@ -58,7 +58,7 @@
         padding: 8px 0; width: 100%; outline: none;
         transition: border-color 0.18s; font-family: inherit;
     }
-    .field-input::placeholder, .field-textarea::placeholder { color: rgba(255,255,255,0.14); }
+    .field-input::placeholder, .field-textarea::placeholder { color: rgba(255,255,255,0.46); }
     .field-input:focus, .field-select:focus, .field-textarea:focus { border-bottom-color: rgba(255,255,255,0.40); }
     .field-input:disabled { opacity: 0.40; cursor: not-allowed; }
     .field-input[readonly] { color: rgba(255,255,255,0.72); cursor: default; }
@@ -73,8 +73,8 @@
 
     .field-textarea { resize: vertical; min-height: 96px; line-height: 1.65; border-bottom: 1px solid rgba(255,255,255,0.10); }
 
-    .field-hint { font-size: 11px; color: rgba(255,255,255,0.16); margin-top: 7px; line-height: 1.5; }
-    .field-hint.managed { color: rgba(255,255,255,0.25); font-style: italic; }
+    .field-hint { font-size: 11px; color: rgba(255,255,255,0.52); margin-top: 7px; line-height: 1.5; }
+    .field-hint.managed { color: rgba(255,255,255,0.58); font-style: italic; }
 
     .category-wrap { max-width: 260px; }
 
@@ -92,14 +92,18 @@
     .campaign-add-btn, .campaign-block-btn {
         border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04);
         color: rgba(255,255,255,0.82); border-radius: 6px; padding: 10px 14px;
-        font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+        font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer;
+    }
+    .campaign-add-btn:hover, .campaign-block-btn:hover,
+    .campaign-add-btn:focus-visible, .campaign-block-btn:focus-visible {
+        background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.34); color: #fff; outline: none;
     }
     .campaign-block-btn { padding: 8px 10px; font-size: 10px; }
     .campaign-block-btn.danger { border-color: rgba(255,68,68,0.26); color: #ff7777; }
     .campaign-block-list { display: grid; gap: 16px; margin-top: 20px; }
     .campaign-block-card {
         border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
-        padding: 18px; background: rgba(255,255,255,0.025);
+        padding: 18px; background: rgba(255,255,255,0.025); min-width: 0;
     }
     .campaign-block-head {
         display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -143,6 +147,23 @@
     .campaign-empty {
         border: 1px dashed rgba(255,255,255,0.12); border-radius: 8px;
         padding: 18px; color: rgba(255,255,255,0.24); font-size: 12px; margin-top: 18px;
+    }
+
+    @media (max-width: 760px) {
+        .form-header { flex-direction: column; gap: 16px; margin-bottom: 30px; }
+        .field-row, .campaign-grid, .campaign-block-fields, .campaign-builder-actions,
+        .create-color-choices { grid-template-columns: 1fr; gap: 18px; }
+        .campaign-grid .field-group.full, .campaign-block-fields .field-group.full { grid-column: auto; }
+        .campaign-block-card { padding: 14px; }
+        .campaign-block-head { align-items: stretch; flex-direction: column; }
+        .campaign-block-actions { justify-content: flex-start; }
+        .campaign-block-btn { min-height: 40px; }
+        .campaign-media-preview { grid-template-columns: 1fr; }
+        .campaign-media-preview img, .campaign-media-preview video { height: auto; max-height: 220px; width: 100%; }
+        .form-actions { align-items: stretch; flex-direction: column; }
+        .btn-save, .btn-delete, .btn-cancel { justify-content: center; min-height: 42px; text-align: center; }
+        .required-note { margin-left: 0; }
+        .cv-table { display: block; overflow-x: auto; }
     }
 
     /* ── Product images ──────────────────────────── */
@@ -378,7 +399,7 @@
         </asp:HyperLink>
     </div>
 
-    <asp:Panel ID="pnlAlert" runat="server" Visible="false">
+    <asp:Panel ID="pnlAlert" runat="server" Visible="false" role="status" aria-live="polite">
         <asp:Literal ID="litAlertMessage" runat="server" />
     </asp:Panel>
 
@@ -556,15 +577,15 @@
                 <div class="field-group">
                     <label class="field-label">Block type</label>
                     <asp:DropDownList ID="ddlCampaignBlockType" runat="server" CssClass="field-select">
-                        <asp:ListItem Value="HeroMedia">HeroMedia</asp:ListItem>
-                        <asp:ListItem Value="TextSection">TextSection</asp:ListItem>
-                        <asp:ListItem Value="TextImageSection">TextImageSection</asp:ListItem>
-                        <asp:ListItem Value="MediaSection">MediaSection</asp:ListItem>
-                        <asp:ListItem Value="VideoSection">VideoSection</asp:ListItem>
-                        <asp:ListItem Value="FeatureCards">FeatureCards</asp:ListItem>
-                        <asp:ListItem Value="TechSpecs">TechSpecs</asp:ListItem>
-                        <asp:ListItem Value="CTASection">CTASection</asp:ListItem>
-                        <asp:ListItem Value="SpacerSection">SpacerSection</asp:ListItem>
+                        <asp:ListItem Value="HeroMedia">Hero + media</asp:ListItem>
+                        <asp:ListItem Value="TextSection">Text section</asp:ListItem>
+                        <asp:ListItem Value="TextImageSection">Text + image</asp:ListItem>
+                        <asp:ListItem Value="MediaSection">Media section</asp:ListItem>
+                        <asp:ListItem Value="VideoSection">Video section</asp:ListItem>
+                        <asp:ListItem Value="FeatureCards">Feature cards</asp:ListItem>
+                        <asp:ListItem Value="TechSpecs">Technical specifications</asp:ListItem>
+                        <asp:ListItem Value="CTASection">Call to action</asp:ListItem>
+                        <asp:ListItem Value="SpacerSection">Spacing</asp:ListItem>
                     </asp:DropDownList>
                 </div>
                 <asp:Button ID="btnAddCampaignBlock" runat="server" Text="Add Block"
@@ -613,7 +634,7 @@
                             </div>
                             <div class="field-group full campaign-field--text">
                                 <label class="field-label">Body</label>
-                                <asp:TextBox ID="txtBlockBody" runat="server" CssClass="field-textarea" TextMode="MultiLine" Rows="3" Text='<%# Eval("Body") %>' />
+                                <asp:TextBox ID="txtBlockBody" runat="server" CssClass="field-textarea" TextMode="MultiLine" Rows="3" MaxLength="4000" Text='<%# Eval("Body") %>' />
                             </div>
                             <div class="field-group campaign-field--media">
                                 <label class="field-label">Media type</label>
@@ -621,7 +642,7 @@
                             </div>
                             <div class="field-group campaign-field--media">
                                 <label class="field-label">Media URL</label>
-                                <asp:TextBox ID="txtBlockMediaUrl" runat="server" CssClass="field-input" Text='<%# Eval("MediaUrl") %>' placeholder="/Content/..." />
+                                <asp:TextBox ID="txtBlockMediaUrl" runat="server" CssClass="field-input" MaxLength="1000" Text='<%# Eval("MediaUrl") %>' placeholder="/Content/..." />
                             </div>
                             <div class="field-group full campaign-field--media">
                                 <asp:Panel ID="pnlBlockMediaPreview" runat="server" CssClass="campaign-media-preview" Visible='<%# !string.IsNullOrWhiteSpace((Eval("MediaUrl") ?? "").ToString()) %>'>
@@ -649,8 +670,9 @@
                                 <asp:TextBox ID="txtBlockBackgroundVariant" runat="server" CssClass="field-input" MaxLength="50" Text='<%# Eval("BackgroundVariant") %>' placeholder="light or dark" />
                             </div>
                             <div class="field-group full campaign-field--json">
-                                <label class="field-label">JsonContent / line content</label>
+                                <label class="field-label">Structured line content</label>
                                 <asp:TextBox ID="txtBlockJsonContent" runat="server" CssClass="field-textarea" TextMode="MultiLine" Rows="5" Text='<%# Eval("JsonContent") %>'
+                                    MaxLength="8000"
                                     placeholder="FeatureCards: Title|Body|ImageUrl&#10;TechSpecs: Label|Value&#10;CTASection: Label|Url|Style" />
                                 <div class="field-hint">Line-based content is stored directly and HTML encoded on the customer page.</div>
                             </div>

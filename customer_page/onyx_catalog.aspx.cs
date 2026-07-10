@@ -356,7 +356,10 @@ namespace ONYX_DDAC.customer_page
                 case "Headset":
                     return "/Content/home/products/onyx-headset.png";
                 case "Monitor":
+                case "Monitor Extension":
                     return "/Content/home/products/onyx-monitor.png";
+                case "Mic":
+                    return "/Content/home/products/onyx-headset.png";
                 default: // Mouse, Chair, Accessory, unknown
                     return "/Content/home/products/onyx-mouse.png";
             }
@@ -449,6 +452,29 @@ namespace ONYX_DDAC.customer_page
                 case "accessory":
                 case "accessories":
                     return "Accessory";
+                case "monitor":
+                case "monitors":
+                    return "Monitor";
+                case "chair":
+                case "chairs":
+                    return "Chair";
+                case "mic":
+                case "mics":
+                case "microphone":
+                case "microphones":
+                    return "Mic";
+                case "monitor extension":
+                case "monitor-extension":
+                case "monitor arm":
+                case "monitor mount":
+                    return "Monitor Extension";
+                case "mousepad":
+                case "mouse pad":
+                case "mousepads":
+                    return "Mousepad";
+                case "cable":
+                case "cables":
+                    return "Cable";
                 default:
                     return string.Empty;
             }
@@ -485,6 +511,18 @@ namespace ONYX_DDAC.customer_page
                     return "Audio";
                 case "Accessory":
                     return "Accessories";
+                case "Monitor":
+                    return "Monitors";
+                case "Chair":
+                    return "Gaming Chairs";
+                case "Mic":
+                    return "Microphones";
+                case "Monitor Extension":
+                    return "Monitor Arms";
+                case "Mousepad":
+                    return "Mousepads";
+                case "Cable":
+                    return "Cables";
                 default:
                     return "Catalog";
             }
@@ -502,6 +540,18 @@ namespace ONYX_DDAC.customer_page
                     return "Spatial audio and clean comms for players who need every cue to land clearly.";
                 case "Accessory":
                     return "Desk essentials that complete the setup without adding clutter.";
+                case "Monitor":
+                    return "ONYX displays for complete gaming and work setups.";
+                case "Chair":
+                    return "Seating options available in the current ONYX catalog.";
+                case "Mic":
+                    return "Microphones for voice, team communication and content setups.";
+                case "Monitor Extension":
+                    return "Monitor arms and mounts for a more flexible desk layout.";
+                case "Mousepad":
+                    return "Mouse surfaces for consistent movement across your setup.";
+                case "Cable":
+                    return "Cables and connection essentials from the current catalog.";
                 default:
                     return "Curated ONYX gaming gear across mice, keyboards, audio and desk essentials.";
             }

@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
+using ONYX_DDAC.Models;
 
 namespace ONYX_DDAC.Services
 {
@@ -14,28 +15,15 @@ namespace ONYX_DDAC.Services
         private const int ChunkSize = 1200;
         private const int MaxChunks = 320;
         private const int MaxContextCharacters = 6000;
+        private const int MaxProductContextCharacters = 2600;
+        private const int MaxCatalogProducts = 24;
         private const string AssistantKnowledgeFileName = "onyx-assistant-knowledge.md";
-
-        private static readonly HashSet<string> AllowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            ".aspx", ".ascx", ".master", ".md", ".txt", ".sql"
-        };
-
-        private static readonly HashSet<string> ExcludedDirectoryNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            ".git", ".vs", "bin", "obj", "packages", "Video", "Videos"
-        };
-
-        private static readonly HashSet<string> ExcludedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "Web.config", "Web.Debug.config", "Web.Release.config", "AppSettings.Local.config",
-            "packages.config", "ONYX_DDAC.csproj", "ONYX_DDAC.sln"
-        };
 
         private static readonly HashSet<string> StopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "a", "an", "and", "are", "as", "at", "be", "can", "do", "for", "from", "how", "i", "in",
-            "is", "it", "me", "my", "of", "on", "or", "the", "to", "what", "when", "where", "with", "you"
+            "is", "it", "me", "my", "of", "on", "or", "the", "to", "what", "when", "where", "with", "you",
+            "detail", "details", "information", "know", "please", "question", "tell", "want"
         };
 
         private static readonly Dictionary<string, string[]> RelatedTerms = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
@@ -124,82 +112,123 @@ namespace ONYX_DDAC.Services
             return context.ToString().Trim();
         }
 
+        public string GetRelevantContext(string question, IEnumerable<Product> products)
+        {
+            string fileContext = GetRelevantContext(question);
+            string productContext = BuildProductCatalogContext(question, products);
+
+            if (string.IsNullOrWhiteSpace(productContext))
+            {
+                return fileContext;
+            }
+
+            if (string.IsNullOrWhiteSpace(fileContext))
+            {
+                return productContext;
+            }
+
+            return TruncateContext(productContext + "\n\n" + fileContext, MaxContextCharacters);
+        }
+
+        private static string BuildProductCatalogContext(string question, IEnumerable<Product> products)
+        {
+            if (products == null)
+            {
+                return string.Empty;
+            }
+
+            List<string> terms = ExtractTerms(question);
+            string requestedProductCategory = GetRequestedProductCategory(question);
+            bool broadProductQuestion = IsBroadProductQuestion(question) && requestedProductCategory == null;
+            var matches = products
+                .Where(product => product != null && !string.IsNullOrWhiteSpace(product.Name))
+                .Where(product => requestedProductCategory == null || MatchesRequestedProductCategory(product, requestedProductCategory))
+                .Where(product => !RequiresInStock(question) || product.StockQty > 0)
+                .Select(product => new
+                {
+                    Product = product,
+                    Score = ScoreProduct(product, terms, requestedProductCategory)
+                })
+                .Where(match => broadProductQuestion || match.Score > 0)
+                .ToList();
+
+            if (IsLowestPriceIntent(question))
+            {
+                matches = matches.OrderBy(match => match.Product.Price).ThenByDescending(match => match.Score).ToList();
+            }
+            else if (IsHighestPriceIntent(question))
+            {
+                matches = matches.OrderByDescending(match => match.Product.Price).ThenByDescending(match => match.Score).ToList();
+            }
+            else
+            {
+                matches = matches.OrderByDescending(match => match.Score).ThenBy(match => match.Product.Name).ToList();
+            }
+
+            matches = matches.Take(MaxCatalogProducts).ToList();
+
+            if (matches.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var context = new StringBuilder();
+            context.AppendLine("Live ONYX products from database:");
+            foreach (var match in matches)
+            {
+                Product product = match.Product;
+                string stock = product.StockQty > 0
+                    ? product.StockQty.ToString(CultureInfo.InvariantCulture) + " in stock"
+                    : "out of stock";
+
+                context.Append("- Product: ");
+                context.Append(product.Name.Trim());
+                context.Append("; ID: ");
+                context.Append(product.Id.ToString(CultureInfo.InvariantCulture));
+                context.Append("; Brand: ");
+                context.Append((product.Brand ?? "ONYX").Trim());
+                context.Append("; Category: ");
+                context.Append((product.Category ?? "Gear").Trim());
+                context.Append("; Price: RM ");
+                context.Append(product.Price.ToString("N2", CultureInfo.InvariantCulture));
+                context.Append("; Stock: ");
+                context.Append(stock);
+
+                if (!string.IsNullOrWhiteSpace(product.Description))
+                {
+                    context.Append("; Description: ");
+                    context.Append(TrimForKnowledge(product.Description, 180));
+                }
+
+                context.AppendLine();
+            }
+
+            return TruncateContext(context.ToString().Trim(), MaxProductContextCharacters);
+        }
+
         private IReadOnlyList<KnowledgeChunk> LoadChunks()
         {
             string root = rootPath;
-            var chunks = new List<KnowledgeChunk>();
-
-            foreach (string path in EnumerateSafeFiles(root).OrderBy(GetKnowledgeFilePriority).ThenBy(path => path, StringComparer.OrdinalIgnoreCase))
+            string path = Path.Combine(root, "docs", AssistantKnowledgeFileName);
+            if (!IsSafeKnowledgeFile(path))
             {
-                if (chunks.Count >= MaxChunks)
-                {
-                    break;
-                }
-
-                string text = ReadSafeText(path);
-                if (string.IsNullOrWhiteSpace(text))
-                {
-                    continue;
-                }
-
-                string source = GetRelativePath(root, path);
-                foreach (string chunkText in SplitIntoChunks(text))
-                {
-                    if (chunks.Count >= MaxChunks)
-                    {
-                        break;
-                    }
-
-                    chunks.Add(new KnowledgeChunk(source, chunkText));
-                }
+                return new List<KnowledgeChunk>();
             }
 
-            return chunks;
-        }
-
-        private static IEnumerable<string> EnumerateSafeFiles(string root)
-        {
-            IEnumerable<string> files;
-
-            try
-            {
-                files = Directory.EnumerateFiles(root, "*.*", SearchOption.AllDirectories);
-            }
-            catch (IOException)
-            {
-                return Enumerable.Empty<string>();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Enumerable.Empty<string>();
-            }
-
-            return files.Where(IsSafeKnowledgeFile);
+            string text = ReadSafeText(path);
+            return string.IsNullOrWhiteSpace(text)
+                ? new List<KnowledgeChunk>()
+                : SplitIntoChunks(text)
+                    .Take(MaxChunks)
+                    .Select(chunk => new KnowledgeChunk(AssistantKnowledgeFileName, chunk))
+                    .ToList();
         }
 
         private static bool IsSafeKnowledgeFile(string path)
         {
-            string extension = Path.GetExtension(path);
-            if (!AllowedExtensions.Contains(extension))
-            {
-                return false;
-            }
-
-            string fileName = Path.GetFileName(path);
-            if (ExcludedFileNames.Contains(fileName))
-            {
-                return false;
-            }
-
-            if (path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-                .Any(part => ExcludedDirectoryNames.Contains(part)))
-            {
-                return false;
-            }
-
             try
             {
-                return new FileInfo(path).Length <= MaxFileBytes;
+                return File.Exists(path) && new FileInfo(path).Length <= MaxFileBytes;
             }
             catch (IOException)
             {
@@ -235,26 +264,27 @@ namespace ONYX_DDAC.Services
                 return string.Empty;
             }
 
-            string normalized = Regex.Replace(text, @"<script[\s\S]*?</script>", " ", RegexOptions.IgnoreCase);
-            normalized = Regex.Replace(normalized, @"<style[\s\S]*?</style>", " ", RegexOptions.IgnoreCase);
-            normalized = Regex.Replace(normalized, @"<%[\s\S]*?%>", " ");
-            normalized = Regex.Replace(normalized, @"<[^>]+>", " ");
-            normalized = HttpUtility.HtmlDecode(normalized);
+            string normalized = text;
             normalized = Regex.Replace(normalized, @"(?i)\b(?:current\s+)?(?:ONYX\s+)?(?:catalog\s+)?knowledge base\b", "current ONYX information");
-            normalized = Regex.Replace(normalized, @"\s+", " ").Trim();
+            normalized = Regex.Replace(normalized, @"[ \t]+", " ");
+            normalized = Regex.Replace(normalized, @"\r?\n[ \t]*\r?\n", "\n\n").Trim();
 
             return normalized;
         }
 
         private static IEnumerable<string> SplitIntoChunks(string text)
         {
-            for (int index = 0; index < text.Length; index += ChunkSize)
+            foreach (string section in Regex.Split(text, @"(?m)(?=^#{1,2}\s)")
+                .Where(value => !string.IsNullOrWhiteSpace(value)))
             {
-                int length = Math.Min(ChunkSize, text.Length - index);
-                string chunk = text.Substring(index, length).Trim();
-                if (!string.IsNullOrWhiteSpace(chunk))
+                for (int index = 0; index < section.Length; index += ChunkSize)
                 {
-                    yield return chunk;
+                    int length = Math.Min(ChunkSize, section.Length - index);
+                    string chunk = section.Substring(index, length).Trim();
+                    if (!string.IsNullOrWhiteSpace(chunk))
+                    {
+                        yield return chunk;
+                    }
                 }
             }
         }
@@ -316,11 +346,6 @@ namespace ONYX_DDAC.Services
             string haystack = (chunk.Source + " " + chunk.Text).ToLowerInvariant();
             int score = 0;
 
-            if (chunk.Source.IndexOf(AssistantKnowledgeFileName, StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                score += 10;
-            }
-
             foreach (string term in terms)
             {
                 int count = CountTermMatches(haystack, term);
@@ -335,7 +360,132 @@ namespace ONYX_DDAC.Services
                 }
             }
 
+            if (score > 0 && chunk.Source.IndexOf(AssistantKnowledgeFileName, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                score += 10;
+            }
+
             return score;
+        }
+
+        private static int ScoreProduct(Product product, List<string> terms, string requestedProductCategory)
+        {
+            if (product == null || terms == null || terms.Count == 0)
+            {
+                return requestedProductCategory != null && MatchesRequestedProductCategory(product, requestedProductCategory) ? 6 : 0;
+            }
+
+            string haystack = string.Join(" ", new[]
+            {
+                product.Name,
+                product.Brand,
+                product.Category,
+                product.Description
+            }).ToLowerInvariant();
+
+            int score = 0;
+            foreach (string term in terms)
+            {
+                int count = CountTermMatches(haystack, term);
+                if (count > 0)
+                {
+                    score += Math.Min(count, 8);
+                }
+            }
+
+            if (requestedProductCategory != null && MatchesRequestedProductCategory(product, requestedProductCategory))
+            {
+                score += 6;
+            }
+
+            return score;
+        }
+
+        private static string GetRequestedProductCategory(string question)
+        {
+            string normalized = Regex.Replace((question ?? string.Empty).ToLowerInvariant(), @"[^a-z0-9\s]", " ");
+            normalized = Regex.Replace(normalized, @"\s+", " ").Trim();
+
+            if (Regex.IsMatch(normalized, @"\b(mousepad|mouse pad)\b")) return "mousepad";
+            if (Regex.IsMatch(normalized, @"\b(monitor extension|monitor arm|monitor mount)\b")) return "monitor extension";
+            if (Regex.IsMatch(normalized, @"\b(mice|mouse|gaming mice)\b")) return "mouse";
+            if (Regex.IsMatch(normalized, @"\b(keyboard|keyboards)\b")) return "keyboard";
+            if (Regex.IsMatch(normalized, @"\b(headset|headsets|headphone|headphones|earphone|earphones|earbud|earbuds|audio)\b")) return "headset";
+            if (Regex.IsMatch(normalized, @"\b(mic|mics|microphone|microphones)\b")) return "mic";
+            if (Regex.IsMatch(normalized, @"\b(monitor|monitors)\b")) return "monitor";
+            if (Regex.IsMatch(normalized, @"\b(chair|chairs|gaming chair|gaming chairs)\b")) return "chair";
+            if (Regex.IsMatch(normalized, @"\b(cable|cables)\b")) return "cable";
+            if (Regex.IsMatch(normalized, @"\b(accessory|accessories)\b")) return "accessory";
+
+            return null;
+        }
+
+        private static bool MatchesRequestedProductCategory(Product product, string requestedProductCategory)
+        {
+            string category = Regex.Replace((product.Category ?? string.Empty).ToLowerInvariant(), @"[^a-z0-9\s]", " ");
+            category = Regex.Replace(category, @"\s+", " ").Trim();
+
+            switch (requestedProductCategory)
+            {
+                case "mousepad":
+                    return category == "mousepad" || category == "mouse pad";
+                case "mouse":
+                    return category == "mouse" || category == "mice" || category == "gaming mice";
+                case "keyboard":
+                    return category.Contains("keyboard");
+                case "headset":
+                    return category.Contains("headset") || category.Contains("audio");
+                case "mic":
+                    return category == "mic" || category.Contains("microphone");
+                case "monitor":
+                    return category == "monitor";
+                case "monitor extension":
+                    return category == "monitor extension";
+                case "chair":
+                    return category.Contains("chair");
+                case "cable":
+                    return category.Contains("cable");
+                case "accessory":
+                    return category.Contains("accessory") || category.Contains("accessories");
+                default:
+                    return true;
+            }
+        }
+
+        private static bool IsBroadProductQuestion(string question)
+        {
+            if (string.IsNullOrWhiteSpace(question))
+            {
+                return false;
+            }
+
+            string normalized = question.ToLowerInvariant();
+            return normalized.Contains("product")
+                || normalized.Contains("catalog")
+                || normalized.Contains("shop")
+                || normalized.Contains("recommend")
+                || normalized.Contains("compare")
+                || normalized.Contains("mouse")
+                || normalized.Contains("mice")
+                || normalized.Contains("keyboard")
+                || normalized.Contains("headset")
+                || normalized.Contains("monitor")
+                || normalized.Contains("accessory");
+        }
+
+        private static bool RequiresInStock(string question)
+        {
+            return Regex.IsMatch(question ?? string.Empty, @"\b(in stock|available now|currently available)\b", RegexOptions.IgnoreCase);
+        }
+
+        private static bool IsLowestPriceIntent(string question)
+        {
+            return Regex.IsMatch(question ?? string.Empty, @"\b(cheapest|lowest price|least expensive|budget|most affordable)\b", RegexOptions.IgnoreCase);
+        }
+
+        private static bool IsHighestPriceIntent(string question)
+        {
+            return Regex.IsMatch(question ?? string.Empty, @"\b(most expensive|highest price)\b", RegexOptions.IgnoreCase);
         }
 
         private static int CountTermMatches(string text, string term)
@@ -343,38 +493,21 @@ namespace ONYX_DDAC.Services
             return Regex.Matches(text, @"\b" + Regex.Escape(term) + @"(?:s|es)?\b", RegexOptions.IgnoreCase).Count;
         }
 
-        private static int GetKnowledgeFilePriority(string path)
+        private static string TrimForKnowledge(string value, int maxLength)
         {
-            string fileName = Path.GetFileName(path);
-            if (string.Equals(fileName, AssistantKnowledgeFileName, StringComparison.OrdinalIgnoreCase))
-            {
-                return 0;
-            }
-
-            string extension = Path.GetExtension(path);
-            if (string.Equals(extension, ".md", StringComparison.OrdinalIgnoreCase))
-            {
-                return 1;
-            }
-
-            return 2;
+            string trimmed = Regex.Replace(value ?? string.Empty, @"\s+", " ").Trim();
+            return trimmed.Length <= maxLength ? trimmed : trimmed.Substring(0, maxLength).Trim() + "...";
         }
 
-        private static string GetRelativePath(string root, string path)
+        private static string TruncateContext(string value, int maxLength)
         {
-            Uri rootUri = new Uri(AppendDirectorySeparator(root));
-            Uri pathUri = new Uri(path);
-            return Uri.UnescapeDataString(rootUri.MakeRelativeUri(pathUri).ToString()).Replace('/', Path.DirectorySeparatorChar);
-        }
-
-        private static string AppendDirectorySeparator(string path)
-        {
-            if (path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
+            if (string.IsNullOrWhiteSpace(value))
             {
-                return path;
+                return string.Empty;
             }
 
-            return path + Path.DirectorySeparatorChar;
+            string trimmed = value.Trim();
+            return trimmed.Length <= maxLength ? trimmed : trimmed.Substring(0, maxLength).Trim();
         }
 
         private class KnowledgeChunk

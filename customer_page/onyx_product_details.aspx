@@ -8,10 +8,10 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <section class="<%= DetailsPageCssClass %>">
         <div class="onyx-details-shell">
-            <div class="row align-items-center">
+            <div class="onyx-details-grid">
                 
                 <!-- Left Side: Product Image Stage -->
-                <div class="col-lg-6 mb-5 mb-lg-0">
+                <div class="onyx-details-media">
                     <div class="onyx-image-stage">
                         <asp:Image ID="imgProduct" runat="server" />
                         <asp:Literal ID="litProductImageNav" runat="server" />
@@ -19,7 +19,7 @@
                 </div>
 
                 <!-- Right Side: Details & Purchasing -->
-                <div class="col-lg-5 offset-lg-1">
+                <div class="onyx-details-summary">
                     <p class="text-secondary text-uppercase fw-bold mb-2" style="font-size: 10px; letter-spacing: 0.2em;">
                         <asp:Literal ID="litBrandCategory" runat="server" />
                     </p>
@@ -60,7 +60,7 @@
                                                 </asp:Panel>
 
                     <!-- Add to Cart Actions -->
-                    <div class="d-flex gap-3 mt-5">
+                    <div class="onyx-purchase-actions">
                         <asp:TextBox ID="txtQty" runat="server" TextMode="Number" Text="1" min="1" CssClass="onyx-qty-input"></asp:TextBox>
                         <asp:Button ID="btnAddToCart" runat="server" Text="Add to Cart" CssClass="onyx-add-to-cart flex-grow-1" OnClick="btnAddToCart_Click" />
                         <asp:LinkButton ID="btnWishlist" runat="server" CssClass="onyx-detail-wishlist" OnClick="btnWishlist_Click" ToolTip="Add to wishlist">
@@ -74,20 +74,20 @@
                     <!-- Success/Error Message -->
                     <asp:Label ID="lblMessage" runat="server" CssClass="d-block mt-3 fw-bold" Visible="false"></asp:Label>
 
-                    <!-- NEW: Tech Specs section to fill the empty space and look professional -->
+                    <!-- Database-backed product facts -->
                     <div class="onyx-specs-list">
-                        <h4 class="text-uppercase fw-bold text-white mb-4" style="font-size: 12px; letter-spacing: 0.1em;">Technical Highlights</h4>
+                        <h4 class="text-uppercase fw-bold text-white mb-4" style="font-size: 12px; letter-spacing: 0.1em;">Product Details</h4>
                         <div class="onyx-spec-item">
-                            <span class="text-secondary">Build Quality</span>
-                            <span class="text-white fw-bold">Premium Grade</span>
+                            <span class="text-secondary">Brand</span>
+                            <span class="text-white fw-bold"><asp:Literal ID="litDetailBrand" runat="server" /></span>
                         </div>
                         <div class="onyx-spec-item">
-                            <span class="text-secondary">Warranty</span>
-                            <span class="text-white fw-bold">2-Year Limited</span>
+                            <span class="text-secondary">Category</span>
+                            <span class="text-white fw-bold"><asp:Literal ID="litDetailCategory" runat="server" /></span>
                         </div>
                         <div class="onyx-spec-item">
-                            <span class="text-secondary">Shipping</span>
-                            <span class="text-white fw-bold">Free over RM 200</span>
+                            <span class="text-secondary">Availability</span>
+                            <span class="text-white fw-bold"><asp:Literal ID="litDetailAvailability" runat="server" /></span>
                         </div>
                     </div>
 
@@ -95,7 +95,7 @@
             </div>
         </div>
 
-        <asp:Panel ID="pnlKeyboardCampaign" runat="server" Visible="false" CssClass="onyx-keyboard-campaign-body">
+        <asp:Panel ID="pnlProductCampaign" runat="server" Visible="false" CssClass="onyx-product-campaign-body">
             <asp:Literal ID="litCampaignBlocks" runat="server" />
         </asp:Panel>
     </section>

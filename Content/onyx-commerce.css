@@ -476,11 +476,23 @@
     max-width: 1200px; /* Tighter max-width to prevent massive spreading */
 }
 
+.onyx-details-grid {
+    align-items: center;
+    display: grid;
+    gap: clamp(32px, 5vw, 72px);
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+}
+
+.onyx-details-media,
+.onyx-details-summary {
+    min-width: 0;
+}
+
 /* Fixed the image stage to be much more controlled */
 .onyx-image-stage {
     background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent 70%);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px;
+    border-radius: 12px;
     padding: 40px;
     display: flex;
     flex-direction: column;
@@ -647,6 +659,13 @@
     box-shadow: none;
 }
 
+.onyx-purchase-actions {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 90px minmax(0, 1fr) auto;
+    margin-top: 40px;
+}
+
 .onyx-detail-wishlist {
     align-items: center;
     background: rgba(255,255,255,0.04);
@@ -704,6 +723,43 @@
     font-size: 13px;
 }
 
+@media (max-width: 820px) {
+    .onyx-details-page {
+        padding: 112px 18px 72px;
+    }
+
+    .onyx-image-stage {
+        aspect-ratio: 1 / 1;
+        max-height: none;
+        padding: 20px;
+    }
+
+    .onyx-details-grid {
+        grid-template-columns: 1fr;
+        gap: 34px;
+    }
+
+    .onyx-detail-gallery-nav {
+        justify-content: flex-start;
+        max-width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .onyx-purchase-actions {
+        grid-template-columns: 76px minmax(0, 1fr);
+        margin-top: 28px;
+    }
+
+    .onyx-purchase-actions .onyx-qty-input {
+        width: 76px;
+    }
+
+    .onyx-purchase-actions .onyx-detail-wishlist {
+        grid-column: 1 / -1;
+    }
+}
+
  .onyx-qty-input:focus {
     outline: none;
     border-color: #ffffff;
@@ -742,9 +798,15 @@
 }
 
 /* Admin-built long-form product campaign blocks. */
-.onyx-details-page.onyx-keyboard-campaign .onyx-campaign {
+.onyx-details-page.onyx-product-campaign .onyx-campaign {
     background: #050505;
     color: #f5f7fa;
+}
+
+.onyx-product-campaign-body {
+    background: #050505;
+    color: #f5f7fa;
+    margin: 88px -32px -120px;
 }
 
 .onyx-campaign-block {
@@ -1036,6 +1098,25 @@
     .onyx-campaign-specs dl div {
         grid-template-columns: 1fr;
         gap: 5px;
+    }
+
+    .onyx-product-campaign-body {
+        margin: 64px -18px -72px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .onyx-image-stage img,
+    .onyx-detail-gallery-thumb,
+    .onyx-add-to-cart,
+    .onyx-detail-wishlist {
+        transition: none;
+    }
+
+    .onyx-image-stage:hover img,
+    .onyx-add-to-cart:hover,
+    .onyx-detail-wishlist:hover {
+        transform: none;
     }
 }
 

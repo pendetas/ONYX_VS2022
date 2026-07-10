@@ -111,6 +111,7 @@ namespace ONYX_DDAC.Services
                 IsEnabled = true
             });
 
+            _repo.EnsureProductCampaignEnabled(productId);
             _repo.EnsureSortOrderIntegrity(productId);
             return null;
         }
@@ -134,6 +135,10 @@ namespace ONYX_DDAC.Services
             block.JsonContent = NormalizeCampaignText(block.JsonContent);
 
             _repo.AddCampaignBlock(block);
+            if (block.IsEnabled)
+            {
+                _repo.EnsureProductCampaignEnabled(block.ProductId);
+            }
             return null;
         }
 
@@ -156,6 +161,10 @@ namespace ONYX_DDAC.Services
             block.JsonContent = NormalizeCampaignText(block.JsonContent);
 
             _repo.UpdateCampaignBlock(block);
+            if (block.IsEnabled)
+            {
+                _repo.EnsureProductCampaignEnabled(block.ProductId);
+            }
             return null;
         }
 

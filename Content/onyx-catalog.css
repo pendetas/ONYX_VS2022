@@ -75,6 +75,7 @@
     text-decoration: none;
     text-transform: uppercase;
     transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+    flex: 0 0 auto;
 }
 
 .onyx-catalog-pill:hover,
@@ -343,8 +344,17 @@
     }
 
     .onyx-catalog-filters {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        align-self: stretch;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: nowrap;
+        margin: 0 -14px;
+        max-width: calc(100% + 28px);
+        min-width: 0;
+        overflow-x: auto;
+        padding: 0 14px 8px;
+        scrollbar-width: thin;
+        width: calc(100% + 28px);
     }
 
     .onyx-catalog-pill {
