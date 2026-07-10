@@ -137,6 +137,24 @@ $checks = [ordered]@{
         $service -match 'DeleteProduct\(long id\)' -and
         $repo -match 'DELETE FROM products WHERE id = @ProductId'
 
+    'Product form uses a persistent ONYX command bar' =
+        $markup -match 'data-admin-product-actions' -and
+        $markup -match '\.form-actions\s*\{[\s\S]*position:\s*sticky' -and
+        $markup -match 'backdrop-filter:\s*blur' -and
+        $markup -match '\.btn-save:focus-visible' -and
+        $markup -match '@media\s*\(prefers-reduced-motion:\s*reduce\)'
+
+    'Product save action prevents duplicate submissions' =
+        $markup -match 'validateAndPrepareProductSave' -and
+        $markup -match 'button\.disabled\s*=\s*true' -and
+        $markup -match "button\.value\s*=\s*'Saving"
+
+    'Product save action uses mode-specific copy and safe failure guidance' =
+        $code -match 'btnSave\.Text\s*=\s*IsEditMode\s*\?\s*"Save changes' -and
+        $code -match '"Save product' -and
+        $code -match 'The product was not created\. Check the database connection and try again, or contact an administrator\.' -and
+        $code -notmatch 'ShowAlert\(ex\.ToString\(\)'
+
     'Web config supports 50MB product image upload requests' =
         $webConfig -match '<httpRuntime[^>]*maxRequestLength="51200"[^>]*executionTimeout="300"[^>]*/>' -and
         $webConfig -match '<system\.webServer>' -and
