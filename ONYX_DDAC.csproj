@@ -197,6 +197,7 @@
     <Content Include="admin_page\onyx_admin_user_detail.aspx" />
     <Content Include="admin_page\onyx_admin_products_form.aspx" />
     <Content Include="admin_page\onyx_admin_promos.aspx" />
+    <Content Include="admin_page\onyx_admin_voucher_form.aspx" />
     <Content Include="admin_page\onyx_admin_settings.aspx" />
     <Content Include="admin_page\onyx_admin_users.aspx" />
     <Content Include="auth_page\onyx_Admin_Login.aspx" />
@@ -404,6 +405,13 @@
     </Compile>
     <Compile Include="admin_page\onyx_admin_promos.aspx.designer.cs">
       <DependentUpon>onyx_admin_promos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_voucher_form.aspx.cs">
+      <DependentUpon>onyx_admin_voucher_form.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_voucher_form.aspx.designer.cs">
+      <DependentUpon>onyx_admin_voucher_form.aspx</DependentUpon>
     </Compile>
     <Compile Include="admin_page\onyx_admin_settings.aspx.cs">
       <DependentUpon>onyx_admin_settings.aspx</DependentUpon>
