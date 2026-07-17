@@ -65,6 +65,11 @@ namespace ONYX_DDAC.Services
                 },
                 LineItems = order.Items.Select(CreateLineItem).ToList()
             };
+            SessionDiscountOptions orderDiscount = CreateOrderDiscount(order);
+            if (orderDiscount != null)
+            {
+                options.Discounts = new List<SessionDiscountOptions> { orderDiscount };
+            }
 
             var requestOptions = new RequestOptions
             {
@@ -203,6 +208,11 @@ namespace ONYX_DDAC.Services
             return "onyx-checkout-" + order.Id + "-" + order.CheckoutAttemptToken;
         }
 
+        private static string BuildCouponIdempotencyKey(Order order)
+        {
+            return "onyx-voucher-coupon-" + order.Id;
+        }
+
         private static bool IsDefinitiveCreateFailure(StripeException exception)
         {
             int statusCode = (int)exception.HttpStatusCode;
@@ -335,6 +345,49 @@ namespace ONYX_DDAC.Services
             }
 
             return "Card";
+        }
+
+        private static SessionDiscountOptions CreateOrderDiscount(Order order)
+        {
+            if (order.DiscountAmount > 0m)
+            {
+                long amountOff = checked((long)Math.Round(
+                    order.DiscountAmount * 100m,
+                    0,
+                    MidpointRounding.AwayFromZero));
+                if (amountOff <= 0)
+                {
+                    throw new InvalidOperationException("The pending order discount is invalid.");
+                }
+
+                var couponOptions = new CouponCreateOptions
+                {
+                    AmountOff = amountOff,
+                    Currency = "myr",
+                    Duration = "once",
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "onyx_order_id", order.Id.ToString() }
+                    }
+                };
+                var couponRequestOptions = new RequestOptions
+                {
+                    IdempotencyKey = BuildCouponIdempotencyKey(order)
+                };
+
+                Coupon coupon = new CouponService().Create(couponOptions, couponRequestOptions);
+                if (coupon == null || string.IsNullOrWhiteSpace(coupon.Id))
+                {
+                    throw new InvalidOperationException("Stripe did not return a usable discount coupon.");
+                }
+
+                return new SessionDiscountOptions
+                {
+                    Coupon = coupon.Id
+                };
+            }
+
+            return null;
         }
 
         private static SessionLineItemOptions CreateLineItem(OrderItem item)

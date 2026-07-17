@@ -2,6 +2,7 @@ $root = Split-Path $PSScriptRoot -Parent
 $markup = Get-Content "$root\customer_page\onyx_checkout.aspx" -Raw
 $page = Get-Content "$root\customer_page\onyx_checkout.aspx.cs" -Raw
 $checkoutRepo = Get-Content "$root\DAL\CheckoutRepository.cs" -Raw
+$stripeService = Get-Content "$root\Services\StripePaymentService.cs" -Raw
 $startCheckoutCall = [regex]::Match($page, 'StartCheckout\s*\((?s:.*?)\);').Value
 
 $checks = [ordered]@{
@@ -21,6 +22,19 @@ $checks = [ordered]@{
     'Checkout passes applied voucher into StartCheckout handoff' =
         -not [string]::IsNullOrWhiteSpace($startCheckoutCall) -and
         $startCheckoutCall -match 'AppliedVoucherCode'
+    'Stripe checkout creates authoritative MYR coupon for discounted orders' =
+        $stripeService -match 'order\.DiscountAmount\s*>\s*0m' -and
+        $stripeService -match 'new CouponCreateOptions' -and
+        $stripeService -match 'AmountOff\s*=' -and
+        $stripeService -match 'Currency\s*=\s*"myr"' -and
+        $stripeService -match 'Duration\s*=\s*"once"'
+    'Stripe coupon creation uses per-order idempotency key' =
+        $stripeService -match 'onyx-voucher-coupon-' -and
+        $stripeService -match 'IdempotencyKey\s*=\s*BuildCouponIdempotencyKey\(order\)'
+    'Stripe session attaches discount coupon when present' =
+        $stripeService -match 'new SessionDiscountOptions' -and
+        $stripeService -match 'Discounts\s*=' -and
+        $stripeService -match 'Coupon\s*='
 }
 
 $failures = @($checks.GetEnumerator() | Where-Object { -not $_.Value })
