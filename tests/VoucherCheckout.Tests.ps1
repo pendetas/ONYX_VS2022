@@ -4,6 +4,15 @@ $page = Get-Content "$root\customer_page\onyx_checkout.aspx.cs" -Raw
 $checkoutRepo = Get-Content "$root\DAL\CheckoutRepository.cs" -Raw
 $paymentRepo = Get-Content "$root\DAL\PaymentRepository.cs" -Raw
 $stripeService = Get-Content "$root\Services\StripePaymentService.cs" -Raw
+$orderRepo = Get-Content "$root\DAL\OrderRepository.cs" -Raw
+$adminDetails = Get-Content "$root\admin_page\onyx_admin_order_details.aspx" -Raw
+$adminDetailsCode = Get-Content "$root\admin_page\onyx_admin_order_details.aspx.cs" -Raw
+$history = Get-Content "$root\customer_page\onyx_order_history.aspx" -Raw
+$historyCode = Get-Content "$root\customer_page\onyx_order_history.aspx.cs" -Raw
+$invoice = Get-Content "$root\customer_page\onyx_invoice.aspx" -Raw
+$invoiceCode = Get-Content "$root\customer_page\onyx_invoice.aspx.cs" -Raw
+$confirmation = Get-Content "$root\customer_page\onyx_payment_confirmation.aspx" -Raw
+$confirmationCode = Get-Content "$root\customer_page\onyx_payment_confirmation.aspx.cs" -Raw
 $startCheckoutCall = [regex]::Match($page, 'StartCheckout\s*\((?s:.*?)\);').Value
 
 $checks = [ordered]@{
@@ -48,6 +57,28 @@ $checks = [ordered]@{
         $paymentRepo -match 'CancelPayment[\s\S]*UPDATE orders[\s\S]*VoucherRepository\.ReleaseForOrder[\s\S]*tx\.Commit'
     'Checkout cancellation releases voucher before commit' =
         $checkoutRepo -match 'CancelPendingOrderAndReleaseReservations[\s\S]*VoucherRepository\.ReleaseForOrder[\s\S]*tx\.Commit'
+    'Order repository hydrates voucher snapshots' =
+        $orderRepo -match 'subtotal_amount' -and
+        $orderRepo -match 'discount_amount' -and
+        $orderRepo -match 'voucher_code' -and
+        $orderRepo -match 'voucher_name'
+    'Admin order shows voucher breakdown and free shipping' =
+        $adminDetails -match 'pnlVoucherSummary' -and
+        $adminDetailsCode -match 'SubtotalAmount' -and
+        $adminDetailsCode -match 'DiscountAmount' -and
+        $adminDetails -match 'RM 0\.00' -and
+        $adminDetails -notmatch 'RM 10\.00'
+    'Order history shows voucher savings' =
+        ($history + $historyCode) -match 'VoucherCode' -and
+        ($history + $historyCode) -match 'DiscountAmount'
+    'Invoice shows stored voucher totals' =
+        ($invoice + $invoiceCode) -match 'SubtotalAmount' -and
+        ($invoice + $invoiceCode) -match 'DiscountAmount' -and
+        ($invoice + $invoiceCode) -match 'VoucherCode'
+    'Payment confirmation shows stored voucher totals' =
+        ($confirmation + $confirmationCode) -match 'SubtotalAmount' -and
+        ($confirmation + $confirmationCode) -match 'DiscountAmount' -and
+        ($confirmation + $confirmationCode) -match 'VoucherCode'
 }
 
 $failures = @($checks.GetEnumerator() | Where-Object { -not $_.Value })

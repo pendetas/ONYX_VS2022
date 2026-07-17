@@ -40,22 +40,22 @@ namespace ONYX_DDAC.DAL
                     {
                         while (r.Read())
                         {
-                            string status = r.GetString(10);
+                            string status = r.GetString(r.GetOrdinal("status"));
                             string cap = string.IsNullOrEmpty(status) ? "Unknown" : char.ToUpper(status[0]) + status.Substring(1);
 
                             list.Add(new OrderSummary
                             {
-                                RawId = r.GetInt64(0),
-                                OrderId = "#ORD-" + r.GetInt64(0),
-                                CustomerName = r.GetString(1),
-                                Date = r.GetDateTime(2).ToString("d MMM yyyy, h:mm tt"),
-                                ItemCount = r.GetInt32(3),
-                                SubtotalAmount = Convert.ToDecimal(r[4]),
-                                DiscountAmount = Convert.ToDecimal(r[5]),
-                                Total = "RM " + Convert.ToDecimal(r[6]).ToString("N2"),
-                                VoucherId = r.IsDBNull(7) ? (long?)null : r.GetInt64(7),
-                                VoucherCode = r.IsDBNull(8) ? null : r.GetString(8),
-                                VoucherName = r.IsDBNull(9) ? null : r.GetString(9),
+                                RawId = r.GetInt64(r.GetOrdinal("id")),
+                                OrderId = "#ORD-" + r.GetInt64(r.GetOrdinal("id")),
+                                CustomerName = r.GetString(r.GetOrdinal("customer_name")),
+                                Date = r.GetDateTime(r.GetOrdinal("ordered_at")).ToString("d MMM yyyy, h:mm tt"),
+                                ItemCount = r.GetInt32(r.GetOrdinal("item_count")),
+                                SubtotalAmount = r.GetDecimal(r.GetOrdinal("subtotal_amount")),
+                                DiscountAmount = r.GetDecimal(r.GetOrdinal("discount_amount")),
+                                Total = "RM " + r.GetDecimal(r.GetOrdinal("total_amount")).ToString("N2"),
+                                VoucherId = r.IsDBNull(r.GetOrdinal("voucher_id")) ? (long?)null : r.GetInt64(r.GetOrdinal("voucher_id")),
+                                VoucherCode = ReadNullableString(r, "voucher_code"),
+                                VoucherName = ReadNullableString(r, "voucher_name"),
                                 Status = cap,
                                 StatusKey = status.ToLower()
                             });
@@ -82,10 +82,10 @@ namespace ONYX_DDAC.DAL
                             o.discount_amount,
                             o.total_amount,
                             o.voucher_id,
-                            COALESCE(o.voucher_code, '') AS voucher_code,
-                            COALESCE(o.voucher_name, '') AS voucher_name,
-                            COALESCE(o.shipping_address, '') AS shipping_address,
-                            COALESCE(o.receipt_s3_key, '') AS receipt_s3_key,
+                            o.voucher_code,
+                            o.voucher_name,
+                            o.shipping_address,
+                            o.receipt_s3_key,
                             o.ordered_at,
                             o.status_updated_at,
                             COALESCE(NULLIF(TRIM(u.fullname), ''), u.username, 'Unknown') AS customer_name,
@@ -107,22 +107,22 @@ namespace ONYX_DDAC.DAL
                         {
                             return new OrderDetail
                             {
-                                Id = r.GetInt64(0),
-                                Status = r.GetString(1),
-                                SubtotalAmount = Convert.ToDecimal(r[2]),
-                                DiscountAmount = Convert.ToDecimal(r[3]),
-                                TotalAmount = Convert.ToDecimal(r[4]),
-                                VoucherId = r.IsDBNull(5) ? (long?)null : r.GetInt64(5),
-                                VoucherCode = r.GetString(6),
-                                VoucherName = r.GetString(7),
-                                ShippingAddress = r.GetString(8),
-                                ReceiptS3Key = r.GetString(9),
-                                OrderedAt = r.GetDateTime(10),
-                                StatusUpdatedAt = r.IsDBNull(11) ? (DateTime?)null : r.GetDateTime(11),
-                                CustomerName = r.GetString(12),
+                                Id = r.GetInt64(r.GetOrdinal("id")),
+                                Status = r.GetString(r.GetOrdinal("status")),
+                                SubtotalAmount = r.GetDecimal(r.GetOrdinal("subtotal_amount")),
+                                DiscountAmount = r.GetDecimal(r.GetOrdinal("discount_amount")),
+                                TotalAmount = r.GetDecimal(r.GetOrdinal("total_amount")),
+                                VoucherId = r.IsDBNull(r.GetOrdinal("voucher_id")) ? (long?)null : r.GetInt64(r.GetOrdinal("voucher_id")),
+                                VoucherCode = ReadNullableString(r, "voucher_code"),
+                                VoucherName = ReadNullableString(r, "voucher_name"),
+                                ShippingAddress = ReadNullableString(r, "shipping_address"),
+                                ReceiptS3Key = ReadNullableString(r, "receipt_s3_key"),
+                                OrderedAt = r.GetDateTime(r.GetOrdinal("ordered_at")),
+                                StatusUpdatedAt = r.IsDBNull(r.GetOrdinal("status_updated_at")) ? (DateTime?)null : r.GetDateTime(r.GetOrdinal("status_updated_at")),
+                                CustomerName = r.GetString(r.GetOrdinal("customer_name")),
                                 CustomerEmail = r.IsDBNull(13) ? "—" : r.GetString(13),
-                                CustomerPhone = r.GetString(14),
-                                CustomerSince = r.IsDBNull(15) ? DateTime.MinValue : r.GetDateTime(15)
+                                CustomerPhone = r.GetString(r.GetOrdinal("phone")),
+                                CustomerSince = r.IsDBNull(r.GetOrdinal("created_at")) ? DateTime.MinValue : r.GetDateTime(r.GetOrdinal("created_at"))
                             };
                         }
                     }

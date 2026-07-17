@@ -58,6 +58,10 @@ namespace ONYX_DDAC.customer_page
             litShippingAddress.Text = FormatAddress(invoice.Order.ShippingAddress);
             litDeliveryMethod.Text = Server.HtmlEncode(string.IsNullOrWhiteSpace(invoice.Order.DeliveryMethod) ? "Standard Delivery" : invoice.Order.DeliveryMethod);
             litPaymentMethod.Text = Server.HtmlEncode(string.IsNullOrWhiteSpace(invoice.Order.PaymentMethod) ? "Stripe" : invoice.Order.PaymentMethod);
+            litSubtotal.Text = CurrencyHelper.FormatMyr(invoice.Order.SubtotalAmount);
+            pnlVoucherSummary.Visible = invoice.Order.DiscountAmount > 0m;
+            litVoucherLabel.Text = pnlVoucherSummary.Visible ? BuildVoucherLabel(invoice.Order) : string.Empty;
+            litDiscount.Text = pnlVoucherSummary.Visible ? CurrencyHelper.FormatMyr(invoice.Order.DiscountAmount) : string.Empty;
             litGrandTotal.Text = CurrencyHelper.FormatMyr(invoice.Order.TotalAmount);
 
             rptInvoiceItems.DataSource = invoice.Order.Items;
@@ -97,6 +101,30 @@ namespace ONYX_DDAC.customer_page
             return Server.HtmlEncode(shippingAddress ?? string.Empty)
                 .Replace("\r\n", "<br />")
                 .Replace("\n", "<br />");
+        }
+
+        private string BuildVoucherLabel(Order order)
+        {
+            string code = string.IsNullOrWhiteSpace(order.VoucherCode) ? string.Empty : order.VoucherCode.Trim();
+            string name = string.IsNullOrWhiteSpace(order.VoucherName) ? string.Empty : order.VoucherName.Trim();
+
+            if (!string.IsNullOrEmpty(code) && !string.IsNullOrEmpty(name) &&
+                !string.Equals(code, name, StringComparison.OrdinalIgnoreCase))
+            {
+                return "Voucher (" + Server.HtmlEncode(code) + " · " + Server.HtmlEncode(name) + ")";
+            }
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                return "Voucher (" + Server.HtmlEncode(code) + ")";
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                return "Voucher (" + Server.HtmlEncode(name) + ")";
+            }
+
+            return "Voucher";
         }
     }
 }

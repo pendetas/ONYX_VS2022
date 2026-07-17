@@ -3,6 +3,52 @@
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-commerce.css") %>" />
+    <style>
+        .onyx-invoice-breakdown {
+            border-top: 1px solid #ededed;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 26px;
+            padding-top: 18px;
+        }
+
+        .onyx-invoice-breakdown-row {
+            align-items: baseline;
+            display: flex;
+            gap: 18px;
+            justify-content: space-between;
+        }
+
+        .onyx-invoice-breakdown-row span {
+            color: #777;
+            font-size: 0.58rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .onyx-invoice-breakdown-row strong {
+            color: #111;
+            font-size: 0.92rem;
+            font-weight: 800;
+        }
+
+        .onyx-invoice-breakdown-row--total {
+            border-top: 1px solid #ededed;
+            margin-top: 4px;
+            padding-top: 14px;
+        }
+
+        .onyx-invoice-breakdown-row--total span,
+        .onyx-invoice-breakdown-row--total strong {
+            color: #111;
+        }
+
+        .onyx-invoice-breakdown-row--total strong {
+            font-size: 1.2rem;
+        }
+    </style>
 </asp:Content>
 
 <asp:Content ID="InvoiceContent" ContentPlaceHolderID="MainContent" runat="server">
@@ -79,9 +125,25 @@
                     </tbody>
                 </table>
 
-                <div class="onyx-invoice-total">
-                    <span>Grand Total Paid</span>
-                    <strong><asp:Literal ID="litGrandTotal" runat="server" /></strong>
+                <div class="onyx-invoice-breakdown">
+                    <div class="onyx-invoice-breakdown-row">
+                        <span>Items subtotal</span>
+                        <strong><asp:Literal ID="litSubtotal" runat="server" /></strong>
+                    </div>
+                    <asp:Panel ID="pnlVoucherSummary" runat="server" Visible="false">
+                        <div class="onyx-invoice-breakdown-row">
+                            <span><asp:Literal ID="litVoucherLabel" runat="server" /></span>
+                            <strong>-<asp:Literal ID="litDiscount" runat="server" /></strong>
+                        </div>
+                    </asp:Panel>
+                    <div class="onyx-invoice-breakdown-row">
+                        <span>Shipping</span>
+                        <strong>RM 0.00</strong>
+                    </div>
+                    <div class="onyx-invoice-breakdown-row onyx-invoice-breakdown-row--total">
+                        <span>Total charged</span>
+                        <strong><asp:Literal ID="litGrandTotal" runat="server" /></strong>
+                    </div>
                 </div>
 
                 <div class="onyx-invoice-thanks">Thank you for choosing ONYX.</div>

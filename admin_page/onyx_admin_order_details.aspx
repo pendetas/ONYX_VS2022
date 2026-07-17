@@ -434,12 +434,18 @@
                         <div class="summary-key">Items subtotal</div>
                         <div class="summary-value"><asp:Literal ID="litSubtotal" runat="server" /></div>
                     </div>
+                    <asp:Panel ID="pnlVoucherSummary" runat="server" Visible="false">
+                        <div class="summary-row">
+                            <div class="summary-key"><asp:Literal ID="litVoucherLabel" runat="server" /></div>
+                            <div class="summary-value">-<asp:Literal ID="litDiscount" runat="server" /></div>
+                        </div>
+                    </asp:Panel>
                     <div class="summary-row">
                         <div class="summary-key">Shipping</div>
-                        <div class="summary-value" style="color:rgba(255,255,255,0.40);">RM 10.00</div>
+                        <div class="summary-value">RM 0.00</div>
                     </div>
                     <div class="summary-row summary-total">
-                        <div class="summary-key">Total Charged</div>
+                        <div class="summary-key">Total charged</div>
                         <div class="summary-value"><asp:Literal ID="litTotal" runat="server" /></div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web.UI;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.admin_page
@@ -72,15 +73,40 @@ namespace ONYX_DDAC.admin_page
             OrderItemsRepeater.DataSource = items;
             OrderItemsRepeater.DataBind();
 
-            decimal subtotal = 0;
-            foreach (var item in items)
-                subtotal += item.UnitPrice * item.Quantity;
+            litSubtotal.Text = CurrencyHelper.FormatMyr(order.SubtotalAmount);
+            litTotal.Text    = CurrencyHelper.FormatMyr(order.TotalAmount);
 
-            litSubtotal.Text = "RM " + subtotal.ToString("N2");
-            litTotal.Text    = "RM " + order.TotalAmount.ToString("N2");
+            bool hasVoucherDiscount = order.DiscountAmount > 0m;
+            pnlVoucherSummary.Visible = hasVoucherDiscount;
+            litVoucherLabel.Text = hasVoucherDiscount ? BuildVoucherLabel(order.VoucherCode, order.VoucherName) : string.Empty;
+            litDiscount.Text = hasVoucherDiscount ? CurrencyHelper.FormatMyr(order.DiscountAmount) : string.Empty;
 
             TimelineRepeater.DataSource = BuildTimeline(statusKey, order.OrderedAt, order.StatusUpdatedAt);
             TimelineRepeater.DataBind();
+        }
+
+        private string BuildVoucherLabel(string voucherCode, string voucherName)
+        {
+            string code = string.IsNullOrWhiteSpace(voucherCode) ? string.Empty : voucherCode.Trim();
+            string name = string.IsNullOrWhiteSpace(voucherName) ? string.Empty : voucherName.Trim();
+
+            if (!string.IsNullOrEmpty(code) && !string.IsNullOrEmpty(name) &&
+                !string.Equals(code, name, StringComparison.OrdinalIgnoreCase))
+            {
+                return "Voucher (" + Server.HtmlEncode(code) + " · " + Server.HtmlEncode(name) + ")";
+            }
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                return "Voucher (" + Server.HtmlEncode(code) + ")";
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                return "Voucher (" + Server.HtmlEncode(name) + ")";
+            }
+
+            return "Voucher";
         }
 
         protected void btnUpdateStatus_Click(object sender, EventArgs e)

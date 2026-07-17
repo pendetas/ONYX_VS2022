@@ -29,6 +29,8 @@ namespace ONYX_DDAC.customer_page
 
             try
             {
+                litTitle.Text = "Confirming your payment";
+                litMessage.Text = "<p>Please wait while ONYX verifies your payment securely.</p>";
                 int poll = GetPollCount();
                 if (poll >= MaximumPolls)
                 {
@@ -56,6 +58,11 @@ namespace ONYX_DDAC.customer_page
 
                 string next = ResolveUrl("~/customer_page/onyx_payment_confirmation.aspx?session_id=") +
                     HttpUtility.UrlEncode(sessionId) + "&poll=" + (poll + 1);
+                if (result.OrderId > 0)
+                {
+                    Order order = new OrderService().GetOrderForUser(result.OrderId, userId);
+                    litMessage.Text = BuildPendingMessage(order);
+                }
                 litRefresh.Text = "<meta http-equiv=\"refresh\" content=\"2;url=" +
                     HttpUtility.HtmlAttributeEncode(next) + "\" />";
             }
@@ -63,7 +70,7 @@ namespace ONYX_DDAC.customer_page
             {
                 System.Diagnostics.Trace.TraceError("Payment confirmation failed: {0}", ex);
                 litTitle.Text = "Payment verification delayed";
-                litMessage.Text = "Your payment status could not be confirmed yet. Check order history shortly.";
+                litMessage.Text = "<p>Your payment status could not be confirmed yet. Check order history shortly.</p>";
             }
         }
 
@@ -83,6 +90,61 @@ namespace ONYX_DDAC.customer_page
             return AppUrlHelper.BuildAbsoluteUrl(this, "~/customer_page/onyx_invoice.aspx") +
                    "?orderId=" +
                    HttpUtility.UrlEncode(orderId.ToString());
+        }
+
+        private string BuildPendingMessage(Order order)
+        {
+            if (order == null)
+            {
+                return "<p>Please wait while ONYX verifies your payment securely.</p>";
+            }
+
+            bool hasVoucherDiscount = order.DiscountAmount > 0m;
+            string voucherLabel = BuildVoucherLabel(order);
+            string summary = "<div class=\"onyx-payment-summary\">" +
+                "<div class=\"onyx-payment-summary-row\"><span>Items subtotal</span><strong>" +
+                HttpUtility.HtmlEncode(CurrencyHelper.FormatMyr(order.SubtotalAmount)) +
+                "</strong></div>";
+
+            if (hasVoucherDiscount)
+            {
+                summary += "<div class=\"onyx-payment-summary-row\"><span>" +
+                    voucherLabel +
+                    "</span><strong>-" +
+                    HttpUtility.HtmlEncode(CurrencyHelper.FormatMyr(order.DiscountAmount)) +
+                    "</strong></div>";
+            }
+
+            summary += "<div class=\"onyx-payment-summary-row\"><span>Shipping</span><strong>RM 0.00</strong></div>" +
+                "<div class=\"onyx-payment-summary-row onyx-payment-summary-row--total\"><span>Total charged</span><strong>" +
+                HttpUtility.HtmlEncode(CurrencyHelper.FormatMyr(order.TotalAmount)) +
+                "</strong></div></div>";
+
+            return "<p>ONYX is still confirming your Stripe payment. These stored order totals will stay consistent once your receipt is ready.</p>" + summary;
+        }
+
+        private string BuildVoucherLabel(Order order)
+        {
+            string code = string.IsNullOrWhiteSpace(order.VoucherCode) ? string.Empty : order.VoucherCode.Trim();
+            string name = string.IsNullOrWhiteSpace(order.VoucherName) ? string.Empty : order.VoucherName.Trim();
+
+            if (!string.IsNullOrEmpty(code) && !string.IsNullOrEmpty(name) &&
+                !string.Equals(code, name, StringComparison.OrdinalIgnoreCase))
+            {
+                return HttpUtility.HtmlEncode("Voucher (" + code + " · " + name + ")");
+            }
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                return HttpUtility.HtmlEncode("Voucher (" + code + ")");
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                return HttpUtility.HtmlEncode("Voucher (" + name + ")");
+            }
+
+            return "Voucher";
         }
 
         private static bool TryGetUserId(out long userId)
