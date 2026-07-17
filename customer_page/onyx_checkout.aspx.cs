@@ -50,13 +50,7 @@ namespace ONYX_DDAC.customer_page
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.TraceError("Checkout cart validation failed for user {0}: {1}", userId, ex);
-                pnlEmptyCheckout.Visible = false;
-                pnlCheckout.Visible = true;
-                btnPayWithStripe.Enabled = false;
-                btnApplyVoucher.Enabled = false;
-                lblCheckoutMessage.Text = "Checkout is currently unavailable. Return to your cart and verify item quantities.";
-                lblCheckoutMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ff4444");
-                lblCheckoutMessage.Visible = true;
+                ShowCheckoutUnavailableState();
                 return;
             }
 
@@ -131,6 +125,20 @@ namespace ONYX_DDAC.customer_page
                 BindCheckout();
                 txtVoucherCode.Text = requestedCode;
                 SetVoucherMessage(ex.Message, true);
+            }
+            catch (InvalidOperationException)
+            {
+                AppliedVoucherCode = null;
+                txtVoucherCode.Text = requestedCode;
+                ShowCheckoutUnavailableState();
+            }
+            catch (Exception ex)
+            {
+                long userId = Session["UserId"] == null ? 0 : Convert.ToInt64(Session["UserId"]);
+                System.Diagnostics.Trace.TraceError("Voucher checkout preview apply failed for user {0}: {1}", userId, ex);
+                AppliedVoucherCode = null;
+                txtVoucherCode.Text = requestedCode;
+                ShowCheckoutUnavailableState();
             }
         }
 
@@ -256,6 +264,18 @@ namespace ONYX_DDAC.customer_page
                 ? System.Drawing.ColorTranslator.FromHtml("#ff8a8a")
                 : System.Drawing.ColorTranslator.FromHtml("#d5f5dd");
             lblVoucherMessage.Visible = !string.IsNullOrWhiteSpace(message);
+        }
+
+        private void ShowCheckoutUnavailableState()
+        {
+            ResetVoucherPreview();
+            pnlEmptyCheckout.Visible = false;
+            pnlCheckout.Visible = true;
+            btnPayWithStripe.Enabled = false;
+            btnApplyVoucher.Enabled = false;
+            lblCheckoutMessage.Text = "Checkout is currently unavailable. Return to your cart and verify item quantities.";
+            lblCheckoutMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ff4444");
+            lblCheckoutMessage.Visible = true;
         }
     }
 }

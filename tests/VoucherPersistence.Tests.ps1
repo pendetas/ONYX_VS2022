@@ -33,8 +33,10 @@ $checks = [ordered]@{
     'Cart and checkout hydrate authoritative category' =
         $cartRepo -match 'p\.category' -and
         $cartRepo -match 'Category\s*=\s*reader\.GetString\(reader\.GetOrdinal\("category"\)\)' -and
-        $checkoutRepo -match 'p\.category' -and
-        $checkoutRepo -match 'Category\s*=\s*reader\.GetString\(reader\.GetOrdinal\("category"\)\)' -and
+        $checkoutRepo -match 'p\.category\s+AS\s+product_category' -and
+        $checkoutRepo -notmatch 'p\.category\s*,\s*p\.category\s+AS\s+product_category' -and
+        $checkoutRepo -match 'Category\s*=\s*reader\.GetString\(reader\.GetOrdinal\("product_category"\)\)' -and
+        $checkoutRepo -notmatch 'Category\s*=\s*reader\.GetString\(reader\.GetOrdinal\("category"\)\)' -and
         $checkoutRepo -match 'Category\s*=\s*item\.Category'
     'Repository filters category hydration to requested vouchers' =
         $repo -match 'WHERE voucher_id = ANY\s*\(@VoucherIds\)' -and
