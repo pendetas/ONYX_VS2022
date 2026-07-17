@@ -601,6 +601,9 @@
     <Compile Include="Models\StripeCheckoutResult.cs" />
     <Compile Include="Models\StripePaymentState.cs" />
     <Compile Include="Models\TopProduct.cs" />
+    <Compile Include="Models\Voucher.cs" />
+    <Compile Include="Models\VoucherAdminMetrics.cs" />
+    <Compile Include="Models\VoucherQuote.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Wishlist.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -675,6 +678,7 @@
     <Compile Include="Services\S3Service.cs" />
     <Compile Include="Services\StripePaymentService.cs" />
     <Compile Include="Services\PaymentCompletionService.cs" />
+    <Compile Include="Services\VoucherCalculator.cs" />
     <Compile Include="stripe_webhook.ashx.cs">
       <DependentUpon>stripe_webhook.ashx</DependentUpon>
     </Compile>
