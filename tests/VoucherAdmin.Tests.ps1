@@ -21,6 +21,11 @@ $checks = [ordered]@{
         $list -match 'ID="pnlEmptyState"' -and
         $listCode -match 'pnlEmptyState\.Visible' -and
         $listCode -match 'The loyalty list is temporarily unavailable\.'
+    'List hides unexpected action exceptions behind a safe message' =
+        $listCode -match 'catch\s*\(InvalidOperationException\s+\w+\)' -and
+        $listCode -match 'ShowError\(ex\.Message\)' -and
+        $listCode -match 'Trace\.TraceError\("Voucher loyalty action failed: \{0\}"' -and
+        $listCode -match 'The voucher action could not be completed\. Please refresh and try again\.'
     'Dedicated voucher form exists' = $form -match 'Voucher Details'
     'Voucher form has identity fields' = $form -match 'ID="txtName"' -and $form -match 'ID="txtCode"'
     'Voucher form has discount fields' = $form -match 'ID="ddlDiscountType"' -and $form -match 'ID="txtDiscountValue"' -and $form -match 'ID="txtMaximumDiscount"' -and $form -match 'ID="txtMinimumPurchase"'

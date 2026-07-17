@@ -65,9 +65,15 @@ namespace ONYX_DDAC.admin_page
 
                 BindPage();
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 ShowError(ex.Message);
+                BindPage();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Voucher loyalty action failed: {0}", ex);
+                ShowError("The voucher action could not be completed. Please refresh and try again.");
                 BindPage();
             }
         }

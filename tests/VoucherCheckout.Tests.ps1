@@ -18,6 +18,22 @@ $confirmation = Get-Content "$root\customer_page\onyx_payment_confirmation.aspx"
 $confirmationCode = Get-Content "$root\customer_page\onyx_payment_confirmation.aspx.cs" -Raw
 $startCheckoutCall = [regex]::Match($page, 'StartCheckout\s*\((?s:.*?)\);').Value
 
+$tempAssembly = Join-Path ([System.IO.Path]::GetTempPath()) ('StripePaymentState.' + [guid]::NewGuid().ToString('N') + '.dll')
+Add-Type -Path "$root\Models\StripePaymentState.cs" -OutputAssembly $tempAssembly | Out-Null
+[System.Reflection.Assembly]::LoadFrom($tempAssembly) | Out-Null
+$openNoCost = New-Object ONYX_DDAC.Models.StripePaymentState
+$openNoCost.PaymentStatus = 'no_payment_required'
+$openNoCost.SessionStatus = 'open'
+$openNoCost.AmountTotal = 0
+$completedNoCost = New-Object ONYX_DDAC.Models.StripePaymentState
+$completedNoCost.PaymentStatus = 'no_payment_required'
+$completedNoCost.SessionStatus = 'complete'
+$completedNoCost.AmountTotal = 0
+$nonZeroNoCost = New-Object ONYX_DDAC.Models.StripePaymentState
+$nonZeroNoCost.PaymentStatus = 'no_payment_required'
+$nonZeroNoCost.SessionStatus = 'complete'
+$nonZeroNoCost.AmountTotal = 500
+
 $checks = [ordered]@{
     'Checkout loads authoritative category from explicit alias' =
         $checkoutRepo -match 'p\.category\s+AS\s+product_category' -and
@@ -54,9 +70,14 @@ $checks = [ordered]@{
         $stripeService -match 'new SessionDiscountOptions' -and
         $stripeService -match 'Discounts\s*=' -and
         $stripeService -match 'Coupon\s*='
-    'Zero-cost Stripe sessions are recognized as successful' =
-        $stripePaymentState -match 'no_payment_required' -and
-        $stripePaymentState -match 'IsNoCostSession'
+    'Open no-cost Stripe sessions do not fulfill payment' =
+        (-not $openNoCost.IsNoCostSession) -and
+        (-not $openNoCost.IsPaid)
+    'Completed zero-value no-cost Stripe sessions fulfill payment' =
+        $completedNoCost.IsNoCostSession -and
+        $completedNoCost.IsPaid -and
+        (-not $nonZeroNoCost.IsNoCostSession) -and
+        (-not $nonZeroNoCost.IsPaid)
     'Payment completion allows missing intent only for zero-cost sessions' =
         $paymentCompletionService -match 'payment\.IsNoCostSession' -and
         $paymentCompletionService -match 'Stripe reported a paid Session without a PaymentIntent' -and
