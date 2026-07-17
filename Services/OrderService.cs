@@ -165,8 +165,21 @@ namespace ONYX_DDAC.Services
                 return "Invalid status value.";
             }
 
+            OrderDetail order = _repo.GetOrderById(orderId);
+            if (order == null)
+            {
+                return "Order not found.";
+            }
+
+            if (string.Equals(order.Status, OrderStatuses.PendingPayment, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(status, OrderStatuses.Cancelled, StringComparison.OrdinalIgnoreCase))
+            {
+                return "Use the payment cancellation flow for pending Stripe orders.";
+            }
+
             _repo.UpdateStatus(orderId, status);
-            return null;
+            string errorMessage = null;
+            return errorMessage;
         }
 
         public void DeleteOrder(long orderId)

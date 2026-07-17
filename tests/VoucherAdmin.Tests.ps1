@@ -13,12 +13,24 @@ $checks = [ordered]@{
     'List supports server actions' = $list -match 'OnItemCommand="rptVouchers_ItemCommand"' -and $listCode -match 'rptVouchers_ItemCommand'
     'List uses ONYX monochrome theme' = $list -notmatch 'bootstrap' -and $list -notmatch '#00ff87|#a78bfa'
     'List has keyboard focus styles' = $list -match '\.primary-action:focus-visible' -and $list -match '\.actions (a|\.link-button):focus-visible'
+    'List supports server-side search and status filtering' =
+        $list -match 'ID="txtSearch"' -and
+        $list -match 'ID="ddlStatusFilter"' -and
+        $listCode -match 'GetAll\(\s*txtSearch\.Text\s*,\s*ddlStatusFilter\.SelectedValue\s*\)'
+    'List renders empty-state and safe database-error states' =
+        $list -match 'ID="pnlEmptyState"' -and
+        $listCode -match 'pnlEmptyState\.Visible' -and
+        $listCode -match 'The loyalty list is temporarily unavailable\.'
     'Dedicated voucher form exists' = $form -match 'Voucher Details'
     'Voucher form has identity fields' = $form -match 'ID="txtName"' -and $form -match 'ID="txtCode"'
     'Voucher form has discount fields' = $form -match 'ID="ddlDiscountType"' -and $form -match 'ID="txtDiscountValue"' -and $form -match 'ID="txtMaximumDiscount"' -and $form -match 'ID="txtMinimumPurchase"'
     'Voucher form has category selection' = $form -match 'ID="chkAllCategories"' -and $form -match 'ID="cblCategories"'
     'Voucher form has validity and limits' = $form -match 'ID="txtValidFrom"' -and $form -match 'ID="txtExpiresAt"' -and $form -match 'ID="txtTotalLimit"' -and $form -match 'ID="txtPerUserLimit"'
     'Voucher form stores plain text terms' = $form -match 'ID="txtTerms"' -and $form -notmatch 'contenteditable|innerHTML'
+    'Voucher form previews terms with textContent only' =
+        $form -match 'data-terms-preview' -and
+        $form -match 'textContent' -and
+        $form -notmatch 'innerHTML'
     'Voucher form uses sticky action bar' = $form -match 'data-voucher-actions' -and $form -match 'position:\s*sticky'
     'Voucher form uses associated labels for key controls' = $form -match 'AssociatedControlID="txtName"' -and $form -match 'AssociatedControlID="txtCode"' -and $form -match 'AssociatedControlID="ddlDiscountType"' -and $form -match 'AssociatedControlID="chkIsActive"' -and $form -match 'AssociatedControlID="chkAllCategories"' -and $form -match 'AssociatedControlID="txtTerms"'
     'Voucher form has focus-visible treatment for fields and categories' = $form -match '\.field-input:focus-visible' -and $form -match '\.field-select:focus-visible' -and $form -match '\.field-textarea:focus-visible' -and $form -match '\.category-grid input:focus-visible'

@@ -51,6 +51,15 @@ $checks = [ordered]@{
     'Repository filters category hydration to requested vouchers' =
         $repo -match 'WHERE voucher_id = ANY\s*\(@VoucherIds\)' -and
         $repo -match '@VoucherIds'
+    'Repository validates selected categories against authoritative product categories inside the save transaction' =
+        $repo -match 'ValidateCategoriesForSave' -and
+        $repo -match 'SELECT DISTINCT category' -and
+        $repo -match 'FROM products' -and
+        $repo -match 'tx' -and
+        $repo -match 'Unknown voucher category selected'
+    'All-categories vouchers skip category persistence safely' =
+        $repo -match 'if \(voucher == null \|\| voucher\.AppliesToAllCategories\)' -and
+        $repo -match 'return;'
     'SQL remains parameterized' = $repo -notmatch 'CommandText\s*=.*\+.*(code|Code|voucher|Voucher)'
 }
 

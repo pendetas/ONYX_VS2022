@@ -29,6 +29,17 @@ $checks = [ordered]@{
     'Canonical schema contains voucher tables' =
         $schema -match 'CREATE TABLE vouchers' -and
         $schema -match 'CREATE TABLE voucher_redemptions'
+    'Voucher redemption foreign keys cascade on legacy user and order deletes' =
+        $migration -match 'user_id BIGINT NOT NULL REFERENCES users\(id\) ON DELETE CASCADE' -and
+        $migration -match 'order_id BIGINT NOT NULL REFERENCES orders\(id\) ON DELETE CASCADE' -and
+        $schema -match 'user_id BIGINT NOT NULL REFERENCES users\(id\) ON DELETE CASCADE' -and
+        $schema -match 'order_id BIGINT NOT NULL REFERENCES orders\(id\) ON DELETE CASCADE'
+    'Migration recreates named redemption constraints idempotently without touching orders voucher FK behavior' =
+        $migration -match 'fk_voucher_redemptions_user' -and
+        $migration -match 'fk_voucher_redemptions_order' -and
+        $migration -match 'DROP CONSTRAINT IF EXISTS fk_voucher_redemptions_user' -and
+        $migration -match 'DROP CONSTRAINT IF EXISTS fk_voucher_redemptions_order' -and
+        $migration -match 'fk_orders_voucher'
     'Project includes voucher migration' =
         $project -match 'App_Data\\20260717_voucher_loyalty_management\.sql'
 }

@@ -70,6 +70,118 @@
         font-size: 12px;
     }
 
+    .toolbar {
+        display: flex;
+        align-items: end;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .toolbar-field {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .toolbar-field--search {
+        flex: 1;
+        min-width: 240px;
+    }
+
+    .toolbar-label {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.26);
+    }
+
+    .search-line,
+    .filter-select {
+        min-height: 42px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: #111113;
+        color: #fff;
+    }
+
+    .search-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 12px;
+    }
+
+    .search-line i {
+        width: 14px;
+        height: 14px;
+        color: rgba(255,255,255,0.24);
+        flex-shrink: 0;
+    }
+
+    .search-input,
+    .filter-select {
+        width: 100%;
+        font-size: 13px;
+        font-family: inherit;
+    }
+
+    .search-input {
+        border: none;
+        background: transparent;
+        color: #fff;
+        outline: none;
+    }
+
+    .search-input::placeholder {
+        color: rgba(255,255,255,0.22);
+    }
+
+    .filter-select {
+        padding: 0 12px;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 28px;
+    }
+
+    .search-line:focus-within,
+    .filter-select:focus,
+    .filter-select:focus-visible {
+        border-color: rgba(255,255,255,0.26);
+        outline: none;
+    }
+
+    .toolbar-button {
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: #111113;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+
+    .toolbar-button:hover {
+        border-color: rgba(255,255,255,0.20);
+        background: rgba(255,255,255,0.04);
+    }
+
+    .toolbar-button:focus-visible,
+    .search-input:focus-visible,
+    .filter-select:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(17,17,19,0.95), 0 0 0 4px rgba(255,255,255,0.18);
+    }
+
     .stat-strip {
         display: flex;
         gap: 12px;
@@ -225,6 +337,27 @@
         box-shadow: 0 0 0 2px rgba(17,17,19,0.95), 0 0 0 4px rgba(255,255,255,0.20);
     }
 
+    .empty-state {
+        margin-top: 16px;
+        padding: 22px 20px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.05);
+        background: #111113;
+        color: #fff;
+    }
+
+    .empty-state__title {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .empty-state__copy {
+        font-size: 12px;
+        color: rgba(255,255,255,0.46);
+        line-height: 1.6;
+    }
+
     html[data-theme="light"] .page-title,
     html[data-theme="light"] .stat-box,
     html[data-theme="light"] .voucher-table tbody td,
@@ -238,12 +371,17 @@
     html[data-theme="light"] .voucher-table thead th,
     html[data-theme="light"] .muted-cell,
     html[data-theme="light"] .code,
+    html[data-theme="light"] .toolbar-label,
     html[data-theme="light"] .actions a,
     html[data-theme="light"] .actions .link-button { color: rgba(0,0,0,0.42); }
 
     html[data-theme="light"] .primary-action,
     html[data-theme="light"] .stat-box,
-    html[data-theme="light"] .panel {
+    html[data-theme="light"] .panel,
+    html[data-theme="light"] .search-line,
+    html[data-theme="light"] .filter-select,
+    html[data-theme="light"] .toolbar-button,
+    html[data-theme="light"] .empty-state {
         background: #ffffff;
         border-color: rgba(0,0,0,0.07);
     }
@@ -272,6 +410,19 @@
         border-color: rgba(255,68,68,0.18);
         background: rgba(255,68,68,0.07);
         color: #7d1f1f;
+    }
+
+    html[data-theme="light"] .search-line i,
+    html[data-theme="light"] .search-input::placeholder,
+    html[data-theme="light"] .empty-state__copy {
+        color: rgba(0,0,0,0.30);
+    }
+
+    html[data-theme="light"] .search-input,
+    html[data-theme="light"] .filter-select,
+    html[data-theme="light"] .toolbar-button,
+    html[data-theme="light"] .empty-state__title {
+        color: #0d0d0f;
     }
 
     html[data-theme="light"] .actions a:focus-visible,
@@ -313,6 +464,32 @@
     </div>
 
     <asp:Label ID="lblMessage" runat="server" CssClass="message-banner" Visible="false" />
+
+    <div class="toolbar">
+        <div class="toolbar-field toolbar-field--search">
+            <label for="<%= txtSearch.ClientID %>" class="toolbar-label">Search vouchers</label>
+            <div class="search-line">
+                <i data-lucide="search"></i>
+                <asp:TextBox ID="txtSearch" runat="server" CssClass="search-input" placeholder="Search by voucher name or code" />
+            </div>
+        </div>
+        <div class="toolbar-field">
+            <label for="<%= ddlStatusFilter.ClientID %>" class="toolbar-label">Status</label>
+            <asp:DropDownList ID="ddlStatusFilter" runat="server" CssClass="filter-select" AutoPostBack="true" OnSelectedIndexChanged="ddlStatusFilter_SelectedIndexChanged">
+                <asp:ListItem Value="all" Text="All statuses" />
+                <asp:ListItem Value="active" Text="Active" />
+                <asp:ListItem Value="upcoming" Text="Upcoming" />
+                <asp:ListItem Value="paused" Text="Paused" />
+                <asp:ListItem Value="expired" Text="Expired" />
+                <asp:ListItem Value="exhausted" Text="Exhausted" />
+                <asp:ListItem Value="archived" Text="Archived" />
+            </asp:DropDownList>
+        </div>
+        <div class="toolbar-field">
+            <span class="toolbar-label">Apply</span>
+            <asp:Button ID="btnApplyFilters" runat="server" Text="Filter" CssClass="toolbar-button" OnClick="btnApplyFilters_Click" />
+        </div>
+    </div>
 
     <div class="stat-strip">
         <div class="stat-box"><asp:Literal ID="litActiveCount" runat="server" /><span>Active vouchers</span></div>
@@ -361,4 +538,9 @@
             </table>
         </div>
     </div>
+
+    <asp:Panel ID="pnlEmptyState" runat="server" CssClass="empty-state" Visible="false">
+        <div class="empty-state__title">No vouchers found</div>
+        <div class="empty-state__copy"><asp:Literal ID="litEmptyStateText" runat="server" /></div>
+    </asp:Panel>
 </asp:Content>

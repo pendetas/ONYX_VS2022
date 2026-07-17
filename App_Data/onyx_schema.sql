@@ -256,8 +256,8 @@ CREATE TABLE voucher_categories (
 CREATE TABLE voucher_redemptions (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   voucher_id BIGINT NOT NULL REFERENCES vouchers(id),
-  user_id BIGINT NOT NULL REFERENCES users(id),
-  order_id BIGINT NOT NULL REFERENCES orders(id),
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  order_id BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   eligible_subtotal NUMERIC(10,2) NOT NULL CHECK (eligible_subtotal >= 0),
   discount_amount NUMERIC(10,2) NOT NULL CHECK (discount_amount > 0),
   status VARCHAR(20) NOT NULL,

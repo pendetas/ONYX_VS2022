@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS voucher_categories (
 CREATE TABLE IF NOT EXISTS voucher_redemptions (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   voucher_id BIGINT NOT NULL REFERENCES vouchers(id),
-  user_id BIGINT NOT NULL REFERENCES users(id),
-  order_id BIGINT NOT NULL REFERENCES orders(id),
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  order_id BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   eligible_subtotal NUMERIC(10,2) NOT NULL CHECK (eligible_subtotal >= 0),
   discount_amount NUMERIC(10,2) NOT NULL CHECK (discount_amount > 0),
   status VARCHAR(20) NOT NULL,
@@ -65,6 +65,14 @@ CREATE INDEX IF NOT EXISTS ix_voucher_redemptions_voucher_status
   ON voucher_redemptions (voucher_id, status);
 CREATE INDEX IF NOT EXISTS ix_voucher_redemptions_user_status
   ON voucher_redemptions (voucher_id, user_id, status);
+
+ALTER TABLE voucher_redemptions DROP CONSTRAINT IF EXISTS voucher_redemptions_user_id_fkey;
+ALTER TABLE voucher_redemptions DROP CONSTRAINT IF EXISTS voucher_redemptions_order_id_fkey;
+ALTER TABLE voucher_redemptions DROP CONSTRAINT IF EXISTS fk_voucher_redemptions_user;
+ALTER TABLE voucher_redemptions DROP CONSTRAINT IF EXISTS fk_voucher_redemptions_order;
+ALTER TABLE voucher_redemptions
+  ADD CONSTRAINT fk_voucher_redemptions_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk_voucher_redemptions_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
 
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS subtotal_amount NUMERIC(10,2);
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount NUMERIC(10,2);

@@ -17,8 +17,19 @@ namespace ONYX_DDAC.admin_page
         {
             if (!IsPostBack)
             {
+                ddlStatusFilter.SelectedValue = "all";
                 BindPage();
             }
+        }
+
+        protected void btnApplyFilters_Click(object sender, EventArgs e)
+        {
+            BindPage();
+        }
+
+        protected void ddlStatusFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            BindPage();
         }
 
         protected void rptVouchers_ItemCommand(object source, RepeaterCommandEventArgs e)
@@ -63,13 +74,32 @@ namespace ONYX_DDAC.admin_page
 
         private void BindPage()
         {
-            VoucherAdminMetrics metrics = _voucherService.GetMetrics();
-            litActiveCount.Text = metrics.ActiveVoucherCount.ToString("N0", CultureInfo.InvariantCulture);
-            litRedeemedCount.Text = metrics.RedeemedCount.ToString("N0", CultureInfo.InvariantCulture);
-            litSavingsGiven.Text = CurrencyHelper.FormatMyr(metrics.RedeemedSavings);
+            try
+            {
+                VoucherAdminMetrics metrics = _voucherService.GetMetrics();
+                litActiveCount.Text = metrics.ActiveVoucherCount.ToString("N0", CultureInfo.InvariantCulture);
+                litRedeemedCount.Text = metrics.RedeemedCount.ToString("N0", CultureInfo.InvariantCulture);
+                litSavingsGiven.Text = CurrencyHelper.FormatMyr(metrics.RedeemedSavings);
 
-            rptVouchers.DataSource = _voucherService.GetAll();
-            rptVouchers.DataBind();
+                var vouchers = _voucherService.GetAll(txtSearch.Text, ddlStatusFilter.SelectedValue).ToList();
+                rptVouchers.DataSource = vouchers;
+                rptVouchers.DataBind();
+
+                pnlEmptyState.Visible = vouchers.Count == 0;
+                litEmptyStateText.Text = Server.HtmlEncode("No vouchers match the current filters.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Voucher loyalty list load failed: {0}", ex);
+                litActiveCount.Text = "0";
+                litRedeemedCount.Text = "0";
+                litSavingsGiven.Text = CurrencyHelper.FormatMyr(0m);
+                rptVouchers.DataSource = Enumerable.Empty<Voucher>();
+                rptVouchers.DataBind();
+                pnlEmptyState.Visible = true;
+                litEmptyStateText.Text = Server.HtmlEncode("The loyalty list is temporarily unavailable.");
+                ShowError("The loyalty list is temporarily unavailable.");
+            }
         }
 
         private void ShowError(string message)
@@ -163,33 +193,7 @@ namespace ONYX_DDAC.admin_page
                 return "paused";
             }
 
-            DateTimeOffset now = DateTimeOffset.UtcNow;
-            if (voucher.ArchivedAt.HasValue)
-            {
-                return "archived";
-            }
-
-            if (voucher.ExpiresAt <= now)
-            {
-                return "expired";
-            }
-
-            if (voucher.TotalUsageLimit.HasValue && voucher.PendingAndRedeemedUses >= voucher.TotalUsageLimit.Value)
-            {
-                return "exhausted";
-            }
-
-            if (!voucher.IsActive)
-            {
-                return "paused";
-            }
-
-            if (voucher.ValidFrom > now)
-            {
-                return "upcoming";
-            }
-
-            return "active";
+            return VoucherService.GetStatusKey(voucher, DateTimeOffset.UtcNow);
         }
 
         public string GetStatusText(object dataItem)

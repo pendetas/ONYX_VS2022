@@ -102,6 +102,33 @@
     .category-grid input:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
     .category-grid.disabled { opacity: 0.42; }
 
+    .terms-preview {
+        margin-top: 14px;
+        padding: 16px 18px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.025);
+    }
+
+    .terms-preview__label {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.34);
+        margin-bottom: 10px;
+    }
+
+    .terms-preview__content {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: inherit;
+        font-size: 13px;
+        line-height: 1.7;
+        color: rgba(255,255,255,0.82);
+    }
+
     .lock-banner {
         margin-top: 18px; padding: 12px 14px; border-radius: 10px;
         border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.04);
@@ -176,6 +203,12 @@
     }
     html[data-theme="light"] .category-grid span,
     html[data-theme="light"] .lock-banner { color: rgba(0,0,0,0.72); }
+    html[data-theme="light"] .terms-preview {
+        border-color: rgba(0,0,0,0.08);
+        background: rgba(0,0,0,0.02);
+    }
+    html[data-theme="light"] .terms-preview__label { color: rgba(0,0,0,0.34); }
+    html[data-theme="light"] .terms-preview__content { color: rgba(0,0,0,0.80); }
     html[data-theme="light"] .message-banner {
         border-color: rgba(196,42,42,0.20); background: rgba(196,42,42,0.06); color: #c42a2a;
     }
@@ -212,14 +245,29 @@
             }
         }
 
+        function syncTermsPreview() {
+            var termsInput = document.getElementById('<%= txtTerms.ClientID %>');
+            var termsPreview = document.querySelector('[data-terms-preview]');
+            if (!termsInput || !termsPreview) {
+                return;
+            }
+
+            termsPreview.textContent = termsInput.value || 'Preview your plain-text terms here.';
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             var allCategories = document.getElementById('<%= chkAllCategories.ClientID %>');
+            var termsInput = document.getElementById('<%= txtTerms.ClientID %>');
             if (!allCategories) {
                 return;
             }
 
             allCategories.addEventListener('change', toggleVoucherCategories);
+            if (termsInput) {
+                termsInput.addEventListener('input', syncTermsPreview);
+            }
             toggleVoucherCategories();
+            syncTermsPreview();
         });
     })();
 </script>
@@ -345,6 +393,10 @@
                 <asp:Label ID="lblTerms" runat="server" CssClass="field-label" AssociatedControlID="txtTerms">Plain-text terms <span class="req">*</span></asp:Label>
                 <asp:TextBox ID="txtTerms" runat="server" TextMode="MultiLine" Rows="10" MaxLength="8000" CssClass="field-textarea" />
                 <div class="field-hint">Plain text only. Line breaks are preserved for customers.</div>
+                <div class="terms-preview" aria-live="polite">
+                    <div class="terms-preview__label">Live preview</div>
+                    <pre class="terms-preview__content" data-terms-preview></pre>
+                </div>
             </div>
         </div>
 

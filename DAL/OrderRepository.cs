@@ -481,12 +481,13 @@ namespace ONYX_DDAC.DAL
             {
                 cmd.Transaction = tx;
                 cmd.CommandText = @"
-                    INSERT INTO orders (user_id, status, total_amount, shipping_address, receipt_s3_key)
-                    VALUES (@UserId, @Status, @TotalAmount, @ShippingAddress, @ReceiptS3Key)
+                    INSERT INTO orders (user_id, status, subtotal_amount, discount_amount, total_amount, shipping_address, receipt_s3_key)
+                    VALUES (@UserId, @Status, @TotalAmount, @DiscountAmount, @TotalAmount, @ShippingAddress, @ReceiptS3Key)
                     RETURNING id";
                 cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
                 cmd.Parameters.Add(new NpgsqlParameter("@Status", OrderStatuses.Paid));
                 cmd.Parameters.Add(new NpgsqlParameter("@TotalAmount", totalAmount));
+                cmd.Parameters.Add(new NpgsqlParameter("@DiscountAmount", (object)0m));
                 cmd.Parameters.Add(new NpgsqlParameter("@ShippingAddress", shippingAddress));
                 cmd.Parameters.Add(new NpgsqlParameter("@ReceiptS3Key", string.IsNullOrWhiteSpace(receiptS3Key) ? (object)DBNull.Value : receiptS3Key));
 

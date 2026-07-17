@@ -18,6 +18,32 @@ namespace ONYX_DDAC.Services
 
         public IList<Voucher> GetAll() { return _repository.GetAll(); }
 
+        public IList<Voucher> GetAll(string searchTerm, string statusFilter)
+        {
+            IEnumerable<Voucher> vouchers = _repository.GetAll() ?? new List<Voucher>();
+            string normalizedSearch = (searchTerm ?? string.Empty).Trim();
+            if (!string.IsNullOrWhiteSpace(normalizedSearch))
+            {
+                vouchers = vouchers.Where(voucher =>
+                    (!string.IsNullOrWhiteSpace(voucher.Name) &&
+                     voucher.Name.IndexOf(normalizedSearch, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                    (!string.IsNullOrWhiteSpace(voucher.Code) &&
+                     voucher.Code.IndexOf(normalizedSearch, StringComparison.OrdinalIgnoreCase) >= 0));
+            }
+
+            string normalizedStatus = NormalizeStatusFilter(statusFilter);
+            if (!string.Equals(normalizedStatus, "all", StringComparison.Ordinal))
+            {
+                DateTimeOffset now = DateTimeOffset.UtcNow;
+                vouchers = vouchers.Where(voucher => string.Equals(
+                    GetStatusKey(voucher, now),
+                    normalizedStatus,
+                    StringComparison.Ordinal));
+            }
+
+            return vouchers.ToList();
+        }
+
         public Voucher GetById(long id) { return _repository.GetById(id); }
 
         public VoucherAdminMetrics GetMetrics() { return _repository.GetMetrics(DateTimeOffset.UtcNow); }
@@ -83,6 +109,58 @@ namespace ONYX_DDAC.Services
             if (voucher.PerUserUsageLimit <= 0) throw new InvalidOperationException("Per-customer limit must be at least one.");
             if (string.IsNullOrWhiteSpace(voucher.TermsAndConditions)) throw new InvalidOperationException("Terms and conditions are required.");
             if (voucher.TermsAndConditions.Length > 8000) throw new InvalidOperationException("Terms and conditions cannot exceed 8000 characters.");
+        }
+
+        public static string GetStatusKey(Voucher voucher, DateTimeOffset now)
+        {
+            if (voucher == null)
+            {
+                return "paused";
+            }
+
+            if (voucher.ArchivedAt.HasValue)
+            {
+                return "archived";
+            }
+
+            if (voucher.ExpiresAt <= now)
+            {
+                return "expired";
+            }
+
+            if (voucher.TotalUsageLimit.HasValue && voucher.PendingAndRedeemedUses >= voucher.TotalUsageLimit.Value)
+            {
+                return "exhausted";
+            }
+
+            if (!voucher.IsActive)
+            {
+                return "paused";
+            }
+
+            if (voucher.ValidFrom > now)
+            {
+                return "upcoming";
+            }
+
+            return "active";
+        }
+
+        private static string NormalizeStatusFilter(string statusFilter)
+        {
+            string value = (statusFilter ?? string.Empty).Trim().ToLowerInvariant();
+            switch (value)
+            {
+                case "active":
+                case "upcoming":
+                case "paused":
+                case "expired":
+                case "exhausted":
+                case "archived":
+                    return value;
+                default:
+                    return "all";
+            }
         }
     }
 }

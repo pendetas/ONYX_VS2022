@@ -227,6 +227,7 @@ namespace ONYX_DDAC.DAL
                                 id = Convert.ToInt64(cmd.ExecuteScalar());
                             }
 
+                            ValidateCategoriesForSave(conn, tx, voucher);
                             SaveCategories(conn, tx, id, voucher);
                             tx.Commit();
                             return id;
@@ -301,6 +302,7 @@ namespace ONYX_DDAC.DAL
                                 }
                             }
 
+                            ValidateCategoriesForSave(conn, tx, voucher);
                             SaveCategories(conn, tx, voucher.Id, voucher);
                             tx.Commit();
                         }
@@ -793,6 +795,40 @@ namespace ONYX_DDAC.DAL
                     insert.Parameters.Add(new NpgsqlParameter("@Category", category));
                     insert.ExecuteNonQuery();
                 }
+            }
+        }
+
+        private static void ValidateCategoriesForSave(DbConnection conn, DbTransaction tx, Voucher voucher)
+        {
+            IList<string> categories = NormalizeCategories(voucher);
+            if (voucher == null || voucher.AppliesToAllCategories || categories.Count == 0)
+            {
+                return;
+            }
+
+            var authoritativeCategories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            using (DbCommand cmd = conn.CreateCommand())
+            {
+                cmd.Transaction = tx;
+                cmd.CommandText = @"
+                    SELECT DISTINCT category
+                    FROM products
+                    WHERE category IS NOT NULL
+                      AND btrim(category) <> ''";
+
+                using (DbDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        authoritativeCategories.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            string invalidCategory = categories.FirstOrDefault(category => !authoritativeCategories.Contains(category));
+            if (!string.IsNullOrWhiteSpace(invalidCategory))
+            {
+                throw new InvalidOperationException("Unknown voucher category selected: " + invalidCategory);
             }
         }
 

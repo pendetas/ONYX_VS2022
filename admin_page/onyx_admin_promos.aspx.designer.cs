@@ -12,9 +12,14 @@ namespace ONYX_DDAC.admin_page
     public partial class onyx_admin_promos
     {
         protected global::System.Web.UI.WebControls.Label lblMessage;
+        protected global::System.Web.UI.WebControls.TextBox txtSearch;
+        protected global::System.Web.UI.WebControls.DropDownList ddlStatusFilter;
+        protected global::System.Web.UI.WebControls.Button btnApplyFilters;
         protected global::System.Web.UI.WebControls.Literal litActiveCount;
         protected global::System.Web.UI.WebControls.Literal litRedeemedCount;
         protected global::System.Web.UI.WebControls.Literal litSavingsGiven;
         protected global::System.Web.UI.WebControls.Repeater rptVouchers;
+        protected global::System.Web.UI.WebControls.Panel pnlEmptyState;
+        protected global::System.Web.UI.WebControls.Literal litEmptyStateText;
     }
 }
