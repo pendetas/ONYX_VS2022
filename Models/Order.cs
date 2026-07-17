@@ -8,7 +8,12 @@ namespace ONYX_DDAC.Models
         public long Id { get; set; }
         public long UserId { get; set; }
         public string Status { get; set; }
+        public decimal SubtotalAmount { get; set; }
+        public decimal DiscountAmount { get; set; }
         public decimal TotalAmount { get; set; }
+        public long? VoucherId { get; set; }
+        public string VoucherCode { get; set; }
+        public string VoucherName { get; set; }
         public string ShippingAddress { get; set; }
         public string DeliveryMethod { get; set; }
         public string CheckoutAttemptToken { get; set; }

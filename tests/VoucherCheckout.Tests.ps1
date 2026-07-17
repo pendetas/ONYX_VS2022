@@ -18,9 +18,9 @@ $checks = [ordered]@{
         $page -match 'catch\s*\(Exception\s+\w+\)' -and
         $page -match 'Trace\.TraceError\("Voucher checkout preview apply failed for user \{0\}: \{1\}"' -and
         $page -match 'Checkout is currently unavailable\. Return to your cart and verify item quantities\.'
-    'Checkout preview stops before Task 7 StartCheckout handoff' =
+    'Checkout passes applied voucher into StartCheckout handoff' =
         -not [string]::IsNullOrWhiteSpace($startCheckoutCall) -and
-        $startCheckoutCall -notmatch 'AppliedVoucherCode'
+        $startCheckoutCall -match 'AppliedVoucherCode'
 }
 
 $failures = @($checks.GetEnumerator() | Where-Object { -not $_.Value })

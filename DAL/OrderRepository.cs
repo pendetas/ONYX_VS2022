@@ -23,19 +23,24 @@ namespace ONYX_DDAC.DAL
                             COALESCE(NULLIF(TRIM(u.fullname), ''), u.username, 'Unknown') AS customer_name,
                             o.ordered_at,
                             COALESCE(SUM(oi.quantity), 0)::int AS item_count,
+                            o.subtotal_amount,
+                            o.discount_amount,
                             o.total_amount,
+                            o.voucher_id,
+                            o.voucher_code,
+                            o.voucher_name,
                             o.status
                         FROM orders o
                         LEFT JOIN users u ON o.user_id = u.id
                         LEFT JOIN order_items oi ON oi.order_id = o.id
-                        GROUP BY o.id, u.fullname, u.username, o.ordered_at, o.total_amount, o.status
+                        GROUP BY o.id, u.fullname, u.username, o.ordered_at, o.subtotal_amount, o.discount_amount, o.total_amount, o.voucher_id, o.voucher_code, o.voucher_name, o.status
                         ORDER BY o.ordered_at DESC";
 
                     using (DbDataReader r = cmd.ExecuteReader())
                     {
                         while (r.Read())
                         {
-                            string status = r.GetString(5);
+                            string status = r.GetString(10);
                             string cap = string.IsNullOrEmpty(status) ? "Unknown" : char.ToUpper(status[0]) + status.Substring(1);
 
                             list.Add(new OrderSummary
@@ -45,7 +50,12 @@ namespace ONYX_DDAC.DAL
                                 CustomerName = r.GetString(1),
                                 Date = r.GetDateTime(2).ToString("d MMM yyyy, h:mm tt"),
                                 ItemCount = r.GetInt32(3),
-                                Total = "RM " + Convert.ToDecimal(r[4]).ToString("N2"),
+                                SubtotalAmount = Convert.ToDecimal(r[4]),
+                                DiscountAmount = Convert.ToDecimal(r[5]),
+                                Total = "RM " + Convert.ToDecimal(r[6]).ToString("N2"),
+                                VoucherId = r.IsDBNull(7) ? (long?)null : r.GetInt64(7),
+                                VoucherCode = r.IsDBNull(8) ? null : r.GetString(8),
+                                VoucherName = r.IsDBNull(9) ? null : r.GetString(9),
                                 Status = cap,
                                 StatusKey = status.ToLower()
                             });
@@ -68,7 +78,12 @@ namespace ONYX_DDAC.DAL
                         SELECT
                             o.id,
                             o.status,
+                            o.subtotal_amount,
+                            o.discount_amount,
                             o.total_amount,
+                            o.voucher_id,
+                            COALESCE(o.voucher_code, '') AS voucher_code,
+                            COALESCE(o.voucher_name, '') AS voucher_name,
                             COALESCE(o.shipping_address, '') AS shipping_address,
                             COALESCE(o.receipt_s3_key, '') AS receipt_s3_key,
                             o.ordered_at,
@@ -94,15 +109,20 @@ namespace ONYX_DDAC.DAL
                             {
                                 Id = r.GetInt64(0),
                                 Status = r.GetString(1),
-                                TotalAmount = Convert.ToDecimal(r[2]),
-                                ShippingAddress = r.GetString(3),
-                                ReceiptS3Key = r.GetString(4),
-                                OrderedAt = r.GetDateTime(5),
-                                StatusUpdatedAt = r.IsDBNull(6) ? (DateTime?)null : r.GetDateTime(6),
-                                CustomerName = r.GetString(7),
-                                CustomerEmail = r.IsDBNull(8) ? "—" : r.GetString(8),
-                                CustomerPhone = r.GetString(9),
-                                CustomerSince = r.IsDBNull(10) ? DateTime.MinValue : r.GetDateTime(10)
+                                SubtotalAmount = Convert.ToDecimal(r[2]),
+                                DiscountAmount = Convert.ToDecimal(r[3]),
+                                TotalAmount = Convert.ToDecimal(r[4]),
+                                VoucherId = r.IsDBNull(5) ? (long?)null : r.GetInt64(5),
+                                VoucherCode = r.GetString(6),
+                                VoucherName = r.GetString(7),
+                                ShippingAddress = r.GetString(8),
+                                ReceiptS3Key = r.GetString(9),
+                                OrderedAt = r.GetDateTime(10),
+                                StatusUpdatedAt = r.IsDBNull(11) ? (DateTime?)null : r.GetDateTime(11),
+                                CustomerName = r.GetString(12),
+                                CustomerEmail = r.IsDBNull(13) ? "—" : r.GetString(13),
+                                CustomerPhone = r.GetString(14),
+                                CustomerSince = r.IsDBNull(15) ? DateTime.MinValue : r.GetDateTime(15)
                             };
                         }
                     }
@@ -266,7 +286,12 @@ namespace ONYX_DDAC.DAL
                             o.id,
                             o.user_id,
                             o.status,
+                            o.subtotal_amount,
+                            o.discount_amount,
                             o.total_amount,
+                            o.voucher_id,
+                            o.voucher_code,
+                            o.voucher_name,
                             o.shipping_address,
                             o.delivery_method,
                             o.stripe_checkout_session_id,
@@ -335,7 +360,7 @@ namespace ONYX_DDAC.DAL
                 {
                     cmd.CommandText = @"
                         SELECT
-                            id, user_id, status, total_amount, shipping_address, delivery_method,
+                            id, user_id, status, subtotal_amount, discount_amount, total_amount, voucher_id, voucher_code, voucher_name, shipping_address, delivery_method,
                             stripe_checkout_session_id, stripe_payment_intent_id, payment_method,
                             payment_expires_at, paid_at, receipt_s3_key, ordered_at
                         FROM orders
@@ -500,7 +525,12 @@ namespace ONYX_DDAC.DAL
                             o.id,
                             o.user_id,
                             o.status,
+                            o.subtotal_amount,
+                            o.discount_amount,
                             o.total_amount,
+                            o.voucher_id,
+                            o.voucher_code,
+                            o.voucher_name,
                             o.shipping_address,
                             o.delivery_method,
                             o.stripe_checkout_session_id,
@@ -608,7 +638,12 @@ namespace ONYX_DDAC.DAL
                     Id = reader.GetInt64(reader.GetOrdinal("id")),
                     UserId = reader.GetInt64(reader.GetOrdinal("user_id")),
                     Status = reader.GetString(reader.GetOrdinal("status")),
+                    SubtotalAmount = reader.GetDecimal(reader.GetOrdinal("subtotal_amount")),
+                    DiscountAmount = reader.GetDecimal(reader.GetOrdinal("discount_amount")),
                     TotalAmount = reader.GetDecimal(reader.GetOrdinal("total_amount")),
+                    VoucherId = reader.IsDBNull(reader.GetOrdinal("voucher_id")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("voucher_id")),
+                    VoucherCode = ReadNullableString(reader, "voucher_code"),
+                    VoucherName = ReadNullableString(reader, "voucher_name"),
                     ShippingAddress = reader.GetString(reader.GetOrdinal("shipping_address")),
                     DeliveryMethod = ReadNullableString(reader, "delivery_method"),
                     StripeCheckoutSessionId = ReadNullableString(reader, "stripe_checkout_session_id"),
@@ -638,7 +673,12 @@ namespace ONYX_DDAC.DAL
                 Id = reader.GetInt64(reader.GetOrdinal("id")),
                 UserId = reader.GetInt64(reader.GetOrdinal("user_id")),
                 Status = reader.GetString(reader.GetOrdinal("status")),
+                SubtotalAmount = reader.GetDecimal(reader.GetOrdinal("subtotal_amount")),
+                DiscountAmount = reader.GetDecimal(reader.GetOrdinal("discount_amount")),
                 TotalAmount = reader.GetDecimal(reader.GetOrdinal("total_amount")),
+                VoucherId = reader.IsDBNull(reader.GetOrdinal("voucher_id")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("voucher_id")),
+                VoucherCode = ReadNullableString(reader, "voucher_code"),
+                VoucherName = ReadNullableString(reader, "voucher_name"),
                 ShippingAddress = reader.GetString(reader.GetOrdinal("shipping_address")),
                 DeliveryMethod = ReadNullableString(reader, "delivery_method"),
                 StripeCheckoutSessionId = ReadNullableString(reader, "stripe_checkout_session_id"),

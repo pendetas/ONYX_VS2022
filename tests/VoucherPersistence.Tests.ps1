@@ -38,6 +38,16 @@ $checks = [ordered]@{
         $checkoutRepo -match 'Category\s*=\s*reader\.GetString\(reader\.GetOrdinal\("product_category"\)\)' -and
         $checkoutRepo -notmatch 'Category\s*=\s*reader\.GetString\(reader\.GetOrdinal\("category"\)\)' -and
         $checkoutRepo -match 'Category\s*=\s*item\.Category'
+    'Checkout locks voucher before reservation' =
+        $checkoutRepo -match 'VoucherRepository\.LockByCode' -and
+        $checkoutRepo -match 'VoucherRepository\.ReserveRedemption'
+    'Checkout stores subtotal discount and voucher snapshots' =
+        $checkoutRepo -match 'subtotal_amount' -and
+        $checkoutRepo -match 'discount_amount' -and
+        $checkoutRepo -match 'voucher_code' -and
+        $checkoutRepo -match 'voucher_name'
+    'Checkout recalculates inside transaction' =
+        $checkoutRepo -match 'VoucherCalculator\.Calculate'
     'Repository filters category hydration to requested vouchers' =
         $repo -match 'WHERE voucher_id = ANY\s*\(@VoucherIds\)' -and
         $repo -match '@VoucherIds'

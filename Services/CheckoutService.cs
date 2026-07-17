@@ -35,11 +35,13 @@ namespace ONYX_DDAC.Services
             string shippingAddress,
             string deliveryMethod,
             string checkoutAttemptToken,
+            string voucherCode,
             string applicationBaseUrl)
         {
             shippingAddress = (shippingAddress ?? string.Empty).Trim();
             deliveryMethod = (deliveryMethod ?? string.Empty).Trim();
             checkoutAttemptToken = (checkoutAttemptToken ?? string.Empty).Trim();
+            voucherCode = VoucherService.NormalizeCode(voucherCode);
 
             ValidateRequest(userId, shippingAddress, deliveryMethod, checkoutAttemptToken);
 
@@ -58,6 +60,7 @@ namespace ONYX_DDAC.Services
                 shippingAddress,
                 deliveryMethod,
                 checkoutAttemptToken,
+                voucherCode,
                 PaymentCancellationTokenService.HashToken(paymentCancellationToken),
                 expiresAt);
 

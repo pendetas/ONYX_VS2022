@@ -165,6 +165,7 @@ namespace ONYX_DDAC.customer_page
                     shippingAddress,
                     deliveryMethod,
                     CheckoutAttemptToken,
+                    AppliedVoucherCode,
                     applicationBaseUrl);
 
                 new CartService().RefreshCurrentUserCartFromDatabase();

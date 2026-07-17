@@ -101,6 +101,7 @@ namespace ONYX_DDAC.DAL
 
                         CompleteReservations(conn, tx, order.OrderId, reservations.Count);
                         MarkOrderPaid(conn, tx, order.OrderId, payment);
+                        VoucherRepository.RedeemForOrder(conn, tx, order.OrderId);
 
                         tx.Commit();
                         return new PaymentReconciliationResult
@@ -164,6 +165,8 @@ namespace ONYX_DDAC.DAL
                             release.Parameters.Add(new NpgsqlParameter("@ActiveStatus", StockReservation.Active));
                             release.ExecuteNonQuery();
                         }
+
+                        VoucherRepository.ReleaseForOrder(conn, tx, order.OrderId);
 
                         using (DbCommand cancel = conn.CreateCommand())
                         {
