@@ -556,6 +556,7 @@
     <Compile Include="DAL\ProductRepository.cs" />
     <Compile Include="DAL\ReviewRepository.cs" />
     <Compile Include="DAL\UserRepository.cs" />
+    <Compile Include="DAL\VoucherRepository.cs" />
     <Compile Include="DAL\WishlistRepository.cs" />
     <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Helpers\AppUrlHelper.cs" />
@@ -679,6 +680,7 @@
     <Compile Include="Services\StripePaymentService.cs" />
     <Compile Include="Services\PaymentCompletionService.cs" />
     <Compile Include="Services\VoucherCalculator.cs" />
+    <Compile Include="Services\VoucherService.cs" />
     <Compile Include="stripe_webhook.ashx.cs">
       <DependentUpon>stripe_webhook.ashx</DependentUpon>
     </Compile>
