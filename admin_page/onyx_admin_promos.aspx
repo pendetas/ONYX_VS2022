@@ -53,6 +53,12 @@
         text-decoration: none;
     }
 
+    .primary-action:focus-visible {
+        outline: none;
+        border-color: rgba(255,255,255,0.34);
+        box-shadow: 0 0 0 2px rgba(17,17,19,0.95), 0 0 0 4px rgba(255,255,255,0.22);
+    }
+
     .message-banner {
         display: block;
         margin-bottom: 18px;
@@ -211,6 +217,14 @@
         text-decoration: none;
     }
 
+    .actions a:focus-visible,
+    .actions .link-button:focus-visible {
+        outline: none;
+        border-radius: 4px;
+        color: #fff;
+        box-shadow: 0 0 0 2px rgba(17,17,19,0.95), 0 0 0 4px rgba(255,255,255,0.20);
+    }
+
     html[data-theme="light"] .page-title,
     html[data-theme="light"] .stat-box,
     html[data-theme="light"] .voucher-table tbody td,
@@ -239,6 +253,11 @@
         background: rgba(0,0,0,0.03);
     }
 
+    html[data-theme="light"] .primary-action:focus-visible {
+        border-color: rgba(0,0,0,0.28);
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.95), 0 0 0 4px rgba(0,0,0,0.18);
+    }
+
     html[data-theme="light"] .voucher-table thead th { border-bottom-color: rgba(0,0,0,0.07); }
     html[data-theme="light"] .voucher-table tbody td { border-bottom-color: rgba(0,0,0,0.04); }
     html[data-theme="light"] .voucher-table tbody tr:hover td { background: rgba(0,0,0,0.02); }
@@ -253,6 +272,12 @@
         border-color: rgba(255,68,68,0.18);
         background: rgba(255,68,68,0.07);
         color: #7d1f1f;
+    }
+
+    html[data-theme="light"] .actions a:focus-visible,
+    html[data-theme="light"] .actions .link-button:focus-visible {
+        color: #0d0d0f;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.95), 0 0 0 4px rgba(0,0,0,0.16);
     }
 
     @media (max-width: 900px) {

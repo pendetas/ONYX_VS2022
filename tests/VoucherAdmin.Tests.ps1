@@ -10,6 +10,7 @@ $checks = [ordered]@{
     'List is database-backed' = $listCode -match 'VoucherService' -and $listCode -notmatch 'mockPromos'
     'List supports server actions' = $list -match 'OnItemCommand="rptVouchers_ItemCommand"' -and $listCode -match 'rptVouchers_ItemCommand'
     'List uses ONYX monochrome theme' = $list -notmatch 'bootstrap' -and $list -notmatch '#00ff87|#a78bfa'
+    'List has keyboard focus styles' = $list -match '\.primary-action:focus-visible' -and $list -match '\.actions (a|\.link-button):focus-visible'
 }
 
 $failures = @($checks.GetEnumerator() | Where-Object { -not $_.Value })
