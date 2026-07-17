@@ -51,6 +51,15 @@ namespace ONYX_DDAC.admin_page
         protected global::System.Web.UI.WebControls.Label lblMessage;
 
         /// <summary>
+        /// lblName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblName;
+
+        /// <summary>
         /// txtName control.
         /// </summary>
         /// <remarks>
@@ -60,6 +69,15 @@ namespace ONYX_DDAC.admin_page
         protected global::System.Web.UI.WebControls.TextBox txtName;
 
         /// <summary>
+        /// lblCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblCode;
+
+        /// <summary>
         /// txtCode control.
         /// </summary>
         /// <remarks>
@@ -67,6 +85,15 @@ namespace ONYX_DDAC.admin_page
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtCode;
+
+        /// <summary>
+        /// lblIsActive control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblIsActive;
 
         /// <summary>
         /// chkIsActive control.
@@ -87,6 +114,15 @@ namespace ONYX_DDAC.admin_page
         protected global::System.Web.UI.WebControls.Panel pnlRedemptionLock;
 
         /// <summary>
+        /// lblDiscountType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblDiscountType;
+
+        /// <summary>
         /// ddlDiscountType control.
         /// </summary>
         /// <remarks>
@@ -94,6 +130,15 @@ namespace ONYX_DDAC.admin_page
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlDiscountType;
+
+        /// <summary>
+        /// lblDiscountValue control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblDiscountValue;
 
         /// <summary>
         /// txtDiscountValue control.
@@ -105,6 +150,15 @@ namespace ONYX_DDAC.admin_page
         protected global::System.Web.UI.WebControls.TextBox txtDiscountValue;
 
         /// <summary>
+        /// lblMaximumDiscount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMaximumDiscount;
+
+        /// <summary>
         /// txtMaximumDiscount control.
         /// </summary>
         /// <remarks>
@@ -112,6 +166,15 @@ namespace ONYX_DDAC.admin_page
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtMaximumDiscount;
+
+        /// <summary>
+        /// lblMinimumPurchase control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMinimumPurchase;
 
         /// <summary>
         /// txtMinimumPurchase control.
@@ -123,6 +186,15 @@ namespace ONYX_DDAC.admin_page
         protected global::System.Web.UI.WebControls.TextBox txtMinimumPurchase;
 
         /// <summary>
+        /// lblAllCategories control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblAllCategories;
+
+        /// <summary>
         /// chkAllCategories control.
         /// </summary>
         /// <remarks>
@@ -130,6 +202,15 @@ namespace ONYX_DDAC.admin_page
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkAllCategories;
+
+        /// <summary>
+        /// lblCategories control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblCategories;
 
         /// <summary>
         /// cblCategories control.
@@ -141,6 +222,15 @@ namespace ONYX_DDAC.admin_page
         protected global::System.Web.UI.WebControls.CheckBoxList cblCategories;
 
         /// <summary>
+        /// lblValidFrom control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblValidFrom;
+
+        /// <summary>
         /// txtValidFrom control.
         /// </summary>
         /// <remarks>
@@ -148,6 +238,15 @@ namespace ONYX_DDAC.admin_page
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtValidFrom;
+
+        /// <summary>
+        /// lblExpiresAt control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblExpiresAt;
 
         /// <summary>
         /// txtExpiresAt control.
@@ -159,6 +258,15 @@ namespace ONYX_DDAC.admin_page
         protected global::System.Web.UI.WebControls.TextBox txtExpiresAt;
 
         /// <summary>
+        /// lblTotalLimit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTotalLimit;
+
+        /// <summary>
         /// txtTotalLimit control.
         /// </summary>
         /// <remarks>
@@ -168,6 +276,15 @@ namespace ONYX_DDAC.admin_page
         protected global::System.Web.UI.WebControls.TextBox txtTotalLimit;
 
         /// <summary>
+        /// lblPerUserLimit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblPerUserLimit;
+
+        /// <summary>
         /// txtPerUserLimit control.
         /// </summary>
         /// <remarks>
@@ -175,6 +292,15 @@ namespace ONYX_DDAC.admin_page
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPerUserLimit;
+
+        /// <summary>
+        /// lblTerms control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTerms;
 
         /// <summary>
         /// txtTerms control.

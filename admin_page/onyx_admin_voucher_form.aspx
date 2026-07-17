@@ -58,6 +58,9 @@
     }
     .field-input::placeholder, .field-textarea::placeholder { color: rgba(255,255,255,0.46); }
     .field-input:focus, .field-select:focus, .field-textarea:focus { border-bottom-color: rgba(255,255,255,0.40); }
+    .field-input:focus-visible, .field-select:focus-visible, .field-textarea:focus-visible {
+        outline: 2px solid #fff; outline-offset: 3px; border-bottom-color: rgba(255,255,255,0.40);
+    }
     .field-input:disabled, .field-select:disabled, .field-textarea:disabled { opacity: 0.40; cursor: not-allowed; }
     .field-input[readonly], .field-textarea[readonly] { color: rgba(255,255,255,0.72); cursor: default; }
 
@@ -96,9 +99,7 @@
         min-width: 0; color: rgba(255,255,255,0.82); font-size: 13px;
     }
     .category-grid input { width: 16px; height: 16px; margin: 0; accent-color: #fff; }
-    .category-grid input:focus-visible + label {
-        outline: 2px solid #fff; outline-offset: 3px; border-radius: 4px;
-    }
+    .category-grid input:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
     .category-grid.disabled { opacity: 0.42; }
 
     .lock-banner {
@@ -154,6 +155,9 @@
     html[data-theme="light"] .field-input:focus,
     html[data-theme="light"] .field-select:focus,
     html[data-theme="light"] .field-textarea:focus { border-bottom-color: rgba(0,0,0,0.38); }
+    html[data-theme="light"] .field-input:focus-visible,
+    html[data-theme="light"] .field-select:focus-visible,
+    html[data-theme="light"] .field-textarea:focus-visible { outline-color: #0d0d0f; border-bottom-color: rgba(0,0,0,0.38); }
     html[data-theme="light"] .field-input::placeholder,
     html[data-theme="light"] .field-textarea::placeholder { color: rgba(0,0,0,0.18); }
     html[data-theme="light"] .field-input[readonly],
@@ -187,6 +191,7 @@
     html[data-theme="light"] .btn-cancel { border-color: rgba(0,0,0,0.14); color: rgba(0,0,0,0.58); }
     html[data-theme="light"] .btn-cancel:hover { border-color: rgba(0,0,0,0.32); color: rgba(0,0,0,0.90); }
     html[data-theme="light"] .btn-save:focus-visible, html[data-theme="light"] .btn-cancel:focus-visible { outline-color: #0d0d0f; }
+    html[data-theme="light"] .category-grid input:focus-visible { outline-color: #0d0d0f; }
     html[data-theme="light"] .required-note { color: rgba(0,0,0,0.20); }
 </style>
 <script type="text/javascript">
@@ -238,12 +243,12 @@
             <div class="section-label">Voucher Details</div>
             <div class="field-row fr-2">
                 <div class="field-group">
-                    <label class="field-label">Name <span class="req">*</span></label>
+                    <asp:Label ID="lblName" runat="server" CssClass="field-label" AssociatedControlID="txtName">Name <span class="req">*</span></asp:Label>
                     <asp:TextBox ID="txtName" runat="server" MaxLength="120" CssClass="field-input" />
                     <div class="field-hint">Public-facing voucher name, up to 120 characters.</div>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Voucher code <span class="req">*</span></label>
+                    <asp:Label ID="lblCode" runat="server" CssClass="field-label" AssociatedControlID="txtCode">Voucher code <span class="req">*</span></asp:Label>
                     <asp:TextBox ID="txtCode" runat="server" MaxLength="40" CssClass="field-input code-input" />
                     <div class="field-hint">Use only letters, numbers, underscores, or hyphens.</div>
                 </div>
@@ -251,7 +256,8 @@
             <div class="field-row fr-1">
                 <div class="field-group toggle-stack">
                     <div class="field-toggle">
-                        <asp:CheckBox ID="chkIsActive" runat="server" Text="Voucher is active" Checked="true" />
+                        <asp:CheckBox ID="chkIsActive" runat="server" Checked="true" />
+                        <asp:Label ID="lblIsActive" runat="server" AssociatedControlID="chkIsActive">Voucher is active</asp:Label>
                     </div>
                     <asp:Panel ID="pnlRedemptionLock" runat="server" CssClass="lock-banner" Visible="false">
                         This voucher already has redemptions. Code, discount rules, valid-from date, and category eligibility are locked to protect existing usage.
@@ -264,26 +270,26 @@
             <div class="section-label">Discount Rules</div>
             <div class="field-row fr-2">
                 <div class="field-group">
-                    <label class="field-label">Discount type <span class="req">*</span></label>
+                    <asp:Label ID="lblDiscountType" runat="server" CssClass="field-label" AssociatedControlID="ddlDiscountType">Discount type <span class="req">*</span></asp:Label>
                     <asp:DropDownList ID="ddlDiscountType" runat="server" CssClass="field-select">
                         <asp:ListItem Value="percentage">Percentage (%)</asp:ListItem>
                         <asp:ListItem Value="fixed">Fixed amount (RM)</asp:ListItem>
                     </asp:DropDownList>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Discount value <span class="req">*</span></label>
+                    <asp:Label ID="lblDiscountValue" runat="server" CssClass="field-label" AssociatedControlID="txtDiscountValue">Discount value <span class="req">*</span></asp:Label>
                     <asp:TextBox ID="txtDiscountValue" runat="server" TextMode="Number" CssClass="field-input" />
                     <div class="field-hint">Use percentages up to 100, or a fixed Ringgit amount.</div>
                 </div>
             </div>
             <div class="field-row fr-2">
                 <div class="field-group">
-                    <label class="field-label">Maximum discount cap</label>
+                    <asp:Label ID="lblMaximumDiscount" runat="server" CssClass="field-label" AssociatedControlID="txtMaximumDiscount">Maximum discount cap</asp:Label>
                     <asp:TextBox ID="txtMaximumDiscount" runat="server" TextMode="Number" CssClass="field-input" />
                     <div class="field-hint">Leave blank for uncapped percentage vouchers. Fixed vouchers must keep this empty.</div>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Minimum purchase (RM)</label>
+                    <asp:Label ID="lblMinimumPurchase" runat="server" CssClass="field-label" AssociatedControlID="txtMinimumPurchase">Minimum purchase (RM)</asp:Label>
                     <asp:TextBox ID="txtMinimumPurchase" runat="server" TextMode="Number" Text="0" CssClass="field-input" />
                     <div class="field-hint">Set 0 when no minimum spend is required.</div>
                 </div>
@@ -294,10 +300,12 @@
             <div class="section-label">Eligible Categories</div>
             <div class="field-group">
                 <div class="field-toggle">
-                    <asp:CheckBox ID="chkAllCategories" runat="server" Text="All categories" Checked="true" />
+                    <asp:CheckBox ID="chkAllCategories" runat="server" Checked="true" />
+                    <asp:Label ID="lblAllCategories" runat="server" AssociatedControlID="chkAllCategories">All categories</asp:Label>
                 </div>
                 <div class="field-hint">Uncheck this to target only specific product categories.</div>
                 <div class="category-panel">
+                    <asp:Label ID="lblCategories" runat="server" CssClass="field-label" AssociatedControlID="cblCategories">Eligible categories</asp:Label>
                     <asp:CheckBoxList ID="cblCategories" runat="server" RepeatLayout="Flow" CssClass="category-grid" />
                 </div>
             </div>
@@ -307,24 +315,24 @@
             <div class="section-label">Validity &amp; Usage Limits</div>
             <div class="field-row fr-2">
                 <div class="field-group">
-                    <label class="field-label">Valid from <span class="req">*</span></label>
+                    <asp:Label ID="lblValidFrom" runat="server" CssClass="field-label" AssociatedControlID="txtValidFrom">Valid from <span class="req">*</span></asp:Label>
                     <asp:TextBox ID="txtValidFrom" runat="server" TextMode="DateTimeLocal" CssClass="field-input" />
                     <div class="field-hint">Uses the application local timezone.</div>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Expires at <span class="req">*</span></label>
+                    <asp:Label ID="lblExpiresAt" runat="server" CssClass="field-label" AssociatedControlID="txtExpiresAt">Expires at <span class="req">*</span></asp:Label>
                     <asp:TextBox ID="txtExpiresAt" runat="server" TextMode="DateTimeLocal" CssClass="field-input" />
                     <div class="field-hint">Must be later than the valid-from date.</div>
                 </div>
             </div>
             <div class="field-row fr-2">
                 <div class="field-group">
-                    <label class="field-label">Total redemption limit</label>
+                    <asp:Label ID="lblTotalLimit" runat="server" CssClass="field-label" AssociatedControlID="txtTotalLimit">Total redemption limit</asp:Label>
                     <asp:TextBox ID="txtTotalLimit" runat="server" TextMode="Number" CssClass="field-input" />
                     <div class="field-hint">Leave blank for no overall cap.</div>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">Per-customer limit <span class="req">*</span></label>
+                    <asp:Label ID="lblPerUserLimit" runat="server" CssClass="field-label" AssociatedControlID="txtPerUserLimit">Per-customer limit <span class="req">*</span></asp:Label>
                     <asp:TextBox ID="txtPerUserLimit" runat="server" TextMode="Number" Text="1" CssClass="field-input" />
                     <div class="field-hint">At least 1 redemption per customer.</div>
                 </div>
@@ -334,7 +342,7 @@
         <div class="form-section">
             <div class="section-label">Terms &amp; Conditions</div>
             <div class="field-group">
-                <label class="field-label">Plain-text terms <span class="req">*</span></label>
+                <asp:Label ID="lblTerms" runat="server" CssClass="field-label" AssociatedControlID="txtTerms">Plain-text terms <span class="req">*</span></asp:Label>
                 <asp:TextBox ID="txtTerms" runat="server" TextMode="MultiLine" Rows="10" MaxLength="8000" CssClass="field-textarea" />
                 <div class="field-hint">Plain text only. Line breaks are preserved for customers.</div>
             </div>

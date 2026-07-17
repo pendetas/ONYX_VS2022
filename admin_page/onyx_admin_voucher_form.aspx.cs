@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using ONYX_DDAC.Helpers;
@@ -15,6 +16,9 @@ namespace ONYX_DDAC.admin_page
         private readonly VoucherService _voucherService = new VoucherService();
         private const string EditIdViewStateKey = "VoucherEditId";
         private const string ApplicationTimeZoneId = "Singapore Standard Time";
+        private static readonly Regex MixedInvariantNumberPattern = new Regex(@"^[+-]?\d{1,3}(,\d{3})+(\.\d+)?$", RegexOptions.Compiled);
+        private static readonly Regex InvariantThousandsPattern = new Regex(@"^[+-]?\d{1,3}(,\d{3})+$", RegexOptions.Compiled);
+        private static readonly Regex InvariantCommaDecimalPattern = new Regex(@"^[+-]?\d+,\d+$", RegexOptions.Compiled);
 
         private long EditId
         {
@@ -277,7 +281,7 @@ namespace ONYX_DDAC.admin_page
         private decimal ParseRequiredDecimal(string rawValue, string errorMessage)
         {
             decimal parsedValue;
-            if (!decimal.TryParse(NormalizeNumericInput(rawValue), NumberStyles.Number, CultureInfo.InvariantCulture, out parsedValue))
+            if (!TryParseInvariantDecimal(rawValue, out parsedValue))
             {
                 throw new InvalidOperationException(errorMessage);
             }
@@ -356,17 +360,58 @@ namespace ONYX_DDAC.admin_page
             lblMessage.Visible = true;
         }
 
-        private static string NormalizeNumericInput(string rawValue)
+        private static bool TryParseInvariantDecimal(string rawValue, out decimal parsedValue)
         {
-            string normalized = rawValue == null ? string.Empty : rawValue.Trim();
-            if (normalized.IndexOf(',') >= 0)
+            parsedValue = 0m;
+
+            string normalized;
+            if (!TryNormalizeInvariantNumericInput(rawValue, out normalized))
             {
-                normalized = normalized.IndexOf('.') >= 0
-                    ? normalized.Replace(",", string.Empty)
-                    : normalized.Replace(',', '.');
+                return false;
             }
 
-            return normalized;
+            return decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.InvariantCulture, out parsedValue);
+        }
+
+        private static bool TryNormalizeInvariantNumericInput(string rawValue, out string normalized)
+        {
+            normalized = rawValue == null ? string.Empty : rawValue.Trim();
+            if (string.IsNullOrWhiteSpace(normalized))
+            {
+                return false;
+            }
+
+            bool containsComma = normalized.IndexOf(',') >= 0;
+            bool containsDot = normalized.IndexOf('.') >= 0;
+
+            if (containsComma && containsDot)
+            {
+                if (!MixedInvariantNumberPattern.IsMatch(normalized))
+                {
+                    return false;
+                }
+
+                normalized = normalized.Replace(",", string.Empty);
+                return true;
+            }
+
+            if (containsComma)
+            {
+                if (InvariantThousandsPattern.IsMatch(normalized))
+                {
+                    return true;
+                }
+
+                if (InvariantCommaDecimalPattern.IsMatch(normalized))
+                {
+                    normalized = normalized.Replace(',', '.');
+                    return true;
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         private static string ToDateTimeLocalValue(DateTimeOffset value)
