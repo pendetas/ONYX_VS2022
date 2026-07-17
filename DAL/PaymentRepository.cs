@@ -166,8 +166,6 @@ namespace ONYX_DDAC.DAL
                             release.ExecuteNonQuery();
                         }
 
-                        VoucherRepository.ReleaseForOrder(conn, tx, order.OrderId);
-
                         using (DbCommand cancel = conn.CreateCommand())
                         {
                             cancel.Transaction = tx;
@@ -185,6 +183,8 @@ namespace ONYX_DDAC.DAL
                                 throw new InvalidOperationException("The pending order could not be cancelled.");
                             }
                         }
+
+                        VoucherRepository.ReleaseForOrder(conn, tx, order.OrderId);
 
                         tx.Commit();
                         return new PaymentReconciliationResult

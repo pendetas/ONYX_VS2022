@@ -351,10 +351,12 @@ namespace ONYX_DDAC.Services
         {
             if (order.DiscountAmount > 0m)
             {
-                long amountOff = checked((long)Math.Round(
-                    order.DiscountAmount * 100m,
-                    0,
-                    MidpointRounding.AwayFromZero));
+                if (!order.VoucherId.HasValue || string.IsNullOrWhiteSpace(order.VoucherCode))
+                {
+                    throw new InvalidOperationException("The pending order discount must be linked to a voucher.");
+                }
+
+                long amountOff = checked((long)Math.Round(order.DiscountAmount * 100m, 0, MidpointRounding.AwayFromZero));
                 if (amountOff <= 0)
                 {
                     throw new InvalidOperationException("The pending order discount is invalid.");
@@ -365,9 +367,12 @@ namespace ONYX_DDAC.Services
                     AmountOff = amountOff,
                     Currency = "myr",
                     Duration = "once",
+                    MaxRedemptions = 1,
+                    Name = order.VoucherCode,
                     Metadata = new Dictionary<string, string>
                     {
-                        { "onyx_order_id", order.Id.ToString() }
+                        { "onyx_order_id", order.Id.ToString() },
+                        { "onyx_voucher_id", order.VoucherId.Value.ToString() }
                     }
                 };
                 var couponRequestOptions = new RequestOptions
