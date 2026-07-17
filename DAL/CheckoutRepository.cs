@@ -610,6 +610,7 @@ namespace ONYX_DDAC.DAL
                         c.quantity,
                         p.name AS product_name,
                         p.category,
+                        p.category AS product_category,
                         p.price AS product_price,
                         p.stock_qty AS product_stock,
                         p.image_url AS product_image_url,
