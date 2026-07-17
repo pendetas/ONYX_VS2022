@@ -216,6 +216,7 @@
     <Content Include="App_Data\20260709_product_campaign_blocks.sql" />
     <Content Include="App_Data\20260709_product_campaigns.sql" />
     <Content Include="App_Data\20260709_product_images_rds.sql" />
+    <Content Include="App_Data\20260717_voucher_loyalty_management.sql" />
     <Content Include="App_Data\stripe_checkout_migration.sql" />
     <Content Include="auth_page\google_callback.aspx" />
     <Content Include="auth_page\onyx_forgotpassword.aspx" />
