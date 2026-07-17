@@ -21,6 +21,9 @@ namespace ONYX_DDAC.Models
         public Voucher()
         {
             Categories = new List<string>();
+            PerUserUsageLimit = 1;
+            IsActive = true;
+            AppliesToAllCategories = true;
         }
 
         public long Id { get; set; }

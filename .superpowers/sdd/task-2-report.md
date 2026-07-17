@@ -61,3 +61,35 @@ Concerns:
 
 - No additional integration/build verification was run beyond the focused calculator test and source-review sanity check.
 - The repository still contains unrelated unstaged changes from prior work.
+
+## Reviewer Fix — July 17, 2026
+
+Fixed two voucher-domain issues called out in review:
+
+1. `Models/Voucher.cs` now sets the approved constructor defaults:
+   - `PerUserUsageLimit = 1`
+   - `IsActive = true`
+   - `AppliesToAllCategories = true`
+   - `Categories` still initializes to an empty list.
+
+2. `Services/VoucherCalculator.cs` now fails closed on malformed discount configurations before calculation:
+   - percentage discounts must be `> 0` and `<= 100`
+   - fixed discounts must be `> 0`
+   - percentage caps, if supplied, must be `> 0`
+   - fixed discounts cannot supply a cap
+   - valid discounts still clamp normally to the eligible subtotal
+
+Verification command:
+
+- `powershell -ExecutionPolicy Bypass -File tests\VoucherCalculator.Tests.ps1`
+
+Verification output:
+
+- `Voucher calculator behavior passes.`
+
+Files changed in this fix:
+
+- `Models/Voucher.cs`
+- `Services/VoucherCalculator.cs`
+- `tests/VoucherCalculator.Tests.ps1`
+- `.superpowers/sdd/task-2-report.md`

@@ -15,6 +15,24 @@ function Assert-Decimal([decimal]$actual, [decimal]$expected, [string]$name) {
     if ($actual -ne $expected) { throw "$name expected $expected but got $actual" }
 }
 
+function Assert-True([bool]$condition, [string]$name) {
+    if (-not $condition) { throw $name }
+}
+
+function Assert-Throws([scriptblock]$action, [string]$expectedMessage, [string]$name) {
+    $thrown = $false
+    try {
+        & $action
+    }
+    catch {
+        $thrown = $_.Exception.Message -match $expectedMessage
+    }
+
+    if (-not $thrown) {
+        throw $name
+    }
+}
+
 function New-Voucher([string]$type, [decimal]$value) {
     $voucher = [ONYX_DDAC.Models.Voucher]::new()
     $voucher.Id = 7
@@ -32,6 +50,11 @@ function New-Voucher([string]$type, [decimal]$value) {
     $voucher.TermsAndConditions = 'Mouse products only.'
     return $voucher
 }
+
+$defaults = [ONYX_DDAC.Models.Voucher]::new()
+Assert-True ($defaults.PerUserUsageLimit -eq 1) 'Voucher default per-user usage limit'
+Assert-True ($defaults.IsActive) 'Voucher default active flag'
+Assert-True ($defaults.AppliesToAllCategories) 'Voucher default category scope'
 
 $lines = [System.Collections.Generic.List[ONYX_DDAC.Models.VoucherCartLine]]::new()
 $lines.Add([ONYX_DDAC.Models.VoucherCartLine]@{ Category='Mouse'; UnitPrice=200; Quantity=1 })
@@ -59,6 +82,19 @@ Assert-Decimal $capped.DiscountAmount 25 'Percentage cap'
 $fixed = New-Voucher 'fixed' 250
 $fixedQuote = [ONYX_DDAC.Services.VoucherCalculator]::Calculate($fixed, $lines, $now, 0, 0)
 Assert-Decimal $fixedQuote.DiscountAmount 200 'Fixed discount eligible-subtotal cap'
+
+$negativePercentage = New-Voucher 'percentage' -1
+Assert-Throws { [ONYX_DDAC.Services.VoucherCalculator]::Calculate($negativePercentage, $lines, $now, 0, 0) } 'invalid discount value' 'Negative percentage discount should fail closed'
+
+$tooLargePercentage = New-Voucher 'percentage' 101
+Assert-Throws { [ONYX_DDAC.Services.VoucherCalculator]::Calculate($tooLargePercentage, $lines, $now, 0, 0) } 'invalid discount value' 'Percentage above 100 should fail closed'
+
+$invalidFixed = New-Voucher 'fixed' 0
+Assert-Throws { [ONYX_DDAC.Services.VoucherCalculator]::Calculate($invalidFixed, $lines, $now, 0, 0) } 'invalid discount value' 'Zero fixed discount should fail closed'
+
+$invalidCap = New-Voucher 'percentage' 10
+$invalidCap.MaximumDiscountAmount = 0
+Assert-Throws { [ONYX_DDAC.Services.VoucherCalculator]::Calculate($invalidCap, $lines, $now, 0, 0) } 'invalid maximum discount amount' 'Non-positive cap should fail closed'
 
 $failed = $false
 try { [ONYX_DDAC.Services.VoucherCalculator]::Calculate($percentage, $lines, $now, 0, 1) } catch { $failed = $_.Exception.Message -match 'already used' }

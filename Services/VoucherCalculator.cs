@@ -51,6 +51,8 @@ namespace ONYX_DDAC.Services
                 throw new VoucherValidationException("You have already used this voucher.");
             }
 
+            ValidateDiscountConfiguration(voucher);
+
             List<VoucherCartLine> lines = (cartLines ?? Enumerable.Empty<VoucherCartLine>()).ToList();
             if (lines.Count == 0)
             {
@@ -112,6 +114,41 @@ namespace ONYX_DDAC.Services
                 DiscountAmount = discount,
                 TotalAmount = subtotal - discount
             };
+        }
+
+        private static void ValidateDiscountConfiguration(Voucher voucher)
+        {
+            if (string.Equals(voucher.DiscountType, VoucherDiscountTypes.Percentage, StringComparison.Ordinal))
+            {
+                if (voucher.DiscountValue <= 0m || voucher.DiscountValue > 100m)
+                {
+                    throw new VoucherValidationException("This voucher has an invalid discount value.");
+                }
+
+                if (voucher.MaximumDiscountAmount.HasValue && voucher.MaximumDiscountAmount.Value <= 0m)
+                {
+                    throw new VoucherValidationException("This voucher has an invalid maximum discount amount.");
+                }
+
+                return;
+            }
+
+            if (string.Equals(voucher.DiscountType, VoucherDiscountTypes.Fixed, StringComparison.Ordinal))
+            {
+                if (voucher.DiscountValue <= 0m)
+                {
+                    throw new VoucherValidationException("This voucher has an invalid discount value.");
+                }
+
+                if (voucher.MaximumDiscountAmount.HasValue)
+                {
+                    throw new VoucherValidationException("This voucher has an invalid maximum discount amount.");
+                }
+
+                return;
+            }
+
+            throw new VoucherValidationException("This voucher has an invalid discount type.");
         }
 
         private static decimal RoundMoney(decimal value)
