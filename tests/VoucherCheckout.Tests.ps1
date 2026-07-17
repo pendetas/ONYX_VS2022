@@ -90,8 +90,15 @@ $checks = [ordered]@{
         $checkoutRepo -match 'CancelPendingOrderAndReleaseReservations[\s\S]*VoucherRepository\.ReleaseForOrder[\s\S]*tx\.Commit'
     'Admin generic status updates do not cancel active Stripe checkout orders unsafely' =
         $orderService -match 'OrderStatuses\.PendingPayment' -and
-        $orderService -match 'Use the payment cancellation flow for pending Stripe orders' -and
+        $orderService -match 'This order has an active Stripe payment\. Cancel it through the payment cancellation flow\.' -and
         $orderService -notmatch '_repo\.UpdateStatus\(orderId,\s*status\);\s*return null;'
+    'Admin generic status updates reject all pending-payment status changes' =
+        $orderService -match 'if\s*\(\s*string\.Equals\(order\.Status,\s*OrderStatuses\.PendingPayment' -and
+        $orderService -match 'return "This order has an active Stripe payment\. Cancel it through the payment cancellation flow\."'
+    'Admin delete rejects pending-payment orders before repository deletion' =
+        $orderService -match 'public void DeleteOrder\(long orderId\)' -and
+        $orderService -match 'OrderDetail order = _repo\.GetOrderById\(orderId\);' -and
+        $orderService -match 'throw new InvalidOperationException\("This order has an active Stripe payment\. Cancel it through the payment cancellation flow\."\);'
     'Order repository hydrates voucher snapshots' =
         $orderRepo -match 'subtotal_amount' -and
         $orderRepo -match 'discount_amount' -and
@@ -107,6 +114,22 @@ $checks = [ordered]@{
         $adminDetailsCode -match 'DiscountAmount' -and
         $adminDetails -match 'RM 0\.00' -and
         $adminDetails -notmatch 'RM 10\.00'
+    'Pending-payment admin order UI is read-only and explanatory' =
+        $adminDetailsCode -match 'btnUpdateStatus\.Enabled\s*=\s*false' -and
+        $adminDetailsCode -match 'btnDeleteOrder\.Enabled\s*=\s*false' -and
+        $adminDetailsCode -match 'ddlStatus\.Enabled\s*=\s*false' -and
+        $adminDetailsCode -match 'This order has an active Stripe payment\. Cancel it through the payment cancellation flow\.' -and
+        $adminDetails -match 'CssClass="status-select"' -and
+        $adminDetails -match 'CssClass="btn-save"' -and
+        $adminDetails -match 'CssClass="btn-delete"'
+    'Pending-payment admin order dropdown is handled safely when the status option is absent' =
+        $adminDetailsCode -match 'ddlStatus\.Items\.FindByValue\(statusKey\)' -and
+        $adminDetailsCode -match 'ddlStatus\.Items\.Insert\(0,\s*new ListItem\(statusCap,\s*statusKey\)\)' -and
+        $adminDetailsCode -match 'ddlStatus\.ClearSelection\(\)'
+    'Pending-payment admin order postbacks do not bypass the lifecycle guard' =
+        $adminDetailsCode -match 'OrderDetail order = _svc\.GetOrderById\(id\);' -and
+        $adminDetailsCode -match 'if\s*\(\s*IsPendingPaymentOrder\(order\)\s*\)' -and
+        $adminDetailsCode -match 'litStatusMsg\.Text\s*=\s*PendingPaymentGuardMessage'
     'Order history shows voucher savings' =
         ($history + $historyCode) -match 'VoucherCode' -and
         ($history + $historyCode) -match 'DiscountAmount'

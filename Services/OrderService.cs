@@ -10,6 +10,7 @@ namespace ONYX_DDAC.Services
 {
     public class OrderService
     {
+        private const string PendingPaymentGuardMessage = "This order has an active Stripe payment. Cancel it through the payment cancellation flow.";
         private readonly OrderRepository _repo;
         private readonly EmailService _emailService;
 
@@ -159,22 +160,21 @@ namespace ONYX_DDAC.Services
 
         public string UpdateStatus(long orderId, string status)
         {
-            var allowed = new[] { "pending", "shipped", "delivered", "cancelled" };
-            if (!allowed.Contains(status))
-            {
-                return "Invalid status value.";
-            }
-
             OrderDetail order = _repo.GetOrderById(orderId);
             if (order == null)
             {
                 return "Order not found.";
             }
 
-            if (string.Equals(order.Status, OrderStatuses.PendingPayment, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(status, OrderStatuses.Cancelled, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(order.Status, OrderStatuses.PendingPayment, StringComparison.OrdinalIgnoreCase))
             {
-                return "Use the payment cancellation flow for pending Stripe orders.";
+                return "This order has an active Stripe payment. Cancel it through the payment cancellation flow.";
+            }
+
+            var allowed = new[] { "pending", "shipped", "delivered", "cancelled" };
+            if (!allowed.Contains(status))
+            {
+                return "Invalid status value.";
             }
 
             _repo.UpdateStatus(orderId, status);
@@ -184,6 +184,17 @@ namespace ONYX_DDAC.Services
 
         public void DeleteOrder(long orderId)
         {
+            OrderDetail order = _repo.GetOrderById(orderId);
+            if (order == null)
+            {
+                throw new InvalidOperationException("Order not found.");
+            }
+
+            if (string.Equals(order.Status, OrderStatuses.PendingPayment, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("This order has an active Stripe payment. Cancel it through the payment cancellation flow.");
+            }
+
             _repo.DeleteOrder(orderId);
         }
     }
