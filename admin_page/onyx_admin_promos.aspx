@@ -1,378 +1,339 @@
-﻿<%@ Page Title="Promotions" Language="C#" MasterPageFile="~/admin_page/admin.Master"
+<%@ Page Title="Loyalty Management" Language="C#" MasterPageFile="~/admin_page/admin.Master"
     AutoEventWireup="true" CodeBehind="onyx_admin_promos.aspx.cs"
     Inherits="ONYX_DDAC.admin_page.onyx_admin_promos" %>
 
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #0d0d0d !important; }
+<style>
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+    }
 
-        .admin-panel {
-            background: #1a1a1a;
-            border: 1px solid #2b2b2b;
-            border-radius: 0;
+    .page-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+
+    .page-subtitle {
+        font-size: 12px;
+        color: rgba(255,255,255,0.28);
+        margin-top: 5px;
+    }
+
+    .primary-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: #111113;
+        color: #fff;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+
+    .primary-action i { width: 14px; height: 14px; }
+    .primary-action:hover {
+        border-color: rgba(255,255,255,0.18);
+        background: rgba(255,255,255,0.04);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .message-banner {
+        display: block;
+        margin-bottom: 18px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,68,68,0.20);
+        background: rgba(255,68,68,0.08);
+        color: #ffd6d6;
+        font-size: 12px;
+    }
+
+    .stat-strip {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 26px;
+        flex-wrap: wrap;
+    }
+
+    .stat-box {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        background: #111113;
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 10px;
+        padding: 16px 20px;
+        color: #fff;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+
+    .stat-box span {
+        font-size: 10px;
+        color: rgba(255,255,255,0.26);
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .panel {
+        background: #111113;
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .voucher-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        min-width: 980px;
+    }
+
+    .voucher-table thead th {
+        color: rgba(255,255,255,0.26);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.10em;
+        padding: 16px 14px 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        white-space: nowrap;
+        text-align: left;
+    }
+
+    .voucher-table thead th:first-child,
+    .voucher-table tbody td:first-child { padding-left: 18px; }
+
+    .voucher-table tbody td {
+        padding: 16px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        color: #fff;
+        vertical-align: middle;
+    }
+
+    .voucher-table tbody tr:last-child td { border-bottom: none; }
+    .voucher-table tbody tr:hover td { background: rgba(255,255,255,0.018); }
+
+    .voucher-name {
+        display: block;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 4px;
+    }
+
+    .code {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.56);
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+    }
+
+    .muted-cell {
+        color: rgba(255,255,255,0.42);
+    }
+
+    .status {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .status--active { background: rgba(255,255,255,0.10); color: #fff; }
+    .status--upcoming { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.72); }
+    .status--paused { background: rgba(251,191,36,0.14); color: #fbbf24; }
+    .status--expired,
+    .status--archived { background: rgba(255,68,68,0.12); color: #ff9d9d; }
+    .status--exhausted { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.76); }
+
+    .actions {
+        white-space: nowrap;
+    }
+
+    .actions a,
+    .actions .link-button {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 12px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: rgba(255,255,255,0.50);
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: color 0.15s;
+    }
+
+    .actions a:last-child,
+    .actions .link-button:last-child { margin-right: 0; }
+
+    .actions a:hover,
+    .actions .link-button:hover {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    html[data-theme="light"] .page-title,
+    html[data-theme="light"] .stat-box,
+    html[data-theme="light"] .voucher-table tbody td,
+    html[data-theme="light"] .voucher-name,
+    html[data-theme="light"] .primary-action:hover,
+    html[data-theme="light"] .actions a:hover,
+    html[data-theme="light"] .actions .link-button:hover { color: #0d0d0f; }
+
+    html[data-theme="light"] .page-subtitle,
+    html[data-theme="light"] .stat-box span,
+    html[data-theme="light"] .voucher-table thead th,
+    html[data-theme="light"] .muted-cell,
+    html[data-theme="light"] .code,
+    html[data-theme="light"] .actions a,
+    html[data-theme="light"] .actions .link-button { color: rgba(0,0,0,0.42); }
+
+    html[data-theme="light"] .primary-action,
+    html[data-theme="light"] .stat-box,
+    html[data-theme="light"] .panel {
+        background: #ffffff;
+        border-color: rgba(0,0,0,0.07);
+    }
+
+    html[data-theme="light"] .primary-action:hover {
+        border-color: rgba(0,0,0,0.16);
+        background: rgba(0,0,0,0.03);
+    }
+
+    html[data-theme="light"] .voucher-table thead th { border-bottom-color: rgba(0,0,0,0.07); }
+    html[data-theme="light"] .voucher-table tbody td { border-bottom-color: rgba(0,0,0,0.04); }
+    html[data-theme="light"] .voucher-table tbody tr:hover td { background: rgba(0,0,0,0.02); }
+    html[data-theme="light"] .code { background: rgba(0,0,0,0.05); }
+    html[data-theme="light"] .status--active { background: rgba(0,0,0,0.08); color: #0d0d0f; }
+    html[data-theme="light"] .status--upcoming { background: rgba(0,0,0,0.05); color: rgba(0,0,0,0.62); }
+    html[data-theme="light"] .status--exhausted { background: rgba(0,0,0,0.07); color: rgba(0,0,0,0.62); }
+    html[data-theme="light"] .status--paused { color: #8a5a00; }
+    html[data-theme="light"] .status--expired,
+    html[data-theme="light"] .status--archived { color: #9b3d3d; }
+    html[data-theme="light"] .message-banner {
+        border-color: rgba(255,68,68,0.18);
+        background: rgba(255,68,68,0.07);
+        color: #7d1f1f;
+    }
+
+    @media (max-width: 900px) {
+        .page-header {
+            margin-bottom: 24px;
         }
 
-        .page-title   { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 0; }
-        .page-subtitle { font-size: 13px; color: #9c9ca4; margin-top: 4px; }
-
-        /* ── ADD PROMO BUTTON ────────────────────────────────────── */
-        .btn-onyx {
-            background: #00ff87;
-            color: #000000;
-            border: none;
-            border-radius: 0;
-            font-weight: 700;
-            font-size: 13px;
-            padding: 10px 22px;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-onyx:hover { background: #00e077; color: #000; }
-
-        /* ── STAT STRIP ──────────────────────────────────────────── */
-        .stat-strip {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: #2b2b2b;
-            border: 1px solid #2b2b2b;
-            margin-bottom: 20px;
-        }
-
-        .stat-box {
-            background: #1a1a1a;
-            padding: 18px 22px;
-            text-align: center;
-        }
-
-        .stat-value { font-size: 22px; font-weight: 700; color: #ffffff; }
-        .stat-label { font-size: 12px; color: #9c9ca4; margin-top: 4px; }
-
-        /* ── PROMOS TABLE ────────────────────────────────────────── */
-        .promos-table {
+        .primary-action {
             width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        .promos-table thead th {
-            background: #141414;
-            color: #9c9ca4;
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            padding: 13px 20px;
-            border-bottom: 1px solid #2b2b2b;
-            white-space: nowrap;
-        }
-
-        .promos-table tbody td {
-            padding: 15px 20px;
-            border-bottom: 1px solid #202020;
-            color: #ffffff;
-            vertical-align: middle;
-        }
-
-        .promos-table tbody tr:last-child td { border-bottom: none; }
-        .promos-table tbody tr:hover td      { background: rgba(255,255,255,0.02); }
-
-        /* Promo code chip */
-        .promo-code {
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            font-weight: 700;
-            color: #00ff87;
-            background: rgba(0, 255, 135, 0.07);
-            padding: 4px 10px;
-            border: 1px solid rgba(0, 255, 135, 0.2);
-            letter-spacing: 1px;
-        }
-
-        /* Discount chip */
-        .discount-chip {
-            display: inline-block;
-            background: rgba(167, 139, 250, 0.10);
-            color: #a78bfa;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 3px 10px;
-        }
-
-        /* Status badges */
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        .status-active  { background: rgba(0,   255, 135, 0.12); color: #00ff87; }
-        .status-expired { background: rgba(255, 68,  68,  0.12); color: #ff4444; }
-        .status-paused  { background: rgba(251, 191, 36,  0.12); color: #fbbf24; }
-
-        /* Expiry cell colours */
-        .expiry-warning { color: #fbbf24; font-size: 13px; }
-        .expiry-normal  { color: #9c9ca4; font-size: 13px; }
-        .expiry-expired { color: #ff4444; font-size: 13px; }
-
-        /* Action icon buttons */
-        .btn-icon {
-            background: transparent;
-            border: 1px solid #2b2b2b;
-            color: #9c9ca4;
-            padding: 5px 9px;
-            border-radius: 0;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .btn-icon:hover              { border-color: #00ff87; color: #00ff87; }
-        .btn-icon.btn-delete:hover   { border-color: #ff4444; color: #ff4444; }
-
-        /* Usage bar */
-        .usage-bar {
-            height: 4px;
-            background: #2b2b2b;
-            margin-top: 6px;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .usage-fill {
-            height: 100%;
-            background: #00ff87;
-            border-radius: 2px;
-        }
-
-        /* ── ADD PROMO MODAL ─────────────────────────────────────── */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.72);
-            z-index: 9000;
-            align-items: center;
             justify-content: center;
         }
 
-        .modal-overlay.open { display: flex; }
-
-        .modal-panel {
-            background: #1a1a1a;
-            border: 1px solid #2b2b2b;
-            padding: 30px 32px;
-            width: 480px;
-            max-width: 95vw;
+        .stat-box {
+            min-width: calc(50% - 6px);
         }
+    }
 
-        .modal-title { font-size: 17px; font-weight: 700; color: #ffffff; margin-bottom: 22px; }
-
-        .modal-label {
-            font-size: 13px;
-            color: #9c9ca4;
-            margin-bottom: 6px;
-            display: block;
-            font-weight: 500;
+    @media (max-width: 640px) {
+        .stat-box {
+            min-width: 100%;
         }
-
-        .modal-input,
-        .modal-select {
-            width: 100%;
-            background: #0d0d0d;
-            border: 1px solid #2b2b2b;
-            border-radius: 0;
-            color: #ffffff;
-            padding: 9px 12px;
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            box-sizing: border-box;
-            margin-bottom: 16px;
-        }
-
-        .modal-input:focus, .modal-select:focus { outline: none; border-color: #00ff87; }
-        .modal-input::placeholder { color: #484848; }
-        .modal-select option { background: #1a1a1a; }
-
-        .btn-cancel-modal {
-            background: transparent;
-            border: 1px solid #2b2b2b;
-            color: #9c9ca4;
-            padding: 10px 20px;
-            border-radius: 0;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-
-        .btn-cancel-modal:hover { border-color: #555; color: #fff; }
-    </style>
+    }
+</style>
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-
-    <%-- ======================================================
-         PAGE HEADER
-    ====================================================== --%>
-    <div class="d-flex justify-content-between align-items-start mb-4">
+    <div class="page-header">
         <div>
-            <h1 class="page-title">Promotions &amp; Coupons</h1>
-            <p class="page-subtitle">Create and manage discount codes for your customers.</p>
+            <h1 class="page-title">Loyalty Management</h1>
+            <p class="page-subtitle">Create and control checkout vouchers.</p>
         </div>
-        <button class="btn-onyx" onclick="openModal()">
-            <i data-lucide="plus" style="width:15px;height:15px;"></i> Add Promo
-        </button>
+        <a class="primary-action" href="onyx_admin_voucher_form.aspx"><i data-lucide="plus"></i>Add voucher</a>
     </div>
 
-    <%-- ======================================================
-         STAT STRIP
-    ====================================================== --%>
-    <div class="stat-strip mb-4">
-        <div class="stat-box">
-            <div class="stat-value" style="color:#00ff87;">
-                <asp:Literal ID="litActiveCount" runat="server" Text="0" />
-            </div>
-            <div class="stat-label">Active Codes</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-value">
-                <asp:Literal ID="litTotalUses" runat="server" Text="0" />
-            </div>
-            <div class="stat-label">Total Redemptions</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-value" style="color:#a78bfa;">
-                <asp:Literal ID="litSavingsGiven" runat="server" Text="RM 0" />
-            </div>
-            <div class="stat-label">Total Savings Given</div>
-        </div>
+    <asp:Label ID="lblMessage" runat="server" CssClass="message-banner" Visible="false" />
+
+    <div class="stat-strip">
+        <div class="stat-box"><asp:Literal ID="litActiveCount" runat="server" /><span>Active vouchers</span></div>
+        <div class="stat-box"><asp:Literal ID="litRedeemedCount" runat="server" /><span>Redemptions</span></div>
+        <div class="stat-box"><asp:Literal ID="litSavingsGiven" runat="server" /><span>Total savings</span></div>
     </div>
 
-    <%-- ======================================================
-         PROMOS TABLE
-    ====================================================== --%>
-    <div class="admin-panel">
-        <table class="promos-table">
-            <thead>
-                <tr>
-                    <th>Promo Code</th>
-                    <th>Discount</th>
-                    <th>Type</th>
-                    <th>Usage / Limit</th>
-                    <th>Expiry Date</th>
-                    <th>Status</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <asp:Repeater ID="PromosRepeater" runat="server">
-                    <ItemTemplate>
-                        <tr>
-                            <td><span class="promo-code"><%# Eval("Code") %></span></td>
-                            <td><span class="discount-chip"><%# Eval("Discount") %></span></td>
-                            <td style="color:#9c9ca4; font-size:13px;"><%# Eval("Type") %></td>
-                            <td>
-                                <div style="font-size:13px;">
-                                    <strong><%# Eval("Uses") %></strong>
-                                    <span style="color:#555;"> / <%# Eval("Limit") %></span>
-                                </div>
-                                <div class="usage-bar">
-                                    <div class="usage-fill" style="width:<%# Eval("UsagePct") %>%;"></div>
-                                </div>
-                            </td>
-                            <td><span class="<%# Eval("ExpiryClass") %>"><%# Eval("Expiry") %></span></td>
-                            <td>
-                                <span class="status-badge status-<%# Eval("StatusKey") %>">
-                                    <%# Eval("Status") %>
-                                </span>
-                            </td>
-                            <td>
-                                <div style="display:flex; gap:6px;">
-                                    <a href="#" class="btn-icon" title="Edit promo">
-                                        <i data-lucide="edit-2" style="width:13px;height:13px;"></i>
-                                    </a>
-                                    <a href="#" class="btn-icon btn-delete" title="Delete promo">
-                                        <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    </ItemTemplate>
-                </asp:Repeater>
-            </tbody>
-        </table>
-    </div>
-
-    <%-- ======================================================
-         ADD PROMO MODAL
-    ====================================================== --%>
-    <div id="addPromoModal" class="modal-overlay" onclick="handleOverlayClick(event)">
-        <div class="modal-panel" onclick="event.stopPropagation()">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-                <div class="modal-title">New Promo Code</div>
-                <button onclick="closeModal()"
-                        style="background:none;border:none;color:#9c9ca4;cursor:pointer;font-size:22px;line-height:1;">&times;</button>
-            </div>
-            <p style="font-size:13px;color:#9c9ca4;margin-bottom:20px;">
-                Create a new discount code for your customers.
-            </p>
-
-            <label class="modal-label">Promo Code <span style="color:#ff4444;">*</span></label>
-            <input type="text" class="modal-input" id="newPromoCode"
-                   placeholder="e.g. SUMMER30" style="text-transform:uppercase;">
-
-            <label class="modal-label">Discount Type</label>
-            <select class="modal-select" id="newPromoType">
-                <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Amount (RM)</option>
-                <option value="shipping">Free Shipping</option>
-            </select>
-
-            <label class="modal-label">Discount Value <span style="color:#ff4444;">*</span></label>
-            <input type="text" class="modal-input" id="newPromoValue"
-                   placeholder="e.g. 20 (for 20%) or 50 (for RM50)">
-
-            <label class="modal-label">Expiry Date <span style="color:#ff4444;">*</span></label>
-            <input type="date" class="modal-input" id="newPromoExpiry">
-
-            <label class="modal-label">Usage Limit</label>
-            <input type="number" class="modal-input" id="newPromoLimit"
-                   placeholder="Leave blank for unlimited">
-
-            <div class="d-flex gap-3 mt-1">
-                <button class="btn-onyx" onclick="submitPromo()">
-                    <i data-lucide="check" style="width:14px;height:14px;"></i> Create Promo
-                </button>
-                <button class="btn-cancel-modal" onclick="closeModal()">Cancel</button>
-            </div>
+    <div class="panel">
+        <div class="table-wrap">
+            <table class="voucher-table">
+                <thead>
+                    <tr>
+                        <th>Voucher</th>
+                        <th>Discount</th>
+                        <th>Eligibility</th>
+                        <th>Minimum</th>
+                        <th>Usage</th>
+                        <th>Validity</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <asp:Repeater ID="rptVouchers" runat="server" OnItemCommand="rptVouchers_ItemCommand">
+                        <ItemTemplate>
+                            <tr>
+                                <td>
+                                    <strong class="voucher-name"><%#: Eval("Name") %></strong>
+                                    <span class="code"><%#: Eval("Code") %></span>
+                                </td>
+                                <td><%#: GetDiscountText(Container.DataItem) %></td>
+                                <td class="muted-cell"><%#: GetEligibilityText(Container.DataItem) %></td>
+                                <td class="muted-cell"><%#: GetMinimumText(Container.DataItem) %></td>
+                                <td class="muted-cell"><%#: GetUsageText(Container.DataItem) %></td>
+                                <td class="muted-cell"><%#: GetValidityText(Container.DataItem) %></td>
+                                <td><span class='<%#: "status status--" + GetStatusKey(Container.DataItem) %>'><%#: GetStatusText(Container.DataItem) %></span></td>
+                                <td class="actions">
+                                    <a href='<%#: "onyx_admin_voucher_form.aspx?id=" + Eval("Id") %>'>Edit</a>
+                                    <asp:LinkButton ID="btnToggle" runat="server" CssClass="link-button" CommandName="Toggle" CommandArgument='<%# Eval("Id") %>' Text='<%# GetToggleText(Container.DataItem) %>' />
+                                    <asp:LinkButton ID="btnArchive" runat="server" CssClass="link-button" CommandName="Archive" CommandArgument='<%# Eval("Id") %>' Text="Archive" OnClientClick="return confirm('Archive this voucher?');" />
+                                </td>
+                            </tr>
+                        </ItemTemplate>
+                    </asp:Repeater>
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <script>
-        function openModal()  { document.getElementById('addPromoModal').classList.add('open'); }
-        function closeModal() { document.getElementById('addPromoModal').classList.remove('open'); }
-        function handleOverlayClick(e) { if (e.target === e.currentTarget) closeModal(); }
-
-        function submitPromo() {
-            var code = document.getElementById('newPromoCode').value.trim().toUpperCase();
-            if (!code) { alert('Please enter a promo code.'); return; }
-            // TODO: POST to server when backend is ready.
-            closeModal();
-            alert('Promo code "' + code + '" created successfully! (UI-only — connect to backend to persist.)');
-        }
-    </script>
-
 </asp:Content>

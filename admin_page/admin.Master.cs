@@ -29,6 +29,7 @@ namespace ONYX_DDAC.admin_page
                 { "onyx_admin_products.aspx",  navProducts  },
                 { "onyx_admin_orders.aspx",    navOrders    },
                 { "onyx_admin_promos.aspx",    navPromos    },
+                { "onyx_admin_voucher_form.aspx", navPromos },
                 { "onyx_admin_users.aspx",     navUsers     }
             };
 
