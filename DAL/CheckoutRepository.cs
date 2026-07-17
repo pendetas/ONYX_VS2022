@@ -609,6 +609,7 @@ namespace ONYX_DDAC.DAL
                         c.product_variant_id,
                         c.quantity,
                         p.name AS product_name,
+                        p.category,
                         p.price AS product_price,
                         p.stock_qty AS product_stock,
                         p.image_url AS product_image_url,
@@ -649,6 +650,7 @@ namespace ONYX_DDAC.DAL
                             ProductName = string.IsNullOrWhiteSpace(variantValue)
                                 ? productName
                                 : productName + " (" + variantValue + ")",
+                            Category = reader.GetString(reader.GetOrdinal("category")),
                             Quantity = reader.GetInt32(reader.GetOrdinal("quantity")),
                             UnitPrice = variantId.HasValue
                                 ? reader.GetDecimal(reader.GetOrdinal("variant_price"))
@@ -810,6 +812,7 @@ namespace ONYX_DDAC.DAL
                 ProductId = item.ProductId,
                 VariantId = item.VariantId,
                 ProductName = item.ProductName,
+                Category = item.Category,
                 VariantName = item.VariantName,
                 Price = item.UnitPrice,
                 Quantity = item.Quantity,
@@ -842,6 +845,7 @@ namespace ONYX_DDAC.DAL
             public long ProductId { get; set; }
             public long? VariantId { get; set; }
             public string ProductName { get; set; }
+            public string Category { get; set; }
             public string VariantName { get; set; }
             public string ImageUrl { get; set; }
             public int Quantity { get; set; }

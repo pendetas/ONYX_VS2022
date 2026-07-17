@@ -805,13 +805,16 @@ namespace ONYX_DDAC.DAL
             }
 
             Dictionary<long, List<string>> categoriesByVoucherId = voucherList.ToDictionary(voucher => voucher.Id, voucher => new List<string>());
+            long[] voucherIds = voucherList.Select(voucher => voucher.Id).Distinct().ToArray();
             using (DbCommand cmd = conn.CreateCommand())
             {
                 cmd.Transaction = tx;
                 cmd.CommandText = @"
                     SELECT voucher_id, category
                     FROM voucher_categories
+                    WHERE voucher_id = ANY(@VoucherIds)
                     ORDER BY voucher_id, category";
+                cmd.Parameters.Add(new NpgsqlParameter("@VoucherIds", voucherIds));
 
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {

@@ -1,8 +1,12 @@
 $root = Split-Path $PSScriptRoot -Parent
 $repoPath = "$root\DAL\VoucherRepository.cs"
+$cartRepoPath = "$root\DAL\CartRepository.cs"
+$checkoutRepoPath = "$root\DAL\CheckoutRepository.cs"
 $servicePath = "$root\Services\VoucherService.cs"
 $cartPath = "$root\Models\CartItem.cs"
 $repo = if (Test-Path $repoPath) { Get-Content $repoPath -Raw } else { '' }
+$cartRepo = Get-Content $cartRepoPath -Raw
+$checkoutRepo = Get-Content $checkoutRepoPath -Raw
 $service = if (Test-Path $servicePath) { Get-Content $servicePath -Raw } else { '' }
 $cart = Get-Content $cartPath -Raw
 
@@ -26,6 +30,15 @@ $checks = [ordered]@{
         $service -match 'GetCheckoutQuote' -and
         $service -match 'VoucherCalculator\.Calculate'
     'Cart items carry authoritative category' = $cart -match 'string\s+Category'
+    'Cart and checkout hydrate authoritative category' =
+        $cartRepo -match 'p\.category' -and
+        $cartRepo -match 'Category\s*=\s*reader\.GetString\(reader\.GetOrdinal\("category"\)\)' -and
+        $checkoutRepo -match 'p\.category' -and
+        $checkoutRepo -match 'Category\s*=\s*reader\.GetString\(reader\.GetOrdinal\("category"\)\)' -and
+        $checkoutRepo -match 'Category\s*=\s*item\.Category'
+    'Repository filters category hydration to requested vouchers' =
+        $repo -match 'WHERE voucher_id = ANY\s*\(@VoucherIds\)' -and
+        $repo -match '@VoucherIds'
     'SQL remains parameterized' = $repo -notmatch 'CommandText\s*=.*\+.*(code|Code|voucher|Voucher)'
 }
 
