@@ -12,6 +12,8 @@ namespace ONYX_DDAC.customer_page
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            AuthHelper.RequireLogin(this);
+
             // We only want to bind the data the first time the page loads.
             // If they click "Remove", the ItemCommand handles re-binding.
             if (!IsPostBack)

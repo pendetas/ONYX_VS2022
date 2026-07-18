@@ -646,6 +646,8 @@ namespace ONYX_DDAC.customer_page
 
         protected void btnAddToCart_Click(object sender, EventArgs e)
         {
+            AuthHelper.RequireLogin(this);
+
             long productId;
             int qty;
             if (!long.TryParse(Request.QueryString["id"], out productId) || productId <= 0)

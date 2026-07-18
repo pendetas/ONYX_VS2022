@@ -38,6 +38,12 @@ Thumbs.db
 .magicpath-work/
 .playwright-mcp/
 
+# Local documentation, test, and generated output
+docs/
+tests/
+tmp/
+outputs/
+
 # Local secrets
 .env
 .env.*
