@@ -26,16 +26,28 @@ namespace ONYX_DDAC.auth_page
         /// <summary>
         /// GoogleRegisterButton control.
         /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton GoogleRegisterButton;
 
         /// <summary>
         /// DiscordRegisterButton control.
         /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton DiscordRegisterButton;
 
         /// <summary>
         /// FacebookRegisterButton control.
         /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton FacebookRegisterButton;
 
         /// <summary>
