@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Google.GenAI;
 using Google.GenAI.Types;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
 
 namespace ONYX_DDAC.Services
@@ -627,11 +628,7 @@ namespace ONYX_DDAC.Services
                 return "/" + normalized.TrimStart('/');
             }
 
-            string category = (product.Category ?? string.Empty).ToLowerInvariant();
-            if (category.Contains("keyboard")) return "/Content/home/products/onyx-keyboard.png";
-            if (category.Contains("headset") || category.Contains("audio")) return "/Content/home/products/onyx-headset.png";
-            if (category.Contains("monitor")) return "/Content/home/products/onyx-monitor.png";
-            return "/Content/home/products/onyx-mouse.png";
+            return MediaUrlHelper.Resolve("site-photos/image-unavailable.svg");
         }
 
         private static string FormatOrderStatus(string status)

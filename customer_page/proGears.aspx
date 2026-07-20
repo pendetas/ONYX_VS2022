@@ -585,7 +585,7 @@
                 </div>
 
                 <div class="onyx-pro-stage onyx-pro-reveal" aria-label="ONYX pro collab keyboard concept">
-                    <img class="onyx-pro-hero-image" src="/Content/home/onyx-pro-signature-keyboard.png?v=20260708-tenz-style" alt="Black ONYX compact pro keyboard with signature-style accent lighting" />
+                    <img class="onyx-pro-hero-image" src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("site-photos/pro-gear/onyx-pro-signature-keyboard.png") %>" alt="Black ONYX compact pro keyboard with signature-style accent lighting" />
                     <div class="onyx-pro-drop-card">
                         <span class="onyx-pro-label">Collab concept</span>
                         <h2>ONYX Pro Signature</h2>

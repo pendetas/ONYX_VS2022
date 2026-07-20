@@ -251,7 +251,7 @@
 
                     <div class="card-logo-wrap">
                         <img class="card-logo"
-                             src='<%= ResolveUrl("~/Images/ONYX Black.png") %>'
+                             src='<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("site-photos/admin-auth/onyx-black.png") %>'
                              alt="ONYX" />
                     </div>
 

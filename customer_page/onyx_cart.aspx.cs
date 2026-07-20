@@ -89,13 +89,15 @@ namespace ONYX_DDAC.customer_page
         protected string GetImageUrl(object imageUrl)
         {
             string url = (imageUrl ?? string.Empty).ToString();
-
-            // If the database image_url is empty, fallback to a default image
-            if (string.IsNullOrWhiteSpace(url))
+            Uri absoluteUri;
+            if (!string.IsNullOrWhiteSpace(url) &&
+                Uri.TryCreate(url, UriKind.Absolute, out absoluteUri) &&
+                (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
             {
-                return "/Content/home/products/onyx-mouse.png";
+                return url;
             }
-            return url;
+
+            return MediaUrlHelper.Resolve("site-photos/image-unavailable.svg");
         }
     }
 }

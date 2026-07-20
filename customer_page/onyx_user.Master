@@ -627,7 +627,7 @@
                             visual.loading = 'lazy';
                             visual.src = imageUrl;
                             visual.addEventListener('error', function () {
-                                visual.src = '<%= ResolveUrl("~/Content/home/products/onyx-mouse.png") %>';
+                                    visual.src = '<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("site-photos/image-unavailable.svg") %>';
                             });
                         } else {
                             visual = document.createElement('span');

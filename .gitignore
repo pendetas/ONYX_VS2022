@@ -45,5 +45,6 @@ tmp/
 outputs/
 
 # Local secrets
+Web.config
 .env
 .env.*

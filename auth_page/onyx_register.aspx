@@ -577,7 +577,7 @@
             <div class="auth-left">
                 <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" class="auth-brand" aria-label="Back to ONYX home">onyx</a>
                 <video autoplay loop muted playsinline class="auth-video-bg">
-                    <source src="<%= ResolveUrl("~/Videos/onyx_headset.mp4") %>" type="video/mp4" />
+                    <source src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("auth/onyx_headset.mp4") %>" type="video/mp4" />
                 </video>
 
 

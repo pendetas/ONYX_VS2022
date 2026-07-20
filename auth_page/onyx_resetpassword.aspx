@@ -248,7 +248,7 @@
             <div class="auth-left">
                 <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" class="auth-brand" aria-label="Back to ONYX home">onyx</a>
                 <video autoplay loop muted playsinline class="auth-video-bg">
-                    <source src="<%= ResolveUrl("~/Videos/ONYX_Cinematic_Logo.mp4") %>" type="video/mp4" />
+                    <source src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("auth/ONYX_Cinematic_Logo.mp4") %>" type="video/mp4" />
                 </video>
                 <div class="auth-copyright">&copy; 2026 ONYX Gaming Technologies.</div>
             </div>
