@@ -80,7 +80,7 @@ namespace ONYX_DDAC.customer_page
             BindProductCampaign(currentProduct);
 
             // Image Fallback check
-            imgProduct.ImageUrl = ResolveCampaignUrl(FirstText(currentProduct.ImageUrl, "/Content/home/products/onyx-mouse.png"));
+            imgProduct.ImageUrl = ResolveProductImageUrl(currentProduct.ImageUrl);
             imgProduct.AlternateText = FirstText(currentProduct.Name, "ONYX product");
             BindProductImageNavigation(currentProduct);
 
@@ -144,7 +144,7 @@ namespace ONYX_DDAC.customer_page
                 : new List<string> { product.ImageUrl };
             List<string> resolvedUrls = imageUrls
                 .Where(value => !string.IsNullOrWhiteSpace(value))
-                .Select(ResolveCampaignUrl)
+                .Select(ResolveProductImageUrl)
                 .Where(value => !string.IsNullOrWhiteSpace(value))
                 .ToList();
 
@@ -475,6 +475,19 @@ namespace ONYX_DDAC.customer_page
                 : ResolveUrl(trimmed);
         }
 
+        private string ResolveProductImageUrl(string value)
+        {
+            string resolved = ResolveCampaignUrl(value);
+            Uri absoluteUri;
+            if (Uri.TryCreate(resolved, UriKind.Absolute, out absoluteUri) &&
+                (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
+            {
+                return resolved;
+            }
+
+            return MediaUrlHelper.Resolve("site-photos/image-unavailable.svg");
+        }
+
         private static string Encode(string value)
         {
             return HttpUtility.HtmlEncode(value ?? string.Empty);
@@ -552,7 +565,7 @@ namespace ONYX_DDAC.customer_page
                 // Swap the main image if the variant has a custom image!
                 if (!string.IsNullOrWhiteSpace(variant.ImageUrl))
                 {
-                    imgProduct.ImageUrl = ResolveCampaignUrl(variant.ImageUrl);
+                    imgProduct.ImageUrl = ResolveProductImageUrl(variant.ImageUrl);
                 }
 
                 ApplyStockState(variant.StockQty);
@@ -646,6 +659,8 @@ namespace ONYX_DDAC.customer_page
 
         protected void btnAddToCart_Click(object sender, EventArgs e)
         {
+            AuthHelper.RequireLogin(this);
+
             long productId;
             int qty;
             if (!long.TryParse(Request.QueryString["id"], out productId) || productId <= 0)

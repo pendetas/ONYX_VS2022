@@ -202,7 +202,7 @@
     <Content Include="admin_page\onyx_admin_users.aspx" />
     <Content Include="auth_page\onyx_Admin_Login.aspx" />
     <Content Include="auth_page\onyx_admin_register.aspx" />
-    <Content Include="Contact.aspx" />
+    <Content Include="Default.aspx" />
     <Content Include="admin_page\admin.Master" />
     <Content Include="admin_page\onyx_admin_dashboard.aspx" />
     <Content Include="admin_page\onyx_admin_products.aspx" />
@@ -225,22 +225,6 @@
     <Content Include="auth_page\onyx_register.aspx" />
     <Content Include="auth_page\onyx_resetpassword.aspx" />
     <Content Include="auth_page\oauth_callback.aspx" />
-    <Content Include="Content\bootstrap-grid.css" />
-    <Content Include="Content\bootstrap-grid.min.css" />
-    <Content Include="Content\bootstrap-grid.rtl.css" />
-    <Content Include="Content\bootstrap-grid.rtl.min.css" />
-    <Content Include="Content\bootstrap-reboot.css" />
-    <Content Include="Content\bootstrap-reboot.min.css" />
-    <Content Include="Content\bootstrap-reboot.rtl.css" />
-    <Content Include="Content\bootstrap-reboot.rtl.min.css" />
-    <Content Include="Content\bootstrap-utilities.css" />
-    <Content Include="Content\bootstrap-utilities.min.css" />
-    <Content Include="Content\bootstrap-utilities.rtl.css" />
-    <Content Include="Content\bootstrap-utilities.rtl.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\bootstrap.rtl.css" />
-    <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="customer_page\onyx_cart.aspx" />
     <Content Include="customer_page\onyx_checkout.aspx" />
     <Content Include="customer_page\onyx_invoice.aspx" />
@@ -261,17 +245,12 @@
     <Content Include="customer_page\onyx_ai_chat.ashx" />
     <Content Include="Content\home\onyx-logo-horizontal.png" />
     <Content Include="Content\home\onyx-logo-stacked.png" />
-    <Content Include="Content\home\onyx-pro-mouse.png" />
     <Content Include="Content\home\onyx-pro-signature-keyboard.png" />
     <Content Include="Content\home\onyx-related-hero.png" />
     <Content Include="Content\home\dragonink-poster.png" />
     <Content Include="Content\home\products\onyx-60he-v2.jpeg" />
     <Content Include="Content\home\products\onyx-80he.png" />
     <Content Include="Content\home\products\onyx-gm1-se-plus.png" />
-    <Content Include="Content\home\products\onyx-headset.png" />
-    <Content Include="Content\home\products\onyx-keyboard.png" />
-    <Content Include="Content\home\products\onyx-monitor.png" />
-    <Content Include="Content\home\products\onyx-mouse.png" />
     <Content Include="Content\home\team-logos\100-thieves.svg" />
     <Content Include="Content\home\team-logos\cloud9.svg" />
     <Content Include="Content\home\team-logos\faze-clan.svg" />
@@ -281,6 +260,7 @@
     <Content Include="Content\home\team-logos\sentinels.svg" />
     <Content Include="Content\home\team-logos\team-liquid.svg" />
     <Content Include="Content\admin.css" />
+    <Content Include="Content\image-unavailable.svg" />
     <Content Include="Content\onyx-account.css" />
     <Content Include="Content\onyx-catalog.css" />
     <Content Include="Content\onyx-commerce.css" />
@@ -298,12 +278,6 @@
     <Content Include="PRODUCT.md" />
     <Content Include="docs\onyx-ai-assistant.md" />
     <Content Include="docs\onyx-assistant-knowledge.md" />
-    <Content Include="Scripts\bootstrap.bundle.js" />
-    <Content Include="Scripts\bootstrap.bundle.min.js" />
-    <Content Include="Scripts\bootstrap.esm.js" />
-    <Content Include="Scripts\bootstrap.esm.min.js" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-3.7.0-vsdoc.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -333,14 +307,42 @@
     <Content Include="Scripts\WebForms\WebForms.js" />
     <Content Include="Scripts\WebForms\WebParts.js" />
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
-    <Content Include="Site.Master" />
     <Content Include="customer_page\onyx_privacy.aspx" />
     <Content Include="customer_page\onyx_terms.aspx" />
-    <Content Include="Video\Dragon.mp4" />
-    <Content Include="Video\DragonInk.mp4" />
+    <Content Include="Content\uploads\products\campaign-00f13ffce40944979cb138e569c4d100.png" />
+    <Content Include="Content\uploads\products\campaign-2877eb6e45c54fd0b14889f36354478f.webp" />
+    <Content Include="Content\uploads\products\campaign-3f4653e878dd4d30867df5a7d9d212b8.gif" />
+    <Content Include="Content\uploads\products\campaign-448ba1d1bb1849059ccfac53530e6558.gif" />
+    <Content Include="Content\uploads\products\campaign-a7ac069e8f884415bbb52036ecc96787.png" />
+    <Content Include="Content\uploads\products\campaign-c54490ec97f74774996d496cddb327ef.webp" />
+    <Content Include="Content\uploads\products\campaign-d83c9818df574fd4b786ba04198e5a67.gif" />
+    <Content Include="Content\uploads\products\product-07b38b8f7c9c4a908f824f8fd67fb07a.png" />
+    <Content Include="Content\uploads\products\product-21cdf7a0ce6341ba93ffd20ed2b0f7b4.png" />
+    <Content Include="Content\uploads\products\product-2c2e7b247e9441c4b4adb589ac016d55.png" />
+    <Content Include="Content\uploads\products\product-2eca48949a824519b870c7714163994d.jpeg" />
+    <Content Include="Content\uploads\products\product-3872607deb8e4ea689ab596b1d31b7a8.png" />
+    <Content Include="Content\uploads\products\product-45761d1d6a624a98a2f7b028f9784e1e.png" />
+    <Content Include="Content\uploads\products\product-4fd3188e87634a99b5ca71012de5e9ce.png" />
+    <Content Include="Content\uploads\products\product-81f23db44dec4764817692fbf87d9370.png" />
+    <Content Include="Content\uploads\products\product-8faad5a47bf540ecbc043865496644d8.png" />
+    <Content Include="Content\uploads\products\product-944b5f1061d848159efba0ea95638e01.png" />
+    <Content Include="Content\uploads\products\product-9ac5b78c0e3e4931b9b41bb7f89dc494.png" />
+    <Content Include="Content\uploads\products\product-a9222a54de7548239e60b06405518c03.png" />
+    <Content Include="Content\uploads\products\product-b10f061c98844398ba03cc5ea3c0891b.png" />
+    <Content Include="Content\uploads\products\product-b95ca56eefc44777b7da79e8bac3786d.png" />
+    <Content Include="Content\uploads\products\product-c147be1693e94b7480f363c371371120.png" />
+    <Content Include="Content\uploads\products\product-c29bed603eb34e908ccc078e76a59e2a.png" />
+    <Content Include="Content\uploads\products\product-cc0dccc4792745f5831d4677ce5c18e2.jpeg" />
+    <Content Include="Content\uploads\products\product-cf307419a2c1413988f95c3f894e2586.png" />
+    <Content Include="Content\uploads\products\product-dfd361b3fb8343f0973e6e92c7e86309.png" />
+    <Content Include="Content\uploads\products\product-ef61e01ef4b64f9ca1cb3321f96b11c0.png" />
+    <Content Include="Content\uploads\products\product-f5d7f210a3ff4fb78ed835ba1faf1384.png" />
+    <Content Include="Content\uploads\products\product-f67fd3ab59dc49b2bf284b53df39758c.png" />
+    <Content Include="Content\uploads\products\razer chair-20260706151741725.jpg" />
+    <Content Include="Videos\ONYX_Cinematic_Logo.mp4" />
+    <Content Include="Videos\onyx_headset.mp4" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
-    <Content Include="Bundle.config" />
     <Content Include="Site.Mobile.Master" />
   </ItemGroup>
   <ItemGroup>
@@ -571,6 +573,7 @@
     <Compile Include="Helpers\CurrencyHelper.cs" />
     <Compile Include="Helpers\GoogleOAuthAccountHelper.cs" />
     <Compile Include="Helpers\GoogleOAuthRedirectHelper.cs" />
+    <Compile Include="Helpers\MediaUrlHelper.cs" />
     <Compile Include="Helpers\OAuthPkceHelper.cs" />
     <Compile Include="Helpers\PostAuthRedirectHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
@@ -616,12 +619,9 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Wishlist.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Contact.aspx.cs">
-      <DependentUpon>Contact.aspx</DependentUpon>
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Contact.aspx.designer.cs">
-      <DependentUpon>Contact.aspx</DependentUpon>
     </Compile>
     <Compile Include="customer_page\onyx_cart.aspx.cs">
       <DependentUpon>onyx_cart.aspx</DependentUpon>
@@ -666,7 +666,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AuthService.cs" />
-    <Compile Include="Services\CaptchaService.cs" />
     <Compile Include="Services\CartService.cs" />
     <Compile Include="Services\CheckoutService.cs" />
     <Compile Include="Services\EmailService.cs" />
@@ -695,13 +694,6 @@
     <Compile Include="Services\WishlistService.cs" />
     <Compile Include="Services\DashboardService.cs" />
     <Compile Include="Services\UserService.cs" />
-    <Compile Include="Site.Master.cs">
-      <DependentUpon>Site.Master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Site.Master.designer.cs">
-      <DependentUpon>Site.Master</DependentUpon>
-    </Compile>
     <Compile Include="Site.Mobile.Master.cs">
       <DependentUpon>Site.Mobile.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -746,29 +738,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\bootstrap.rtl.min.css.map" />
-    <Content Include="Content\bootstrap.rtl.css.map" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-utilities.rtl.min.css.map" />
-    <Content Include="Content\bootstrap-utilities.rtl.css.map" />
-    <Content Include="Content\bootstrap-utilities.min.css.map" />
-    <Content Include="Content\bootstrap-utilities.css.map" />
-    <Content Include="Content\bootstrap-reboot.rtl.min.css.map" />
-    <Content Include="Content\bootstrap-reboot.rtl.css.map" />
-    <Content Include="Content\bootstrap-reboot.min.css.map" />
-    <Content Include="Content\bootstrap-reboot.css.map" />
-    <Content Include="Content\bootstrap-grid.rtl.min.css.map" />
-    <Content Include="Content\bootstrap-grid.rtl.css.map" />
-    <Content Include="Content\bootstrap-grid.min.css.map" />
-    <Content Include="Content\bootstrap-grid.css.map" />
     <None Include="packages.config" />
-    <Content Include="Scripts\bootstrap.min.js.map" />
-    <Content Include="Scripts\bootstrap.js.map" />
-    <Content Include="Scripts\bootstrap.esm.min.js.map" />
-    <Content Include="Scripts\bootstrap.esm.js.map" />
-    <Content Include="Scripts\bootstrap.bundle.min.js.map" />
-    <Content Include="Scripts\bootstrap.bundle.js.map" />
     <Content Include="Scripts\jquery-3.7.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.7.0.min.map" />
     <None Include="Web.Debug.config">
@@ -788,6 +758,7 @@
     <Analyzer Include="packages\AWSSDK.SQS.4.0.2.33\analyzers\dotnet\cs\AWSSDK.SQS.CodeAnalysis.dll" />
     <Analyzer Include="packages\AWSSDK.SQS.4.0.2.33\analyzers\dotnet\cs\SharedAnalysisCode.dll" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

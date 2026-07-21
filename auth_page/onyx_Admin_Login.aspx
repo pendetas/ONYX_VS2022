@@ -32,11 +32,6 @@
             position: relative;
         }
 
-        /* ══════════════════════════════════════
-           BACKGROUND  —  clean, minimal
-        ══════════════════════════════════════ */
-
-        /* soft centre glow so glass blur has something to catch */
         .bg-glow {
             position: fixed; inset: 0; z-index: 0; pointer-events: none;
             background:
@@ -297,7 +292,7 @@
 
                     <div class="card-logo-wrap">
                         <img class="card-logo"
-                             src='<%= ResolveUrl("~/Images/ONYX Black.png") %>'
+                             src='<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("site-photos/admin-auth/onyx-black.png") %>'
                              alt="ONYX" />
                     </div>
 

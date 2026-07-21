@@ -41,11 +41,10 @@ namespace ONYX_DDAC.customer_page
                 PaymentReconciliationResult result = new PaymentCompletionService().ReconcileForUser(sessionId, userId);
                 if (result.IsPaid)
                 {
-                    new CartService().RefreshCurrentUserCartFromDatabase();
-                    new OrderService().SendCheckoutSuccessEmailOnce(
-                        result.OrderId,
-                        userId,
-                        BuildInvoiceUrl(result.OrderId));
+                    // The order is confirmed paid and already committed to the database.
+                    // Cart refresh and the receipt email are best-effort follow-ups: a
+                    // failure there must not surface to the customer as a payment problem.
+                    RunPostPaymentSideEffects(result.OrderId, userId);
                     RedirectTo("~/customer_page/onyx_invoice.aspx?orderId=" + result.OrderId);
                     return;
                 }
@@ -71,6 +70,32 @@ namespace ONYX_DDAC.customer_page
                 System.Diagnostics.Trace.TraceError("Payment confirmation failed: {0}", ex);
                 litTitle.Text = "Payment verification delayed";
                 litMessage.Text = "<p>Your payment status could not be confirmed yet. Check order history shortly.</p>";
+            }
+        }
+
+        private void RunPostPaymentSideEffects(long orderId, long userId)
+        {
+            try
+            {
+                new CartService().RefreshCurrentUserCartFromDatabase();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Post-payment cart refresh failed for paid order {0}: {1}", orderId, ex);
+            }
+
+            try
+            {
+                new OrderService().SendCheckoutSuccessEmailOnce(
+                    orderId,
+                    userId,
+                    BuildInvoiceUrl(orderId));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "Checkout success email dispatch failed for paid order {0}: {1}", orderId, ex);
             }
         }
 

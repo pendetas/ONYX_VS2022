@@ -24,6 +24,7 @@ namespace ONYX_DDAC.admin_page
     public partial class onyx_admin_products_form : Page
     {
         private readonly ProductService _svc = new ProductService();
+        private readonly S3Service _mediaService = new S3Service();
         private const string LockedBrand = "ONYX";
         private const int MaxProductImageBytes = 5 * 1024 * 1024;
         private const int MaxCampaignMediaBytes = 20 * 1024 * 1024;
@@ -604,12 +605,7 @@ namespace ONYX_DDAC.admin_page
             if (!AllowedCampaignMediaContentTypes.Contains(contentType, StringComparer.OrdinalIgnoreCase))
                 throw new ArgumentException("Campaign media type is not supported.");
 
-            string uploadRoot = Server.MapPath("~/Content/uploads/products");
-            Directory.CreateDirectory(uploadRoot);
-            string fileName = "campaign-" + Guid.NewGuid().ToString("N") + extension;
-            string physicalPath = Path.Combine(uploadRoot, fileName);
-            postedFile.SaveAs(physicalPath);
-            return "/Content/uploads/products/" + fileName;
+            return _mediaService.Upload(postedFile, "campaign");
         }
 
         private static string GetCampaignMediaTypeFromPath(string mediaUrl)
@@ -722,10 +718,6 @@ namespace ONYX_DDAC.admin_page
             var savedPaths = new List<string>();
             if (!ProductImageUpload.HasFiles) return savedPaths;
 
-            string uploadFolder = Server.MapPath("~/Content/uploads/products/");
-            Directory.CreateDirectory(uploadFolder);
-            string safeUploadFolder = Path.GetFullPath(uploadFolder);
-
             for (int index = 0; index < ProductImageUpload.PostedFiles.Count; index++)
             {
                 while (savedPaths.Count <= index)
@@ -748,13 +740,7 @@ namespace ONYX_DDAC.admin_page
                 if (!AllowedProductImageContentTypes.Contains(contentType, StringComparer.OrdinalIgnoreCase))
                     throw new ArgumentException("Only JPG, JPEG, PNG, and WEBP product images are allowed.");
 
-                string fileName = "product-" + Guid.NewGuid().ToString("N") + extension;
-                string path = Path.GetFullPath(Path.Combine(safeUploadFolder, fileName));
-                if (!path.StartsWith(safeUploadFolder, StringComparison.OrdinalIgnoreCase))
-                    throw new ArgumentException("Invalid product image path.");
-
-                postedFile.SaveAs(path);
-                savedPaths[index] = ResolveUrl("~/Content/uploads/products/" + fileName);
+                savedPaths[index] = _mediaService.Upload(postedFile, "product");
             }
 
             return savedPaths;

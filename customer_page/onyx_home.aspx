@@ -35,7 +35,7 @@
         <main id="top">
             <section class="onyx-ddac-hero-section relative w-full h-screen flex flex-col justify-center items-center px-6 pt-20" aria-label="ONYX hero video">
                 <video class="onyx-ddac-hero-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
-                    <source src="<%= ResolveUrl("~/Video/Dragon.mp4") %>" type="video/mp4" />
+                    <source src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-videos/Dragon.mp4") %>" type="video/mp4" />
                 </video>
                 <div class="onyx-ddac-hero-scrim" aria-hidden="true"></div>
                 <h1 class="onyx-ddac-hero-title reveal-item opacity-0">Dominate<br />the game.</h1>
@@ -136,22 +136,22 @@
                 </div>
                 <div class="onyx-ddac-marquee-container opacity-60 hover:opacity-100 transition-opacity duration-500">
                     <div class="onyx-ddac-marquee-content onyx-ddac-logo-track">
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/faze-clan.svg" alt="FaZe Clan logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/cloud9.svg" alt="Cloud9 logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/team-liquid.svg" alt="Team Liquid logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/fnatic.svg" alt="Fnatic logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/100-thieves.svg" alt="100 Thieves logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/g2-esports.svg" alt="G2 Esports logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/sentinels.svg" alt="Sentinels logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/navi.svg" alt="NAVI logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/faze-clan.svg" alt="FaZe Clan logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/cloud9.svg" alt="Cloud9 logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/team-liquid.svg" alt="Team Liquid logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/fnatic.svg" alt="Fnatic logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/100-thieves.svg" alt="100 Thieves logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/g2-esports.svg" alt="G2 Esports logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/sentinels.svg" alt="Sentinels logo" loading="lazy" /></span>
-                        <span class="onyx-ddac-team-logo"><img src="/Content/home/team-logos/navi.svg" alt="NAVI logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/faze-clan.svg") %>" alt="FaZe Clan logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/cloud9.svg") %>" alt="Cloud9 logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/team-liquid.svg") %>" alt="Team Liquid logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/fnatic.svg") %>" alt="Fnatic logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/100-thieves.svg") %>" alt="100 Thieves logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/g2-esports.svg") %>" alt="G2 Esports logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/sentinels.svg") %>" alt="Sentinels logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/navi.svg") %>" alt="NAVI logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/faze-clan.svg") %>" alt="FaZe Clan logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/cloud9.svg") %>" alt="Cloud9 logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/team-liquid.svg") %>" alt="Team Liquid logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/fnatic.svg") %>" alt="Fnatic logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/100-thieves.svg") %>" alt="100 Thieves logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/g2-esports.svg") %>" alt="G2 Esports logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/sentinels.svg") %>" alt="Sentinels logo" loading="lazy" /></span>
+                        <span class="onyx-ddac-team-logo"><img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/team-logos/navi.svg") %>" alt="NAVI logo" loading="lazy" /></span>
                     </div>
                 </div>
             </section>
@@ -166,7 +166,7 @@
 
                     <div class="onyx-home-drop-grid" aria-label="Featured ONYX catalog products">
                         <a class="onyx-home-drop-card reveal-item" href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx?category=Mouse") %>">
-                            <img src="<%= ResolveUrl("~/Content/home/products/onyx-gm1-se-plus.png") %>" alt="ONYX GM1 SE+ gaming mouse" loading="lazy" />
+                            <img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/drop-cards/onyx-gm1-se-plus.png") %>" alt="ONYX GM1 SE+ gaming mouse" loading="lazy" />
                             <span class="onyx-home-drop-label">Mouse / SE+</span>
                             <div>
                                 <h3>ONYX GM1 SE+</h3>
@@ -176,7 +176,7 @@
                         </a>
 
                         <a class="onyx-home-drop-card reveal-item" href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx?category=Keyboard") %>">
-                            <img src="<%= ResolveUrl("~/Content/home/products/onyx-60he-v2.jpeg") %>" alt="ONYX 60HE v2 compact keyboard" loading="lazy" />
+                            <img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/drop-cards/onyx-60he-v2.jpeg") %>" alt="ONYX 60HE v2 compact keyboard" loading="lazy" />
                             <span class="onyx-home-drop-label">Keyboard / 60%</span>
                             <div>
                                 <h3>ONYX 60HE v2</h3>
@@ -186,7 +186,7 @@
                         </a>
 
                         <a class="onyx-home-drop-card reveal-item" href="<%= ResolveUrl("~/customer_page/onyx_catalog.aspx?category=Keyboard") %>">
-                            <img src="<%= ResolveUrl("~/Content/home/products/onyx-80he.png") %>" alt="ONYX 80HE gaming keyboard" loading="lazy" />
+                            <img src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/drop-cards/onyx-80he.png") %>" alt="ONYX 80HE gaming keyboard" loading="lazy" />
                             <span class="onyx-home-drop-label">Keyboard / 80%</span>
                             <div>
                                 <h3>ONYX 80HE</h3>
@@ -243,11 +243,11 @@
                             <ItemTemplate>
                                 <article class="onyx-ddac-product-card reveal-item">
                                     <div class="onyx-ddac-product-media">
-                                        <img src='<%# GetFeaturedProductImageUrl(Eval("Category"), Container.ItemIndex) %>' alt='<%# GetFeaturedProductAlt(Eval("Category"), Container.ItemIndex) %>' class="onyx-ddac-product-image" loading="lazy" />
+                                        <img src='<%# GetFeaturedProductImageUrl(Container.DataItem, Container.ItemIndex) %>' alt='<%# GetFeaturedProductAlt(Container.DataItem) %>' class="onyx-ddac-product-image" loading="lazy" />
                                     </div>
                                     <div class="onyx-ddac-product-body">
-                                        <p><%# GetFeaturedProductBrandLine(Eval("Category"), Container.ItemIndex) %></p>
-                                        <h3><%# GetFeaturedProductName(Eval("Category"), Container.ItemIndex) %></h3>
+                                        <p><%# Eval("Brand") %></p>
+                                        <h3><%# Eval("Name") %></h3>
                                         <div class="onyx-ddac-product-meta">
                                             <strong><%# ONYX_DDAC.Helpers.CurrencyHelper.FormatMyr((decimal)Eval("Price")) %></strong>
                                             <a href="../customer_page/onyx_catalog.aspx">View</a>
@@ -261,8 +261,8 @@
             </section>
 
             <footer class="onyx-ddac-footer w-full py-32 px-6 md:px-12 relative z-10">
-                <video class="onyx-ddac-footer-video" autoplay muted loop playsinline preload="auto" poster="<%= ResolveUrl("~/Content/home/dragonink-poster.png") %>" aria-hidden="true">
-                    <source src="<%= ResolveUrl("~/Video/DragonInk.mp4") %>" type="video/mp4" />
+            <video class="onyx-ddac-footer-video" autoplay muted loop playsinline preload="auto" poster="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-photos/dragonink-poster.png") %>" aria-hidden="true">
+                    <source src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("home-videos/DragonInk.mp4") %>" type="video/mp4" />
                 </video>
                 <div class="onyx-ddac-footer-main max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
                     <div class="onyx-ddac-footer-signup reveal-item">

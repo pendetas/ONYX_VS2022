@@ -13,7 +13,7 @@
                 <h1 id="about-title" class="onyx-about-hero-title onyx-about-parallax-text">Gear for <em>focused play</em>.</h1>
 
                 <div class="onyx-about-hero-stage onyx-about-reveal" aria-label="ONYX gaming gear collection">
-                    <img class="onyx-about-hero-image onyx-about-parallax-img" src="/Content/home/onyx-related-hero.png?v=20260708-imagegen" alt="Dark ONYX gaming setup with monitor, headset, keyboard, and mouse" />
+                    <img class="onyx-about-hero-image onyx-about-parallax-img" src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("site-photos/about/onyx-related-hero.png") %>" alt="Dark ONYX gaming setup with monitor, headset, keyboard, and mouse" />
                     <div class="onyx-about-hero-note">
                         <span class="onyx-about-label">What ONYX is</span>
                         <p>Black-and-silver gaming gear with one connected account for catalog, wishlist, orders, reviews, and support.</p>

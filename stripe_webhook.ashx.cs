@@ -32,7 +32,9 @@ namespace ONYX_DDAC
                 stripeEvent = EventUtility.ConstructEvent(
                     requestBody,
                     context.Request.Headers["Stripe-Signature"],
-                    stripePaymentService.GetWebhookSecret());
+                    stripePaymentService.GetWebhookSecret(),
+                    300,
+                    false);
             }
             catch (StripeException ex)
             {

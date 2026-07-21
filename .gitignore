@@ -38,10 +38,13 @@ Thumbs.db
 .magicpath-work/
 .playwright-mcp/
 
-# Local secrets
-.env
-.env.*
-
-# Generated local output
+# Local documentation, test, and generated output
+docs/
+tests/
 tmp/
 outputs/
+
+# Local secrets
+Web.config
+.env
+.env.*

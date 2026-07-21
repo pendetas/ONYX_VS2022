@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
@@ -73,22 +74,15 @@ namespace ONYX_DDAC.customer_page
         protected string GetProductImageUrl(object imageUrl, object category)
         {
             string value = (imageUrl ?? string.Empty).ToString();
-            if (!string.IsNullOrWhiteSpace(value))
+            Uri absoluteUri;
+            if (!string.IsNullOrWhiteSpace(value) &&
+                Uri.TryCreate(value, UriKind.Absolute, out absoluteUri) &&
+                (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
             {
                 return value;
             }
 
-            switch (NormalizeCategory((category ?? string.Empty).ToString()))
-            {
-                case "Keyboard":
-                    return "/Content/home/products/onyx-keyboard.png";
-                case "Headset":
-                    return "/Content/home/products/onyx-headset.png";
-                case "Accessory":
-                    return "/Content/home/onyx-pro-mouse.png";
-                default:
-                    return "/Content/home/products/onyx-mouse.png";
-            }
+            return MediaUrlHelper.Resolve("site-photos/image-unavailable.svg");
         }
 
         protected string GetCategoryDisplayName(object category)

@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using System.Web.UI;
 using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
@@ -11,17 +10,9 @@ namespace ONYX_DDAC.auth_page
     {
         private readonly AuthService _authService = new AuthService();
         private readonly OAuthService _oauthService = new OAuthService();
-        private readonly CaptchaService _captchaService = new CaptchaService();
-
-        protected string TurnstileSiteKey { get; private set; }
-        protected bool CaptchaRequired { get; private set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            TurnstileSiteKey = CaptchaService.GetSiteKey();
-            CaptchaRequired = CaptchaService.IsConfigured() || !Context.IsDebuggingEnabled;
-            btnRegister.CssClass = CaptchaRequired ? "cta captcha-pending" : "cta";
-
             if (Session["UserId"] != null)
             {
                 if (TryBuildSessionUser(out User sessionUser))
@@ -36,11 +27,6 @@ namespace ONYX_DDAC.auth_page
         }
 
         protected void btnRegister_Click(object sender, EventArgs e)
-        {
-            RegisterAsyncTask(new PageAsyncTask(RegisterAsync));
-        }
-
-        private async Task RegisterAsync()
         {
             string fullName = txtFullName.Text.Trim();
             string username = txtUsername.Text.Trim();
@@ -69,20 +55,6 @@ namespace ONYX_DDAC.auth_page
             {
                 ShowMessage("Invalid Date of Birth format.", false);
                 return;
-            }
-
-            if (CaptchaRequired)
-            {
-                string captchaToken = Request.Form["cf-turnstile-response"];
-                bool captchaValid = await _captchaService.VerifyCaptchaAsync(
-                    captchaToken,
-                    Request.UserHostAddress);
-
-                if (!captchaValid)
-                {
-                    ShowMessage("Please complete the Cloudflare verification before registering.", false);
-                    return;
-                }
             }
 
             try

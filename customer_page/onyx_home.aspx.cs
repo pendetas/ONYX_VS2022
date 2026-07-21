@@ -33,34 +33,34 @@ namespace ONYX_DDAC.customer_page
             get { return (Session["Username"] ?? "").ToString(); }
         }
 
-        protected string GetFeaturedProductBrandLine(object category, int itemIndex)
+        protected string GetFeaturedProductImageUrl(object dataItem, int itemIndex)
         {
-            return "ONYX / " + GetProductCategoryLabel(category, itemIndex);
-        }
+            Product product = dataItem as Product;
+            string value = product == null ? string.Empty : product.ImageUrl;
+            Uri uri;
 
-        protected string GetFeaturedProductName(object category, int itemIndex)
-        {
-            switch (GetProductVisualKey(category, itemIndex))
+            // ponytail: the repository hydrates ImageUrl from the primary product_images row.
+            if (!string.IsNullOrWhiteSpace(value) &&
+                Uri.TryCreate(value, UriKind.Absolute, out uri) &&
+                (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
             {
-                case "keyboard":
-                    return "ONYX Forge V3";
-                case "headset":
-                    return "ONYX Pulse X";
-                case "monitor":
-                    return "ONYX Eclipse X27";
-                default:
-                    return "ONYX Vanta Pro";
+                return value;
             }
+
+            return GetFallbackProductImageUrl(product == null ? null : product.Category, itemIndex);
         }
 
-        protected string GetFeaturedProductImageUrl(object category, int itemIndex)
+        private static string GetFallbackProductImageUrl(object category, int itemIndex)
         {
-            return "/Content/home/products/onyx-" + GetProductVisualKey(category, itemIndex) + ".png?v=20260603-studio";
+            return MediaUrlHelper.Resolve("site-photos/image-unavailable.svg");
         }
 
-        protected string GetFeaturedProductAlt(object category, int itemIndex)
+        protected string GetFeaturedProductAlt(object dataItem)
         {
-            return GetFeaturedProductName(category, itemIndex) + " product render";
+            Product product = dataItem as Product;
+            return product == null || string.IsNullOrWhiteSpace(product.Name)
+                ? "Featured product image"
+                : product.Name + " product image";
         }
 
         protected string GetFeaturedProductCue(object category, int itemIndex)
@@ -160,9 +160,7 @@ namespace ONYX_DDAC.customer_page
         protected string GetPersonalizedProductImageUrl(object dataItem, int itemIndex)
         {
             PersonalizedProduct recommendation = dataItem as PersonalizedProduct;
-            return GetFeaturedProductImageUrl(
-                recommendation == null || recommendation.Product == null ? null : recommendation.Product.Category,
-                itemIndex);
+            return GetFeaturedProductImageUrl(recommendation == null || recommendation.Product == null ? null : recommendation.Product, itemIndex);
         }
 
         protected string GetPersonalizedProductAlt(object dataItem)
@@ -176,21 +174,6 @@ namespace ONYX_DDAC.customer_page
             userId = 0;
             object value = Session["UserId"];
             return value != null && long.TryParse(value.ToString(), out userId);
-        }
-
-        private static string GetProductCategoryLabel(object category, int itemIndex)
-        {
-            switch (GetProductVisualKey(category, itemIndex))
-            {
-                case "keyboard":
-                    return "Keyboard";
-                case "headset":
-                    return "Headset";
-                case "monitor":
-                    return "Monitor";
-                default:
-                    return "Mouse";
-            }
         }
 
         private static string GetProductVisualKey(object category, int itemIndex)

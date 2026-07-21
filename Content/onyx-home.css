@@ -221,7 +221,7 @@
 }
 
 .onyx-ddac-footer {
-    background: #050505 url("home/dragonink-poster.png") center / cover no-repeat;
+    background: #050505;
     border: 0;
     border-radius: clamp(22px, 3vw, 36px) clamp(22px, 3vw, 36px) 0 0;
     box-sizing: border-box;

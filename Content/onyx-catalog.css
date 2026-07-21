@@ -385,7 +385,6 @@
     align-items: center;
     background:
         linear-gradient(90deg, rgba(0, 0, 0, 0.94), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9)),
-        url("/Content/home/products/onyx-monitor.png") right 8% center / min(42%, 520px) auto no-repeat,
         linear-gradient(135deg, #111111, #030303);
     border: 1px solid var(--catalog-line);
     border-radius: 8px;
@@ -802,10 +801,8 @@
     }
 
     .onyx-catalog-banner {
-        background:
-            linear-gradient(180deg, rgba(0, 0, 0, 0.54), rgba(0, 0, 0, 0.96)),
-            url("/Content/home/products/onyx-monitor.png") center / cover no-repeat,
-            #050505;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.54), rgba(0, 0, 0, 0.96));
+        background-color: #050505;
         min-height: 260px;
     }
 

@@ -9,18 +9,63 @@
 
 namespace ONYX_DDAC.auth_page
 {
+
+
     public partial class onyx_resetpassword
     {
+
+        /// <summary>
+        /// MessagePanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.Panel MessagePanel;
 
+        /// <summary>
+        /// MessageLiteral control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.Literal MessageLiteral;
 
+        /// <summary>
+        /// ResetFormPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.Panel ResetFormPanel;
 
+        /// <summary>
+        /// NewPasswordTextBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox NewPasswordTextBox;
 
+        /// <summary>
+        /// ConfirmPasswordTextBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox ConfirmPasswordTextBox;
 
+        /// <summary>
+        /// ResetPasswordButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.Button ResetPasswordButton;
     }
 }

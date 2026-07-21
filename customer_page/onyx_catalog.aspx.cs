@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
@@ -331,40 +332,17 @@ namespace ONYX_DDAC.customer_page
         // Returns a browser-safe DB image URL, or a category fallback when none is stored.
         protected string GetProductImageUrl(object imageUrl, object category)
         {
-            string value = (imageUrl ?? string.Empty).ToString().Trim().Replace('\\', '/');
-            if (!string.IsNullOrWhiteSpace(value))
+            string value = (imageUrl ?? string.Empty).ToString().Trim();
+            Uri absoluteUri;
+            if (!string.IsNullOrWhiteSpace(value) &&
+                Uri.TryCreate(value, UriKind.Absolute, out absoluteUri) &&
+                (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
             {
-                Uri absoluteUri;
-                if (Uri.TryCreate(value, UriKind.Absolute, out absoluteUri)
-                    && (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
-                {
-                    return value;
-                }
-
-                string applicationPath = value.StartsWith("~/", StringComparison.Ordinal)
-                    ? value.Substring(2)
-                    : value.TrimStart('/');
-
-                return ResolveUrl("~/" + applicationPath);
+                return value;
             }
 
             // Fallback: no image in DB — serve by category from products folder
-            switch (NormalizeCategory((category ?? string.Empty).ToString()))
-            {
-                case "Keyboard":
-                    return "/Content/home/products/onyx-keyboard.png";
-                case "Headset":
-                    return "/Content/home/products/onyx-headset.png";
-                case "Monitor":
-                case "Monitor Extension":
-                    return "/Content/home/products/onyx-monitor.png";
-                case "Mic":
-                    return "/Content/home/products/onyx-headset.png";
-                case "Mousepad":
-                    return "/Content/uploads/products/product-21cdf7a0ce6341ba93ffd20ed2b0f7b4.png";
-                default: // Mouse, Chair, Accessory, unknown
-                    return "/Content/home/products/onyx-mouse.png";
-            }
+            return MediaUrlHelper.Resolve("site-photos/image-unavailable.svg");
         }
 
         protected string GetProductGalleryHtml(object dataItem)

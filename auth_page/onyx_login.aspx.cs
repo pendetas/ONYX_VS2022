@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using System.Web.UI;
 using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
@@ -11,17 +10,9 @@ namespace ONYX_DDAC.auth_page
     {
         private readonly AuthService authService = new AuthService();
         private readonly OAuthService oauthService = new OAuthService();
-        private readonly CaptchaService captchaService = new CaptchaService();
-
-        protected string TurnstileSiteKey { get; private set; }
-        protected bool CaptchaRequired { get; private set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            TurnstileSiteKey = CaptchaService.GetSiteKey();
-            CaptchaRequired = CaptchaService.IsConfigured() || !Context.IsDebuggingEnabled;
-            LoginButton.CssClass = CaptchaRequired ? "cta captcha-pending" : "cta";
-
             if (TryGetAuthenticatedUser(out User currentUser))
             {
                 string requestedTarget = Request.QueryString["profile"] == "true"
@@ -43,11 +34,6 @@ namespace ONYX_DDAC.auth_page
 
         protected void LoginButton_Click(object sender, EventArgs e)
         {
-            RegisterAsyncTask(new PageAsyncTask(LoginAsync));
-        }
-
-        private async Task LoginAsync()
-        {
             string emailOrUser = EmailTextBox.Text.Trim();
             string password = PasswordTextBox.Text;
 
@@ -66,20 +52,6 @@ namespace ONYX_DDAC.auth_page
             {
                 ShowMessage("Too many login attempts. Please wait 15 minutes and try again.", false);
                 return;
-            }
-
-            if (CaptchaRequired)
-            {
-                string captchaToken = Request.Form["cf-turnstile-response"];
-                bool captchaValid = await captchaService.VerifyCaptchaAsync(
-                    captchaToken,
-                    Request.UserHostAddress);
-
-                if (!captchaValid)
-                {
-                    ShowMessage("Please complete the Cloudflare verification before signing in.", false);
-                    return;
-                }
             }
 
             try

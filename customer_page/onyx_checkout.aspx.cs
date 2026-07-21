@@ -192,9 +192,7 @@ namespace ONYX_DDAC.customer_page
 
         protected string GetSafeImageUrl(object imageUrl)
         {
-            const string fallback = "~/Content/home/products/onyx-mouse.png";
             string value = Convert.ToString(imageUrl)?.Trim();
-            string resolved = ResolveUrl(fallback);
 
             if (!string.IsNullOrWhiteSpace(value) && !value.Contains("\\"))
             {
@@ -203,20 +201,12 @@ namespace ONYX_DDAC.customer_page
                     if (absoluteUri.Scheme == Uri.UriSchemeHttp ||
                         absoluteUri.Scheme == Uri.UriSchemeHttps)
                     {
-                        resolved = absoluteUri.AbsoluteUri;
+                        return HttpUtility.HtmlAttributeEncode(absoluteUri.AbsoluteUri);
                     }
-                }
-                else if (!value.StartsWith("//", StringComparison.Ordinal) &&
-                         !value.Contains(":"))
-                {
-                    string applicationPath = value.StartsWith("~/", StringComparison.Ordinal)
-                        ? value
-                        : "~/" + value.TrimStart('/');
-                    resolved = ResolveUrl(applicationPath);
                 }
             }
 
-            return HttpUtility.HtmlAttributeEncode(resolved);
+            return HttpUtility.HtmlAttributeEncode(MediaUrlHelper.Resolve("site-photos/image-unavailable.svg"));
         }
 
         protected string EncodeProductName(object productName)

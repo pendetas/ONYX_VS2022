@@ -342,19 +342,6 @@
             background: rgba(255,255,255,0.12);
         }
 
-        .captcha-wrapper {
-            grid-column: 1 / -1;
-            margin-top: 10px;
-            min-height: 65px;
-            display: flex;
-            justify-content: flex-start;
-        }
-
-        .cta.captcha-pending {
-            opacity: 0.45;
-            cursor: not-allowed;
-        }
-
         /* ============================
            SEGMENTED DATE INPUT
         ============================ */
@@ -590,7 +577,7 @@
             <div class="auth-left">
                 <a href="<%= ResolveUrl("~/customer_page/onyx_home.aspx") %>" class="auth-brand" aria-label="Back to ONYX home">onyx</a>
                 <video autoplay loop muted playsinline class="auth-video-bg">
-                    <source src="<%= ResolveUrl("~/Videos/onyx_headset.mp4") %>" type="video/mp4" />
+                    <source src="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("auth/onyx_headset.mp4") %>" type="video/mp4" />
                 </video>
 
 
@@ -692,18 +679,7 @@
 
                     </div>
 
-                    <% if (CaptchaRequired) { %>
-                        <div class="captcha-wrapper">
-                            <div class="cf-turnstile"
-                                 data-sitekey="<%= Server.HtmlEncode(TurnstileSiteKey) %>"
-                                 data-theme="dark"
-                                 data-callback="onTurnstileSuccess"
-                                 data-expired-callback="onTurnstileExpired"
-                                 data-error-callback="onTurnstileExpired"></div>
-                        </div>
-                    <% } %>
-
-                    <asp:LinkButton ID="btnRegister" runat="server" CssClass="cta captcha-pending" OnClientClick="return ensureCaptchaCompleted();" OnClick="btnRegister_Click">
+                    <asp:LinkButton ID="btnRegister" runat="server" CssClass="cta" OnClick="btnRegister_Click">
                         <span class="hover-underline-animation">REGISTER NOW</span>
                         <svg viewBox="0 0 46 16" height="10" width="30" xmlns="http://www.w3.org/2000/svg" id="arrow-horizontal">
                             <path transform="translate(30)" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z" data-name="Path 10" id="Path_10"></path>
@@ -717,30 +693,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
-    <% if (CaptchaRequired) { %>
-        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <% } %>
-
     <script>
-        const captchaRequired = <%= CaptchaRequired.ToString().ToLowerInvariant() %>;
-        let captchaCompleted = !captchaRequired;
-
-        function onTurnstileSuccess() {
-            captchaCompleted = true;
-            const button = document.getElementById('<%= btnRegister.ClientID %>');
-            if (button) button.classList.remove('captcha-pending');
-        }
-
-        function onTurnstileExpired() {
-            captchaCompleted = false;
-            const button = document.getElementById('<%= btnRegister.ClientID %>');
-            if (button) button.classList.add('captcha-pending');
-        }
-
-        function ensureCaptchaCompleted() {
-            return !captchaRequired || captchaCompleted;
-        }
-
         document.addEventListener("DOMContentLoaded", () => {
 
             // Lenis smooth scroll � wrapper clips, content is the full scrollable area
