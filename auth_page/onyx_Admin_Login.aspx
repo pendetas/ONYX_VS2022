@@ -275,6 +275,7 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
+
     </style>
 </head>
 <body>
@@ -318,7 +319,7 @@
                         </asp:LinkButton>
                     </div>
 
-                    <p class="card-footer">Authorized Personnel Only</p>
+                    <p class="card-footer">Admin access is invitation-only</p>
 
                 </div>
             </div>

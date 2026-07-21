@@ -31,6 +31,14 @@ namespace ONYX_DDAC.customer_page
 
         protected global::System.Web.UI.WebControls.Repeater rptInvoiceItems;
 
+        protected global::System.Web.UI.WebControls.Literal litSubtotal;
+
+        protected global::System.Web.UI.WebControls.Panel pnlVoucherSummary;
+
+        protected global::System.Web.UI.WebControls.Literal litVoucherLabel;
+
+        protected global::System.Web.UI.WebControls.Literal litDiscount;
+
         protected global::System.Web.UI.WebControls.Literal litGrandTotal;
 
         protected global::System.Web.UI.WebControls.Panel pnlInvoiceError;

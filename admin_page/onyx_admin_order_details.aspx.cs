@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Web.UI;
+using System.Web.UI.WebControls;
+using ONYX_DDAC.Helpers;
+using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.admin_page
 {
     public partial class onyx_admin_order_details : Page
     {
+        private const string PendingPaymentGuardMessage = "This order has an active Stripe payment. Cancel it through the payment cancellation flow.";
         private readonly OrderService _svc = new OrderService();
 
         private long CurrentOrderId
@@ -62,7 +66,8 @@ namespace ONYX_DDAC.admin_page
             else
                 litShippingAddress.Text = Server.HtmlEncode(order.ShippingAddress).Replace("\n", "<br/>");
 
-            ddlStatus.SelectedValue = statusKey;
+            SelectStatusValueSafely(statusKey, statusCap);
+            ConfigurePendingPaymentControls(order);
 
             litMetaOrderId.Text = "#ORD-" + order.Id;
             litMetaDate.Text    = order.OrderedAt.ToString("d MMM yyyy, h:mm tt");
@@ -72,21 +77,55 @@ namespace ONYX_DDAC.admin_page
             OrderItemsRepeater.DataSource = items;
             OrderItemsRepeater.DataBind();
 
-            decimal subtotal = 0;
-            foreach (var item in items)
-                subtotal += item.UnitPrice * item.Quantity;
+            litSubtotal.Text = CurrencyHelper.FormatMyr(order.SubtotalAmount);
+            litTotal.Text    = CurrencyHelper.FormatMyr(order.TotalAmount);
 
-            litSubtotal.Text = "RM " + subtotal.ToString("N2");
-            litTotal.Text    = "RM " + order.TotalAmount.ToString("N2");
+            bool hasVoucherDiscount = order.DiscountAmount > 0m;
+            pnlVoucherSummary.Visible = hasVoucherDiscount;
+            litVoucherLabel.Text = hasVoucherDiscount ? BuildVoucherLabel(order.VoucherCode, order.VoucherName) : string.Empty;
+            litDiscount.Text = hasVoucherDiscount ? CurrencyHelper.FormatMyr(order.DiscountAmount) : string.Empty;
 
             TimelineRepeater.DataSource = BuildTimeline(statusKey, order.OrderedAt, order.StatusUpdatedAt);
             TimelineRepeater.DataBind();
+        }
+
+        private string BuildVoucherLabel(string voucherCode, string voucherName)
+        {
+            string code = string.IsNullOrWhiteSpace(voucherCode) ? string.Empty : voucherCode.Trim();
+            string name = string.IsNullOrWhiteSpace(voucherName) ? string.Empty : voucherName.Trim();
+
+            if (!string.IsNullOrEmpty(code) && !string.IsNullOrEmpty(name) &&
+                !string.Equals(code, name, StringComparison.OrdinalIgnoreCase))
+            {
+                return "Voucher (" + Server.HtmlEncode(code) + " · " + Server.HtmlEncode(name) + ")";
+            }
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                return "Voucher (" + Server.HtmlEncode(code) + ")";
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                return "Voucher (" + Server.HtmlEncode(name) + ")";
+            }
+
+            return "Voucher";
         }
 
         protected void btnUpdateStatus_Click(object sender, EventArgs e)
         {
             long id = CurrentOrderId;
             if (id <= 0) return;
+
+            OrderDetail order = _svc.GetOrderById(id);
+            if (IsPendingPaymentOrder(order))
+            {
+                pnlStatusMsg.Visible = true;
+                litStatusMsg.Text = PendingPaymentGuardMessage;
+                ConfigurePendingPaymentControls(order);
+                return;
+            }
 
             string err = _svc.UpdateStatus(id, ddlStatus.SelectedValue);
             if (err != null)
@@ -104,16 +143,69 @@ namespace ONYX_DDAC.admin_page
             long id = CurrentOrderId;
             if (id <= 0) return;
 
+            OrderDetail order = _svc.GetOrderById(id);
+            if (IsPendingPaymentOrder(order))
+            {
+                pnlStatusMsg.Visible = true;
+                litStatusMsg.Text = PendingPaymentGuardMessage;
+                ConfigurePendingPaymentControls(order);
+                return;
+            }
+
             try
             {
                 _svc.DeleteOrder(id);
                 Response.Redirect("~/admin_page/onyx_admin_orders.aspx");
+            }
+            catch (InvalidOperationException ex)
+            {
+                pnlStatusMsg.Visible = true;
+                litStatusMsg.Text    = ex.Message;
             }
             catch (Exception)
             {
                 pnlStatusMsg.Visible = true;
                 litStatusMsg.Text    = "Failed to delete order. Please try again.";
             }
+        }
+
+        private void SelectStatusValueSafely(string statusKey, string statusCap)
+        {
+            ddlStatus.ClearSelection();
+            var statusItem = ddlStatus.Items.FindByValue(statusKey);
+            if (statusItem == null && !string.IsNullOrWhiteSpace(statusKey))
+            {
+                ddlStatus.Items.Insert(0, new ListItem(statusCap, statusKey));
+                statusItem = ddlStatus.Items.FindByValue(statusKey);
+            }
+
+            if (statusItem != null)
+            {
+                statusItem.Selected = true;
+            }
+        }
+
+        private void ConfigurePendingPaymentControls(OrderDetail order)
+        {
+            bool isPendingPayment = IsPendingPaymentOrder(order);
+            ddlStatus.Enabled = !isPendingPayment;
+            btnUpdateStatus.Enabled = !isPendingPayment;
+            btnDeleteOrder.Enabled = !isPendingPayment;
+
+            if (isPendingPayment)
+            {
+                ddlStatus.Enabled = false;
+                btnUpdateStatus.Enabled = false;
+                btnDeleteOrder.Enabled = false;
+                pnlStatusMsg.Visible = true;
+                litStatusMsg.Text = PendingPaymentGuardMessage;
+            }
+        }
+
+        private static bool IsPendingPaymentOrder(OrderDetail order)
+        {
+            return order != null &&
+                string.Equals(order.Status, OrderStatuses.PendingPayment, StringComparison.OrdinalIgnoreCase);
         }
 
         private void ShowNotFound()
@@ -136,6 +228,12 @@ namespace ONYX_DDAC.admin_page
             var t = new List<object>();
 
             t.Add(new { Event = "Order Placed",       Timestamp = ts,      DotClass = "dot-done" });
+
+            if (status == OrderStatuses.PendingPayment)
+            {
+                t.Add(new { Event = "Awaiting Payment", Timestamp = "Pending", DotClass = "dot-pending" });
+                return t;
+            }
 
             if (status != "cancelled")
                 t.Add(new { Event = "Payment Confirmed", Timestamp = ts,      DotClass = "dot-done" });

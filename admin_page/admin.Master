@@ -405,7 +405,7 @@
                 <li><a id="navDashboard" runat="server" href="onyx_admin_dashboard.aspx"><i data-lucide="layout-dashboard"></i> Overview</a></li>
                 <li><a id="navProducts"  runat="server" href="onyx_admin_products.aspx"><i data-lucide="package"></i> Products</a></li>
                 <li><a id="navOrders"    runat="server" href="onyx_admin_orders.aspx"><i data-lucide="shopping-cart"></i> Orders</a></li>
-                <li><a id="navPromos"    runat="server" href="onyx_admin_promos.aspx"><i data-lucide="tag"></i> Promos</a></li>
+                <li><a id="navPromos"    runat="server" href="onyx_admin_promos.aspx"><i data-lucide="badge-percent"></i> Loyalty</a></li>
                 <li><a id="navUsers"     runat="server" href="onyx_admin_users.aspx"><i data-lucide="users"></i> Users</a></li>
             </ul>
 

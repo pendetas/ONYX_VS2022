@@ -192,15 +192,181 @@
     width: 100%;
 }
 
+.onyx-checkout-input:focus,
+.onyx-voucher-apply:focus,
+.onyx-voucher-remove:focus,
+.onyx-voucher-terms-link:focus,
+.onyx-voucher-modal__close:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.78);
+    outline-offset: 2px;
+}
+
+.onyx-voucher-entry {
+    margin-top: 22px;
+}
+
+.onyx-voucher-entry__row {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.onyx-voucher-entry__input {
+    text-transform: uppercase;
+}
+
+.onyx-voucher-apply {
+    background: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #050505;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    min-height: 46px;
+    padding: 0 20px;
+    text-transform: uppercase;
+}
+
+.onyx-checkout-message--voucher {
+    margin-top: 12px;
+}
+
+.onyx-voucher-applied {
+    align-items: center;
+    background: #111113;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding: 16px 18px;
+}
+
+.onyx-voucher-applied__meta {
+    display: grid;
+    gap: 4px;
+}
+
+.onyx-voucher-applied__meta strong {
+    font-size: 0.95rem;
+}
+
+.onyx-voucher-applied__meta span {
+    color: #b6bcc8;
+    font-size: 0.82rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.onyx-voucher-applied__actions {
+    align-items: center;
+    display: flex;
+    gap: 14px;
+}
+
+.onyx-voucher-terms-link,
+.onyx-voucher-remove,
+.onyx-voucher-modal__close {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0;
+    text-decoration: underline;
+    text-transform: uppercase;
+}
+
+.onyx-checkout-totals {
+    background: #111113;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 22px;
+    padding: 18px;
+}
+
+.onyx-checkout-totals__row,
 .onyx-checkout-total {
     align-items: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
     display: flex;
+    font-size: 0.96rem;
+    justify-content: space-between;
+}
+
+.onyx-checkout-totals__row + .onyx-checkout-totals__row,
+.onyx-checkout-totals__row + .onyx-checkout-total {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 14px;
+    padding-top: 14px;
+}
+
+.onyx-checkout-totals__row span {
+    color: #cfd4dc;
+}
+
+.onyx-checkout-totals__row--discount strong {
+    color: #d8f0df;
+}
+
+.onyx-checkout-totals .onyx-checkout-total {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     font-size: 1.2rem;
     font-weight: 800;
-    justify-content: space-between;
-    margin-top: 22px;
-    padding-top: 22px;
+    margin-top: 14px;
+    padding-top: 14px;
+}
+
+.onyx-voucher-modal {
+    align-items: center;
+    background: rgba(5, 5, 5, 0.72);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    padding: 24px;
+    position: fixed;
+    z-index: 9999;
+}
+
+.onyx-voucher-modal[hidden] {
+    display: none;
+}
+
+.onyx-voucher-modal__panel {
+    background: #111113;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    max-width: 560px;
+    padding: 24px 24px 22px;
+    position: relative;
+    width: 100%;
+}
+
+.onyx-voucher-modal__panel h2 {
+    font-family: Syne, sans-serif;
+    font-size: 1.25rem;
+    margin: 0 0 18px;
+    text-transform: uppercase;
+}
+
+.onyx-voucher-modal__close {
+    font-size: 1.5rem;
+    line-height: 1;
+    position: absolute;
+    right: 18px;
+    text-decoration: none;
+    top: 16px;
+}
+
+.onyx-voucher-terms {
+    color: #d8dde3;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    white-space: normal;
+}
+
+.voucher-modal-open {
+    overflow: hidden;
 }
 
 .onyx-pay-btn {
@@ -242,6 +408,34 @@
     margin-top: 16px;
 }
 
+html[data-theme="light"] .onyx-voucher-applied,
+html[data-theme="light"] .onyx-checkout-totals,
+html[data-theme="light"] .onyx-voucher-modal__panel {
+    background: #f6f7f9;
+    border-color: rgba(17, 17, 19, 0.12);
+    color: #111113;
+}
+
+html[data-theme="light"] .onyx-voucher-applied__meta span,
+html[data-theme="light"] .onyx-checkout-totals__row span,
+html[data-theme="light"] .onyx-voucher-terms {
+    color: #4a5565;
+}
+
+html[data-theme="light"] .onyx-voucher-terms-link,
+html[data-theme="light"] .onyx-voucher-remove,
+html[data-theme="light"] .onyx-voucher-modal__close {
+    color: #111113;
+}
+
+html[data-theme="light"] .onyx-checkout-input:focus,
+html[data-theme="light"] .onyx-voucher-apply:focus,
+html[data-theme="light"] .onyx-voucher-remove:focus,
+html[data-theme="light"] .onyx-voucher-terms-link:focus,
+html[data-theme="light"] .onyx-voucher-modal__close:focus {
+    outline-color: rgba(17, 17, 19, 0.78);
+}
+
 @media (max-width: 860px) {
     .onyx-checkout-page {
         padding: 150px 20px 60px;
@@ -249,6 +443,23 @@
 
     .onyx-checkout-grid {
         grid-template-columns: 1fr;
+    }
+
+    .onyx-voucher-entry__row {
+        grid-template-columns: 1fr;
+    }
+
+    .onyx-voucher-applied {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .onyx-voucher-applied__actions {
+        flex-wrap: wrap;
+    }
+
+    .onyx-voucher-modal {
+        padding: 18px;
     }
 }
 

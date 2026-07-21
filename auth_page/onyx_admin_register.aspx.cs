@@ -2,6 +2,7 @@ using System;
 using System.Web.UI;
 using BCrypt.Net;
 using ONYX_DDAC.DAL;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
 
 namespace ONYX_DDAC.auth_page
@@ -12,12 +13,7 @@ namespace ONYX_DDAC.auth_page
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack &&
-                string.Equals(Convert.ToString(Session["Role"]), "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                Response.Redirect("~/admin_page/onyx_admin_dashboard.aspx", false);
-                Context.ApplicationInstance.CompleteRequest();
-            }
+            AuthHelper.RequireAdmin(this);
         }
 
         protected void btnRegister_Click(object sender, EventArgs e)

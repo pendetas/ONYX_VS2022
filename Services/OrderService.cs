@@ -10,6 +10,7 @@ namespace ONYX_DDAC.Services
 {
     public class OrderService
     {
+        private const string PendingPaymentGuardMessage = "This order has an active Stripe payment. Cancel it through the payment cancellation flow.";
         private readonly OrderRepository _repo;
         private readonly EmailService _emailService;
 
@@ -159,6 +160,17 @@ namespace ONYX_DDAC.Services
 
         public string UpdateStatus(long orderId, string status)
         {
+            OrderDetail order = _repo.GetOrderById(orderId);
+            if (order == null)
+            {
+                return "Order not found.";
+            }
+
+            if (string.Equals(order.Status, OrderStatuses.PendingPayment, StringComparison.OrdinalIgnoreCase))
+            {
+                return "This order has an active Stripe payment. Cancel it through the payment cancellation flow.";
+            }
+
             var allowed = new[] { "pending", "shipped", "delivered", "cancelled" };
             if (!allowed.Contains(status))
             {
@@ -166,11 +178,23 @@ namespace ONYX_DDAC.Services
             }
 
             _repo.UpdateStatus(orderId, status);
-            return null;
+            string errorMessage = null;
+            return errorMessage;
         }
 
         public void DeleteOrder(long orderId)
         {
+            OrderDetail order = _repo.GetOrderById(orderId);
+            if (order == null)
+            {
+                throw new InvalidOperationException("Order not found.");
+            }
+
+            if (string.Equals(order.Status, OrderStatuses.PendingPayment, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("This order has an active Stripe payment. Cancel it through the payment cancellation flow.");
+            }
+
             _repo.DeleteOrder(orderId);
         }
     }

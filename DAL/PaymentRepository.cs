@@ -101,6 +101,7 @@ namespace ONYX_DDAC.DAL
 
                         CompleteReservations(conn, tx, order.OrderId, reservations.Count);
                         MarkOrderPaid(conn, tx, order.OrderId, payment);
+                        VoucherRepository.RedeemForOrder(conn, tx, order.OrderId);
 
                         tx.Commit();
                         return new PaymentReconciliationResult
@@ -182,6 +183,8 @@ namespace ONYX_DDAC.DAL
                                 throw new InvalidOperationException("The pending order could not be cancelled.");
                             }
                         }
+
+                        VoucherRepository.ReleaseForOrder(conn, tx, order.OrderId);
 
                         tx.Commit();
                         return new PaymentReconciliationResult

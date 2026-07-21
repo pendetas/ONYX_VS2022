@@ -27,6 +27,9 @@ namespace ONYX_DDAC.admin_page
 
         // Summary
         protected global::System.Web.UI.WebControls.Literal litSubtotal;
+        protected global::System.Web.UI.WebControls.Panel pnlVoucherSummary;
+        protected global::System.Web.UI.WebControls.Literal litVoucherLabel;
+        protected global::System.Web.UI.WebControls.Literal litDiscount;
         protected global::System.Web.UI.WebControls.Literal litTotal;
 
         // Status update

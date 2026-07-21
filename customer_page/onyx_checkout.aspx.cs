@@ -38,6 +38,10 @@ namespace ONYX_DDAC.customer_page
             var checkoutService = new CheckoutService();
             IList<CartItem> cartItems;
 
+            lblCheckoutMessage.Text = string.Empty;
+            lblCheckoutMessage.Visible = false;
+            ResetVoucherPreview();
+
             try
             {
                 cartItems = checkoutService.GetValidatedCheckoutCart(userId);
@@ -46,12 +50,7 @@ namespace ONYX_DDAC.customer_page
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.TraceError("Checkout cart validation failed for user {0}: {1}", userId, ex);
-                pnlEmptyCheckout.Visible = false;
-                pnlCheckout.Visible = true;
-                btnPayWithStripe.Enabled = false;
-                lblCheckoutMessage.Text = "Checkout is currently unavailable. Return to your cart and verify item quantities.";
-                lblCheckoutMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ff4444");
-                lblCheckoutMessage.Visible = true;
+                ShowCheckoutUnavailableState();
                 return;
             }
 
@@ -65,7 +64,90 @@ namespace ONYX_DDAC.customer_page
 
             rptCheckoutItems.DataSource = cartItems;
             rptCheckoutItems.DataBind();
-            litCheckoutTotal.Text = CurrencyHelper.FormatMyr(cartItems.Sum(item => item.Price * item.Quantity));
+            btnPayWithStripe.Enabled = true;
+            btnApplyVoucher.Enabled = true;
+
+            decimal subtotal = cartItems.Sum(item => item.Price * item.Quantity);
+            litCheckoutSubtotal.Text = CurrencyHelper.FormatMyr(subtotal);
+            litCheckoutTotal.Text = CurrencyHelper.FormatMyr(subtotal);
+
+            if (!string.IsNullOrWhiteSpace(AppliedVoucherCode))
+            {
+                try
+                {
+                    VoucherQuote quote = new VoucherService().GetCheckoutQuote(userId, AppliedVoucherCode, cartItems);
+                    AppliedVoucherCode = quote.Code;
+                    txtVoucherCode.Text = quote.Code;
+                    litCheckoutTotal.Text = CurrencyHelper.FormatMyr(quote.TotalAmount);
+                    pnlVoucherDiscount.Visible = quote.DiscountAmount > 0m;
+                    litVoucherDiscount.Text = CurrencyHelper.FormatMyr(quote.DiscountAmount);
+                    pnlAppliedVoucher.Visible = true;
+                    litVoucherName.Text = Server.HtmlEncode(quote.Name ?? string.Empty);
+                    litVoucherCode.Text = Server.HtmlEncode(quote.Code ?? string.Empty);
+                    litVoucherTerms.Text = Server.HtmlEncode(quote.TermsAndConditions ?? string.Empty)
+                        .Replace("\r\n", "<br />")
+                        .Replace("\n", "<br />");
+                }
+                catch (VoucherValidationException ex)
+                {
+                    AppliedVoucherCode = null;
+                    txtVoucherCode.Text = string.Empty;
+                    SetVoucherMessage(ex.Message, true);
+                }
+            }
+        }
+
+        protected void btnApplyVoucher_Click(object sender, EventArgs e)
+        {
+            string requestedCode = VoucherService.NormalizeCode(txtVoucherCode.Text);
+            if (string.IsNullOrWhiteSpace(requestedCode))
+            {
+                AppliedVoucherCode = null;
+                BindCheckout();
+                txtVoucherCode.Text = string.Empty;
+                SetVoucherMessage("Enter a voucher code.", true);
+                return;
+            }
+
+            try
+            {
+                long userId = Convert.ToInt64(Session["UserId"]);
+                IList<CartItem> cartItems = new CheckoutService().GetValidatedCheckoutCart(userId);
+                Session["Cart"] = cartItems.ToList();
+                VoucherQuote quote = new VoucherService().GetCheckoutQuote(userId, requestedCode, cartItems);
+                AppliedVoucherCode = quote.Code;
+                BindCheckout();
+                SetVoucherMessage("Voucher applied to this checkout preview.", false);
+            }
+            catch (VoucherValidationException ex)
+            {
+                AppliedVoucherCode = null;
+                BindCheckout();
+                txtVoucherCode.Text = requestedCode;
+                SetVoucherMessage(ex.Message, true);
+            }
+            catch (InvalidOperationException)
+            {
+                AppliedVoucherCode = null;
+                txtVoucherCode.Text = requestedCode;
+                ShowCheckoutUnavailableState();
+            }
+            catch (Exception ex)
+            {
+                long userId = Session["UserId"] == null ? 0 : Convert.ToInt64(Session["UserId"]);
+                System.Diagnostics.Trace.TraceError("Voucher checkout preview apply failed for user {0}: {1}", userId, ex);
+                AppliedVoucherCode = null;
+                txtVoucherCode.Text = requestedCode;
+                ShowCheckoutUnavailableState();
+            }
+        }
+
+        protected void btnRemoveVoucher_Click(object sender, EventArgs e)
+        {
+            AppliedVoucherCode = null;
+            BindCheckout();
+            txtVoucherCode.Text = string.Empty;
+            SetVoucherMessage("Voucher removed from this checkout preview.", false);
         }
 
         protected void btnPayWithStripe_Click(object sender, EventArgs e)
@@ -83,6 +165,7 @@ namespace ONYX_DDAC.customer_page
                     shippingAddress,
                     deliveryMethod,
                     CheckoutAttemptToken,
+                    AppliedVoucherCode,
                     applicationBaseUrl);
 
                 new CartService().RefreshCurrentUserCartFromDatabase();
@@ -145,6 +228,45 @@ namespace ONYX_DDAC.customer_page
                 return value;
             }
             set { ViewState["CheckoutAttemptToken"] = value; }
+        }
+
+        private string AppliedVoucherCode
+        {
+            get { return Convert.ToString(ViewState["AppliedVoucherCode"]); }
+            set { ViewState["AppliedVoucherCode"] = string.IsNullOrWhiteSpace(value) ? null : value; }
+        }
+
+        private void ResetVoucherPreview()
+        {
+            pnlAppliedVoucher.Visible = false;
+            pnlVoucherDiscount.Visible = false;
+            litVoucherName.Text = string.Empty;
+            litVoucherCode.Text = string.Empty;
+            litVoucherDiscount.Text = string.Empty;
+            litVoucherTerms.Text = string.Empty;
+            lblVoucherMessage.Text = string.Empty;
+            lblVoucherMessage.Visible = false;
+        }
+
+        private void SetVoucherMessage(string message, bool isError)
+        {
+            lblVoucherMessage.Text = Server.HtmlEncode(message ?? string.Empty);
+            lblVoucherMessage.ForeColor = isError
+                ? System.Drawing.ColorTranslator.FromHtml("#ff8a8a")
+                : System.Drawing.ColorTranslator.FromHtml("#d5f5dd");
+            lblVoucherMessage.Visible = !string.IsNullOrWhiteSpace(message);
+        }
+
+        private void ShowCheckoutUnavailableState()
+        {
+            ResetVoucherPreview();
+            pnlEmptyCheckout.Visible = false;
+            pnlCheckout.Visible = true;
+            btnPayWithStripe.Enabled = false;
+            btnApplyVoucher.Enabled = false;
+            lblCheckoutMessage.Text = "Checkout is currently unavailable. Return to your cart and verify item quantities.";
+            lblCheckoutMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ff4444");
+            lblCheckoutMessage.Visible = true;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Linq;
 using Npgsql;
 using ONYX_DDAC.Models;
+using ONYX_DDAC.Services;
 
 namespace ONYX_DDAC.DAL
 {
@@ -37,6 +38,7 @@ namespace ONYX_DDAC.DAL
             string shippingAddress,
             string deliveryMethod,
             string checkoutAttemptToken,
+            string voucherCode,
             string paymentCancellationTokenHash,
             DateTimeOffset expiresAt)
         {
@@ -74,6 +76,14 @@ namespace ONYX_DDAC.DAL
                             checkoutAttemptToken);
                         if (activeOrder != null)
                         {
+                            if (!string.Equals(
+                                VoucherService.NormalizeCode(activeOrder.VoucherCode),
+                                VoucherService.NormalizeCode(voucherCode),
+                                StringComparison.Ordinal))
+                            {
+                                throw new InvalidOperationException("The voucher cannot be changed on an active payment attempt.");
+                            }
+
                             if (string.IsNullOrWhiteSpace(activeOrder.StripeCheckoutSessionId))
                             {
                                 ReplacePaymentCancellationTokenHash(
@@ -99,17 +109,51 @@ namespace ONYX_DDAC.DAL
                         IList<CheckoutItem> items = LoadAuthoritativeCart(conn, tx, userId);
                         ValidateAvailability(conn, tx, items);
 
-                        decimal totalAmount = items.Sum(item => item.UnitPrice * item.Quantity);
+                        decimal subtotalAmount = items.Sum(item => item.UnitPrice * item.Quantity);
+                        VoucherQuote quote = new VoucherQuote
+                        {
+                            Subtotal = subtotalAmount,
+                            DiscountAmount = 0m,
+                            TotalAmount = subtotalAmount
+                        };
+                        if (!string.IsNullOrWhiteSpace(voucherCode))
+                        {
+                            Voucher voucher = VoucherRepository.LockByCode(conn, tx, voucherCode);
+                            int totalUsed = voucher == null ? 0 : VoucherRepository.CountTotalActiveUses(conn, tx, voucher.Id);
+                            int userUsed = voucher == null ? 0 : VoucherRepository.CountUserActiveUses(conn, tx, voucher.Id, userId);
+                            quote = VoucherCalculator.Calculate(
+                                voucher,
+                                items.Select(item => new VoucherCartLine
+                                {
+                                    Category = item.Category,
+                                    UnitPrice = item.UnitPrice,
+                                    Quantity = item.Quantity
+                                }),
+                                DateTimeOffset.UtcNow,
+                                totalUsed,
+                                userUsed);
+                        }
+
                         long orderId = InsertPendingOrder(
                             conn,
                             tx,
                             userId,
-                            totalAmount,
+                            subtotalAmount,
+                            quote.DiscountAmount,
+                            quote.TotalAmount,
+                            quote.VoucherId > 0 ? (long?)quote.VoucherId : null,
+                            quote.Code,
+                            quote.Name,
                             shippingAddress,
                             deliveryMethod,
                             checkoutAttemptToken,
                             paymentCancellationTokenHash,
                             expiresAt);
+
+                        if (quote.VoucherId > 0)
+                        {
+                            VoucherRepository.ReserveRedemption(conn, tx, quote.VoucherId, userId, orderId, quote);
+                        }
 
                         foreach (CheckoutItem item in items)
                         {
@@ -125,7 +169,12 @@ namespace ONYX_DDAC.DAL
                             Id = orderId,
                             UserId = userId,
                             Status = OrderStatuses.PendingPayment,
-                            TotalAmount = totalAmount,
+                            SubtotalAmount = subtotalAmount,
+                            DiscountAmount = quote.DiscountAmount,
+                            TotalAmount = quote.TotalAmount,
+                            VoucherId = quote.VoucherId > 0 ? (long?)quote.VoucherId : null,
+                            VoucherCode = quote.Code,
+                            VoucherName = quote.Name,
                             ShippingAddress = shippingAddress,
                             DeliveryMethod = deliveryMethod,
                             CheckoutAttemptToken = checkoutAttemptToken,
@@ -259,7 +308,12 @@ namespace ONYX_DDAC.DAL
                     SELECT
                         id,
                         status,
+                        subtotal_amount,
+                        discount_amount,
                         total_amount,
+                        voucher_id,
+                        voucher_code,
+                        voucher_name,
                         shipping_address,
                         delivery_method,
                         checkout_attempt_token,
@@ -287,7 +341,14 @@ namespace ONYX_DDAC.DAL
                             Id = reader.GetInt64(reader.GetOrdinal("id")),
                             UserId = userId,
                             Status = reader.GetString(reader.GetOrdinal("status")),
+                            SubtotalAmount = reader.GetDecimal(reader.GetOrdinal("subtotal_amount")),
+                            DiscountAmount = reader.GetDecimal(reader.GetOrdinal("discount_amount")),
                             TotalAmount = reader.GetDecimal(reader.GetOrdinal("total_amount")),
+                            VoucherId = reader.IsDBNull(reader.GetOrdinal("voucher_id"))
+                                ? (long?)null
+                                : reader.GetInt64(reader.GetOrdinal("voucher_id")),
+                            VoucherCode = ReadNullableString(reader, "voucher_code"),
+                            VoucherName = ReadNullableString(reader, "voucher_name"),
                             ShippingAddress = reader.GetString(reader.GetOrdinal("shipping_address")),
                             DeliveryMethod = ReadNullableString(reader, "delivery_method"),
                             CheckoutAttemptToken = ReadNullableString(reader, "checkout_attempt_token"),
@@ -473,6 +534,8 @@ namespace ONYX_DDAC.DAL
                             release.ExecuteNonQuery();
                         }
 
+                        VoucherRepository.ReleaseForOrder(conn, tx, orderId);
+
                         using (DbCommand cancel = conn.CreateCommand())
                         {
                             cancel.Transaction = tx;
@@ -609,6 +672,7 @@ namespace ONYX_DDAC.DAL
                         c.product_variant_id,
                         c.quantity,
                         p.name AS product_name,
+                        p.category AS product_category,
                         p.price AS product_price,
                         p.stock_qty AS product_stock,
                         p.image_url AS product_image_url,
@@ -649,6 +713,7 @@ namespace ONYX_DDAC.DAL
                             ProductName = string.IsNullOrWhiteSpace(variantValue)
                                 ? productName
                                 : productName + " (" + variantValue + ")",
+                            Category = reader.GetString(reader.GetOrdinal("product_category")),
                             Quantity = reader.GetInt32(reader.GetOrdinal("quantity")),
                             UnitPrice = variantId.HasValue
                                 ? reader.GetDecimal(reader.GetOrdinal("variant_price"))
@@ -698,7 +763,12 @@ namespace ONYX_DDAC.DAL
             DbConnection conn,
             DbTransaction tx,
             long userId,
+            decimal subtotalAmount,
+            decimal discountAmount,
             decimal totalAmount,
+            long? voucherId,
+            string voucherCode,
+            string voucherName,
             string shippingAddress,
             string deliveryMethod,
             string checkoutAttemptToken,
@@ -710,13 +780,18 @@ namespace ONYX_DDAC.DAL
                 cmd.Transaction = tx;
                 cmd.CommandText = @"
                     INSERT INTO orders
-                        (user_id, status, total_amount, shipping_address, delivery_method, checkout_attempt_token, payment_cancel_token_hash, payment_expires_at)
+                        (user_id, status, subtotal_amount, discount_amount, total_amount, voucher_id, voucher_code, voucher_name, shipping_address, delivery_method, checkout_attempt_token, payment_cancel_token_hash, payment_expires_at)
                     VALUES
-                        (@UserId, @Status, @TotalAmount, @ShippingAddress, @DeliveryMethod, @CheckoutAttemptToken, @PaymentCancellationTokenHash, @ExpiresAt)
+                        (@UserId, @Status, @SubtotalAmount, @DiscountAmount, @TotalAmount, @VoucherId, @VoucherCode, @VoucherName, @ShippingAddress, @DeliveryMethod, @CheckoutAttemptToken, @PaymentCancellationTokenHash, @ExpiresAt)
                     RETURNING id";
                 cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
                 cmd.Parameters.Add(new NpgsqlParameter("@Status", OrderStatuses.PendingPayment));
+                cmd.Parameters.Add(new NpgsqlParameter("@SubtotalAmount", subtotalAmount));
+                cmd.Parameters.Add(new NpgsqlParameter("@DiscountAmount", discountAmount));
                 cmd.Parameters.Add(new NpgsqlParameter("@TotalAmount", totalAmount));
+                cmd.Parameters.Add(new NpgsqlParameter("@VoucherId", voucherId.HasValue ? (object)voucherId.Value : DBNull.Value));
+                cmd.Parameters.Add(new NpgsqlParameter("@VoucherCode", string.IsNullOrWhiteSpace(voucherCode) ? (object)DBNull.Value : voucherCode));
+                cmd.Parameters.Add(new NpgsqlParameter("@VoucherName", string.IsNullOrWhiteSpace(voucherName) ? (object)DBNull.Value : voucherName));
                 cmd.Parameters.Add(new NpgsqlParameter("@ShippingAddress", shippingAddress));
                 cmd.Parameters.Add(new NpgsqlParameter("@DeliveryMethod", deliveryMethod));
                 cmd.Parameters.Add(new NpgsqlParameter("@CheckoutAttemptToken", checkoutAttemptToken));
@@ -810,6 +885,7 @@ namespace ONYX_DDAC.DAL
                 ProductId = item.ProductId,
                 VariantId = item.VariantId,
                 ProductName = item.ProductName,
+                Category = item.Category,
                 VariantName = item.VariantName,
                 Price = item.UnitPrice,
                 Quantity = item.Quantity,
@@ -842,6 +918,7 @@ namespace ONYX_DDAC.DAL
             public long ProductId { get; set; }
             public long? VariantId { get; set; }
             public string ProductName { get; set; }
+            public string Category { get; set; }
             public string VariantName { get; set; }
             public string ImageUrl { get; set; }
             public int Quantity { get; set; }

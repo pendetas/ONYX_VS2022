@@ -51,9 +51,51 @@
                         <asp:TextBox ID="txtShippingAddress" runat="server" TextMode="MultiLine" Rows="4" CssClass="onyx-checkout-input" />
                     </div>
 
-                    <div class="onyx-checkout-total">
-                        <span>Total</span>
-                        <asp:Literal ID="litCheckoutTotal" runat="server" />
+                    <div class="onyx-voucher-entry">
+                        <label for="<%= txtVoucherCode.ClientID %>">Voucher Code</label>
+                        <div class="onyx-voucher-entry__row">
+                            <asp:TextBox ID="txtVoucherCode" runat="server" MaxLength="40" CssClass="onyx-checkout-input onyx-voucher-entry__input" />
+                            <asp:Button ID="btnApplyVoucher" runat="server" Text="Apply" OnClick="btnApplyVoucher_Click" CssClass="onyx-voucher-apply" />
+                        </div>
+                        <asp:Label ID="lblVoucherMessage" runat="server" Visible="false" CssClass="onyx-checkout-message onyx-checkout-message--voucher" />
+                    </div>
+
+                    <asp:Panel ID="pnlAppliedVoucher" runat="server" Visible="false" CssClass="onyx-voucher-applied">
+                        <div class="onyx-voucher-applied__meta">
+                            <strong><asp:Literal ID="litVoucherName" runat="server" /></strong>
+                            <span>Code <asp:Literal ID="litVoucherCode" runat="server" /></span>
+                        </div>
+                        <div class="onyx-voucher-applied__actions">
+                            <button type="button" class="onyx-voucher-terms-link" data-voucher-terms-open>T&amp;C apply</button>
+                            <asp:LinkButton ID="btnRemoveVoucher" runat="server" Text="Remove" OnClick="btnRemoveVoucher_Click" CssClass="onyx-voucher-remove" />
+                        </div>
+                    </asp:Panel>
+
+                    <div class="onyx-checkout-totals">
+                        <div class="onyx-checkout-totals__row">
+                            <span>Subtotal</span>
+                            <asp:Literal ID="litCheckoutSubtotal" runat="server" />
+                        </div>
+
+                        <asp:Panel ID="pnlVoucherDiscount" runat="server" Visible="false" CssClass="onyx-checkout-totals__row onyx-checkout-totals__row--discount">
+                            <span>Voucher Discount</span>
+                            <strong>-<asp:Literal ID="litVoucherDiscount" runat="server" /></strong>
+                        </asp:Panel>
+
+                        <div class="onyx-checkout-total">
+                            <span>Total</span>
+                            <asp:Literal ID="litCheckoutTotal" runat="server" />
+                        </div>
+                    </div>
+
+                    <div id="voucherTermsModal" class="onyx-voucher-modal" hidden role="dialog" aria-modal="true" aria-labelledby="voucherTermsTitle">
+                        <div class="onyx-voucher-modal__panel">
+                            <button type="button" class="onyx-voucher-modal__close" data-voucher-terms-close aria-label="Close voucher terms">&times;</button>
+                            <h2 id="voucherTermsTitle">Voucher Terms</h2>
+                            <div class="onyx-voucher-terms">
+                                <asp:Literal ID="litVoucherTerms" runat="server" />
+                            </div>
+                        </div>
                     </div>
 
                     <div class="onyx-stripe-checkout-note">
@@ -73,4 +115,82 @@
             </asp:Panel>
         </div>
     </section>
+
+    <script type="text/javascript">
+        (function () {
+            var modal = document.getElementById('voucherTermsModal');
+            if (!modal) return;
+
+            var opener = document.querySelector('[data-voucher-terms-open]');
+            var closer = modal.querySelector('[data-voucher-terms-close]');
+            var previousFocus = null;
+
+            function getFocusableElements() {
+                return modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            }
+
+            function openTerms() {
+                previousFocus = document.activeElement;
+                modal.hidden = false;
+                document.body.classList.add('voucher-modal-open');
+                if (closer) {
+                    closer.focus();
+                }
+            }
+
+            function closeTerms() {
+                modal.hidden = true;
+                document.body.classList.remove('voucher-modal-open');
+                if (previousFocus && previousFocus.focus) {
+                    previousFocus.focus();
+                }
+            }
+
+            if (opener) {
+                opener.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    openTerms();
+                });
+            }
+
+            if (closer) {
+                closer.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    closeTerms();
+                });
+            }
+
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal) {
+                    closeTerms();
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (modal.hidden) return;
+
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeTerms();
+                    return;
+                }
+
+                if (event.key !== 'Tab') return;
+
+                var focusable = getFocusableElements();
+                if (!focusable.length) return;
+
+                var first = focusable[0];
+                var last = focusable[focusable.length - 1];
+
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            });
+        }());
+    </script>
 </asp:Content>

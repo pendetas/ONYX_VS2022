@@ -62,7 +62,7 @@ namespace ONYX_DDAC.Services
 
             if (payment.IsPaid)
             {
-                if (string.IsNullOrWhiteSpace(payment.PaymentIntentId))
+                if (string.IsNullOrWhiteSpace(payment.PaymentIntentId) && !payment.IsNoCostSession)
                 {
                     throw new InvalidOperationException("Stripe reported a paid Session without a PaymentIntent.");
                 }

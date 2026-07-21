@@ -23,7 +23,29 @@ namespace ONYX_DDAC.customer_page
 
         protected global::System.Web.UI.WebControls.TextBox txtShippingAddress;
 
+        protected global::System.Web.UI.WebControls.TextBox txtVoucherCode;
+
+        protected global::System.Web.UI.WebControls.Button btnApplyVoucher;
+
+        protected global::System.Web.UI.WebControls.Label lblVoucherMessage;
+
+        protected global::System.Web.UI.WebControls.Panel pnlAppliedVoucher;
+
+        protected global::System.Web.UI.WebControls.Literal litVoucherName;
+
+        protected global::System.Web.UI.WebControls.Literal litVoucherCode;
+
+        protected global::System.Web.UI.WebControls.LinkButton btnRemoveVoucher;
+
+        protected global::System.Web.UI.WebControls.Literal litCheckoutSubtotal;
+
+        protected global::System.Web.UI.WebControls.Panel pnlVoucherDiscount;
+
+        protected global::System.Web.UI.WebControls.Literal litVoucherDiscount;
+
         protected global::System.Web.UI.WebControls.Literal litCheckoutTotal;
+
+        protected global::System.Web.UI.WebControls.Literal litVoucherTerms;
 
         protected global::System.Web.UI.WebControls.Button btnPayWithStripe;
 

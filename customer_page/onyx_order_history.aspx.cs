@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
 using ONYX_DDAC.Services;
 
@@ -246,6 +247,16 @@ namespace ONYX_DDAC.customer_page
             if (order.Items.Count > 3)
             {
                 summary += string.Format(" and {0} more", order.Items.Count - 3);
+            }
+
+            if (order.DiscountAmount > 0m)
+            {
+                string voucherLabel = !string.IsNullOrWhiteSpace(order.VoucherCode)
+                    ? order.VoucherCode.Trim()
+                    : !string.IsNullOrWhiteSpace(order.VoucherName)
+                        ? order.VoucherName.Trim()
+                        : "Voucher";
+                summary += " · " + voucherLabel + " · saved " + CurrencyHelper.FormatMyr(order.DiscountAmount);
             }
 
             return Server.HtmlEncode(summary);

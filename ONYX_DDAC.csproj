@@ -197,6 +197,7 @@
     <Content Include="admin_page\onyx_admin_user_detail.aspx" />
     <Content Include="admin_page\onyx_admin_products_form.aspx" />
     <Content Include="admin_page\onyx_admin_promos.aspx" />
+    <Content Include="admin_page\onyx_admin_voucher_form.aspx" />
     <Content Include="admin_page\onyx_admin_settings.aspx" />
     <Content Include="admin_page\onyx_admin_users.aspx" />
     <Content Include="auth_page\onyx_Admin_Login.aspx" />
@@ -216,6 +217,7 @@
     <Content Include="App_Data\20260709_product_campaign_blocks.sql" />
     <Content Include="App_Data\20260709_product_campaigns.sql" />
     <Content Include="App_Data\20260709_product_images_rds.sql" />
+    <Content Include="App_Data\20260717_voucher_loyalty_management.sql" />
     <Content Include="App_Data\stripe_checkout_migration.sql" />
     <Content Include="auth_page\google_callback.aspx" />
     <Content Include="auth_page\onyx_forgotpassword.aspx" />
@@ -406,6 +408,13 @@
     <Compile Include="admin_page\onyx_admin_promos.aspx.designer.cs">
       <DependentUpon>onyx_admin_promos.aspx</DependentUpon>
     </Compile>
+    <Compile Include="admin_page\onyx_admin_voucher_form.aspx.cs">
+      <DependentUpon>onyx_admin_voucher_form.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="admin_page\onyx_admin_voucher_form.aspx.designer.cs">
+      <DependentUpon>onyx_admin_voucher_form.aspx</DependentUpon>
+    </Compile>
     <Compile Include="admin_page\onyx_admin_settings.aspx.cs">
       <DependentUpon>onyx_admin_settings.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -557,6 +566,7 @@
     <Compile Include="DAL\ProductRepository.cs" />
     <Compile Include="DAL\ReviewRepository.cs" />
     <Compile Include="DAL\UserRepository.cs" />
+    <Compile Include="DAL\VoucherRepository.cs" />
     <Compile Include="DAL\WishlistRepository.cs" />
     <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Helpers\AppUrlHelper.cs" />
@@ -603,6 +613,9 @@
     <Compile Include="Models\StripeCheckoutResult.cs" />
     <Compile Include="Models\StripePaymentState.cs" />
     <Compile Include="Models\TopProduct.cs" />
+    <Compile Include="Models\Voucher.cs" />
+    <Compile Include="Models\VoucherAdminMetrics.cs" />
+    <Compile Include="Models\VoucherQuote.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Wishlist.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -673,6 +686,8 @@
     <Compile Include="Services\S3Service.cs" />
     <Compile Include="Services\StripePaymentService.cs" />
     <Compile Include="Services\PaymentCompletionService.cs" />
+    <Compile Include="Services\VoucherCalculator.cs" />
+    <Compile Include="Services\VoucherService.cs" />
     <Compile Include="stripe_webhook.ashx.cs">
       <DependentUpon>stripe_webhook.ashx</DependentUpon>
     </Compile>

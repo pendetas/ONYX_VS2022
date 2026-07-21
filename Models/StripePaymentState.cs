@@ -20,7 +20,22 @@ namespace ONYX_DDAC.Models
 
         public bool IsPaid
         {
-            get { return string.Equals(PaymentStatus, "paid", StringComparison.OrdinalIgnoreCase); }
+            get
+            {
+                return string.Equals(PaymentStatus, "paid", StringComparison.OrdinalIgnoreCase) ||
+                    IsNoCostSession;
+            }
+        }
+
+        public bool IsNoCostSession
+        {
+            get
+            {
+                return string.Equals(PaymentStatus, "no_payment_required", StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(SessionStatus, "complete", StringComparison.OrdinalIgnoreCase) &&
+                    AmountTotal.HasValue &&
+                    AmountTotal.Value == 0;
+            }
         }
 
         public bool IsExpired
