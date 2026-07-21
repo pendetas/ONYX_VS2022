@@ -4,6 +4,23 @@
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
     <link rel="stylesheet" href="<%= ResolveUrl("~/Content/onyx-commerce.css") %>" />
     <style>
+        /* The customer master is dark; receipts must keep readable ink on white paper. */
+        .onyx-invoice-paper,
+        .onyx-invoice-paper .onyx-invoice-value,
+        .onyx-invoice-paper .onyx-invoice-muted,
+        .onyx-invoice-paper .onyx-invoice-payment,
+        .onyx-invoice-paper .onyx-invoice-table td,
+        .onyx-invoice-paper .onyx-invoice-product-sub,
+        .onyx-invoice-paper .onyx-invoice-signature {
+            color: #111 !important;
+        }
+
+        .onyx-invoice-paper .onyx-invoice-label,
+        .onyx-invoice-paper .onyx-invoice-table th,
+        .onyx-invoice-paper .onyx-invoice-thanks {
+            color: #555 !important;
+        }
+
         .onyx-invoice-breakdown {
             border-top: 1px solid #ededed;
             display: flex;

@@ -671,7 +671,6 @@
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\GeminiAssistantService.cs" />
     <Compile Include="Services\GoogleOAuthService.cs" />
-    <Compile Include="Services\LambdaService.cs" />
     <Compile Include="Services\OnyxKnowledgeService.cs" />
     <Compile Include="Services\OAuthProviderOptions.cs" />
     <Compile Include="Services\OAuthProviderRegistry.cs" />
