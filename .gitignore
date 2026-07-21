@@ -37,6 +37,7 @@ Thumbs.db
 .superpowers/
 .magicpath-work/
 .playwright-mcp/
+.claude/
 
 # Local documentation, test, and generated output
 docs/
