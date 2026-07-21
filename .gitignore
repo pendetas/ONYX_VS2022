@@ -41,3 +41,9 @@ Thumbs.db
 # Local secrets
 .env
 .env.*
+
+# Local documentation, test, and generated output
+docs/
+tests/
+tmp/
+outputs/

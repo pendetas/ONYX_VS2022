@@ -323,7 +323,10 @@
                         </asp:LinkButton>
                     </div>
 
-                    <p class="card-footer">Authorized Personnel Only</p>
+                    <p class="card-footer">
+                        Don't have an admin account?&nbsp;
+                        <a href="<%= ResolveUrl("~/auth_page/onyx_admin_register.aspx") %>">Register as an admin</a>
+                    </p>
 
                 </div>
             </div>
