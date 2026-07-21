@@ -280,6 +280,15 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
+
+        .card-footer a {
+            color: rgba(255,255,255,0.32);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.18s;
+        }
+
+        .card-footer a:hover { color: rgba(255,255,255,0.65); }
     </style>
 </head>
 <body>

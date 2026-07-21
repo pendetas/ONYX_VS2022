@@ -33,6 +33,9 @@ $checks = [ordered]@{
         $adminLoginMarkup -match 'Register as an admin' -and
         $adminLoginMarkup -match 'ResolveUrl\s*\(\s*"~/auth_page/onyx_admin_register\.aspx"\s*\)'
 
+    'Admin registration link uses the muted footer treatment' =
+        $adminLoginMarkup -match '(?s)\.card-footer\s+a\s*\{.*?color:\s*rgba\(255,255,255,0\.32\).*?font-weight:\s*600.*?text-decoration:\s*none'
+
     'Gitignore excludes local agent state and generated output' =
         $gitIgnore -match '(?m)^\.agents/$' -and
         $gitIgnore -match '(?m)^\.codex/$' -and
