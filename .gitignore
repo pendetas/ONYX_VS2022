@@ -42,8 +42,6 @@ Thumbs.db
 .env
 .env.*
 
-# Local documentation, test, and generated output
-docs/
-tests/
+# Generated local output
 tmp/
 outputs/

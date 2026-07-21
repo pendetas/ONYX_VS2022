@@ -10,14 +10,11 @@ $adminLoginMarkup = Get-Content $adminLoginMarkupPath -Raw
 $gitIgnore = (Get-Content $gitIgnorePath -Raw) -replace "`r`n", "`n"
 
 $checks = [ordered]@{
-    'Admin registration page does not require an existing admin session' =
-        $adminRegisterCode -notmatch 'RequireAdmin\s*\(' -and
-        $adminRegisterCode -notmatch 'Response\.Redirect\s*\(\s*"~/auth_page/onyx_Admin_Login\.aspx"'
+    'Admin registration requires an existing admin session' =
+        $adminRegisterCode -match 'AuthHelper\.RequireAdmin\s*\(\s*this\s*\)'
 
-    'Admin registration redirects already authenticated admins to dashboard' =
-        $adminRegisterCode -match 'Session\["Role"\]' -and
-        $adminRegisterCode -match '"admin"' -and
-        $adminRegisterCode -match 'onyx_admin_dashboard\.aspx'
+    'Admin login does not expose unrestricted admin registration' =
+        $adminLoginMarkup -notmatch 'onyx_admin_register\.aspx'
 
     'Admin registration still creates admin role accounts' =
         $adminRegisterCode -match 'Role\s*=\s*"admin"' -and
@@ -28,19 +25,12 @@ $checks = [ordered]@{
         $adminRegisterMarkup -match 'OnClick="btnRegister_Click"' -and
         $adminRegisterMarkup -match 'Create Account'
 
-    'Admin login links to admin registration' =
-        $adminLoginMarkup -match 'Don''t have an admin account\?' -and
-        $adminLoginMarkup -match 'Register as an admin' -and
-        $adminLoginMarkup -match 'ResolveUrl\s*\(\s*"~/auth_page/onyx_admin_register\.aspx"\s*\)'
-
-    'Admin registration link uses the muted footer treatment' =
-        $adminLoginMarkup -match '(?s)\.card-footer\s+a\s*\{.*?color:\s*rgba\(255,255,255,0\.32\).*?font-weight:\s*600.*?text-decoration:\s*none'
-
-    'Gitignore excludes local agent state and generated output' =
+    'Gitignore preserves repository docs and tests while ignoring local output' =
         $gitIgnore -match '(?m)^\.agents/$' -and
         $gitIgnore -match '(?m)^\.codex/$' -and
-        $gitIgnore -match '(?m)^docs/$' -and
-        $gitIgnore -match '(?m)^tests/$' -and
+        $gitIgnore -notmatch '(?m)^docs/$' -and
+        $gitIgnore -notmatch '(?m)^tests/$' -and
+        $gitIgnore -match '(?m)^tmp/$' -and
         $gitIgnore -match '(?m)^outputs/$' -and
         $gitIgnore -match '(?m)^\.env\.\*$'
 }

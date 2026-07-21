@@ -5,7 +5,6 @@ $checkoutRepo = Get-Content "$root\DAL\CheckoutRepository.cs" -Raw
 $paymentRepo = Get-Content "$root\DAL\PaymentRepository.cs" -Raw
 $stripeService = Get-Content "$root\Services\StripePaymentService.cs" -Raw
 $paymentCompletionService = Get-Content "$root\Services\PaymentCompletionService.cs" -Raw
-$stripePaymentState = Get-Content "$root\Models\StripePaymentState.cs" -Raw
 $orderService = Get-Content "$root\Services\OrderService.cs" -Raw
 $orderRepo = Get-Content "$root\DAL\OrderRepository.cs" -Raw
 $adminDetails = Get-Content "$root\admin_page\onyx_admin_order_details.aspx" -Raw
@@ -130,6 +129,12 @@ $checks = [ordered]@{
         $adminDetailsCode -match 'OrderDetail order = _svc\.GetOrderById\(id\);' -and
         $adminDetailsCode -match 'if\s*\(\s*IsPendingPaymentOrder\(order\)\s*\)' -and
         $adminDetailsCode -match 'litStatusMsg\.Text\s*=\s*PendingPaymentGuardMessage'
+    'Admin order timeline labels pending payment as awaiting payment' =
+        $adminDetailsCode -match 'status\s*==\s*OrderStatuses\.PendingPayment[\s\S]*Awaiting Payment' -and
+        $adminDetailsCode -match 'Payment Confirmed'
+    'Order repository resolves customer email by column name' =
+        $orderRepo -match 'ReadNullableString\(r,\s*"email"\)' -and
+        $orderRepo -notmatch 'CustomerEmail\s*=\s*r\.(IsDBNull|GetString)\(13\)'
     'Order history shows voucher savings' =
         ($history + $historyCode) -match 'VoucherCode' -and
         ($history + $historyCode) -match 'DiscountAmount'

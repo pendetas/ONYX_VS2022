@@ -82,7 +82,8 @@ namespace ONYX_DDAC.admin_page
                     existingVoucher = _voucherService.GetById(EditId);
                     if (existingVoucher == null)
                     {
-                        Response.Redirect("onyx_admin_promos.aspx", true);
+                        Response.Redirect("onyx_admin_promos.aspx", false);
+                        Context.ApplicationInstance.CompleteRequest();
                         return;
                     }
                 }
@@ -133,7 +134,9 @@ namespace ONYX_DDAC.admin_page
                     _voucherService.Create(voucher, GetAdminUserId());
                 }
 
-                Response.Redirect("onyx_admin_promos.aspx", true);
+                Response.Redirect("onyx_admin_promos.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
             }
             catch (InvalidOperationException ex)
             {
@@ -165,9 +168,7 @@ namespace ONYX_DDAC.admin_page
         private void ConfigurePageChrome()
         {
             litPageTitle.Text = IsEditMode ? "Edit Voucher" : "Create Voucher";
-            litPageSubtitle.Text = IsEditMode
-                ? "Voucher Details for secure create and edit management."
-                : "Voucher Details for secure create and edit management.";
+            litPageSubtitle.Text = "Voucher Details for secure create and edit management.";
             btnSave.Text = IsEditMode ? "Save changes" : "Create voucher";
         }
 
@@ -188,7 +189,8 @@ namespace ONYX_DDAC.admin_page
             Voucher voucher = _voucherService.GetById(id);
             if (voucher == null)
             {
-                Response.Redirect("onyx_admin_promos.aspx", true);
+                Response.Redirect("onyx_admin_promos.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
                 return;
             }
 

@@ -229,6 +229,12 @@ namespace ONYX_DDAC.admin_page
 
             t.Add(new { Event = "Order Placed",       Timestamp = ts,      DotClass = "dot-done" });
 
+            if (status == OrderStatuses.PendingPayment)
+            {
+                t.Add(new { Event = "Awaiting Payment", Timestamp = "Pending", DotClass = "dot-pending" });
+                return t;
+            }
+
             if (status != "cancelled")
                 t.Add(new { Event = "Payment Confirmed", Timestamp = ts,      DotClass = "dot-done" });
 

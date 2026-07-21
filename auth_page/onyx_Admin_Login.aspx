@@ -281,14 +281,6 @@
             text-transform: uppercase;
         }
 
-        .card-footer a {
-            color: rgba(255,255,255,0.32);
-            font-weight: 600;
-            text-decoration: none;
-            transition: color 0.18s;
-        }
-
-        .card-footer a:hover { color: rgba(255,255,255,0.65); }
     </style>
 </head>
 <body>
@@ -332,10 +324,7 @@
                         </asp:LinkButton>
                     </div>
 
-                    <p class="card-footer">
-                        Don't have an admin account?&nbsp;
-                        <a href="<%= ResolveUrl("~/auth_page/onyx_admin_register.aspx") %>">Register as an admin</a>
-                    </p>
+                    <p class="card-footer">Admin access is invitation-only</p>
 
                 </div>
             </div>

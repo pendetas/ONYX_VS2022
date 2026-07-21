@@ -120,7 +120,7 @@ namespace ONYX_DDAC.DAL
                                 OrderedAt = r.GetDateTime(r.GetOrdinal("ordered_at")),
                                 StatusUpdatedAt = r.IsDBNull(r.GetOrdinal("status_updated_at")) ? (DateTime?)null : r.GetDateTime(r.GetOrdinal("status_updated_at")),
                                 CustomerName = r.GetString(r.GetOrdinal("customer_name")),
-                                CustomerEmail = r.IsDBNull(13) ? "—" : r.GetString(13),
+                                CustomerEmail = ReadNullableString(r, "email") ?? "—",
                                 CustomerPhone = r.GetString(r.GetOrdinal("phone")),
                                 CustomerSince = r.IsDBNull(r.GetOrdinal("created_at")) ? DateTime.MinValue : r.GetDateTime(r.GetOrdinal("created_at"))
                             };
