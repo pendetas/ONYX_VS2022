@@ -48,7 +48,7 @@ jobs:
         uses: aws-actions/aws-elasticbeanstalk-deploy@v1
         with:
           application-name: onyx
-          environment-name: Onyx-env
+          environment-name: Onyx-env-v4
           aws-region: ap-southeast-1
           deployment-package-path: obj/Release/Package/ONYX_DDAC.zip
           version-label: onyx-${{ github.sha }}
