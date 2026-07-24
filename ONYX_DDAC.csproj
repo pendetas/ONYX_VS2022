@@ -244,7 +244,6 @@
     <Content Include="customer_page\onyx_support.aspx" />
     <Content Include="customer_page\onyx_ai_chat.ashx" />
     <Content Include="Content\admin.css" />
-    <Content Include="Content\image-unavailable.svg" />
     <Content Include="Content\onyx-account.css" />
     <Content Include="Content\onyx-catalog.css" />
     <Content Include="Content\onyx-commerce.css" />
@@ -255,14 +254,9 @@
     <Content Include="Content\onyx-user-master.css" />
     <Content Include="Content\onyx.css" />
     <Content Include="Content\Site.css" />
-    <Content Include="favicon.ico" />
-    <Content Include="favicon-onyx.png" />
     <Content Include="Global.asax" />
     <Content Include="stripe_webhook.ashx" />
-    <Content Include="PRD.md" />
-    <Content Include="PRODUCT.md" />
-    <Content Include="docs\onyx-ai-assistant.md" />
-    <Content Include="docs\onyx-assistant-knowledge.md" />
+    <Content Include="App_Data\onyx-assistant-knowledge.md" />
     <None Include="Scripts\jquery-3.7.0-vsdoc.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />

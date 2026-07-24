@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <title>Admin &mdash; ONYX</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="<%= ResolveUrl("~/favicon-onyx.png?v=1") %>" />
+    <link rel="icon" type="image/png" href="<%= ONYX_DDAC.Helpers.MediaUrlHelper.Resolve("site-photos/favicon-onyx.png") %>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />

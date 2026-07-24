@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title description">
-  <title id="title">ONYX image unavailable</title>
-  <desc id="description">A neutral ONYX placeholder used when a product has no uploaded image.</desc>
-  <rect width="1200" height="800" fill="#090909"/>
-  <rect x="36" y="36" width="1128" height="728" fill="none" stroke="#2a2a2a" stroke-width="4"/>
-  <text x="600" y="382" fill="#eeeeee" font-family="Arial, sans-serif" font-size="80" font-weight="700" letter-spacing="18" text-anchor="middle">ONYX</text>
-  <text x="600" y="454" fill="#8c8c8c" font-family="Arial, sans-serif" font-size="28" letter-spacing="8" text-anchor="middle">IMAGE UNAVAILABLE</text>
-</svg>

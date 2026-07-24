@@ -209,7 +209,7 @@ namespace ONYX_DDAC.Services
         private IReadOnlyList<KnowledgeChunk> LoadChunks()
         {
             string root = rootPath;
-            string path = Path.Combine(root, "docs", AssistantKnowledgeFileName);
+            string path = Path.Combine(root, "App_Data", AssistantKnowledgeFileName);
             if (!IsSafeKnowledgeFile(path))
             {
                 return new List<KnowledgeChunk>();
