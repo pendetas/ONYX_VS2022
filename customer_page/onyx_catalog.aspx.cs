@@ -329,7 +329,7 @@ namespace ONYX_DDAC.customer_page
             return value;
         }
 
-        // Returns a browser-safe DB image URL, or a category fallback when none is stored.
+        
         protected string GetProductImageUrl(object imageUrl, object category)
         {
             string value = (imageUrl ?? string.Empty).ToString().Trim();
@@ -340,8 +340,6 @@ namespace ONYX_DDAC.customer_page
             {
                 return value;
             }
-
-            // Fallback: no image in DB — serve by category from products folder
             return MediaUrlHelper.Resolve("site-photos/image-unavailable.svg");
         }
 

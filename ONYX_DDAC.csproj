@@ -272,6 +272,7 @@
     <Content Include="Content\onyx.css" />
     <Content Include="Content\Site.css" />
     <Content Include="favicon.ico" />
+    <Content Include="favicon-onyx.png" />
     <Content Include="Global.asax" />
     <Content Include="stripe_webhook.ashx" />
     <Content Include="PRD.md" />
