@@ -42,6 +42,9 @@
                             <a class='<%= GetFilterClass("all") %>' href="onyx_order_history.aspx">All</a>
                             <a class='<%= GetFilterClass("pending_payment") %>' href="onyx_order_history.aspx?status=pending_payment">Pending Payment</a>
                             <a class='<%= GetFilterClass("paid") %>' href="onyx_order_history.aspx?status=paid">Paid</a>
+                            <a class='<%= GetFilterClass("pending") %>' href="onyx_order_history.aspx?status=pending">Processing</a>
+                            <a class='<%= GetFilterClass("shipped") %>' href="onyx_order_history.aspx?status=shipped">Shipped</a>
+                            <a class='<%= GetFilterClass("delivered") %>' href="onyx_order_history.aspx?status=delivered">Delivered</a>
                             <a class='<%= GetFilterClass("cancelled") %>' href="onyx_order_history.aspx?status=cancelled">Cancelled</a>
                         </nav>
                     </header>
@@ -74,7 +77,7 @@
                                 <div class="onyx-order-footer">
                                     <span class="onyx-order-total"><%# ONYX_DDAC.Helpers.CurrencyHelper.FormatMyr((decimal)Eval("TotalAmount")) %></span>
                                     <div class="onyx-order-actions">
-                                        <asp:PlaceHolder runat="server" Visible='<%# IsPaid(Eval("Status")) %>'>
+                                        <asp:PlaceHolder runat="server" Visible='<%# CanViewReceipt(Eval("Status")) %>'>
                                             <a class="onyx-profile-ghost" href='<%# "onyx_invoice.aspx?orderId=" + Eval("Id") %>'>View Receipt</a>
                                         </asp:PlaceHolder>
                                         <asp:PlaceHolder runat="server" Visible='<%# CanContinuePayment(Eval("Id")) %>'>

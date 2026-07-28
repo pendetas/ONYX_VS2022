@@ -682,6 +682,19 @@
                     }
                 }
 
+                function isDirectAiRequest(text) {
+                    // ponytail: mirror the server order router so order lookups do not impersonate AI thinking.
+                    var normalized = (text || '').toLowerCase();
+                    var mentionsOrder = /\b(order|invoice|receipt|delivery|package|parcel|payment)\b/.test(normalized);
+                    var asksForStatus = /\b(track|status|history|recent)\b/.test(normalized)
+                        || /\bmy order\b/.test(normalized)
+                        || /(?:order|invoice|receipt)\s*#?\s*\d+/.test(normalized)
+                        || /\bwhere\b.*\bmy (order|delivery|package|parcel)\b/.test(normalized)
+                        || /\bmy (order|delivery|package|parcel)\b.*\bwhere\b/.test(normalized);
+
+                    return mentionsOrder && asksForStatus;
+                }
+
                 function requestAiReply(text) {
                     return fetch(aiEndpoint, {
                         method: 'POST',
@@ -728,22 +741,21 @@
                     addAiMessage(text, 'user');
                     aiInput.value = '';
                     setAiSending(true);
-                    var pendingMessage = addAiMessage('Searching ONYX knowledge...', 'bot');
+                    var directRequest = isDirectAiRequest(text);
+                    var pendingMessage = directRequest ? null : addAiMessage('ONYX AI is thinking...', 'bot');
 
                     requestAiReply(text)
                         .then(function (result) {
-                            if (pendingMessage) {
-                                pendingMessage.className = result.isError ? 'onyx-ai-message bot error' : 'onyx-ai-message bot';
-                                pendingMessage.textContent = formatAiReply(result.reply);
-                                renderAiActions(result.actions);
-                                aiMessages.scrollTop = aiMessages.scrollHeight;
-                            }
+                            var replyMessage = pendingMessage || addAiMessage('', result.isError ? 'bot error' : 'bot');
+                            replyMessage.className = result.isError ? 'onyx-ai-message bot error' : 'onyx-ai-message bot';
+                            replyMessage.textContent = formatAiReply(result.reply);
+                            renderAiActions(result.actions);
+                            aiMessages.scrollTop = aiMessages.scrollHeight;
                         })
                         .catch(function () {
-                            if (pendingMessage) {
-                                pendingMessage.className = 'onyx-ai-message bot error';
-                                pendingMessage.textContent = 'The ONYX Assistant is unavailable right now. Please try again or email support.onyxgaming@gmail.com.';
-                            }
+                            var errorMessage = pendingMessage || addAiMessage('', 'bot error');
+                            errorMessage.className = 'onyx-ai-message bot error';
+                            errorMessage.textContent = 'The ONYX Assistant is unavailable right now. Please try again or email support.onyxgaming@gmail.com.';
                         })
                         .finally(function () {
                             setAiSending(false);

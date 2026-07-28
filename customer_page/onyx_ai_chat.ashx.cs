@@ -94,7 +94,8 @@ namespace ONYX_DDAC.customer_page
                     Reply = result.Reply,
                     Actions = MapActions(result.Actions),
                     Restricted = result.IsRestricted,
-                    ConfigurationMissing = result.IsConfigurationMissing
+                    ConfigurationMissing = result.IsConfigurationMissing,
+                    AiGenerated = result.IsAiGenerated
                 });
             }
             catch (Exception ex)
@@ -205,6 +206,9 @@ namespace ONYX_DDAC.customer_page
 
             [JsonProperty("configurationMissing")]
             public bool ConfigurationMissing { get; set; }
+
+            [JsonProperty("aiGenerated")]
+            public bool AiGenerated { get; set; }
         }
 
         private class ChatActionResponse

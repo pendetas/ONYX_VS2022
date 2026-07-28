@@ -560,11 +560,14 @@ namespace ONYX_DDAC.DAL
                         LEFT JOIN product_variants pv ON pv.product_variant_id = oi.product_variant_id
                         WHERE o.id = @OrderId
                           AND o.user_id = @UserId
-                          AND o.status = @PaidStatus
+                          AND o.status IN (@PaidStatus, @PendingStatus, @ShippedStatus, @DeliveredStatus)
                         ORDER BY oi.order_item_id ASC";
                     cmd.Parameters.Add(new NpgsqlParameter("@OrderId", orderId));
                     cmd.Parameters.Add(new NpgsqlParameter("@UserId", userId));
                     cmd.Parameters.Add(new NpgsqlParameter("@PaidStatus", OrderStatuses.Paid));
+                    cmd.Parameters.Add(new NpgsqlParameter("@PendingStatus", OrderStatuses.Pending));
+                    cmd.Parameters.Add(new NpgsqlParameter("@ShippedStatus", OrderStatuses.Shipped));
+                    cmd.Parameters.Add(new NpgsqlParameter("@DeliveredStatus", OrderStatuses.Delivered));
 
                     using (DbDataReader reader = cmd.ExecuteReader())
                     {

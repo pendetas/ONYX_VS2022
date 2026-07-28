@@ -120,6 +120,9 @@ namespace ONYX_DDAC.Services
             string value = (status ?? string.Empty).Trim().ToLowerInvariant();
             if (value == OrderStatuses.PendingPayment ||
                 value == OrderStatuses.Paid ||
+                value == OrderStatuses.Pending ||
+                value == OrderStatuses.Shipped ||
+                value == OrderStatuses.Delivered ||
                 value == OrderStatuses.Cancelled)
             {
                 return value;

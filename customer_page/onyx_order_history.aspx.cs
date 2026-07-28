@@ -125,6 +125,9 @@ namespace ONYX_DDAC.customer_page
             string value = Convert.ToString(status);
             if (value != OrderStatuses.PendingPayment &&
                 value != OrderStatuses.Paid &&
+                value != OrderStatuses.Pending &&
+                value != OrderStatuses.Shipped &&
+                value != OrderStatuses.Delivered &&
                 value != OrderStatuses.Cancelled)
             {
                 value = "unknown";
@@ -138,13 +141,20 @@ namespace ONYX_DDAC.customer_page
             string value = Convert.ToString(status);
             if (value == OrderStatuses.PendingPayment) return "Pending Payment";
             if (value == OrderStatuses.Paid) return "Paid";
+            if (value == OrderStatuses.Pending) return "Pending";
+            if (value == OrderStatuses.Shipped) return "Shipped";
+            if (value == OrderStatuses.Delivered) return "Delivered";
             if (value == OrderStatuses.Cancelled) return "Cancelled";
             return "Unknown";
         }
 
-        protected bool IsPaid(object status)
+        protected bool CanViewReceipt(object status)
         {
-            return string.Equals(Convert.ToString(status), OrderStatuses.Paid, StringComparison.Ordinal);
+            string value = Convert.ToString(status);
+            return value == OrderStatuses.Paid ||
+                   value == OrderStatuses.Pending ||
+                   value == OrderStatuses.Shipped ||
+                   value == OrderStatuses.Delivered;
         }
 
         protected bool CanContinuePayment(object orderId)
@@ -215,6 +225,9 @@ namespace ONYX_DDAC.customer_page
             string value = (filter ?? string.Empty).Trim().ToLowerInvariant();
             return value == OrderStatuses.PendingPayment ||
                    value == OrderStatuses.Paid ||
+                   value == OrderStatuses.Pending ||
+                   value == OrderStatuses.Shipped ||
+                   value == OrderStatuses.Delivered ||
                    value == OrderStatuses.Cancelled
                 ? value
                 : "all";

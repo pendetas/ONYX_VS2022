@@ -15,7 +15,7 @@ namespace ONYX_DDAC.Services
 {
     public class GeminiAssistantService
     {
-        private const string DefaultModel = "gemini-2.5-flash";
+        private const string DefaultModel = "gemini-3.5-flash";
         private const int MaxQuestionLength = 900;
         private const int MaxProductActions = 3;
         private const int MaxOrderActions = 3;
@@ -174,7 +174,7 @@ namespace ONYX_DDAC.Services
                 string reply = ExtractReply(response);
                 return string.IsNullOrWhiteSpace(reply)
                     ? AssistantResult.Unavailable("Gemini did not return an answer. Please try again in a moment.")
-                    : AssistantResult.Success(SanitizeAssistantReply(reply), productActions);
+                    : AssistantResult.AiSuccess(SanitizeAssistantReply(reply), productActions);
             }
             catch (Exception)
             {
@@ -863,6 +863,7 @@ namespace ONYX_DDAC.Services
         public bool IsSuccess { get; private set; }
         public bool IsRestricted { get; private set; }
         public bool IsConfigurationMissing { get; private set; }
+        public bool IsAiGenerated { get; private set; }
         public HttpStatusCode StatusCode { get; private set; }
         public string Reply { get; private set; }
         public IList<AssistantAction> Actions { get; private set; }
@@ -877,6 +878,18 @@ namespace ONYX_DDAC.Services
             return new AssistantResult
             {
                 IsSuccess = true,
+                Reply = reply,
+                Actions = actions ?? new List<AssistantAction>(),
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+
+        public static AssistantResult AiSuccess(string reply, IList<AssistantAction> actions)
+        {
+            return new AssistantResult
+            {
+                IsSuccess = true,
+                IsAiGenerated = true,
                 Reply = reply,
                 Actions = actions ?? new List<AssistantAction>(),
                 StatusCode = HttpStatusCode.OK
