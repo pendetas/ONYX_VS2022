@@ -4,24 +4,31 @@ using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Google.GenAI;
-using Google.GenAI.Types;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ONYX_DDAC.Helpers;
 using ONYX_DDAC.Models;
 
 namespace ONYX_DDAC.Services
 {
-    public class GeminiAssistantService
+    public class OpenAiAssistantService
     {
-        private const string DefaultModel = "gemini-3.5-flash";
+        private const string DefaultModel = "gpt-5.6-luna";
         private const int MaxQuestionLength = 900;
         private const int MaxProductActions = 3;
         private const int MaxOrderActions = 3;
         private static readonly OnyxKnowledgeService KnowledgeService = new OnyxKnowledgeService();
         private static readonly ProductService ProductService = new ProductService();
         private static readonly OrderService OrderService = new OrderService();
+        private static readonly HttpClient OpenAiHttpClient = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(30)
+        };
 
         private static readonly string[] AllowedTerms =
         {
@@ -160,20 +167,19 @@ namespace ONYX_DDAC.Services
                     return AssistantResult.Success("I found matching ONYX products from the live catalog.", productActions);
                 }
 
-                return AssistantResult.ConfigurationMissing("The ONYX Assistant is not connected to Gemini yet. Add GEMINI_API_KEY or GeminiApiKey, then try again.");
+                return AssistantResult.ConfigurationMissing("The ONYX Assistant is not connected to OpenAI yet. Add OPENAI_API_KEY or OpenAIApiKey, then try again.");
             }
 
             try
             {
-                var client = new Client(apiKey: apiKey);
-                GenerateContentResponse response = await GenerateContentWithRetryAsync(
-                    client,
+                string responseJson = await CreateResponseWithRetryAsync(
+                    apiKey,
                     GetModel(),
                     BuildUserPrompt(cleanQuestion, pagePath, knowledgeContext)).ConfigureAwait(false);
 
-                string reply = ExtractReply(response);
+                string reply = ExtractReply(responseJson);
                 return string.IsNullOrWhiteSpace(reply)
-                    ? AssistantResult.Unavailable("Gemini did not return an answer. Please try again in a moment.")
+                    ? AssistantResult.Unavailable("OpenAI did not return an answer. Please try again in a moment.")
                     : AssistantResult.AiSuccess(SanitizeAssistantReply(reply), productActions);
             }
             catch (Exception)
@@ -183,7 +189,7 @@ namespace ONYX_DDAC.Services
                     throw;
                 }
 
-                return AssistantResult.Unavailable("Gemini could not answer right now. Please try again in a moment.");
+                return AssistantResult.Unavailable("OpenAI could not answer right now. Please try again in a moment.");
             }
         }
 
@@ -644,7 +650,7 @@ namespace ONYX_DDAC.Services
             return "RM " + amount.ToString("N2", CultureInfo.InvariantCulture);
         }
 
-        private static async Task<GenerateContentResponse> GenerateContentWithRetryAsync(Client client, string model, string prompt)
+        private static async Task<string> CreateResponseWithRetryAsync(string apiKey, string model, string prompt)
         {
             Exception lastException = null;
 
@@ -652,10 +658,32 @@ namespace ONYX_DDAC.Services
             {
                 try
                 {
-                    return await client.Models.GenerateContentAsync(
-                        model: model,
-                        contents: prompt,
-                        config: BuildGeminiConfig()).ConfigureAwait(false);
+                    var payload = new JObject
+                    {
+                        ["model"] = model,
+                        ["instructions"] = BuildSystemInstruction(),
+                        ["input"] = prompt,
+                        ["max_output_tokens"] = 640,
+                        ["reasoning"] = new JObject { ["effort"] = "low" },
+                        ["text"] = new JObject { ["verbosity"] = "low" }
+                    };
+
+                    using (var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/responses"))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+                        request.Content = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
+
+                        using (HttpResponseMessage response = await OpenAiHttpClient.SendAsync(request).ConfigureAwait(false))
+                        {
+                            string responseJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                throw new HttpRequestException("OpenAI Responses API returned " + (int)response.StatusCode + ".");
+                            }
+
+                            return responseJson;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -669,7 +697,7 @@ namespace ONYX_DDAC.Services
                 }
             }
 
-            throw lastException ?? new InvalidOperationException("Gemini did not return a response.");
+            throw lastException ?? new InvalidOperationException("OpenAI did not return a response.");
         }
 
         private static string NormalizeQuestion(string question)
@@ -737,37 +765,30 @@ namespace ONYX_DDAC.Services
 
         private static string GetApiKey()
         {
-            string apiKey = System.Environment.GetEnvironmentVariable("GEMINI_API_KEY");
+            string apiKey = System.Environment.GetEnvironmentVariable("OPENAI_API_KEY");
             if (!string.IsNullOrWhiteSpace(apiKey))
             {
                 return apiKey;
             }
 
-            return ConfigurationManager.AppSettings["GeminiApiKey"];
+            return ConfigurationManager.AppSettings["OpenAIApiKey"];
         }
 
         private static string GetModel()
         {
-            string model = ConfigurationManager.AppSettings["GeminiModel"];
+            string model = System.Environment.GetEnvironmentVariable("OPENAI_MODEL");
+            if (!string.IsNullOrWhiteSpace(model))
+            {
+                return model.Trim();
+            }
+
+            model = ConfigurationManager.AppSettings["OpenAIModel"];
             return string.IsNullOrWhiteSpace(model) ? DefaultModel : model.Trim();
         }
 
         private static bool IsDebugErrorsEnabled()
         {
             return string.Equals(System.Environment.GetEnvironmentVariable("ONYX_AI_DEBUG_ERRORS"), "1", StringComparison.Ordinal);
-        }
-
-        private static GenerateContentConfig BuildGeminiConfig()
-        {
-            return new GenerateContentConfig
-            {
-                SystemInstruction = new Content
-                {
-                    Parts = new List<Part> { new Part { Text = BuildSystemInstruction() } }
-                },
-                Temperature = 0f,
-                MaxOutputTokens = 640
-            };
         }
 
         private static string BuildSystemInstruction()
@@ -809,10 +830,40 @@ namespace ONYX_DDAC.Services
             });
         }
 
-        private static string ExtractReply(GenerateContentResponse response)
+        private static string ExtractReply(string responseJson)
         {
-            Part part = response?.Candidates?.FirstOrDefault()?.Content?.Parts?.FirstOrDefault(item => !string.IsNullOrWhiteSpace(item.Text));
-            return part == null ? string.Empty : part.Text;
+            if (string.IsNullOrWhiteSpace(responseJson))
+            {
+                return string.Empty;
+            }
+
+            JObject response = JObject.Parse(responseJson);
+            JArray output = response["output"] as JArray;
+            if (output == null)
+            {
+                return string.Empty;
+            }
+
+            foreach (JObject item in output.OfType<JObject>())
+            {
+                JArray content = item["content"] as JArray;
+                if (content == null)
+                {
+                    continue;
+                }
+
+                string reply = content
+                    .OfType<JObject>()
+                    .Where(part => string.Equals((string)part["type"], "output_text", StringComparison.Ordinal))
+                    .Select(part => (string)part["text"])
+                    .FirstOrDefault(text => !string.IsNullOrWhiteSpace(text));
+                if (!string.IsNullOrWhiteSpace(reply))
+                {
+                    return reply;
+                }
+            }
+
+            return string.Empty;
         }
 
         private static string SanitizeAssistantReply(string reply)

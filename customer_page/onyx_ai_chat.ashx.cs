@@ -14,7 +14,7 @@ namespace ONYX_DDAC.customer_page
     public class onyx_ai_chat : HttpTaskAsyncHandler, IReadOnlySessionState
     {
         private const int MaxRequestBodyBytes = 16384;
-        private readonly GeminiAssistantService assistantService = new GeminiAssistantService();
+        private readonly OpenAiAssistantService assistantService = new OpenAiAssistantService();
 
         public override bool IsReusable
         {

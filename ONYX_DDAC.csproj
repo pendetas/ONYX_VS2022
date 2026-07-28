@@ -79,10 +79,6 @@
       <HintPath>packages\Google.Apis.Core.1.75.0\lib\net462\Google.Apis.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.GenAI">
-      <HintPath>packages\Google.GenAI.1.8.0\lib\netstandard2.0\Google.GenAI.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=10.0.0.9, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.10.0.9\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
       <Private>True</Private>
@@ -616,7 +612,7 @@
     <Compile Include="Services\CartService.cs" />
     <Compile Include="Services\CheckoutService.cs" />
     <Compile Include="Services\EmailService.cs" />
-    <Compile Include="Services\GeminiAssistantService.cs" />
+    <Compile Include="Services\OpenAiAssistantService.cs" />
     <Compile Include="Services\GoogleOAuthService.cs" />
     <Compile Include="Services\OnyxKnowledgeService.cs" />
     <Compile Include="Services\OAuthProviderOptions.cs" />
