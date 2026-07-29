@@ -131,6 +131,12 @@ namespace ONYX_DDAC.Services
                 return BuildOrderTrackingResult(cleanQuestion, userId);
             }
 
+            if (NeedsMouseRecommendationClarification(cleanQuestion))
+            {
+                return AssistantResult.Success(
+                    "Before I recommend one, what games do you play, what is your budget and grip style, and do you prefer lightweight or ergonomic and wired or wireless?");
+            }
+
             bool productIntent = IsProductIntent(cleanQuestion) || liveProductRelated;
             if (products == null)
             {
@@ -460,6 +466,36 @@ namespace ONYX_DDAC.Services
         private static bool IsCatalogAvailabilityQuestion(string question)
         {
             return Regex.IsMatch(question ?? string.Empty, @"\b(buy|sell|carry|purchase|shop|product|catalog|recommend|compare|available|in stock)\b", RegexOptions.IgnoreCase);
+        }
+
+        private static bool NeedsMouseRecommendationClarification(string question)
+        {
+            if (!string.Equals(GetRequestedProductCategory(question), "mouse", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            string normalized = Regex.Replace((question ?? string.Empty).ToLowerInvariant(), @"[^a-z0-9\s$]", " ");
+            normalized = Regex.Replace(normalized, @"\s+", " ").Trim();
+
+            bool asksForRecommendation = normalized.Contains("recommend")
+                || Regex.IsMatch(normalized, @"\b(?:what|which)\s+mouse\b")
+                || Regex.IsMatch(normalized, @"\bmouse\b.*\bshould\s+i\s+(?:buy|choose|get)\b")
+                || Regex.IsMatch(normalized, @"\bshould\s+i\s+(?:buy|choose|get)\b.*\bmouse\b");
+            if (!asksForRecommendation)
+            {
+                return false;
+            }
+
+            bool comparesProducts = normalized.Contains("compare")
+                || Regex.IsMatch(normalized, @"\b(?:vs|versus)\b");
+            bool hasConcretePreference = Regex.IsMatch(
+                    normalized,
+                    @"\b(?:wired|wireless|lightweight|ultralight|ultra light|ergonomic|palm|claw|fingertip|budget|cheapest|affordable|razer|logitech|onyx|deathadder|g502|viper)\b")
+                || Regex.IsMatch(normalized, @"\b(?:under|below)\s+(?:rm|myr|\$)?\s*\d+\b")
+                || Regex.IsMatch(normalized, @"\b(?:rm|myr)\s*\d+\b|\$\s*\d+\b");
+
+            return !comparesProducts && !hasConcretePreference;
         }
 
         private static AssistantResult BuildNoMatchingProductResult(string question)
