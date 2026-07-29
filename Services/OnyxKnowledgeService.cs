@@ -300,14 +300,17 @@ namespace ONYX_DDAC.Services
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             string normalized = text.ToLowerInvariant();
             var baseTerms = Regex.Split(normalized, @"[^a-z0-9]+")
-                .Where(term => term.Length >= 3 && !StopWords.Contains(term))
+                .Where(term => (term.Length >= 3 || Regex.IsMatch(term, @"^[a-z]\d$")) && !StopWords.Contains(term))
                 .Distinct()
                 .Take(14)
                 .ToList();
 
             Action<string> addTerm = term =>
             {
-                if (!string.IsNullOrWhiteSpace(term) && term.Length >= 3 && !StopWords.Contains(term) && seen.Add(term))
+                if (!string.IsNullOrWhiteSpace(term)
+                    && (term.Length >= 3 || Regex.IsMatch(term, @"^[a-z]\d$"))
+                    && !StopWords.Contains(term)
+                    && seen.Add(term))
                 {
                     terms.Add(term);
                 }

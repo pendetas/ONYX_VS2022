@@ -460,6 +460,12 @@ namespace ONYX_DDAC.Services
                 || normalized.Contains("purchase")
                 || normalized.Contains("recommend")
                 || normalized.Contains("compare")
+                || normalized.Contains("price")
+                || normalized.Contains("stock")
+                || normalized.Contains("available")
+                || normalized.Contains("availability")
+                || normalized.Contains("how much")
+                || normalized.Contains("cost")
                 || normalized.Contains("gear");
         }
 
@@ -576,7 +582,7 @@ namespace ONYX_DDAC.Services
             };
 
             return Regex.Split((question ?? string.Empty).ToLowerInvariant(), @"[^a-z0-9]+")
-                .Where(term => term.Length >= 3 && !stopWords.Contains(term))
+                .Where(term => (term.Length >= 3 || Regex.IsMatch(term, @"^[a-z]\d$")) && !stopWords.Contains(term))
                 .Distinct()
                 .Take(12)
                 .ToList();
